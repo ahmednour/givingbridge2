@@ -226,7 +226,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         AppButton(
                           text: 'Demo Donor',
                           onPressed: () {
-                            _emailController.text = 'test@example.com';
+                            _emailController.text = 'donor@example.com';
                             _passwordController.text = '123456';
                             _handleLogin();
                           },
