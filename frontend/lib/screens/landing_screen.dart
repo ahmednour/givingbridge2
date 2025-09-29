@@ -101,14 +101,14 @@ class _LandingScreenState extends State<LandingScreen>
   Widget _buildHeader(BuildContext context, bool isDark) {
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: AppTheme.spacing24,
-        vertical: AppTheme.spacing16,
+        horizontal: AppTheme.spacingL,
+        vertical: AppTheme.spacingM,
       ),
       decoration: BoxDecoration(
-        color: isDark ? AppTheme.darkSurface : AppTheme.lightSurface,
+        color: isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor,
         border: Border(
           bottom: BorderSide(
-            color: isDark ? AppTheme.darkBorder : AppTheme.lightBorder,
+            color: isDark ? AppTheme.darkBorderColor : AppTheme.borderColor,
             width: 1,
           ),
         ),
@@ -123,7 +123,7 @@ class _LandingScreenState extends State<LandingScreen>
                 height: 40,
                 decoration: BoxDecoration(
                   color: AppTheme.primaryColor,
-                  borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                  borderRadius: BorderRadius.circular(AppTheme.radiusM),
                 ),
                 child: const Icon(
                   Icons.favorite,
@@ -131,7 +131,7 @@ class _LandingScreenState extends State<LandingScreen>
                   size: 24,
                 ),
               ),
-              const SizedBox(width: AppTheme.spacing12),
+              const SizedBox(width: AppTheme.spacingS + AppTheme.spacingXS),
               Text(
                 'Giving Bridge',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -151,7 +151,7 @@ class _LandingScreenState extends State<LandingScreen>
                 size: ButtonSize.medium,
                 onPressed: () => Navigator.pushNamed(context, '/login'),
               ),
-              const SizedBox(width: AppTheme.spacing12),
+              const SizedBox(width: AppTheme.spacingS + AppTheme.spacingXS),
               PrimaryButton(
                 text: 'Get Started',
                 size: ButtonSize.medium,
@@ -168,16 +168,16 @@ class _LandingScreenState extends State<LandingScreen>
       BuildContext context, ThemeData theme, bool isDark, bool isDesktop) {
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: isDesktop ? AppTheme.spacing64 : AppTheme.spacing24,
-        vertical: isDesktop ? AppTheme.spacing64 : AppTheme.spacing48,
+        horizontal: isDesktop ? AppTheme.spacingXXL + AppTheme.spacingM : AppTheme.spacingL,
+        vertical: isDesktop ? AppTheme.spacingXXL + AppTheme.spacingM : AppTheme.spacingXXL,
       ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppTheme.primaryColor.withOpacity(0.05),
-            AppTheme.secondaryColor.withOpacity(0.05),
+            AppTheme.primaryColor.withValues(alpha: 0.05),
+            AppTheme.secondaryColor.withValues(alpha: 0.05),
           ],
         ),
       ),
@@ -191,7 +191,7 @@ class _LandingScreenState extends State<LandingScreen>
                 Row(
                   children: [
                     Expanded(child: _buildHeroContent(theme, isDesktop)),
-                    const SizedBox(width: AppTheme.spacing64),
+                    const SizedBox(width: AppTheme.spacingXXL + AppTheme.spacingM),
                     Expanded(child: _buildHeroIllustration(isDark)),
                   ],
                 )
@@ -199,7 +199,7 @@ class _LandingScreenState extends State<LandingScreen>
                 Column(
                   children: [
                     _buildHeroContent(theme, isDesktop),
-                    const SizedBox(height: AppTheme.spacing48),
+                    const SizedBox(height: AppTheme.spacingXXL),
                     _buildHeroIllustration(isDark),
                   ],
                 ),
@@ -223,19 +223,19 @@ class _LandingScreenState extends State<LandingScreen>
           ),
           textAlign: isDesktop ? TextAlign.start : TextAlign.center,
         ),
-        const SizedBox(height: AppTheme.spacing24),
+        const SizedBox(height: AppTheme.spacingL),
         Text(
           'Giving Bridge connects generous donors with those in need, creating a community where kindness flows freely and every donation makes a real difference.',
           style: theme.textTheme.bodyLarge?.copyWith(
             color: Theme.of(context).brightness == Brightness.dark
-                ? AppTheme.darkTextSecondary
-                : AppTheme.lightTextSecondary,
+                ? AppTheme.darkTextSecondaryColor
+                : AppTheme.textSecondaryColor,
             height: 1.6,
             fontSize: 18,
           ),
           textAlign: isDesktop ? TextAlign.start : TextAlign.center,
         ),
-        const SizedBox(height: AppTheme.spacing40),
+        const SizedBox(height: AppTheme.spacingXL + AppTheme.spacingS),
         if (isDesktop)
           Row(
             children: [
@@ -245,7 +245,7 @@ class _LandingScreenState extends State<LandingScreen>
                 leftIcon: const Icon(Icons.favorite, size: 20),
                 onPressed: () => Navigator.pushNamed(context, '/register'),
               ),
-              const SizedBox(width: AppTheme.spacing16),
+              const SizedBox(width: AppTheme.spacingM),
               OutlineButton(
                 text: 'Learn More',
                 size: ButtonSize.large,
@@ -264,7 +264,7 @@ class _LandingScreenState extends State<LandingScreen>
                 leftIcon: const Icon(Icons.favorite, size: 20),
                 onPressed: () => Navigator.pushNamed(context, '/register'),
               ),
-              const SizedBox(height: AppTheme.spacing16),
+              const SizedBox(height: AppTheme.spacingM),
               OutlineButton(
                 text: 'Learn More',
                 size: ButtonSize.large,
@@ -283,12 +283,12 @@ class _LandingScreenState extends State<LandingScreen>
       height: 400,
       decoration: BoxDecoration(
         color: (isDark
-                ? AppTheme.darkSurfaceVariant
-                : AppTheme.lightSurfaceVariant)
-            .withOpacity(0.5),
-        borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+                ? AppTheme.darkSurfaceColor
+                : AppTheme.surfaceColor)
+            .withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(AppTheme.radiusL),
         border: Border.all(
-          color: isDark ? AppTheme.darkBorder : AppTheme.lightBorder,
+          color: isDark ? AppTheme.darkBorderColor : AppTheme.borderColor,
           width: 1,
         ),
       ),
@@ -300,7 +300,7 @@ class _LandingScreenState extends State<LandingScreen>
               width: 120,
               height: 120,
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withOpacity(0.1),
+                color: AppTheme.primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(60),
               ),
               child: const Icon(
@@ -309,7 +309,7 @@ class _LandingScreenState extends State<LandingScreen>
                 color: AppTheme.primaryColor,
               ),
             ),
-            const SizedBox(height: AppTheme.spacing24),
+            const SizedBox(height: AppTheme.spacingL),
             Text(
               'Beautiful Illustration\nComing Soon',
               textAlign: TextAlign.center,
@@ -317,8 +317,8 @@ class _LandingScreenState extends State<LandingScreen>
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
                 color: isDark
-                    ? AppTheme.darkTextSecondary
-                    : AppTheme.lightTextSecondary,
+                    ? AppTheme.darkTextSecondaryColor
+                    : AppTheme.textSecondaryColor,
               ),
             ),
           ],
@@ -358,8 +358,8 @@ class _LandingScreenState extends State<LandingScreen>
 
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: isDesktop ? AppTheme.spacing64 : AppTheme.spacing24,
-        vertical: AppTheme.spacing64,
+        horizontal: isDesktop ? AppTheme.spacingXXL + AppTheme.spacingM : AppTheme.spacingL,
+        vertical: AppTheme.spacingXXL + AppTheme.spacingM,
       ),
       child: Column(
         children: [
@@ -370,26 +370,26 @@ class _LandingScreenState extends State<LandingScreen>
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: AppTheme.spacing16),
+          const SizedBox(height: AppTheme.spacingM),
           Text(
             'Our platform makes giving and receiving simple, safe, and meaningful.',
             style: theme.textTheme.bodyLarge?.copyWith(
               color: isDark
-                  ? AppTheme.darkTextSecondary
-                  : AppTheme.lightTextSecondary,
+                  ? AppTheme.darkTextSecondaryColor
+                  : AppTheme.textSecondaryColor,
               fontSize: 18,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: AppTheme.spacing48),
+          const SizedBox(height: AppTheme.spacingXXL),
           if (isDesktop)
             GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                crossAxisSpacing: AppTheme.spacing32,
-                mainAxisSpacing: AppTheme.spacing32,
+                crossAxisSpacing: AppTheme.spacingXL,
+                mainAxisSpacing: AppTheme.spacingXL,
                 childAspectRatio: 1.2,
               ),
               itemCount: features.length,
@@ -402,7 +402,7 @@ class _LandingScreenState extends State<LandingScreen>
             Column(
               children: features.map((feature) {
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: AppTheme.spacing24),
+                  padding: const EdgeInsets.only(bottom: AppTheme.spacingL),
                   child: _buildFeatureCard(feature, theme, isDark),
                 );
               }).toList(),
@@ -415,7 +415,7 @@ class _LandingScreenState extends State<LandingScreen>
   Widget _buildFeatureCard(
       Map<String, dynamic> feature, ThemeData theme, bool isDark) {
     return CustomCard(
-      padding: const EdgeInsets.all(AppTheme.spacing24),
+      padding: const EdgeInsets.all(AppTheme.spacingL),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -423,8 +423,8 @@ class _LandingScreenState extends State<LandingScreen>
             width: 60,
             height: 60,
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+              color: AppTheme.primaryColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(AppTheme.radiusM),
             ),
             child: Icon(
               feature['icon'],
@@ -432,20 +432,20 @@ class _LandingScreenState extends State<LandingScreen>
               color: AppTheme.primaryColor,
             ),
           ),
-          const SizedBox(height: AppTheme.spacing20),
+          const SizedBox(height: AppTheme.spacingM + AppTheme.spacingXS),
           Text(
             feature['title'],
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: AppTheme.spacing12),
+          const SizedBox(height: AppTheme.spacingS + AppTheme.spacingXS),
           Text(
             feature['description'],
             style: theme.textTheme.bodyMedium?.copyWith(
               color: isDark
-                  ? AppTheme.darkTextSecondary
-                  : AppTheme.lightTextSecondary,
+                  ? AppTheme.darkTextSecondaryColor
+                  : AppTheme.textSecondaryColor,
               height: 1.5,
             ),
           ),
@@ -488,14 +488,14 @@ class _LandingScreenState extends State<LandingScreen>
 
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: isDesktop ? AppTheme.spacing64 : AppTheme.spacing24,
-        vertical: AppTheme.spacing64,
+        horizontal: isDesktop ? AppTheme.spacingXXL + AppTheme.spacingM : AppTheme.spacingL,
+        vertical: AppTheme.spacingXXL + AppTheme.spacingM,
       ),
       decoration: BoxDecoration(
         color: (isDark
-                ? AppTheme.darkSurfaceVariant
-                : AppTheme.lightSurfaceVariant)
-            .withOpacity(0.3),
+                ? AppTheme.darkSurfaceColor
+                : AppTheme.surfaceColor)
+            .withValues(alpha: 0.3),
       ),
       child: Column(
         children: [
@@ -506,7 +506,7 @@ class _LandingScreenState extends State<LandingScreen>
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: AppTheme.spacing48),
+          const SizedBox(height: AppTheme.spacingXXL),
           if (isDesktop)
             Row(
               children: steps.map((step) {
@@ -519,9 +519,9 @@ class _LandingScreenState extends State<LandingScreen>
                         Container(
                           width: 40,
                           height: 2,
-                          color: AppTheme.primaryColor.withOpacity(0.3),
+                          color: AppTheme.primaryColor.withValues(alpha: 0.3),
                           margin: const EdgeInsets.symmetric(
-                              horizontal: AppTheme.spacing16),
+                              horizontal: AppTheme.spacingM),
                         ),
                     ],
                   ),
@@ -532,7 +532,7 @@ class _LandingScreenState extends State<LandingScreen>
             Column(
               children: steps.map((step) {
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: AppTheme.spacing24),
+                  padding: const EdgeInsets.only(bottom: AppTheme.spacingL),
                   child: _buildStepCard(step, theme, isDark),
                 );
               }).toList(),
@@ -545,7 +545,7 @@ class _LandingScreenState extends State<LandingScreen>
   Widget _buildStepCard(
       Map<String, dynamic> step, ThemeData theme, bool isDark) {
     return CustomCard(
-      padding: const EdgeInsets.all(AppTheme.spacing24),
+      padding: const EdgeInsets.all(AppTheme.spacingL),
       child: Column(
         children: [
           Container(
@@ -567,13 +567,13 @@ class _LandingScreenState extends State<LandingScreen>
               ),
             ),
           ),
-          const SizedBox(height: AppTheme.spacing20),
+          const SizedBox(height: AppTheme.spacingM + AppTheme.spacingXS),
           Icon(
             step['icon'],
             size: 32,
             color: AppTheme.primaryColor,
           ),
-          const SizedBox(height: AppTheme.spacing16),
+          const SizedBox(height: AppTheme.spacingM),
           Text(
             step['title'],
             style: theme.textTheme.titleMedium?.copyWith(
@@ -581,13 +581,13 @@ class _LandingScreenState extends State<LandingScreen>
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: AppTheme.spacing12),
+          const SizedBox(height: AppTheme.spacingS + AppTheme.spacingXS),
           Text(
             step['description'],
             style: theme.textTheme.bodyMedium?.copyWith(
               color: isDark
-                  ? AppTheme.darkTextSecondary
-                  : AppTheme.lightTextSecondary,
+                  ? AppTheme.darkTextSecondaryColor
+                  : AppTheme.textSecondaryColor,
               height: 1.5,
             ),
             textAlign: TextAlign.center,
@@ -608,8 +608,8 @@ class _LandingScreenState extends State<LandingScreen>
 
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: isDesktop ? AppTheme.spacing64 : AppTheme.spacing24,
-        vertical: AppTheme.spacing64,
+        horizontal: isDesktop ? AppTheme.spacingXXL + AppTheme.spacingM : AppTheme.spacingL,
+        vertical: AppTheme.spacingXXL + AppTheme.spacingM,
       ),
       child: Column(
         children: [
@@ -620,7 +620,7 @@ class _LandingScreenState extends State<LandingScreen>
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: AppTheme.spacing48),
+          const SizedBox(height: AppTheme.spacingXXL),
           if (isDesktop)
             Row(
               children: stats.map((stat) {
@@ -635,8 +635,8 @@ class _LandingScreenState extends State<LandingScreen>
               physics: const NeverScrollableScrollPhysics(),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                crossAxisSpacing: AppTheme.spacing16,
-                mainAxisSpacing: AppTheme.spacing16,
+                crossAxisSpacing: AppTheme.spacingM,
+                mainAxisSpacing: AppTheme.spacingM,
                 childAspectRatio: 1.5,
               ),
               itemCount: stats.length,
@@ -659,7 +659,7 @@ class _LandingScreenState extends State<LandingScreen>
             color: AppTheme.primaryColor,
           ),
         ),
-        const SizedBox(height: AppTheme.spacing8),
+        const SizedBox(height: AppTheme.spacingS),
         Text(
           stat['label']!,
           style: theme.textTheme.bodyLarge?.copyWith(
@@ -675,15 +675,15 @@ class _LandingScreenState extends State<LandingScreen>
       BuildContext context, ThemeData theme, bool isDark, bool isDesktop) {
     return Container(
       margin: EdgeInsets.symmetric(
-        horizontal: isDesktop ? AppTheme.spacing64 : AppTheme.spacing24,
-        vertical: AppTheme.spacing48,
+        horizontal: isDesktop ? AppTheme.spacingXXL + AppTheme.spacingM : AppTheme.spacingL,
+        vertical: AppTheme.spacingXXL,
       ),
-      padding: const EdgeInsets.all(AppTheme.spacing48),
+      padding: const EdgeInsets.all(AppTheme.spacingXXL),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [AppTheme.primaryColor, AppTheme.primaryDarkColor],
         ),
-        borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+        borderRadius: BorderRadius.circular(AppTheme.radiusL),
       ),
       child: Column(
         children: [
@@ -695,16 +695,16 @@ class _LandingScreenState extends State<LandingScreen>
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: AppTheme.spacing16),
+          const SizedBox(height: AppTheme.spacingM),
           Text(
             'Join thousands of people who are already making their communities better, one donation at a time.',
             style: theme.textTheme.bodyLarge?.copyWith(
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white.withValues(alpha: 0.9),
               fontSize: 18,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: AppTheme.spacing32),
+          const SizedBox(height: AppTheme.spacingXL),
           if (isDesktop)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -715,8 +715,8 @@ class _LandingScreenState extends State<LandingScreen>
                     backgroundColor: Colors.white,
                     foregroundColor: AppTheme.primaryColor,
                     padding: const EdgeInsets.symmetric(
-                      horizontal: AppTheme.spacing32,
-                      vertical: AppTheme.spacing16,
+                      horizontal: AppTheme.spacingXL,
+                      vertical: AppTheme.spacingM,
                     ),
                   ),
                   child: const Text(
@@ -727,7 +727,7 @@ class _LandingScreenState extends State<LandingScreen>
                     ),
                   ),
                 ),
-                const SizedBox(width: AppTheme.spacing16),
+                const SizedBox(width: AppTheme.spacingM),
                 OutlineButton(
                   text: 'Browse Donations',
                   size: ButtonSize.large,
@@ -753,7 +753,7 @@ class _LandingScreenState extends State<LandingScreen>
                     ),
                   ),
                 ),
-                const SizedBox(height: AppTheme.spacing16),
+                const SizedBox(height: AppTheme.spacingM),
                 OutlineButton(
                   text: 'Browse Donations',
                   size: ButtonSize.large,
@@ -769,12 +769,12 @@ class _LandingScreenState extends State<LandingScreen>
 
   Widget _buildFooter(BuildContext context, ThemeData theme, bool isDark) {
     return Container(
-      padding: const EdgeInsets.all(AppTheme.spacing32),
+      padding: const EdgeInsets.all(AppTheme.spacingXL),
       decoration: BoxDecoration(
-        color: isDark ? AppTheme.darkSurface : AppTheme.lightSurface,
+        color: isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor,
         border: Border(
           top: BorderSide(
-            color: isDark ? AppTheme.darkBorder : AppTheme.lightBorder,
+            color: isDark ? AppTheme.darkBorderColor : AppTheme.borderColor,
             width: 1,
           ),
         ),
@@ -789,7 +789,7 @@ class _LandingScreenState extends State<LandingScreen>
                 height: 32,
                 decoration: BoxDecoration(
                   color: AppTheme.primaryColor,
-                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                  borderRadius: BorderRadius.circular(AppTheme.radiusS),
                 ),
                 child: const Icon(
                   Icons.favorite,
@@ -797,7 +797,7 @@ class _LandingScreenState extends State<LandingScreen>
                   size: 20,
                 ),
               ),
-              const SizedBox(width: AppTheme.spacing8),
+              const SizedBox(width: AppTheme.spacingS),
               Text(
                 'Giving Bridge',
                 style: theme.textTheme.titleMedium?.copyWith(
@@ -806,22 +806,22 @@ class _LandingScreenState extends State<LandingScreen>
               ),
             ],
           ),
-          const SizedBox(height: AppTheme.spacing16),
+          const SizedBox(height: AppTheme.spacingM),
           Text(
             '© 2025 Giving Bridge. All rights reserved.',
             style: theme.textTheme.bodySmall?.copyWith(
               color: isDark
-                  ? AppTheme.darkTextTertiary
-                  : AppTheme.lightTextTertiary,
+                  ? AppTheme.darkTextSecondaryColor
+                  : AppTheme.textSecondaryColor,
             ),
           ),
-          const SizedBox(height: AppTheme.spacing8),
+          const SizedBox(height: AppTheme.spacingS),
           Text(
             'Made with ❤️ for communities worldwide',
             style: theme.textTheme.bodySmall?.copyWith(
               color: isDark
-                  ? AppTheme.darkTextTertiary
-                  : AppTheme.lightTextTertiary,
+                  ? AppTheme.darkTextSecondaryColor
+                  : AppTheme.textSecondaryColor,
             ),
           ),
         ],
