@@ -146,6 +146,40 @@ class ApiService {
     await deleteToken();
   }
 
+  // Update user profile
+  static Future<ApiResponse<User>> updateProfile({
+    required String userId,
+    String? name,
+    String? phone,
+    String? location,
+    String? avatarUrl,
+  }) async {
+    try {
+      Map<String, dynamic> body = {};
+      if (name != null) body['name'] = name;
+      if (phone != null) body['phone'] = phone;
+      if (location != null) body['location'] = location;
+      if (avatarUrl != null) body['avatarUrl'] = avatarUrl;
+
+      final response = await http.put(
+        Uri.parse('$baseUrl/users/$userId'),
+        headers: await _getHeaders(includeAuth: true),
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final user = User.fromJson(data['user']);
+        return ApiResponse.success(user);
+      } else {
+        final error = jsonDecode(response.body);
+        return ApiResponse.error(error['message'] ?? 'Failed to update profile');
+      }
+    } catch (e) {
+      return ApiResponse.error('Network error: ${e.toString()}');
+    }
+  }
+
   // Get all users (admin only)
   static Future<ApiResponse<List<User>>> getAllUsers() async {
     try {

@@ -27,7 +27,7 @@ class CustomCard extends StatefulWidget {
     this.onTap,
     this.isInteractive = false,
     this.backgroundColor,
-    this.borderRadius = AppTheme.radiusMedium,
+    this.borderRadius = AppTheme.radiusM,
   }) : super(key: key);
 
   @override
@@ -102,7 +102,7 @@ class _CustomCardState extends State<CustomCard>
                       color: Colors.transparent,
                       child: Container(
                         padding: widget.padding ??
-                            const EdgeInsets.all(AppTheme.spacing16),
+                            const EdgeInsets.all(AppTheme.spacingM),
                         child: widget.child,
                       ),
                     ),
@@ -124,30 +124,30 @@ class _CustomCardState extends State<CustomCard>
     if (widget.backgroundColor != null) {
       backgroundColor = widget.backgroundColor!;
     } else {
-      backgroundColor = isDark ? AppTheme.darkSurface : AppTheme.lightSurface;
+      backgroundColor = isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor;
     }
 
     switch (widget.variant) {
       case CardVariant.filled:
         if (_isHovered) {
-          boxShadow = AppTheme.mediumShadow;
+          boxShadow = AppTheme.shadowMD;
         } else {
-          boxShadow = AppTheme.softShadow;
+          boxShadow = AppTheme.shadowSM;
         }
         break;
 
       case CardVariant.outlined:
         border = Border.all(
-          color: isDark ? AppTheme.darkBorder : AppTheme.lightBorder,
+          color: isDark ? AppTheme.darkBorderColor : AppTheme.borderColor,
           width: 1,
         );
         if (_isHovered) {
-          boxShadow = AppTheme.softShadow;
+          boxShadow = AppTheme.shadowSM;
         }
         break;
 
       case CardVariant.elevated:
-        boxShadow = _isHovered ? AppTheme.mediumShadow : AppTheme.softShadow;
+        boxShadow = _isHovered ? AppTheme.shadowMD : AppTheme.shadowSM;
         break;
     }
 
@@ -204,17 +204,17 @@ class DonationCard extends StatelessWidget {
               width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(AppTheme.radiusMedium),
-                  topRight: Radius.circular(AppTheme.radiusMedium),
+                  topLeft: Radius.circular(AppTheme.radiusM),
+                  topRight: Radius.circular(AppTheme.radiusM),
                 ),
                 color: isDark
-                    ? AppTheme.darkSurfaceVariant
-                    : AppTheme.lightSurfaceVariant,
+                    ? AppTheme.darkCardColor
+                    : AppTheme.cardColor,
               ),
               child: ClipRRect(
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(AppTheme.radiusMedium),
-                  topRight: Radius.circular(AppTheme.radiusMedium),
+                  topLeft: Radius.circular(AppTheme.radiusM),
+                  topRight: Radius.circular(AppTheme.radiusM),
                 ),
                 child: Image.network(
                   imageUrl!,
@@ -223,14 +223,14 @@ class DonationCard extends StatelessWidget {
                     return Container(
                       decoration: BoxDecoration(
                         color: isDark
-                            ? AppTheme.darkSurfaceVariant
-                            : AppTheme.lightSurfaceVariant,
+                            ? AppTheme.darkCardColor
+                            : AppTheme.cardColor,
                       ),
                       child: const Center(
                         child: Icon(
                           Icons.image_outlined,
                           size: 48,
-                          color: AppTheme.lightTextTertiary,
+                          color: AppTheme.textDisabledColor,
                         ),
                       ),
                     );
@@ -241,7 +241,7 @@ class DonationCard extends StatelessWidget {
 
           // Content section
           Padding(
-            padding: const EdgeInsets.all(AppTheme.spacing16),
+            padding: const EdgeInsets.all(AppTheme.spacingM),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -249,12 +249,12 @@ class DonationCard extends StatelessWidget {
                 if (category != null)
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: AppTheme.spacing8,
-                      vertical: AppTheme.spacing4,
+                      horizontal: AppTheme.spacingS,
+                      vertical: AppTheme.spacingXS,
                     ),
                     decoration: BoxDecoration(
                       color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                      borderRadius: BorderRadius.circular(AppTheme.radiusS),
                     ),
                     child: Text(
                       category!,
@@ -265,7 +265,7 @@ class DonationCard extends StatelessWidget {
                     ),
                   ),
 
-                if (category != null) const SizedBox(height: AppTheme.spacing8),
+                if (category != null) const SizedBox(height: AppTheme.spacingS),
 
                 // Title
                 Text(
@@ -277,21 +277,21 @@ class DonationCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
 
-                const SizedBox(height: AppTheme.spacing8),
+                const SizedBox(height: AppTheme.spacingS),
 
                 // Description
                 Text(
                   description,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: isDark
-                        ? AppTheme.darkTextSecondary
-                        : AppTheme.lightTextSecondary,
+                        ? AppTheme.darkTextSecondaryColor
+                        : AppTheme.textSecondaryColor,
                   ),
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),
 
-                const SizedBox(height: AppTheme.spacing16),
+                const SizedBox(height: AppTheme.spacingM),
 
                 // Footer
                 Row(
@@ -305,8 +305,8 @@ class DonationCard extends StatelessWidget {
                             'Donated by',
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: isDark
-                                  ? AppTheme.darkTextTertiary
-                                  : AppTheme.lightTextTertiary,
+                                  ? AppTheme.textDisabledColor
+                                  : AppTheme.textDisabledColor,
                             ),
                           ),
                           Text(
@@ -316,24 +316,24 @@ class DonationCard extends StatelessWidget {
                             ),
                           ),
                           if (location != null) ...[
-                            const SizedBox(height: AppTheme.spacing4),
+                            const SizedBox(height: AppTheme.spacingXS),
                             Row(
                               children: [
                                 Icon(
                                   Icons.location_on_outlined,
                                   size: 14,
                                   color: isDark
-                                      ? AppTheme.darkTextTertiary
-                                      : AppTheme.lightTextTertiary,
+                                      ? AppTheme.textDisabledColor
+                                      : AppTheme.textDisabledColor,
                                 ),
-                                const SizedBox(width: AppTheme.spacing4),
+                                const SizedBox(width: AppTheme.spacingXS),
                                 Expanded(
                                   child: Text(
                                     location!,
                                     style: theme.textTheme.labelSmall?.copyWith(
                                       color: isDark
-                                          ? AppTheme.darkTextTertiary
-                                          : AppTheme.lightTextTertiary,
+                                          ? AppTheme.textDisabledColor
+                                          : AppTheme.textDisabledColor,
                                     ),
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -391,10 +391,10 @@ class StatCard extends StatelessWidget {
         children: [
           // Icon
           Container(
-            padding: const EdgeInsets.all(AppTheme.spacing12),
+            padding: const EdgeInsets.all(12.0),
             decoration: BoxDecoration(
               color: (iconColor ?? AppTheme.primaryColor).withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+              borderRadius: BorderRadius.circular(AppTheme.radiusM),
             ),
             child: Icon(
               icon,
@@ -403,7 +403,7 @@ class StatCard extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(width: AppTheme.spacing16),
+          const SizedBox(width: AppTheme.spacingM),
 
           // Content
           Expanded(
@@ -420,8 +420,8 @@ class StatCard extends StatelessWidget {
                   title,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: isDark
-                        ? AppTheme.darkTextSecondary
-                        : AppTheme.lightTextSecondary,
+                        ? AppTheme.darkTextSecondaryColor
+                        : AppTheme.textSecondaryColor,
                   ),
                 ),
                 if (subtitle != null)
@@ -429,8 +429,8 @@ class StatCard extends StatelessWidget {
                     subtitle!,
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: isDark
-                          ? AppTheme.darkTextTertiary
-                          : AppTheme.lightTextTertiary,
+                          ? AppTheme.textDisabledColor
+                          : AppTheme.textDisabledColor,
                     ),
                   ),
               ],

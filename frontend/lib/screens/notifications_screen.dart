@@ -96,10 +96,10 @@ class _NotificationsScreenState extends State<NotificationsScreen>
           // Tab Bar
           Container(
             decoration: BoxDecoration(
-              color: isDark ? AppTheme.darkSurface : AppTheme.lightSurface,
+              color: isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor,
               border: Border(
                 bottom: BorderSide(
-                  color: isDark ? AppTheme.darkBorder : AppTheme.lightBorder,
+                  color: isDark ? AppTheme.darkBorderColor : AppTheme.borderColor,
                   width: 1,
                 ),
               ),
@@ -108,8 +108,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
               controller: _tabController,
               labelColor: AppTheme.primaryColor,
               unselectedLabelColor: isDark
-                  ? AppTheme.darkTextSecondary
-                  : AppTheme.lightTextSecondary,
+                  ? AppTheme.darkTextSecondaryColor
+                  : AppTheme.textSecondaryColor,
               indicatorColor: AppTheme.primaryColor,
               indicatorWeight: 3,
               tabs: [
@@ -118,7 +118,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text('All'),
-                      const SizedBox(width: AppTheme.spacing4),
+                      const SizedBox(width: AppTheme.spacingXS),
                       _buildNotificationBadge(_notifications.length),
                     ],
                   ),
@@ -128,7 +128,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text('Unread'),
-                      const SizedBox(width: AppTheme.spacing4),
+                      const SizedBox(width: AppTheme.spacingXS),
                       _buildNotificationBadge(_getUnreadCount()),
                     ],
                   ),
@@ -158,12 +158,12 @@ class _NotificationsScreenState extends State<NotificationsScreen>
 
   Widget _buildHeader(BuildContext context, ThemeData theme, bool isDark) {
     return Container(
-      padding: const EdgeInsets.all(AppTheme.spacing16),
+      padding: const EdgeInsets.all(AppTheme.spacingM),
       decoration: BoxDecoration(
-        color: isDark ? AppTheme.darkSurface : AppTheme.lightSurface,
+        color: isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor,
         border: Border(
           bottom: BorderSide(
-            color: isDark ? AppTheme.darkBorder : AppTheme.lightBorder,
+            color: isDark ? AppTheme.darkBorderColor : AppTheme.borderColor,
             width: 1,
           ),
         ),
@@ -185,8 +185,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                     '${_getUnreadCount()} unread notifications',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: isDark
-                          ? AppTheme.darkTextSecondary
-                          : AppTheme.lightTextSecondary,
+                          ? AppTheme.darkTextSecondaryColor
+                          : AppTheme.textSecondaryColor,
                     ),
                   ),
               ],
@@ -210,12 +210,12 @@ class _NotificationsScreenState extends State<NotificationsScreen>
 
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: AppTheme.spacing6,
-        vertical: AppTheme.spacing2,
+        horizontal: 6.0,
+        vertical: 2.0,
       ),
       decoration: BoxDecoration(
         color: AppTheme.errorColor,
-        borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+        borderRadius: BorderRadius.circular(AppTheme.radiusXL),
       ),
       child: Text(
         count > 99 ? '99+' : count.toString(),
@@ -243,12 +243,12 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       onRefresh: _refreshNotifications,
       child: ListView.builder(
         padding:
-            EdgeInsets.all(isDesktop ? AppTheme.spacing24 : AppTheme.spacing16),
+            EdgeInsets.all(isDesktop ? AppTheme.spacingL : AppTheme.spacingM),
         itemCount: notifications.length,
         itemBuilder: (context, index) {
           final notification = notifications[index];
           return Padding(
-            padding: const EdgeInsets.only(bottom: AppTheme.spacing12),
+            padding: const EdgeInsets.only(bottom: 12.0),
             child: _buildNotificationCard(notification, theme, isDark),
           );
         },
@@ -265,24 +265,24 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             Icons.notifications_none,
             size: 64,
             color:
-                isDark ? AppTheme.darkTextTertiary : AppTheme.lightTextTertiary,
+                isDark ? AppTheme.textDisabledColor : AppTheme.textDisabledColor,
           ),
-          const SizedBox(height: AppTheme.spacing16),
+          const SizedBox(height: AppTheme.spacingM),
           Text(
             'No notifications',
             style: theme.textTheme.titleMedium?.copyWith(
               color: isDark
-                  ? AppTheme.darkTextSecondary
-                  : AppTheme.lightTextSecondary,
+                  ? AppTheme.darkTextSecondaryColor
+                  : AppTheme.textSecondaryColor,
             ),
           ),
-          const SizedBox(height: AppTheme.spacing8),
+          const SizedBox(height: AppTheme.spacingS),
           Text(
             'You\'re all caught up!',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: isDark
-                  ? AppTheme.darkTextTertiary
-                  : AppTheme.lightTextTertiary,
+                  ? AppTheme.textDisabledColor
+                  : AppTheme.textDisabledColor,
             ),
           ),
         ],
@@ -299,8 +299,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       onTap: () => _markAsRead(notification['id']),
       backgroundColor: !isRead
           ? (isDark
-              ? AppTheme.primaryColor.withOpacity(0.05)
-              : AppTheme.primaryColor.withOpacity(0.03))
+              ? AppTheme.primaryColor.withValues(alpha: 0.05)
+              : AppTheme.primaryColor.withValues(alpha: 0.03))
           : null,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -310,8 +310,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: (notification['color'] as Color).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+              color: (notification['color'] as Color).withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(AppTheme.radiusM),
             ),
             child: Icon(
               notification['icon'],
@@ -320,7 +320,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             ),
           ),
 
-          const SizedBox(width: AppTheme.spacing12),
+          const SizedBox(width: 12.0),
 
           // Content
           Expanded(
@@ -349,24 +349,24 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                       ),
                   ],
                 ),
-                const SizedBox(height: AppTheme.spacing4),
+                const SizedBox(height: AppTheme.spacingXS),
                 Text(
                   notification['message'],
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: isDark
-                        ? AppTheme.darkTextSecondary
-                        : AppTheme.lightTextSecondary,
+                        ? AppTheme.darkTextSecondaryColor
+                        : AppTheme.textSecondaryColor,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: AppTheme.spacing8),
+                const SizedBox(height: AppTheme.spacingS),
                 Text(
                   _formatTimestamp(notification['timestamp']),
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: isDark
-                        ? AppTheme.darkTextTertiary
-                        : AppTheme.lightTextTertiary,
+                        ? AppTheme.textDisabledColor
+                        : AppTheme.textDisabledColor,
                   ),
                 ),
               ],
@@ -379,8 +379,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
               Icons.more_vert,
               size: 20,
               color: isDark
-                  ? AppTheme.darkTextTertiary
-                  : AppTheme.lightTextTertiary,
+                  ? AppTheme.textDisabledColor
+                  : AppTheme.textDisabledColor,
             ),
             itemBuilder: (context) => [
               if (!isRead)
@@ -410,7 +410,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       BuildContext context, ThemeData theme, bool isDark, bool isDesktop) {
     return SingleChildScrollView(
       padding:
-          EdgeInsets.all(isDesktop ? AppTheme.spacing32 : AppTheme.spacing16),
+          EdgeInsets.all(isDesktop ? AppTheme.spacingXL : AppTheme.spacingM),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -421,7 +421,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             ),
           ),
 
-          const SizedBox(height: AppTheme.spacing24),
+          const SizedBox(height: AppTheme.spacingL),
 
           // Push Notifications
           CustomCard(
@@ -434,7 +434,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: AppTheme.spacing16),
+                const SizedBox(height: AppTheme.spacingM),
                 _buildSettingToggle(
                   'Donation Requests',
                   'Get notified when someone requests your donations',
@@ -467,7 +467,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             ),
           ),
 
-          const SizedBox(height: AppTheme.spacing24),
+          const SizedBox(height: AppTheme.spacingL),
 
           // Email Notifications
           CustomCard(
@@ -480,7 +480,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: AppTheme.spacing16),
+                const SizedBox(height: AppTheme.spacingM),
                 _buildSettingToggle(
                   'Weekly Summary',
                   'Receive a weekly summary of your activity',
@@ -506,7 +506,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             ),
           ),
 
-          const SizedBox(height: AppTheme.spacing32),
+          const SizedBox(height: AppTheme.spacingXL),
 
           // Clear all notifications
           DangerButton(
@@ -528,7 +528,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     bool isDark,
   ) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppTheme.spacing16),
+      padding: const EdgeInsets.only(bottom: AppTheme.spacingM),
       child: Row(
         children: [
           Expanded(
@@ -545,8 +545,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                   subtitle,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: isDark
-                        ? AppTheme.darkTextSecondary
-                        : AppTheme.lightTextSecondary,
+                        ? AppTheme.darkTextSecondaryColor
+                        : AppTheme.textSecondaryColor,
                   ),
                 ),
               ],

@@ -1,10 +1,11 @@
 const express = require("express");
 const { body, validationResult } = require("express-validator");
-const { authenticateToken, users } = require("./auth");
+const { authenticateToken } = require("./auth");
+const User = require("../models/User");
 const router = express.Router();
 
 // Get all users (admin only)
-router.get("/", authenticateToken, (req, res) => {
+router.get("/", authenticateToken, async (req, res) => {
   try {
     // Check if user is admin
     if (req.user.role !== "admin") {
@@ -13,15 +14,14 @@ router.get("/", authenticateToken, (req, res) => {
       });
     }
 
-    // Remove passwords from response
-    const safeUsers = users.map((user) => {
-      const { password, ...safeUser } = user;
-      return safeUser;
+    // Get all users from database (excluding passwords)
+    const users = await User.findAll({
+      attributes: { exclude: ['password'] }
     });
 
     res.json({
-      users: safeUsers,
-      total: safeUsers.length,
+      users: users,
+      total: users.length,
     });
   } catch (error) {
     console.error("Get users error:", error);
@@ -33,7 +33,7 @@ router.get("/", authenticateToken, (req, res) => {
 });
 
 // Get user by ID
-router.get("/:id", authenticateToken, (req, res) => {
+router.get("/:id", authenticateToken, async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
 
@@ -44,16 +44,18 @@ router.get("/:id", authenticateToken, (req, res) => {
       });
     }
 
-    const user = users.find((u) => u.id === userId);
+    const user = await User.findByPk(userId, {
+      attributes: { exclude: ['password'] }
+    });
+
     if (!user) {
       return res.status(404).json({
         message: "User not found",
       });
     }
 
-    const { password, ...safeUser } = user;
     res.json({
-      user: safeUser,
+      user: user,
     });
   } catch (error) {
     console.error("Get user error:", error);
@@ -89,7 +91,7 @@ router.put(
       .isLength({ min: 2 })
       .withMessage("Location must be at least 2 characters"),
   ],
-  (req, res) => {
+  async (req, res) => {
     try {
       // Check for validation errors
       const errors = validationResult(req);
@@ -109,8 +111,8 @@ router.put(
         });
       }
 
-      const userIndex = users.findIndex((u) => u.id === userId);
-      if (userIndex === -1) {
+      const user = await User.findByPk(userId);
+      if (!user) {
         return res.status(404).json({
           message: "User not found",
         });
@@ -119,11 +121,12 @@ router.put(
       const { name, email, phone, location, avatarUrl } = req.body;
 
       // Check if email is already taken by another user
-      if (email && email !== users[userIndex].email) {
-        const existingUser = users.find(
-          (u) => u.email === email && u.id !== userId
-        );
-        if (existingUser) {
+      if (email && email !== user.email) {
+        const existingUser = await User.findOne({
+          where: { email },
+          attributes: ['id']
+        });
+        if (existingUser && existingUser.id !== userId) {
           return res.status(400).json({
             message: "Email is already taken",
           });
@@ -131,18 +134,23 @@ router.put(
       }
 
       // Update user fields
-      if (name !== undefined) users[userIndex].name = name;
-      if (email !== undefined) users[userIndex].email = email;
-      if (phone !== undefined) users[userIndex].phone = phone;
-      if (location !== undefined) users[userIndex].location = location;
-      if (avatarUrl !== undefined) users[userIndex].avatarUrl = avatarUrl;
+      const updateData = {};
+      if (name !== undefined) updateData.name = name;
+      if (email !== undefined) updateData.email = email;
+      if (phone !== undefined) updateData.phone = phone;
+      if (location !== undefined) updateData.location = location;
+      if (avatarUrl !== undefined) updateData.avatarUrl = avatarUrl;
 
-      users[userIndex].updatedAt = new Date().toISOString();
+      await user.update(updateData);
 
-      const { password, ...safeUser } = users[userIndex];
+      // Return updated user without password
+      const updatedUser = await User.findByPk(userId, {
+        attributes: { exclude: ['password'] }
+      });
+
       res.json({
         message: "User updated successfully",
-        user: safeUser,
+        user: updatedUser,
       });
     } catch (error) {
       console.error("Update user error:", error);
@@ -155,7 +163,7 @@ router.put(
 );
 
 // Delete user (admin only)
-router.delete("/:id", authenticateToken, (req, res) => {
+router.delete("/:id", authenticateToken, async (req, res) => {
   try {
     // Check if user is admin
     if (req.user.role !== "admin") {
@@ -165,9 +173,9 @@ router.delete("/:id", authenticateToken, (req, res) => {
     }
 
     const userId = parseInt(req.params.id);
-    const userIndex = users.findIndex((u) => u.id === userId);
+    const user = await User.findByPk(userId);
 
-    if (userIndex === -1) {
+    if (!user) {
       return res.status(404).json({
         message: "User not found",
       });
@@ -180,7 +188,7 @@ router.delete("/:id", authenticateToken, (req, res) => {
       });
     }
 
-    users.splice(userIndex, 1);
+    await user.destroy();
 
     res.json({
       message: "User deleted successfully",

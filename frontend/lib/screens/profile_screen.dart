@@ -51,7 +51,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       body: SingleChildScrollView(
         padding:
-            EdgeInsets.all(isDesktop ? AppTheme.spacing32 : AppTheme.spacing16),
+            EdgeInsets.all(isDesktop ? AppTheme.spacingXL : AppTheme.spacingM),
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 600),
           child: Column(
@@ -60,17 +60,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // Profile Header
               _buildProfileHeader(context, theme, isDark),
 
-              const SizedBox(height: AppTheme.spacing32),
+              const SizedBox(height: AppTheme.spacingXL),
 
               // Profile Information
               _buildProfileInfo(context, theme, isDark),
 
-              const SizedBox(height: AppTheme.spacing32),
+              const SizedBox(height: AppTheme.spacingXL),
 
               // Settings
               _buildSettings(context, theme, isDark),
 
-              const SizedBox(height: AppTheme.spacing32),
+              const SizedBox(height: AppTheme.spacingXL),
 
               // Actions
               _buildActions(context, theme, isDark),
@@ -96,10 +96,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 width: 100,
                 height: 100,
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withOpacity(0.1),
+                  color: AppTheme.primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(50),
                   border: Border.all(
-                    color: AppTheme.primaryColor.withOpacity(0.2),
+                    color: AppTheme.primaryColor.withValues(alpha: 0.2),
                     width: 3,
                   ),
                 ),
@@ -135,7 +135,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   decoration: BoxDecoration(
                     color: AppTheme.primaryColor,
                     borderRadius: BorderRadius.circular(16),
-                    boxShadow: AppTheme.softShadow,
+                    boxShadow: AppTheme.shadowSM,
                   ),
                   child: IconButton(
                     padding: EdgeInsets.zero,
@@ -157,7 +157,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
 
-          const SizedBox(height: AppTheme.spacing16),
+          const SizedBox(height: AppTheme.spacingM),
 
           // Name and Role
           Text(
@@ -167,16 +167,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
 
-          const SizedBox(height: AppTheme.spacing4),
+          const SizedBox(height: AppTheme.spacingXS),
 
           Container(
             padding: const EdgeInsets.symmetric(
-              horizontal: AppTheme.spacing12,
-              vertical: AppTheme.spacing4,
+              horizontal: 12.0,
+              vertical: AppTheme.spacingXS,
             ),
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+              color: AppTheme.primaryColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(AppTheme.radiusXL),
             ),
             child: Text(
               _getRoleLabel(user?.role),
@@ -188,7 +188,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
 
           if (user?.location != null) ...[
-            const SizedBox(height: AppTheme.spacing8),
+            const SizedBox(height: AppTheme.spacingS),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -196,16 +196,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Icons.location_on_outlined,
                   size: 16,
                   color: isDark
-                      ? AppTheme.darkTextSecondary
-                      : AppTheme.lightTextSecondary,
+                      ? AppTheme.darkTextSecondaryColor
+                      : AppTheme.textSecondaryColor,
                 ),
-                const SizedBox(width: AppTheme.spacing4),
+                const SizedBox(width: AppTheme.spacingXS),
                 Text(
                   user!.location!,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: isDark
-                        ? AppTheme.darkTextSecondary
-                        : AppTheme.lightTextSecondary,
+                        ? AppTheme.darkTextSecondaryColor
+                        : AppTheme.textSecondaryColor,
                   ),
                 ),
               ],
@@ -254,7 +254,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
 
-          const SizedBox(height: AppTheme.spacing24),
+          const SizedBox(height: AppTheme.spacingL),
 
           if (_isEditing)
             _buildEditForm(context, theme)
@@ -287,7 +287,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildInfoRow(
       String label, String value, IconData icon, ThemeData theme, bool isDark) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppTheme.spacing16),
+      padding: const EdgeInsets.only(bottom: AppTheme.spacingM),
       child: Row(
         children: [
           Container(
@@ -295,19 +295,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
             height: 40,
             decoration: BoxDecoration(
               color: (isDark
-                  ? AppTheme.darkSurfaceVariant
-                  : AppTheme.lightSurfaceVariant),
-              borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                  ? AppTheme.darkCardColor
+                  : AppTheme.cardColor),
+              borderRadius: BorderRadius.circular(AppTheme.radiusS),
             ),
             child: Icon(
               icon,
               size: 20,
               color: isDark
-                  ? AppTheme.darkTextSecondary
-                  : AppTheme.lightTextSecondary,
+                  ? AppTheme.darkTextSecondaryColor
+                  : AppTheme.textSecondaryColor,
             ),
           ),
-          const SizedBox(width: AppTheme.spacing12),
+          const SizedBox(width: 12.0),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -316,8 +316,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   label,
                   style: theme.textTheme.labelMedium?.copyWith(
                     color: isDark
-                        ? AppTheme.darkTextSecondary
-                        : AppTheme.lightTextSecondary,
+                        ? AppTheme.darkTextSecondaryColor
+                        : AppTheme.textSecondaryColor,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -351,27 +351,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
               return null;
             },
           ),
-          const SizedBox(height: AppTheme.spacing16),
+          const SizedBox(height: AppTheme.spacingM),
           CustomInput(
             label: 'Email',
             controller: _emailController,
             enabled: false, // Email usually can't be changed
             prefixIcon: const Icon(Icons.email_outlined),
           ),
-          const SizedBox(height: AppTheme.spacing16),
+          const SizedBox(height: AppTheme.spacingM),
           CustomInput(
             label: 'Phone Number',
             controller: _phoneController,
             keyboardType: TextInputType.phone,
             prefixIcon: const Icon(Icons.phone_outlined),
           ),
-          const SizedBox(height: AppTheme.spacing16),
+          const SizedBox(height: AppTheme.spacingM),
           CustomInput(
             label: 'Location',
             controller: _locationController,
             prefixIcon: const Icon(Icons.location_on_outlined),
           ),
-          const SizedBox(height: AppTheme.spacing24),
+          const SizedBox(height: AppTheme.spacingL),
           Row(
             children: [
               Expanded(
@@ -380,7 +380,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   onPressed: () => setState(() => _isEditing = false),
                 ),
               ),
-              const SizedBox(width: AppTheme.spacing12),
+              const SizedBox(width: 12.0),
               Expanded(
                 child: PrimaryButton(
                   text: 'Save Changes',
@@ -408,7 +408,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
 
-          const SizedBox(height: AppTheme.spacing24),
+          const SizedBox(height: AppTheme.spacingL),
 
           // Theme setting
           _buildSettingTile(
@@ -453,8 +453,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Icons.arrow_forward_ios,
               size: 16,
               color: isDark
-                  ? AppTheme.darkTextTertiary
-                  : AppTheme.lightTextTertiary,
+                  ? AppTheme.textDisabledColor
+                  : AppTheme.textDisabledColor,
             ),
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -481,7 +481,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     VoidCallback? onTap,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppTheme.spacing16),
+      padding: const EdgeInsets.only(bottom: AppTheme.spacingM),
       child: GestureDetector(
         onTap: onTap,
         child: Row(
@@ -490,8 +490,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(AppTheme.radiusS),
               ),
               child: Icon(
                 icon,
@@ -499,7 +499,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 color: AppTheme.primaryColor,
               ),
             ),
-            const SizedBox(width: AppTheme.spacing12),
+            const SizedBox(width: 12.0),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -514,8 +514,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     subtitle,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: isDark
-                          ? AppTheme.darkTextSecondary
-                          : AppTheme.lightTextSecondary,
+                          ? AppTheme.darkTextSecondaryColor
+                          : AppTheme.textSecondaryColor,
                     ),
                   ),
                 ],
@@ -547,8 +547,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: AppTheme.infoColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                  color: AppTheme.infoColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(AppTheme.radiusS),
                 ),
                 child: Icon(
                   Icons.help_outline,
@@ -556,7 +556,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: AppTheme.infoColor,
                 ),
               ),
-              const SizedBox(width: AppTheme.spacing12),
+              const SizedBox(width: 12.0),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -571,8 +571,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       'Get help and contact support',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: isDark
-                            ? AppTheme.darkTextSecondary
-                            : AppTheme.lightTextSecondary,
+                            ? AppTheme.darkTextSecondaryColor
+                            : AppTheme.textSecondaryColor,
                       ),
                     ),
                   ],
@@ -582,14 +582,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Icons.arrow_forward_ios,
                 size: 16,
                 color: isDark
-                    ? AppTheme.darkTextTertiary
-                    : AppTheme.lightTextTertiary,
+                    ? AppTheme.textDisabledColor
+                    : AppTheme.textDisabledColor,
               ),
             ],
           ),
         ),
 
-        const SizedBox(height: AppTheme.spacing16),
+        const SizedBox(height: AppTheme.spacingM),
 
         // Logout
         DangerButton(
@@ -674,13 +674,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  String _getRoleLabel(UserRole? role) {
+  String _getRoleLabel(String? role) {
     switch (role) {
-      case UserRole.donor:
+      case 'donor':
         return 'Donor';
-      case UserRole.receiver:
+      case 'receiver':
         return 'Receiver';
-      case UserRole.admin:
+      case 'admin':
         return 'Administrator';
       default:
         return 'User';

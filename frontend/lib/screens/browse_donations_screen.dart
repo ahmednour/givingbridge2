@@ -291,7 +291,7 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity(0.1),
+              color: AppTheme.primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(40),
             ),
             child: const Icon(
@@ -382,7 +382,7 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
                         vertical: AppTheme.spacingM,
                       ),
                       decoration: BoxDecoration(
-                        color: AppTheme.primaryColor.withOpacity(0.1),
+                        color: AppTheme.primaryColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(AppTheme.radiusL),
                       ),
                       child: Text(
@@ -402,7 +402,7 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
                       ),
                       decoration: BoxDecoration(
                         color: _getConditionColor(donation.condition)
-                            .withOpacity(0.1),
+                            .withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(AppTheme.radiusL),
                       ),
                       child: Text(

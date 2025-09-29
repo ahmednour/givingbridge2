@@ -242,7 +242,7 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity(0.1),
+              color: AppTheme.primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(40),
             ),
             child: const Icon(
@@ -298,7 +298,7 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
                     vertical: AppTheme.spacingXS,
                   ),
                   decoration: BoxDecoration(
-                    color: request.statusColor.withOpacity(0.1),
+                    color: request.statusColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(AppTheme.radiusS),
                   ),
                   child: Text(
@@ -327,7 +327,7 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
               children: [
                 CircleAvatar(
                   radius: 20,
-                  backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+                  backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
                   child: Text(
                     request.receiverName.isNotEmpty
                         ? request.receiverName[0].toUpperCase()
@@ -403,10 +403,10 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(AppTheme.spacingS),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.05),
+                  color: Colors.blue.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(AppTheme.radiusS),
                   border: Border.all(
-                    color: Colors.blue.withOpacity(0.2),
+                    color: Colors.blue.withValues(alpha: 0.2),
                   ),
                 ),
                 child: Text(

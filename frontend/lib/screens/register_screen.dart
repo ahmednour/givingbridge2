@@ -160,10 +160,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         Container(
                           padding: const EdgeInsets.all(AppTheme.spacingM),
                           decoration: BoxDecoration(
-                            color: AppTheme.errorColor.withOpacity(0.1),
+                            color: AppTheme.errorColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(AppTheme.radiusM),
                             border: Border.all(
-                              color: AppTheme.errorColor.withOpacity(0.3),
+                              color: AppTheme.errorColor.withValues(alpha: 0.3),
                             ),
                           ),
                           child: Row(
@@ -335,7 +335,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       child: Container(
         padding: const EdgeInsets.all(AppTheme.spacingM),
         decoration: BoxDecoration(
-          color: isSelected ? AppTheme.primaryColor.withOpacity(0.1) : Colors.transparent,
+          color: isSelected ? AppTheme.primaryColor.withValues(alpha: 0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(AppTheme.radiusM),
           border: Border.all(
             color: isSelected ? AppTheme.primaryColor : AppTheme.borderColor,

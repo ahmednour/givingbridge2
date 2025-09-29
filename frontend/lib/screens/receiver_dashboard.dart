@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../core/theme/app_theme.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_card.dart';
 import '../widgets/custom_input.dart';
-import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 
 class ReceiverDashboard extends StatefulWidget {
@@ -17,7 +15,7 @@ class ReceiverDashboard extends StatefulWidget {
 class _ReceiverDashboardState extends State<ReceiverDashboard>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final ApiService _apiService = ApiService();
+  // ApiService uses static methods, no instance needed
 
   List<Map<String, dynamic>> _availableDonations = [];
   List<Map<String, dynamic>> _myRequests = [];
@@ -60,16 +58,27 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
   Future<void> _loadAvailableDonations() async {
     setState(() => _isLoading = true);
 
-    final response = await _apiService.getRequests(
+    final response = await ApiService.getDonations(
       category:
           _selectedCategory == 'All' ? null : _selectedCategory.toLowerCase(),
-      status: 'available',
+      available: true,
     );
 
-    if (response['success'] && mounted) {
+    if (response.success && mounted) {
       setState(() {
-        _availableDonations =
-            List<Map<String, dynamic>>.from(response['requests'] ?? []);
+        _availableDonations = response.data
+                ?.map((donation) => {
+                      'id': donation.id,
+                      'title': donation.title,
+                      'description': donation.description,
+                      'imageUrl': donation.imageUrl,
+                      'category': donation.category,
+                      'location': donation.location,
+                      'donorName': donation.donorName,
+                      'createdAt': donation.createdAt,
+                    })
+                .toList() ??
+            [];
       });
     }
 
@@ -77,15 +86,24 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
   }
 
   Future<void> _loadMyRequests() async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    if (authProvider.user != null) {
-      final response = await _apiService.getUserRequests(authProvider.user!.id);
-      if (response['success'] && mounted) {
-        setState(() {
-          _myRequests =
-              List<Map<String, dynamic>>.from(response['requests'] ?? []);
-        });
-      }
+    final response = await ApiService.getMyRequests();
+    if (response.success && mounted) {
+      setState(() {
+        _myRequests = response.data
+                ?.map((request) => {
+                      'id': request.id,
+                      'title': 'Request #${request.id}',
+                      'description': request.message ?? '',
+                      'imageUrl': null,
+                      'category': null,
+                      'location': null,
+                      'donorName': request.donorName,
+                      'status': request.status,
+                      'createdAt': request.createdAt,
+                    })
+                .toList() ??
+            [];
+      });
     }
   }
 
@@ -102,10 +120,11 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
           // Tab Bar
           Container(
             decoration: BoxDecoration(
-              color: isDark ? AppTheme.darkSurface : AppTheme.lightSurface,
+              color: isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor,
               border: Border(
                 bottom: BorderSide(
-                  color: isDark ? AppTheme.darkBorder : AppTheme.lightBorder,
+                  color:
+                      isDark ? AppTheme.darkBorderColor : AppTheme.borderColor,
                   width: 1,
                 ),
               ),
@@ -114,8 +133,8 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
               controller: _tabController,
               labelColor: AppTheme.primaryColor,
               unselectedLabelColor: isDark
-                  ? AppTheme.darkTextSecondary
-                  : AppTheme.lightTextSecondary,
+                  ? AppTheme.darkTextSecondaryColor
+                  : AppTheme.textSecondaryColor,
               indicatorColor: AppTheme.primaryColor,
               indicatorWeight: 3,
               tabs: const [
@@ -146,12 +165,12 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
       children: [
         // Search and Filter Bar
         Container(
-          padding: const EdgeInsets.all(AppTheme.spacing16),
+          padding: const EdgeInsets.all(AppTheme.spacingM),
           decoration: BoxDecoration(
-            color: isDark ? AppTheme.darkSurface : AppTheme.lightSurface,
+            color: isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor,
             border: Border(
               bottom: BorderSide(
-                color: isDark ? AppTheme.darkBorder : AppTheme.lightBorder,
+                color: isDark ? AppTheme.darkBorderColor : AppTheme.borderColor,
                 width: 1,
               ),
             ),
@@ -171,7 +190,7 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
                 },
               ),
 
-              const SizedBox(height: AppTheme.spacing12),
+              const SizedBox(height: 12.0),
 
               // Category Filter
               SizedBox(
@@ -184,7 +203,7 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
                     final isSelected = _selectedCategory == category;
 
                     return Padding(
-                      padding: const EdgeInsets.only(right: AppTheme.spacing8),
+                      padding: const EdgeInsets.only(right: AppTheme.spacingS),
                       child: GestureDetector(
                         onTap: () {
                           setState(() => _selectedCategory = category);
@@ -193,23 +212,23 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
                           padding: const EdgeInsets.symmetric(
-                            horizontal: AppTheme.spacing16,
-                            vertical: AppTheme.spacing8,
+                            horizontal: AppTheme.spacingM,
+                            vertical: AppTheme.spacingS,
                           ),
                           decoration: BoxDecoration(
                             color: isSelected
                                 ? AppTheme.primaryColor
                                 : (isDark
-                                    ? AppTheme.darkSurfaceVariant
-                                    : AppTheme.lightSurfaceVariant),
+                                    ? AppTheme.darkCardColor
+                                    : AppTheme.cardColor),
                             borderRadius:
-                                BorderRadius.circular(AppTheme.radiusLarge),
+                                BorderRadius.circular(AppTheme.radiusXL),
                             border: Border.all(
                               color: isSelected
                                   ? AppTheme.primaryColor
                                   : (isDark
-                                      ? AppTheme.darkBorder
-                                      : AppTheme.lightBorder),
+                                      ? AppTheme.darkBorderColor
+                                      : AppTheme.borderColor),
                             ),
                           ),
                           child: Text(
@@ -218,8 +237,8 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
                               color: isSelected
                                   ? Colors.white
                                   : (isDark
-                                      ? AppTheme.darkTextPrimary
-                                      : AppTheme.lightTextPrimary),
+                                      ? AppTheme.darkTextPrimaryColor
+                                      : AppTheme.textPrimaryColor),
                               fontWeight: isSelected
                                   ? FontWeight.w600
                                   : FontWeight.w400,
@@ -261,25 +280,25 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
               Icons.search_off,
               size: 64,
               color: isDark
-                  ? AppTheme.darkTextTertiary
-                  : AppTheme.lightTextTertiary,
+                  ? AppTheme.textDisabledColor
+                  : AppTheme.textDisabledColor,
             ),
-            const SizedBox(height: AppTheme.spacing16),
+            const SizedBox(height: AppTheme.spacingM),
             Text(
               'No donations found',
               style: theme.textTheme.titleMedium?.copyWith(
                 color: isDark
-                    ? AppTheme.darkTextSecondary
-                    : AppTheme.lightTextSecondary,
+                    ? AppTheme.darkTextSecondaryColor
+                    : AppTheme.textSecondaryColor,
               ),
             ),
-            const SizedBox(height: AppTheme.spacing8),
+            const SizedBox(height: AppTheme.spacingS),
             Text(
               'Try adjusting your search or category filter.',
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: isDark
-                    ? AppTheme.darkTextTertiary
-                    : AppTheme.lightTextTertiary,
+                    ? AppTheme.textDisabledColor
+                    : AppTheme.textDisabledColor,
               ),
               textAlign: TextAlign.center,
             ),
@@ -290,12 +309,12 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
 
     return Padding(
       padding:
-          EdgeInsets.all(isDesktop ? AppTheme.spacing24 : AppTheme.spacing16),
+          EdgeInsets.all(isDesktop ? AppTheme.spacingL : AppTheme.spacingM),
       child: GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: isDesktop ? 3 : 1,
-          crossAxisSpacing: AppTheme.spacing16,
-          mainAxisSpacing: AppTheme.spacing16,
+          crossAxisSpacing: AppTheme.spacingM,
+          mainAxisSpacing: AppTheme.spacingM,
           childAspectRatio: isDesktop ? 0.8 : 1.2,
         ),
         itemCount: _availableDonations.length,
@@ -327,7 +346,7 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
       onRefresh: _loadMyRequests,
       child: SingleChildScrollView(
         padding:
-            EdgeInsets.all(isDesktop ? AppTheme.spacing32 : AppTheme.spacing16),
+            EdgeInsets.all(isDesktop ? AppTheme.spacingXL : AppTheme.spacingM),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -345,14 +364,14 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
                   '${_myRequests.length} requests',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: isDark
-                        ? AppTheme.darkTextSecondary
-                        : AppTheme.lightTextSecondary,
+                        ? AppTheme.darkTextSecondaryColor
+                        : AppTheme.textSecondaryColor,
                   ),
                 ),
               ],
             ),
 
-            const SizedBox(height: AppTheme.spacing24),
+            const SizedBox(height: AppTheme.spacingL),
 
             // Requests List
             if (_myRequests.isEmpty)
@@ -364,29 +383,29 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
                         Icons.inbox_outlined,
                         size: 64,
                         color: isDark
-                            ? AppTheme.darkTextTertiary
-                            : AppTheme.lightTextTertiary,
+                            ? AppTheme.textDisabledColor
+                            : AppTheme.textDisabledColor,
                       ),
-                      const SizedBox(height: AppTheme.spacing16),
+                      const SizedBox(height: AppTheme.spacingM),
                       Text(
                         'No requests yet',
                         style: theme.textTheme.titleMedium?.copyWith(
                           color: isDark
-                              ? AppTheme.darkTextSecondary
-                              : AppTheme.lightTextSecondary,
+                              ? AppTheme.darkTextSecondaryColor
+                              : AppTheme.textSecondaryColor,
                         ),
                       ),
-                      const SizedBox(height: AppTheme.spacing8),
+                      const SizedBox(height: AppTheme.spacingS),
                       Text(
                         'Browse available donations and request what you need.',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: isDark
-                              ? AppTheme.darkTextTertiary
-                              : AppTheme.lightTextTertiary,
+                              ? AppTheme.textDisabledColor
+                              : AppTheme.textDisabledColor,
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: AppTheme.spacing24),
+                      const SizedBox(height: AppTheme.spacingL),
                       PrimaryButton(
                         text: 'Browse Donations',
                         leftIcon: const Icon(Icons.search, size: 20),
@@ -399,7 +418,7 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
             else
               ...(_myRequests.map(
                 (request) => Padding(
-                  padding: const EdgeInsets.only(bottom: AppTheme.spacing16),
+                  padding: const EdgeInsets.only(bottom: AppTheme.spacingM),
                   child: _buildRequestCard(request, theme, isDark),
                 ),
               )),
@@ -427,15 +446,12 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: isDark
-                      ? AppTheme.darkSurfaceVariant
-                      : AppTheme.lightSurfaceVariant,
-                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                  color: isDark ? AppTheme.darkCardColor : AppTheme.cardColor,
+                  borderRadius: BorderRadius.circular(AppTheme.radiusS),
                 ),
                 child: request['imageUrl'] != null
                     ? ClipRRect(
-                        borderRadius:
-                            BorderRadius.circular(AppTheme.radiusSmall),
+                        borderRadius: BorderRadius.circular(AppTheme.radiusS),
                         child: Image.network(
                           request['imageUrl'],
                           fit: BoxFit.cover,
@@ -443,8 +459,8 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
                             return Icon(
                               Icons.image_outlined,
                               color: isDark
-                                  ? AppTheme.darkTextTertiary
-                                  : AppTheme.lightTextTertiary,
+                                  ? AppTheme.textDisabledColor
+                                  : AppTheme.textDisabledColor,
                             );
                           },
                         ),
@@ -452,13 +468,13 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
                     : Icon(
                         Icons.inventory_outlined,
                         color: isDark
-                            ? AppTheme.darkTextTertiary
-                            : AppTheme.lightTextTertiary,
+                            ? AppTheme.textDisabledColor
+                            : AppTheme.textDisabledColor,
                         size: 32,
                       ),
               ),
 
-              const SizedBox(width: AppTheme.spacing12),
+              const SizedBox(width: 12.0),
 
               // Content
               Expanded(
@@ -474,20 +490,20 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
                       overflow: TextOverflow.ellipsis,
                     ),
 
-                    const SizedBox(height: AppTheme.spacing4),
+                    const SizedBox(height: AppTheme.spacingXS),
 
                     if (request['description'] != null) ...[
                       Text(
                         request['description'],
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: isDark
-                              ? AppTheme.darkTextSecondary
-                              : AppTheme.lightTextSecondary,
+                              ? AppTheme.darkTextSecondaryColor
+                              : AppTheme.textSecondaryColor,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: AppTheme.spacing8),
+                      const SizedBox(height: AppTheme.spacingS),
                     ],
 
                     // Status and Date
@@ -495,13 +511,13 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: AppTheme.spacing8,
-                            vertical: AppTheme.spacing4,
+                            horizontal: AppTheme.spacingS,
+                            vertical: AppTheme.spacingXS,
                           ),
                           decoration: BoxDecoration(
-                            color: statusColor.withOpacity(0.1),
+                            color: statusColor.withValues(alpha: 0.1),
                             borderRadius:
-                                BorderRadius.circular(AppTheme.radiusSmall),
+                                BorderRadius.circular(AppTheme.radiusS),
                           ),
                           child: Text(
                             _getStatusLabel(status),
@@ -511,14 +527,14 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
                             ),
                           ),
                         ),
-                        const SizedBox(width: AppTheme.spacing12),
+                        const SizedBox(width: 12.0),
                         if (request['createdAt'] != null)
                           Text(
                             _formatDate(request['createdAt']),
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: isDark
-                                  ? AppTheme.darkTextTertiary
-                                  : AppTheme.lightTextTertiary,
+                                  ? AppTheme.textDisabledColor
+                                  : AppTheme.textDisabledColor,
                             ),
                           ),
                       ],
@@ -532,8 +548,8 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
                 icon: Icon(
                   Icons.more_vert,
                   color: isDark
-                      ? AppTheme.darkTextTertiary
-                      : AppTheme.lightTextTertiary,
+                      ? AppTheme.textDisabledColor
+                      : AppTheme.textDisabledColor,
                 ),
                 itemBuilder: (context) => [
                   const PopupMenuItem(
@@ -578,10 +594,10 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
     return Container(
       height: MediaQuery.of(context).size.height * 0.75,
       decoration: BoxDecoration(
-        color: isDark ? AppTheme.darkSurface : AppTheme.lightSurface,
+        color: isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor,
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(AppTheme.radiusLarge),
-          topRight: Radius.circular(AppTheme.radiusLarge),
+          topLeft: Radius.circular(AppTheme.radiusXL),
+          topRight: Radius.circular(AppTheme.radiusXL),
         ),
       ),
       child: Column(
@@ -590,11 +606,11 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
           Container(
             width: 40,
             height: 4,
-            margin: const EdgeInsets.symmetric(vertical: AppTheme.spacing12),
+            margin: const EdgeInsets.symmetric(vertical: 12.0),
             decoration: BoxDecoration(
               color: isDark
-                  ? AppTheme.darkTextTertiary
-                  : AppTheme.lightTextTertiary,
+                  ? AppTheme.textDisabledColor
+                  : AppTheme.textDisabledColor,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -602,7 +618,7 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
           // Content
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppTheme.spacing24),
+              padding: const EdgeInsets.all(AppTheme.spacingL),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -612,33 +628,31 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
                       width: double.infinity,
                       height: 200,
                       decoration: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.circular(AppTheme.radiusMedium),
+                        borderRadius: BorderRadius.circular(AppTheme.radiusM),
                       ),
                       child: ClipRRect(
-                        borderRadius:
-                            BorderRadius.circular(AppTheme.radiusMedium),
+                        borderRadius: BorderRadius.circular(AppTheme.radiusM),
                         child: Image.network(
                           donation['imageUrl'],
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
                             return Container(
                               color: isDark
-                                  ? AppTheme.darkSurfaceVariant
-                                  : AppTheme.lightSurfaceVariant,
+                                  ? AppTheme.darkCardColor
+                                  : AppTheme.cardColor,
                               child: Icon(
                                 Icons.image_outlined,
                                 size: 64,
                                 color: isDark
-                                    ? AppTheme.darkTextTertiary
-                                    : AppTheme.lightTextTertiary,
+                                    ? AppTheme.textDisabledColor
+                                    : AppTheme.textDisabledColor,
                               ),
                             );
                           },
                         ),
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacing24),
+                    const SizedBox(height: AppTheme.spacingL),
                   ],
 
                   // Title
@@ -649,7 +663,7 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
                     ),
                   ),
 
-                  const SizedBox(height: AppTheme.spacing16),
+                  const SizedBox(height: AppTheme.spacingM),
 
                   // Description
                   if (donation['description'] != null) ...[
@@ -659,7 +673,7 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
                         height: 1.6,
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacing24),
+                    const SizedBox(height: AppTheme.spacingL),
                   ],
 
                   // Details
@@ -672,7 +686,7 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
                   _buildDetailRow('Posted', _formatDate(donation['createdAt']),
                       theme, isDark),
 
-                  const SizedBox(height: AppTheme.spacing32),
+                  const SizedBox(height: AppTheme.spacingXL),
 
                   // Request Button
                   PrimaryButton(
@@ -697,7 +711,7 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
   Widget _buildDetailRow(
       String label, String? value, ThemeData theme, bool isDark) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppTheme.spacing12),
+      padding: const EdgeInsets.only(bottom: 12.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -707,8 +721,8 @@ class _ReceiverDashboardState extends State<ReceiverDashboard>
               label,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: isDark
-                    ? AppTheme.darkTextSecondary
-                    : AppTheme.lightTextSecondary,
+                    ? AppTheme.darkTextSecondaryColor
+                    : AppTheme.textSecondaryColor,
                 fontWeight: FontWeight.w500,
               ),
             ),

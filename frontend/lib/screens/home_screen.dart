@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final userRole = authProvider.userRole;
 
-    if (userRole == UserRole.donor) {
+    if (userRole == 'donor') {
       _navigationItems = [
         NavigationItem(
           label: 'Dashboard',
@@ -155,14 +155,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: AppTheme.spacing24,
-        vertical: AppTheme.spacing16,
+        horizontal: AppTheme.spacingL,
+        vertical: AppTheme.spacingM,
       ),
       decoration: BoxDecoration(
-        color: isDark ? AppTheme.darkSurface : AppTheme.lightSurface,
+        color: isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor,
         border: Border(
           bottom: BorderSide(
-            color: isDark ? AppTheme.darkBorder : AppTheme.lightBorder,
+            color: isDark ? AppTheme.darkBorderColor : AppTheme.borderColor,
             width: 1,
           ),
         ),
@@ -176,7 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 32,
               decoration: BoxDecoration(
                 color: AppTheme.primaryColor,
-                borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                borderRadius: BorderRadius.circular(AppTheme.radiusS),
               ),
               child: const Icon(
                 Icons.favorite,
@@ -184,7 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 size: 20,
               ),
             ),
-            const SizedBox(width: AppTheme.spacing12),
+            const SizedBox(width: 12.0),
           ],
 
           // Title
@@ -208,7 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
             tooltip: 'Toggle theme',
           ),
 
-          const SizedBox(width: AppTheme.spacing8),
+          const SizedBox(width: AppTheme.spacingS),
 
           // User avatar
           GestureDetector(
@@ -217,10 +217,10 @@ class _HomeScreenState extends State<HomeScreen> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withOpacity(0.1),
+                color: AppTheme.primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: AppTheme.primaryColor.withOpacity(0.2),
+                  color: AppTheme.primaryColor.withValues(alpha: 0.2),
                   width: 2,
                 ),
               ),
@@ -281,22 +281,22 @@ class _BrowseScreen extends StatelessWidget {
           Icon(
             Icons.search,
             size: 64,
-            color: theme.colorScheme.primary.withOpacity(0.5),
+            color: theme.colorScheme.primary.withValues(alpha: 0.5),
           ),
-          const SizedBox(height: AppTheme.spacing16),
+          const SizedBox(height: AppTheme.spacingM),
           Text(
             'Browse Feature',
             style: theme.textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: AppTheme.spacing8),
+          const SizedBox(height: AppTheme.spacingS),
           Text(
             'Coming Soon!',
             style: theme.textTheme.bodyLarge?.copyWith(
               color: theme.brightness == Brightness.dark
-                  ? AppTheme.darkTextSecondary
-                  : AppTheme.lightTextSecondary,
+                  ? AppTheme.darkTextSecondaryColor
+                  : AppTheme.textSecondaryColor,
             ),
           ),
         ],

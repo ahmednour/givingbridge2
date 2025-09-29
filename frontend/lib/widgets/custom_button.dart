@@ -107,7 +107,7 @@ class _CustomButtonState extends State<CustomButton>
                 height: widget.height ?? _getButtonHeight(),
                 decoration: BoxDecoration(
                   color: _getBackgroundColor(theme, isDark, isEnabled),
-                  borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                  borderRadius: BorderRadius.circular(AppTheme.radiusM),
                   border: _getBorder(theme, isDark, isEnabled),
                   boxShadow: _getShadow(isEnabled),
                 ),
@@ -124,7 +124,7 @@ class _CustomButtonState extends State<CustomButton>
                       children: [
                         if (widget.leftIcon != null) ...[
                           widget.leftIcon!,
-                          const SizedBox(width: AppTheme.spacing8),
+                          const SizedBox(width: AppTheme.spacingS),
                         ],
                         if (widget.isLoading)
                           SizedBox(
@@ -142,7 +142,7 @@ class _CustomButtonState extends State<CustomButton>
                             textAlign: TextAlign.center,
                           ),
                         if (widget.rightIcon != null && !widget.isLoading) ...[
-                          const SizedBox(width: AppTheme.spacing8),
+                          const SizedBox(width: AppTheme.spacingS),
                           widget.rightIcon!,
                         ],
                       ],
@@ -171,22 +171,22 @@ class _CustomButtonState extends State<CustomButton>
   double _getHorizontalPadding() {
     switch (widget.size) {
       case ButtonSize.small:
-        return AppTheme.spacing16;
+        return AppTheme.spacingM;
       case ButtonSize.medium:
-        return AppTheme.spacing20;
+        return 20.0;
       case ButtonSize.large:
-        return AppTheme.spacing24;
+        return AppTheme.spacingL;
     }
   }
 
   double _getVerticalPadding() {
     switch (widget.size) {
       case ButtonSize.small:
-        return AppTheme.spacing8;
+        return AppTheme.spacingS;
       case ButtonSize.medium:
-        return AppTheme.spacing12;
+        return 12.0;
       case ButtonSize.large:
-        return AppTheme.spacing16;
+        return AppTheme.spacingM;
     }
   }
 
@@ -201,13 +201,13 @@ class _CustomButtonState extends State<CustomButton>
           return AppTheme.secondaryDarkColor.withValues(alpha: opacity);
         case ButtonVariant.outline:
           return (isDark
-                  ? AppTheme.darkSurfaceVariant
-                  : AppTheme.lightSurfaceVariant)
+                  ? AppTheme.darkCardColor
+                  : AppTheme.cardColor)
               .withValues(alpha: opacity);
         case ButtonVariant.ghost:
           return (isDark
-                  ? AppTheme.darkSurfaceVariant
-                  : AppTheme.lightSurfaceVariant)
+                  ? AppTheme.darkCardColor
+                  : AppTheme.cardColor)
               .withValues(alpha: opacity);
         case ButtonVariant.danger:
           return AppTheme.errorColor.withValues(alpha: 0.9 * opacity);
@@ -238,8 +238,8 @@ class _CustomButtonState extends State<CustomButton>
         return Colors.white.withValues(alpha: opacity);
       case ButtonVariant.outline:
       case ButtonVariant.ghost:
-        return (isDark ? AppTheme.darkTextPrimary : AppTheme.lightTextPrimary)
-            .withOpacity(opacity);
+        return (isDark ? AppTheme.darkTextPrimaryColor : AppTheme.textPrimaryColor)
+            .withValues(alpha: opacity);
     }
   }
 
@@ -271,7 +271,7 @@ class _CustomButtonState extends State<CustomButton>
     if (widget.variant == ButtonVariant.outline) {
       final borderColor = _isHovered && isEnabled
           ? AppTheme.primaryColor
-          : (isDark ? AppTheme.darkBorder : AppTheme.lightBorder);
+          : (isDark ? AppTheme.darkBorderColor : AppTheme.borderColor);
       return Border.all(
         color: borderColor.withValues(alpha: isEnabled ? 1.0 : 0.5),
         width: _isHovered && isEnabled ? 2 : 1,
@@ -287,10 +287,10 @@ class _CustomButtonState extends State<CustomButton>
       case ButtonVariant.primary:
       case ButtonVariant.secondary:
       case ButtonVariant.danger:
-        return _isHovered ? AppTheme.mediumShadow : AppTheme.softShadow;
+        return _isHovered ? AppTheme.shadowMD : AppTheme.shadowSM;
       case ButtonVariant.outline:
       case ButtonVariant.ghost:
-        return _isHovered ? AppTheme.softShadow : null;
+        return _isHovered ? AppTheme.shadowSM : null;
     }
   }
 }

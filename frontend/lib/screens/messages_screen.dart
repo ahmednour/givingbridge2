@@ -124,7 +124,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity(0.1),
+              color: AppTheme.primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(40),
             ),
             child: const Icon(
@@ -177,7 +177,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   children: [
                     CircleAvatar(
                       radius: 24,
-                      backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+                      backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
                       child: Text(
                         conversation.userName.isNotEmpty
                             ? conversation.userName[0].toUpperCase()
@@ -276,7 +276,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: AppTheme.primaryColor.withOpacity(0.1),
+                            color: AppTheme.primaryColor.withValues(alpha: 0.1),
                             borderRadius:
                                 BorderRadius.circular(AppTheme.radiusS),
                           ),

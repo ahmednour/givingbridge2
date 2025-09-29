@@ -150,7 +150,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withOpacity(0.1),
+                  color: AppTheme.primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(AppTheme.radiusM),
                 ),
                 child: const Icon(
@@ -195,7 +195,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       padding: const EdgeInsets.all(AppTheme.spacingM),
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? AppTheme.primaryColor.withOpacity(0.1)
+                            ? AppTheme.primaryColor.withValues(alpha: 0.1)
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(AppTheme.radiusM),
                       ),
@@ -241,7 +241,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 children: [
                   CircleAvatar(
                     radius: 20,
-                    backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+                    backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
                     child: Text(
                       user.name.isNotEmpty ? user.name[0].toUpperCase() : 'U',
                       style: AppTheme.bodyMedium.copyWith(
@@ -318,7 +318,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               vertical: AppTheme.spacingS,
             ),
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity(0.1),
+              color: AppTheme.primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppTheme.radiusM),
             ),
             child: Row(
@@ -373,7 +373,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Icon(
             Icons.volunteer_activism,
             size: 80,
-            color: AppTheme.primaryColor.withOpacity(0.3),
+            color: AppTheme.primaryColor.withValues(alpha: 0.3),
           ),
           const SizedBox(height: AppTheme.spacingL),
           Text(
@@ -427,7 +427,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Icon(
             Icons.person_outline,
             size: 80,
-            color: AppTheme.secondaryColor.withOpacity(0.3),
+            color: AppTheme.secondaryColor.withValues(alpha: 0.3),
           ),
           const SizedBox(height: AppTheme.spacingL),
           Text(
@@ -488,7 +488,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Icon(
             Icons.admin_panel_settings,
             size: 80,
-            color: AppTheme.warningColor.withOpacity(0.3),
+            color: AppTheme.warningColor.withValues(alpha: 0.3),
           ),
           const SizedBox(height: AppTheme.spacingL),
           Text(

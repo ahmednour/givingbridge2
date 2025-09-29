@@ -145,11 +145,11 @@ class _CustomInputState extends State<CustomInput>
               color: hasError
                   ? AppTheme.errorColor
                   : (isDark
-                      ? AppTheme.darkTextSecondary
-                      : AppTheme.lightTextSecondary),
+                      ? AppTheme.darkTextSecondaryColor
+                      : AppTheme.textSecondaryColor),
             ),
           ),
-          const SizedBox(height: AppTheme.spacing8),
+          const SizedBox(height: AppTheme.spacingS),
         ],
 
         // Input Field
@@ -158,11 +158,11 @@ class _CustomInputState extends State<CustomInput>
           builder: (context, child) {
             return Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                borderRadius: BorderRadius.circular(AppTheme.radiusM),
                 boxShadow: _hasFocus && !hasError
                     ? [
                         BoxShadow(
-                          color: AppTheme.primaryColor.withOpacity(0.2),
+                          color: AppTheme.primaryColor.withValues(alpha: 0.2),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -194,15 +194,15 @@ class _CustomInputState extends State<CustomInput>
 
         // Helper/Error Text
         if (widget.helperText != null || widget.errorText != null) ...[
-          const SizedBox(height: AppTheme.spacing8),
+          const SizedBox(height: AppTheme.spacingS),
           Text(
             widget.errorText ?? widget.helperText!,
             style: theme.textTheme.labelSmall?.copyWith(
               color: hasError
                   ? AppTheme.errorColor
                   : (isDark
-                      ? AppTheme.darkTextTertiary
-                      : AppTheme.lightTextTertiary),
+                      ? AppTheme.textDisabledColor
+                      : AppTheme.textDisabledColor),
             ),
           ),
         ],
@@ -228,14 +228,14 @@ class _CustomInputState extends State<CustomInput>
     return TextStyle(
       fontSize: fontSize,
       fontWeight: FontWeight.w400,
-      color: isDark ? AppTheme.darkTextPrimary : AppTheme.lightTextPrimary,
+      color: isDark ? AppTheme.darkTextPrimaryColor : AppTheme.textPrimaryColor,
       height: 1.4,
     );
   }
 
   InputDecoration _getInputDecoration(
       ThemeData theme, bool isDark, bool hasError) {
-    final borderRadius = BorderRadius.circular(AppTheme.radiusMedium);
+    final borderRadius = BorderRadius.circular(AppTheme.radiusM);
 
     Color fillColor;
     Color borderColor;
@@ -244,14 +244,14 @@ class _CustomInputState extends State<CustomInput>
     switch (widget.variant) {
       case InputVariant.filled:
         fillColor =
-            isDark ? AppTheme.darkSurfaceVariant : AppTheme.lightSurfaceVariant;
+            isDark ? AppTheme.darkCardColor : AppTheme.cardColor;
         borderColor = Colors.transparent;
         focusedBorderColor =
             hasError ? AppTheme.errorColor : AppTheme.primaryColor;
         break;
       case InputVariant.outlined:
         fillColor = Colors.transparent;
-        borderColor = isDark ? AppTheme.darkBorder : AppTheme.lightBorder;
+        borderColor = isDark ? AppTheme.darkBorderColor : AppTheme.borderColor;
         focusedBorderColor =
             hasError ? AppTheme.errorColor : AppTheme.primaryColor;
         break;
@@ -266,20 +266,20 @@ class _CustomInputState extends State<CustomInput>
     switch (widget.size) {
       case InputSize.small:
         contentPadding = const EdgeInsets.symmetric(
-          horizontal: AppTheme.spacing12,
-          vertical: AppTheme.spacing8,
+          horizontal: 12.0,
+          vertical: AppTheme.spacingS,
         );
         break;
       case InputSize.medium:
         contentPadding = const EdgeInsets.symmetric(
-          horizontal: AppTheme.spacing16,
-          vertical: AppTheme.spacing12,
+          horizontal: AppTheme.spacingM,
+          vertical: 12.0,
         );
         break;
       case InputSize.large:
         contentPadding = const EdgeInsets.symmetric(
-          horizontal: AppTheme.spacing20,
-          vertical: AppTheme.spacing16,
+          horizontal: 20.0,
+          vertical: AppTheme.spacingM,
         );
         break;
     }
@@ -320,12 +320,12 @@ class _CustomInputState extends State<CustomInput>
       disabledBorder: OutlineInputBorder(
         borderRadius: borderRadius,
         borderSide: BorderSide(
-          color: (isDark ? AppTheme.darkBorder : AppTheme.lightBorder)
-              .withOpacity(0.5),
+          color: (isDark ? AppTheme.darkBorderColor : AppTheme.borderColor)
+              .withValues(alpha: 0.5),
         ),
       ),
       hintStyle: TextStyle(
-        color: isDark ? AppTheme.darkTextTertiary : AppTheme.lightTextTertiary,
+        color: isDark ? AppTheme.textDisabledColor : AppTheme.textDisabledColor,
         fontSize: _getTextStyle(theme, isDark).fontSize,
       ),
       counterText: '',

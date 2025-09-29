@@ -36,10 +36,10 @@ class CustomBottomNavigation extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? AppTheme.darkSurface : AppTheme.lightSurface,
+        color: isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 20,
             offset: const Offset(0, -2),
           ),
@@ -49,8 +49,8 @@ class CustomBottomNavigation extends StatelessWidget {
         child: Container(
           height: 80,
           padding: const EdgeInsets.symmetric(
-            horizontal: AppTheme.spacing16,
-            vertical: AppTheme.spacing8,
+            horizontal: AppTheme.spacingM,
+            vertical: AppTheme.spacingS,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -152,8 +152,8 @@ class _NavItemState extends State<_NavItem>
         builder: (context, child) {
           return Container(
             padding: const EdgeInsets.symmetric(
-              horizontal: AppTheme.spacing12,
-              vertical: AppTheme.spacing8,
+              horizontal: 12.0,
+              vertical: AppTheme.spacingS,
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -161,12 +161,12 @@ class _NavItemState extends State<_NavItem>
                 Transform.scale(
                   scale: _scaleAnimation.value,
                   child: Container(
-                    padding: const EdgeInsets.all(AppTheme.spacing8),
+                    padding: const EdgeInsets.all(AppTheme.spacingS),
                     decoration: widget.isSelected
                         ? BoxDecoration(
-                            color: AppTheme.primaryColor.withOpacity(0.15),
+                            color: AppTheme.primaryColor.withValues(alpha: 0.15),
                             borderRadius:
-                                BorderRadius.circular(AppTheme.radiusMedium),
+                                BorderRadius.circular(AppTheme.radiusM),
                           )
                         : null,
                     child: Icon(
@@ -176,13 +176,13 @@ class _NavItemState extends State<_NavItem>
                       color: widget.isSelected
                           ? AppTheme.primaryColor
                           : (isDark
-                              ? AppTheme.darkTextSecondary
-                              : AppTheme.lightTextSecondary),
+                              ? AppTheme.darkTextSecondaryColor
+                              : AppTheme.textSecondaryColor),
                       size: 24,
                     ),
                   ),
                 ),
-                const SizedBox(height: AppTheme.spacing4),
+                const SizedBox(height: AppTheme.spacingXS),
                 FadeTransition(
                   opacity: _fadeAnimation,
                   child: Text(
@@ -191,8 +191,8 @@ class _NavItemState extends State<_NavItem>
                       color: widget.isSelected
                           ? AppTheme.primaryColor
                           : (isDark
-                              ? AppTheme.darkTextSecondary
-                              : AppTheme.lightTextSecondary),
+                              ? AppTheme.darkTextSecondaryColor
+                              : AppTheme.textSecondaryColor),
                       fontWeight:
                           widget.isSelected ? FontWeight.w600 : FontWeight.w400,
                     ),
@@ -233,10 +233,10 @@ class CustomSideNavigation extends StatelessWidget {
       duration: const Duration(milliseconds: 300),
       width: isCollapsed ? 80 : 240,
       decoration: BoxDecoration(
-        color: isDark ? AppTheme.darkSurface : AppTheme.lightSurface,
+        color: isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor,
         border: Border(
           right: BorderSide(
-            color: isDark ? AppTheme.darkBorder : AppTheme.lightBorder,
+            color: isDark ? AppTheme.darkBorderColor : AppTheme.borderColor,
             width: 1,
           ),
         ),
@@ -246,7 +246,7 @@ class CustomSideNavigation extends StatelessWidget {
           // Header
           Container(
             height: 80,
-            padding: const EdgeInsets.all(AppTheme.spacing16),
+            padding: const EdgeInsets.all(AppTheme.spacingM),
             child: Row(
               children: [
                 Container(
@@ -254,7 +254,7 @@ class CustomSideNavigation extends StatelessWidget {
                   height: 40,
                   decoration: BoxDecoration(
                     color: AppTheme.primaryColor,
-                    borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusM),
                   ),
                   child: const Icon(
                     Icons.favorite,
@@ -263,7 +263,7 @@ class CustomSideNavigation extends StatelessWidget {
                   ),
                 ),
                 if (!isCollapsed) ...[
-                  const SizedBox(width: AppTheme.spacing12),
+                  const SizedBox(width: 12.0),
                   Expanded(
                     child: Text(
                       'Giving Bridge',
@@ -290,7 +290,7 @@ class CustomSideNavigation extends StatelessWidget {
           // Navigation items
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(AppTheme.spacing8),
+              padding: const EdgeInsets.all(AppTheme.spacingS),
               child: Column(
                 children: items.asMap().entries.map((entry) {
                   final index = entry.key;
@@ -394,19 +394,19 @@ class _SideNavItemState extends State<_SideNavItem>
                   ? AppTheme.primaryColor
                   : _isHovered
                       ? (isDark
-                          ? AppTheme.darkSurfaceVariant
-                          : AppTheme.lightSurfaceVariant)
+                          ? AppTheme.darkCardColor
+                          : AppTheme.cardColor)
                       : Colors.transparent;
 
               return AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 padding: const EdgeInsets.symmetric(
-                  horizontal: AppTheme.spacing12,
-                  vertical: AppTheme.spacing12,
+                  horizontal: 12.0,
+                  vertical: 12.0,
                 ),
                 decoration: BoxDecoration(
                   color: backgroundColor,
-                  borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                  borderRadius: BorderRadius.circular(AppTheme.radiusM),
                 ),
                 child: Row(
                   children: [
@@ -417,12 +417,12 @@ class _SideNavItemState extends State<_SideNavItem>
                       color: widget.isSelected
                           ? Colors.white
                           : (isDark
-                              ? AppTheme.darkTextSecondary
-                              : AppTheme.lightTextSecondary),
+                              ? AppTheme.darkTextSecondaryColor
+                              : AppTheme.textSecondaryColor),
                       size: 20,
                     ),
                     if (!widget.isCollapsed) ...[
-                      const SizedBox(width: AppTheme.spacing12),
+                      const SizedBox(width: 12.0),
                       Expanded(
                         child: Text(
                           widget.item.label,
@@ -430,8 +430,8 @@ class _SideNavItemState extends State<_SideNavItem>
                             color: widget.isSelected
                                 ? Colors.white
                                 : (isDark
-                                    ? AppTheme.darkTextPrimary
-                                    : AppTheme.lightTextPrimary),
+                                    ? AppTheme.darkTextPrimaryColor
+                                    : AppTheme.textPrimaryColor),
                             fontWeight: widget.isSelected
                                 ? FontWeight.w600
                                 : FontWeight.w400,
@@ -483,16 +483,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       centerTitle: centerTitle,
       elevation: elevation,
       backgroundColor: backgroundColor ??
-          (isDark ? AppTheme.darkSurface : AppTheme.lightSurface),
+          (isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor),
       foregroundColor:
-          isDark ? AppTheme.darkTextPrimary : AppTheme.lightTextPrimary,
+          isDark ? AppTheme.darkTextPrimaryColor : AppTheme.textPrimaryColor,
       leading: leading,
       actions: actions,
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
         child: Container(
           height: 1,
-          color: isDark ? AppTheme.darkBorder : AppTheme.lightBorder,
+          color: isDark ? AppTheme.darkBorderColor : AppTheme.borderColor,
         ),
       ),
     );

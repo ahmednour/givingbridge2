@@ -212,7 +212,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
             width: 100,
             height: 100,
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity(0.1),
+              color: AppTheme.primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(50),
             ),
             child: const Icon(
@@ -259,7 +259,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
         boxShadow: AppTheme.shadowMD,
         border: donation.isAvailable
             ? null
-            : Border.all(color: Colors.grey.withOpacity(0.5)),
+            : Border.all(color: Colors.grey.withValues(alpha: 0.5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -333,8 +333,8 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                       ),
                       decoration: BoxDecoration(
                         color: donation.isAvailable
-                            ? Colors.green.withOpacity(0.1)
-                            : Colors.grey.withOpacity(0.1),
+                            ? Colors.green.withValues(alpha: 0.1)
+                            : Colors.grey.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(AppTheme.radiusL),
                       ),
                       child: Text(
@@ -354,7 +354,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                         vertical: AppTheme.spacingM,
                       ),
                       decoration: BoxDecoration(
-                        color: AppTheme.primaryColor.withOpacity(0.1),
+                        color: AppTheme.primaryColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(AppTheme.radiusL),
                       ),
                       child: Text(
@@ -487,7 +487,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                       ),
                       decoration: BoxDecoration(
                         color: _getConditionColor(donation.condition)
-                            .withOpacity(0.1),
+                            .withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(AppTheme.radiusL),
                       ),
                       child: Text(

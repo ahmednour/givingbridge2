@@ -18,6 +18,8 @@ class AuthProvider extends ChangeNotifier {
   bool get isLoading => _state == AuthState.loading;
   bool get hasError => _state == AuthState.error;
 
+  String? get userRole => _user?.role;
+
   // Initialize auth state by checking for existing token
   Future<void> initialize() async {
     _setState(AuthState.loading);
@@ -92,6 +94,38 @@ class AuthProvider extends ChangeNotifier {
       }
     } catch (e) {
       _setError('Registration error: ${e.toString()}');
+      return false;
+    }
+  }
+
+  // Update profile
+  Future<bool> updateProfile({
+    String? name,
+    String? phone,
+    String? location,
+    String? avatarUrl,
+  }) async {
+    if (_user == null) return false;
+
+    try {
+      final response = await ApiService.updateProfile(
+        userId: _user!.id.toString(),
+        name: name,
+        phone: phone,
+        location: location,
+        avatarUrl: avatarUrl,
+      );
+
+      if (response.success && response.data != null) {
+        _user = response.data;
+        notifyListeners();
+        return true;
+      } else {
+        _setError(response.error ?? 'Failed to update profile');
+        return false;
+      }
+    } catch (e) {
+      _setError('Update profile error: ${e.toString()}');
       return false;
     }
   }

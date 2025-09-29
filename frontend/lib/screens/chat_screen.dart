@@ -139,7 +139,7 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             CircleAvatar(
               radius: 18,
-              backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+              backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
               child: Text(
                 widget.otherUserName.isNotEmpty
                     ? widget.otherUserName[0].toUpperCase()
@@ -292,7 +292,7 @@ class _ChatScreenState extends State<ChatScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity(0.1),
+              color: AppTheme.primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(40),
             ),
             child: const Icon(
@@ -328,7 +328,7 @@ class _ChatScreenState extends State<ChatScreen> {
           if (!isFromCurrentUser) ...[
             CircleAvatar(
               radius: 16,
-              backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+              backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
               child: Text(
                 message.senderName.isNotEmpty
                     ? message.senderName[0].toUpperCase()
@@ -377,7 +377,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     style: TextStyle(
                       fontSize: 11,
                       color: isFromCurrentUser
-                          ? Colors.white.withOpacity(0.7)
+                          ? Colors.white.withValues(alpha: 0.7)
                           : AppTheme.textSecondaryColor,
                     ),
                   ),
@@ -389,7 +389,7 @@ class _ChatScreenState extends State<ChatScreen> {
             const SizedBox(width: AppTheme.spacingS),
             CircleAvatar(
               radius: 16,
-              backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+              backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
               child: Text(
                 message.senderName.isNotEmpty
                     ? message.senderName[0].toUpperCase()
