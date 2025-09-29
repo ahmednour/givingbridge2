@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../core/theme/app_theme.dart';
 import '../widgets/app_button.dart';
 import '../widgets/app_card.dart';
-import '../widgets/app_input.dart';
+import '../widgets/custom_input.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 
@@ -382,7 +382,7 @@ class _DonorDashboardState extends State<DonorDashboard>
   Widget _buildActionCard(Map<String, dynamic> action, ThemeData theme) {
     return AppCard(
       variant: CardVariant.filled,
-      isInteractive: true,
+      isHoverable: true,
       onTap: action['onTap'],
       child: Row(
         children: [
@@ -390,7 +390,7 @@ class _DonorDashboardState extends State<DonorDashboard>
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: (action['color'] as Color).withOpacity(0.1),
+              color: (action['color'] as Color).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppTheme.radiusL),
             ),
             child: Icon(
@@ -528,7 +528,7 @@ class _DonorDashboardState extends State<DonorDashboard>
 
     return AppCard(
       variant: CardVariant.filled,
-      isInteractive: true,
+      isHoverable: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -612,7 +612,7 @@ class _DonorDashboardState extends State<DonorDashboard>
                               vertical: AppTheme.spacingM,
                             ),
                             decoration: BoxDecoration(
-                              color: AppTheme.primaryColor.withOpacity(0.1),
+                              color: AppTheme.primaryColor.withValues(alpha: 0.1),
                               borderRadius:
                                   BorderRadius.circular(AppTheme.radiusM),
                             ),
@@ -634,7 +634,7 @@ class _DonorDashboardState extends State<DonorDashboard>
                             vertical: AppTheme.spacingM,
                           ),
                           decoration: BoxDecoration(
-                            color: statusColor.withOpacity(0.1),
+                            color: statusColor.withValues(alpha: 0.1),
                             borderRadius:
                                 BorderRadius.circular(AppTheme.radiusM),
                           ),
@@ -741,8 +741,7 @@ class _DonorDashboardState extends State<DonorDashboard>
                   },
                 ),
                 const SizedBox(height: AppTheme.spacingL),
-                AppCard(
-                  variant: CardVariant.filled,
+                CustomInput(
                   variant: InputVariant.filled,
                   label: 'Category',
                   hint: 'e.g., Food, Clothes, Books, Electronics',
@@ -755,80 +754,29 @@ class _DonorDashboardState extends State<DonorDashboard>
                   },
                 ),
                 const SizedBox(height: AppTheme.spacingL),
-                AppCard(
-                  variant: CardVariant.filled,
-                  variant: InputVariant.filled,
-                  label: 'Category',
-                  hint: 'e.g., Food, Clothes, Books, Electronics',
-                  controller: categoryController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a category';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: AppTheme.spacingL),
-                AppCard(
-                  variant: CardVariant.filled,
+                CustomInput(
                   variant: InputVariant.filled,
                   label: 'Image URL (Optional)',
                   hint: 'Add a photo URL of your item',
                   controller: imageController,
                 ),
                 const SizedBox(height: AppTheme.spacingL),
-                AppCard(
-                  variant: CardVariant.filled,
+                CustomInput(
                   variant: InputVariant.filled,
                   label: 'Condition',
                   hint: 'e.g., New, Used, Damaged',
                   controller: conditionController,
                 ),
                 const SizedBox(height: AppTheme.spacingL),
-                AppCard(
-                  variant: CardVariant.filled,
+                CustomInput(
                   variant: InputVariant.filled,
                   label: 'Location',
                   hint: 'e.g., Nairobi, Mombasa, Kisumu',
                   controller: locationController,
                 ),
                 const SizedBox(height: AppTheme.spacingL),
-                AppCard(
-                  variant: CardVariant.filled,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: AppButton(
-                          variant: ButtonVariant.outline,
-                          text: 'Cancel',
-                          onPressed: () => setState(() => _showAddForm = false),
-                        ),
-                      ),
-                      const SizedBox(width: AppTheme.spacingM),
-                      Expanded(
-                        child: AppButton(
-                          variant: ButtonVariant.primary,
-                          text: 'Create Donation',
-                          onPressed: () async {
-                            if (formKey.currentState!.validate()) {
                 Row(
                   children: [
-                                      ? null
-                                  : imageController.text,
-                              );
-                            }
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                  children: [
-                                categoryController.text,
-                                conditionController.text,
-                                locationController.text,
-                                imageController.text.isEmpty
-                                  ? null
                     Expanded(
                       child: AppButton(
                         variant: ButtonVariant.outline,
