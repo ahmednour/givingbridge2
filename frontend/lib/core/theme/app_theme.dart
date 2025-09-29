@@ -54,7 +54,7 @@ class AppTheme {
   // Shadows
   static List<BoxShadow> shadowSM = [
     BoxShadow(
-      color: Colors.black.withOpacity(0.05),
+      color: Colors.black.withValues(alpha: 0.05),
       blurRadius: 2,
       offset: const Offset(0, 1),
     ),
@@ -62,7 +62,7 @@ class AppTheme {
 
   static List<BoxShadow> shadowMD = [
     BoxShadow(
-      color: Colors.black.withOpacity(0.1),
+      color: Colors.black.withValues(alpha: 0.1),
       blurRadius: 6,
       offset: const Offset(0, 4),
     ),
@@ -70,7 +70,7 @@ class AppTheme {
 
   static List<BoxShadow> shadowLG = [
     BoxShadow(
-      color: Colors.black.withOpacity(0.15),
+      color: Colors.black.withValues(alpha: 0.15),
       blurRadius: 10,
       offset: const Offset(0, 10),
     ),
@@ -158,12 +158,12 @@ class AppTheme {
       ),
 
       // Card theme
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: cardColor,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(radiusL),
-          side: BorderSide(color: borderColor, width: 1),
+          side: const BorderSide(color: borderColor, width: 1),
         ),
       ),
 
@@ -217,7 +217,9 @@ class AppTheme {
   static MaterialColor _createMaterialColor(Color color) {
     List<double> strengths = <double>[.05];
     Map<int, Color> swatch = <int, Color>{};
-    final int r = color.red, g = color.green, b = color.blue;
+    final int r = (color.r * 255.0).round() & 0xff,
+              g = (color.g * 255.0).round() & 0xff,
+              b = (color.b * 255.0).round() & 0xff;
 
     for (int i = 1; i < 10; i++) {
       strengths.add(0.1 * i);

@@ -253,7 +253,7 @@ class DonationCard extends StatelessWidget {
                       vertical: AppTheme.spacing4,
                     ),
                     decoration: BoxDecoration(
-                      color: AppTheme.primaryColor.withOpacity(0.1),
+                      color: AppTheme.primaryColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
                     ),
                     child: Text(
@@ -393,7 +393,7 @@ class StatCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(AppTheme.spacing12),
             decoration: BoxDecoration(
-              color: (iconColor ?? AppTheme.primaryColor).withOpacity(0.1),
+              color: (iconColor ?? AppTheme.primaryColor).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
             ),
             child: Icon(

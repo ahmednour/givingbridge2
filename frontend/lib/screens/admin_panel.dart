@@ -307,7 +307,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen>
                   Container(
                     padding: const EdgeInsets.all(AppTheme.spacingS),
                     decoration: BoxDecoration(
-                      color: (stat['color'] as Color).withOpacity(0.1),
+                      color: (stat['color'] as Color).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(AppTheme.radiusS),
                     ),
                     child: Icon(
@@ -410,7 +410,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen>
         children: [
           CircleAvatar(
             radius: 24,
-            backgroundColor: _getRoleColor(user.role).withOpacity(0.1),
+            backgroundColor: _getRoleColor(user.role).withValues(alpha: 0.1),
             child: Text(
               user.name.isNotEmpty ? user.name[0].toUpperCase() : 'U',
               style: TextStyle(
@@ -442,7 +442,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen>
                     vertical: 2,
                   ),
                   decoration: BoxDecoration(
-                    color: _getRoleColor(user.role).withOpacity(0.1),
+                    color: _getRoleColor(user.role).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(AppTheme.radiusS),
                   ),
                   child: Text(
@@ -503,8 +503,8 @@ class _AdminPanelScreenState extends State<AdminPanelScreen>
                 ),
                 decoration: BoxDecoration(
                   color: donation.isAvailable
-                      ? Colors.green.withOpacity(0.1)
-                      : Colors.grey.withOpacity(0.1),
+                      ? Colors.green.withValues(alpha: 0.1)
+                      : Colors.grey.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(AppTheme.radiusS),
                 ),
                 child: Text(
@@ -583,7 +583,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen>
                   vertical: AppTheme.spacingXS,
                 ),
                 decoration: BoxDecoration(
-                  color: request.statusColor.withOpacity(0.1),
+                  color: request.statusColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(AppTheme.radiusS),
                 ),
                 child: Text(

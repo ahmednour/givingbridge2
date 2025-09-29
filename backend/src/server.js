@@ -2,7 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
-const mysql = require("mysql2/promise");
+const { sequelize, testConnection } = require("./config/db");
+const User = require("./models/User");
 require("dotenv").config();
 
 const app = express();
@@ -31,76 +32,17 @@ app.use(limiter);
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-// Database connection
-const dbConfig = {
-  host: process.env.DB_HOST || "localhost",
-  user: process.env.DB_USER || "root",
-  password: process.env.DB_PASSWORD || "root",
-  database: process.env.DB_NAME || "givingbridge",
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-};
-
-let pool;
-
+// Database initialization using Sequelize
 async function initDatabase() {
   try {
-    pool = mysql.createPool(dbConfig);
+    await testConnection();
 
-    // Test connection
-    const connection = await pool.getConnection();
-    console.log("✅ Database connected successfully");
-
-    // Create tables if they don't exist
-    await createTables(connection);
-    connection.release();
+    // Sync database models
+    await sequelize.sync({ alter: true });
+    console.log("✅ Database models synchronized successfully");
   } catch (error) {
-    console.error("❌ Database connection failed:", error.message);
-    // Continue without database for development
+    console.error("❌ Database initialization failed:", error.message);
     console.log("🟡 Continuing without database...");
-  }
-}
-
-async function createTables(connection) {
-  try {
-    // Users table
-    await connection.execute(`
-      CREATE TABLE IF NOT EXISTS users (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        email VARCHAR(255) UNIQUE NOT NULL,
-        password VARCHAR(255) NOT NULL,
-        role ENUM('donor', 'receiver', 'admin') DEFAULT 'donor',
-        phone VARCHAR(20),
-        location VARCHAR(255),
-        avatar_url VARCHAR(500),
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-      )
-    `);
-
-    // Requests table
-    await connection.execute(`
-      CREATE TABLE IF NOT EXISTS requests (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        title VARCHAR(255) NOT NULL,
-        description TEXT,
-        category ENUM('food', 'clothes', 'books', 'electronics', 'other') DEFAULT 'other',
-        status ENUM('pending', 'approved', 'fulfilled', 'cancelled') DEFAULT 'pending',
-        image_url VARCHAR(500),
-        requester_id INT,
-        donor_id INT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (requester_id) REFERENCES users(id) ON DELETE CASCADE,
-        FOREIGN KEY (donor_id) REFERENCES users(id) ON DELETE SET NULL
-      )
-    `);
-
-    console.log("✅ Database tables created successfully");
-  } catch (error) {
-    console.error("❌ Error creating tables:", error.message);
   }
 }
 
@@ -114,12 +56,21 @@ app.get("/", (req, res) => {
 });
 
 // Health check
-app.get("/health", (req, res) => {
-  res.json({
-    status: "healthy",
-    database: pool ? "connected" : "disconnected",
-    timestamp: new Date().toISOString(),
-  });
+app.get("/health", async (req, res) => {
+  try {
+    await sequelize.authenticate();
+    res.json({
+      status: "healthy",
+      database: "connected",
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    res.json({
+      status: "healthy",
+      database: "disconnected",
+      timestamp: new Date().toISOString(),
+    });
+  }
 });
 
 // API Routes
@@ -159,17 +110,13 @@ async function startServer() {
 // Handle graceful shutdown
 process.on("SIGTERM", async () => {
   console.log("SIGTERM received, shutting down gracefully");
-  if (pool) {
-    await pool.end();
-  }
+  await sequelize.close();
   process.exit(0);
 });
 
 process.on("SIGINT", async () => {
   console.log("SIGINT received, shutting down gracefully");
-  if (pool) {
-    await pool.end();
-  }
+  await sequelize.close();
   process.exit(0);
 });
 
@@ -179,4 +126,4 @@ startServer().catch((error) => {
 });
 
 // Export for testing
-module.exports = { app, pool };
+module.exports = { app, sequelize };

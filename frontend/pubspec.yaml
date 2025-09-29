@@ -2,7 +2,7 @@ name: giving_bridge_frontend
 description: Flutter web frontend for Giving Bridge
 version: 1.0.0
 environment:
-  sdk: ">=2.16.0 <3.0.0"
+  sdk: ">=2.17.0 <4.0.0"
 dependencies:
   flutter:
     sdk: flutter

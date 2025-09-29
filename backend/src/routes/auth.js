@@ -2,11 +2,11 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { body, validationResult } = require("express-validator");
+const User = require("../models/User");
+const { sequelize } = require("../config/db");
 const router = express.Router();
 
-// Mock user storage (replace with database queries)
-let users = [];
-let nextUserId = 1;
+require("dotenv").config();
 
 // JWT Secret (use environment variable in production)
 const JWT_SECRET = process.env.JWT_SECRET || "your-super-secret-jwt-key";
@@ -44,7 +44,7 @@ router.post(
       const { name, email, password, role, phone, location } = req.body;
 
       // Check if user already exists
-      const existingUser = users.find((user) => user.email === email);
+      const existingUser = await User.findOne({ where: { email } });
       if (existingUser) {
         return res.status(400).json({
           message: "User with this email already exists",
@@ -56,8 +56,7 @@ router.post(
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
       // Create new user
-      const newUser = {
-        id: nextUserId++,
+      const newUser = await User.create({
         name,
         email,
         password: hashedPassword,
@@ -65,11 +64,7 @@ router.post(
         phone: phone || null,
         location: location || null,
         avatarUrl: null,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      users.push(newUser);
+      });
 
       // Generate JWT token
       const token = jwt.sign(
@@ -83,7 +78,7 @@ router.post(
       );
 
       // Remove password from response
-      const { password: _, ...userResponse } = newUser;
+      const { password: _, ...userResponse } = newUser.toJSON();
 
       res.status(201).json({
         message: "User registered successfully",
@@ -124,7 +119,7 @@ router.post(
       const { email, password } = req.body;
 
       // Find user by email
-      const user = users.find((user) => user.email === email);
+      const user = await User.findOne({ where: { email } });
       if (!user) {
         return res.status(401).json({
           message: "Invalid email or password",
@@ -151,7 +146,7 @@ router.post(
       );
 
       // Remove password from response
-      const { password: _, ...userResponse } = user;
+      const { password: _, ...userResponse } = user.toJSON();
 
       res.json({
         message: "Login successful",
@@ -198,21 +193,28 @@ const authenticateToken = (req, res, next) => {
 };
 
 // Get current user profile
-router.get("/me", authenticateToken, (req, res) => {
-  const user = users.find((u) => u.id === req.user.userId);
-  if (!user) {
-    return res.status(404).json({
-      message: "User not found",
+router.get("/me", authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.userId);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    const { password: _, ...userResponse } = user.toJSON();
+    res.json({
+      user: userResponse,
+    });
+  } catch (error) {
+    console.error("Get user profile error:", error);
+    res.status(500).json({
+      message: "Failed to get user profile",
+      error: error.message,
     });
   }
-
-  const { password: _, ...userResponse } = user;
-  res.json({
-    user: userResponse,
-  });
 });
 
 // Export the router and middleware
 module.exports = router;
 module.exports.authenticateToken = authenticateToken;
-module.exports.users = users;

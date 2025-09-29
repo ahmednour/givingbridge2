@@ -196,19 +196,19 @@ class _CustomButtonState extends State<CustomButton>
     if (_isHovered && isEnabled) {
       switch (widget.variant) {
         case ButtonVariant.primary:
-          return AppTheme.primaryDarkColor.withOpacity(opacity);
+          return AppTheme.primaryDarkColor.withValues(alpha: opacity);
         case ButtonVariant.secondary:
-          return AppTheme.secondaryDarkColor.withOpacity(opacity);
+          return AppTheme.secondaryDarkColor.withValues(alpha: opacity);
         case ButtonVariant.outline:
           return (isDark
                   ? AppTheme.darkSurfaceVariant
                   : AppTheme.lightSurfaceVariant)
-              .withOpacity(opacity);
+              .withValues(alpha: opacity);
         case ButtonVariant.ghost:
           return (isDark
                   ? AppTheme.darkSurfaceVariant
                   : AppTheme.lightSurfaceVariant)
-              .withOpacity(opacity);
+              .withValues(alpha: opacity);
         case ButtonVariant.danger:
           return AppTheme.errorColor.withValues(alpha: 0.9 * opacity);
       }
@@ -216,15 +216,15 @@ class _CustomButtonState extends State<CustomButton>
 
     switch (widget.variant) {
       case ButtonVariant.primary:
-        return AppTheme.primaryColor.withOpacity(opacity);
+        return AppTheme.primaryColor.withValues(alpha: opacity);
       case ButtonVariant.secondary:
-        return AppTheme.secondaryColor.withOpacity(opacity);
+        return AppTheme.secondaryColor.withValues(alpha: opacity);
       case ButtonVariant.outline:
         return Colors.transparent;
       case ButtonVariant.ghost:
         return Colors.transparent;
       case ButtonVariant.danger:
-        return AppTheme.errorColor.withOpacity(opacity);
+        return AppTheme.errorColor.withValues(alpha: opacity);
     }
   }
 
@@ -235,7 +235,7 @@ class _CustomButtonState extends State<CustomButton>
       case ButtonVariant.primary:
       case ButtonVariant.secondary:
       case ButtonVariant.danger:
-        return Colors.white.withOpacity(opacity);
+        return Colors.white.withValues(alpha: opacity);
       case ButtonVariant.outline:
       case ButtonVariant.ghost:
         return (isDark ? AppTheme.darkTextPrimary : AppTheme.lightTextPrimary)
@@ -273,7 +273,7 @@ class _CustomButtonState extends State<CustomButton>
           ? AppTheme.primaryColor
           : (isDark ? AppTheme.darkBorder : AppTheme.lightBorder);
       return Border.all(
-        color: borderColor.withOpacity(isEnabled ? 1.0 : 0.5),
+        color: borderColor.withValues(alpha: isEnabled ? 1.0 : 0.5),
         width: _isHovered && isEnabled ? 2 : 1,
       );
     }

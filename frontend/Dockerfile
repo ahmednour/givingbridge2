@@ -1,4 +1,4 @@
-FROM cirrusci/flutter:2.10.5 AS build
+FROM cirrusci/flutter:stable AS build
 WORKDIR /app
 COPY . .
 RUN flutter config --enable-web
