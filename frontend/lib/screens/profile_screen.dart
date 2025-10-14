@@ -6,6 +6,7 @@ import '../widgets/custom_card.dart';
 import '../widgets/custom_input.dart';
 import '../providers/auth_provider.dart';
 import '../providers/theme_provider.dart';
+import '../l10n/app_localizations.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -83,6 +84,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildProfileHeader(
       BuildContext context, ThemeData theme, bool isDark) {
+    final l10n = AppLocalizations.of(context)!;
     final authProvider = Provider.of<AuthProvider>(context);
     final user = authProvider.user;
 
@@ -96,10 +98,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 width: 100,
                 height: 100,
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                  color: AppTheme.primaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(50),
                   border: Border.all(
-                    color: AppTheme.primaryColor.withValues(alpha: 0.2),
+                    color: AppTheme.primaryColor.withOpacity(0.2),
                     width: 3,
                   ),
                 ),
@@ -146,8 +148,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Avatar upload coming soon!'),
+                        SnackBar(
+                          content: Text(l10n.avatarUploadComingSoon),
                         ),
                       );
                     },
@@ -175,7 +177,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               vertical: AppTheme.spacingXS,
             ),
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withValues(alpha: 0.1),
+              color: AppTheme.primaryColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(AppTheme.radiusXL),
             ),
             child: Text(
@@ -294,9 +296,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: (isDark
-                  ? AppTheme.darkCardColor
-                  : AppTheme.cardColor),
+              color: (isDark ? AppTheme.darkCardColor : AppTheme.cardColor),
               borderRadius: BorderRadius.circular(AppTheme.radiusS),
             ),
             child: Icon(
@@ -336,6 +336,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildEditForm(BuildContext context, ThemeData theme) {
+    final l10n = AppLocalizations.of(context)!;
     return Form(
       key: _formKey,
       child: Column(
@@ -376,14 +377,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               Expanded(
                 child: OutlineButton(
-                  text: 'Cancel',
+                  text: l10n.cancel,
                   onPressed: () => setState(() => _isEditing = false),
                 ),
               ),
               const SizedBox(width: 12.0),
               Expanded(
                 child: PrimaryButton(
-                  text: 'Save Changes',
+                  text: l10n.saveChanges,
                   onPressed: _saveProfile,
                 ),
               ),
@@ -395,6 +396,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildSettings(BuildContext context, ThemeData theme, bool isDark) {
+    final l10n = AppLocalizations.of(context)!;
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return CustomCard(
@@ -418,7 +420,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             trailing: Switch(
               value: themeProvider.isDarkMode,
               onChanged: (_) => themeProvider.toggleTheme(),
-              activeThumbColor: AppTheme.primaryColor,
+              activeColor: AppTheme.primaryColor,
             ),
             theme: theme,
             isDark: isDark,
@@ -433,12 +435,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               value: true, // TODO: Implement notification settings
               onChanged: (value) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Notification settings coming soon!'),
+                  SnackBar(
+                    content: Text(l10n.notificationSettingsComingSoon),
                   ),
                 );
               },
-              activeThumbColor: AppTheme.primaryColor,
+              activeColor: AppTheme.primaryColor,
             ),
             theme: theme,
             isDark: isDark,
@@ -458,8 +460,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Language settings coming soon!'),
+                SnackBar(
+                  content: Text(l10n.languageSettingsComingSoon),
                 ),
               );
             },
@@ -490,7 +492,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                color: AppTheme.primaryColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(AppTheme.radiusS),
               ),
               child: Icon(
@@ -529,6 +531,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildActions(BuildContext context, ThemeData theme, bool isDark) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         // Help & Support
@@ -536,8 +539,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           isInteractive: true,
           onTap: () {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Help & Support coming soon!'),
+              SnackBar(
+                content: Text(l10n.helpSupportComingSoon),
               ),
             );
           },
@@ -547,7 +550,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: AppTheme.infoColor.withValues(alpha: 0.1),
+                  color: AppTheme.infoColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(AppTheme.radiusS),
                 ),
                 child: Icon(
@@ -593,7 +596,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
         // Logout
         DangerButton(
-          text: 'Logout',
+          text: l10n.logout,
           width: double.infinity,
           leftIcon: const Icon(Icons.logout, size: 20),
           onPressed: _logout,

@@ -162,7 +162,7 @@ class _CustomInputState extends State<CustomInput>
                 boxShadow: _hasFocus && !hasError
                     ? [
                         BoxShadow(
-                          color: AppTheme.primaryColor.withValues(alpha: 0.2),
+                          color: AppTheme.primaryColor.withOpacity(0.2),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -243,8 +243,7 @@ class _CustomInputState extends State<CustomInput>
 
     switch (widget.variant) {
       case InputVariant.filled:
-        fillColor =
-            isDark ? AppTheme.darkCardColor : AppTheme.cardColor;
+        fillColor = isDark ? AppTheme.darkCardColor : AppTheme.cardColor;
         borderColor = Colors.transparent;
         focusedBorderColor =
             hasError ? AppTheme.errorColor : AppTheme.primaryColor;
@@ -321,7 +320,7 @@ class _CustomInputState extends State<CustomInput>
         borderRadius: borderRadius,
         borderSide: BorderSide(
           color: (isDark ? AppTheme.darkBorderColor : AppTheme.borderColor)
-              .withValues(alpha: 0.5),
+              .withOpacity(0.5),
         ),
       ),
       hintStyle: TextStyle(

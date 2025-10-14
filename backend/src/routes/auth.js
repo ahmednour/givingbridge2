@@ -1,15 +1,16 @@
 const express = require("express");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const { body, validationResult } = require("express-validator");
-const User = require("../models/User");
-const { sequelize } = require("../config/db");
 const router = express.Router();
+const AuthController = require("../controllers/authController");
+const {
+  USER_ROLES,
+  VALIDATION_LIMITS,
+  ERROR_MESSAGES,
+  SUCCESS_MESSAGES,
+  HTTP_STATUS,
+} = require("../constants");
 
 require("dotenv").config();
-
-// JWT Secret (use environment variable in production)
-const JWT_SECRET = process.env.JWT_SECRET || "your-super-secret-jwt-key";
 
 // Register route
 router.post(
@@ -17,77 +18,42 @@ router.post(
   [
     body("name")
       .trim()
-      .isLength({ min: 2 })
-      .withMessage("Name must be at least 2 characters"),
+      .isLength({ min: VALIDATION_LIMITS.NAME_MIN_LENGTH })
+      .withMessage(
+        `Name must be at least ${VALIDATION_LIMITS.NAME_MIN_LENGTH} characters`
+      ),
     body("email")
       .isEmail()
       .normalizeEmail()
       .withMessage("Please provide a valid email"),
     body("password")
-      .isLength({ min: 6 })
-      .withMessage("Password must be at least 6 characters"),
-    body("role")
-      .isIn(["donor", "receiver", "admin"])
-      .withMessage("Invalid role"),
+      .isLength({ min: VALIDATION_LIMITS.PASSWORD_MIN_LENGTH })
+      .withMessage(
+        `Password must be at least ${VALIDATION_LIMITS.PASSWORD_MIN_LENGTH} characters`
+      ),
+    body("role").isIn(Object.values(USER_ROLES)).withMessage("Invalid role"),
   ],
   async (req, res) => {
     try {
       // Check for validation errors
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return res.status(400).json({
-          message: "Validation failed",
+        return res.status(HTTP_STATUS.BAD_REQUEST).json({
+          message: ERROR_MESSAGES.VALIDATION_FAILED,
           errors: errors.array(),
         });
       }
 
-      const { name, email, password, role, phone, location } = req.body;
+      const result = await AuthController.register(req.body);
 
-      // Check if user already exists
-      const existingUser = await User.findOne({ where: { email } });
-      if (existingUser) {
-        return res.status(400).json({
-          message: "User with this email already exists",
-        });
-      }
-
-      // Hash password
-      const saltRounds = 12;
-      const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-      // Create new user
-      const newUser = await User.create({
-        name,
-        email,
-        password: hashedPassword,
-        role: role || "donor",
-        phone: phone || null,
-        location: location || null,
-        avatarUrl: null,
-      });
-
-      // Generate JWT token
-      const token = jwt.sign(
-        {
-          userId: newUser.id,
-          email: newUser.email,
-          role: newUser.role,
-        },
-        JWT_SECRET,
-        { expiresIn: "7d" }
-      );
-
-      // Remove password from response
-      const { password: _, ...userResponse } = newUser.toJSON();
-
-      res.status(201).json({
-        message: "User registered successfully",
-        user: userResponse,
-        token,
+      res.status(HTTP_STATUS.CREATED).json({
+        message: SUCCESS_MESSAGES.USER_REGISTERED,
+        user: result.user,
+        token: result.token,
       });
     } catch (error) {
       console.error("Registration error:", error);
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         message: "Registration failed",
         error: error.message,
       });
@@ -110,52 +76,23 @@ router.post(
       // Check for validation errors
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return res.status(400).json({
-          message: "Validation failed",
+        return res.status(HTTP_STATUS.BAD_REQUEST).json({
+          message: ERROR_MESSAGES.VALIDATION_FAILED,
           errors: errors.array(),
         });
       }
 
       const { email, password } = req.body;
-
-      // Find user by email
-      const user = await User.findOne({ where: { email } });
-      if (!user) {
-        return res.status(401).json({
-          message: "Invalid email or password",
-        });
-      }
-
-      // Check password
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-      if (!isPasswordValid) {
-        return res.status(401).json({
-          message: "Invalid email or password",
-        });
-      }
-
-      // Generate JWT token
-      const token = jwt.sign(
-        {
-          userId: user.id,
-          email: user.email,
-          role: user.role,
-        },
-        JWT_SECRET,
-        { expiresIn: "7d" }
-      );
-
-      // Remove password from response
-      const { password: _, ...userResponse } = user.toJSON();
+      const result = await AuthController.login(email, password);
 
       res.json({
-        message: "Login successful",
-        user: userResponse,
-        token,
+        message: SUCCESS_MESSAGES.LOGIN_SUCCESS,
+        user: result.user,
+        token: result.token,
       });
     } catch (error) {
       console.error("Login error:", error);
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         message: "Login failed",
         error: error.message,
       });
@@ -166,7 +103,7 @@ router.post(
 // Logout route (client-side token removal)
 router.post("/logout", (req, res) => {
   res.json({
-    message: "Logged out successfully",
+    message: SUCCESS_MESSAGES.LOGOUT_SUCCESS,
   });
 });
 
@@ -176,39 +113,34 @@ const authenticateToken = (req, res, next) => {
   const token = authHeader && authHeader.split(" ")[1]; // Bearer TOKEN
 
   if (!token) {
-    return res.status(401).json({
-      message: "Access token required",
+    return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+      message: ERROR_MESSAGES.TOKEN_REQUIRED,
     });
   }
 
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) {
-      return res.status(403).json({
-        message: "Invalid or expired token",
+  AuthController.verifyToken(token)
+    .then((user) => {
+      req.user = user;
+      next();
+    })
+    .catch((error) => {
+      return res.status(HTTP_STATUS.FORBIDDEN).json({
+        message: ERROR_MESSAGES.INVALID_TOKEN,
       });
-    }
-    req.user = user;
-    next();
-  });
+    });
 };
 
 // Get current user profile
 router.get("/me", authenticateToken, async (req, res) => {
   try {
-    const user = await User.findByPk(req.user.userId);
-    if (!user) {
-      return res.status(404).json({
-        message: "User not found",
-      });
-    }
+    const user = await AuthController.getProfile(req.user.userId);
 
-    const { password: _, ...userResponse } = user.toJSON();
     res.json({
-      user: userResponse,
+      user: user,
     });
   } catch (error) {
     console.error("Get user profile error:", error);
-    res.status(500).json({
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       message: "Failed to get user profile",
       error: error.message,
     });

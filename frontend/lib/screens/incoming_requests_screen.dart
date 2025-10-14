@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../core/theme/app_theme.dart';
 import '../widgets/app_button.dart';
 import '../services/api_service.dart';
+import 'chat_screen_enhanced.dart';
 
 class IncomingRequestsScreen extends StatefulWidget {
   const IncomingRequestsScreen({Key? key}) : super(key: key);
@@ -128,6 +129,20 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
     }
   }
 
+  void _contactReceiver(DonationRequest request) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatScreenEnhanced(
+          otherUserId: request.receiverId.toString(),
+          otherUserName: request.receiverName,
+          donationId: request.donationId.toString(),
+          requestId: request.id.toString(),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final filteredRequests = _filteredRequests;
@@ -242,7 +257,7 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withValues(alpha: 0.1),
+              color: AppTheme.primaryColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(40),
             ),
             child: const Icon(
@@ -298,7 +313,7 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
                     vertical: AppTheme.spacingXS,
                   ),
                   decoration: BoxDecoration(
-                    color: request.statusColor.withValues(alpha: 0.1),
+                    color: request.statusColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(AppTheme.radiusS),
                   ),
                   child: Text(
@@ -327,7 +342,7 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
               children: [
                 CircleAvatar(
                   radius: 20,
-                  backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
+                  backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
                   child: Text(
                     request.receiverName.isNotEmpty
                         ? request.receiverName[0].toUpperCase()
@@ -403,10 +418,10 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(AppTheme.spacingS),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withValues(alpha: 0.05),
+                  color: Colors.blue.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(AppTheme.radiusS),
                   border: Border.all(
-                    color: Colors.blue.withValues(alpha: 0.2),
+                    color: Colors.blue.withOpacity(0.2),
                   ),
                 ),
                 child: Text(
@@ -449,6 +464,16 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
                 children: [
                   Expanded(
                     child: AppButton(
+                      text: 'Message',
+                      onPressed: () => _contactReceiver(request),
+                      variant: ButtonVariant.outline,
+                      size: ButtonSize.small,
+                      leftIcon: const Icon(Icons.message_outlined, size: 16),
+                    ),
+                  ),
+                  const SizedBox(width: AppTheme.spacingS),
+                  Expanded(
+                    child: AppButton(
                       text: 'Decline',
                       onPressed: () => _respondToRequest(request, 'declined'),
                       variant: ButtonVariant.outline,
@@ -474,12 +499,21 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
                     size: 20,
                   ),
                   const SizedBox(width: AppTheme.spacingXS),
-                  Text(
-                    'Approved - Waiting for receiver to confirm receipt',
-                    style: AppTheme.bodySmall.copyWith(
-                      color: Colors.green,
-                      fontWeight: FontWeight.w500,
+                  Expanded(
+                    child: Text(
+                      'Approved - Waiting for receiver to confirm receipt',
+                      style: AppTheme.bodySmall.copyWith(
+                        color: Colors.green,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
+                  ),
+                  AppButton(
+                    text: 'Message',
+                    onPressed: () => _contactReceiver(request),
+                    variant: ButtonVariant.outline,
+                    size: ButtonSize.small,
+                    leftIcon: const Icon(Icons.message_outlined, size: 16),
                   ),
                 ],
               ),

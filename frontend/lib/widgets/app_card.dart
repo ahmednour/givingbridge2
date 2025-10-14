@@ -1,19 +1,9 @@
 import 'package:flutter/material.dart';
 import '../core/theme/app_theme.dart';
 
-enum CardVariant {
-  primary,
-  secondary,
-  outlined,
-  elevated,
-  filled
-}
+enum CardVariant { primary, secondary, outlined, elevated, filled }
 
-enum CardSize {
-  small,
-  medium,
-  large
-}
+enum CardSize { small, medium, large }
 
 class AppCard extends StatefulWidget {
   final Widget? child;
@@ -55,15 +45,14 @@ class AppCard extends StatefulWidget {
     this.value,
     this.icon,
     this.iconColor,
-  }) : assert(child != null || (title != null && value != null)),
-       super(key: key);
+  })  : assert(child != null || (title != null && value != null)),
+        super(key: key);
 
   @override
   State<AppCard> createState() => _AppCardState();
 }
 
-class _AppCardState extends State<AppCard>
-    with SingleTickerProviderStateMixin {
+class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
   bool _isHovered = false;
   late AnimationController _animationController;
   late Animation<double> _elevationAnimation;
@@ -107,7 +96,7 @@ class _AppCardState extends State<AppCard>
     if (widget.backgroundColor != null) return widget.backgroundColor!;
 
     if (widget.isSelected) {
-      return AppTheme.primaryColor.withValues(alpha: 0.1);
+      return AppTheme.primaryColor.withOpacity( 0.1);
     }
 
     switch (widget.variant) {
@@ -181,7 +170,8 @@ class _AppCardState extends State<AppCard>
               Container(
                 padding: const EdgeInsets.all(AppTheme.spacingS),
                 decoration: BoxDecoration(
-                  color: (widget.iconColor ?? AppTheme.primaryColor).withValues(alpha: 0.1),
+                  color: (widget.iconColor ?? AppTheme.primaryColor)
+                      .withOpacity( 0.1),
                   borderRadius: BorderRadius.circular(AppTheme.radiusM),
                 ),
                 child: Icon(
@@ -284,9 +274,10 @@ class AppCardHeader extends StatelessWidget {
                 const SizedBox(height: AppTheme.spacingXS),
                 Text(
                   subtitle!,
-                  style: subtitleStyle ?? AppTheme.bodyMedium.copyWith(
-                    color: AppTheme.textSecondaryColor,
-                  ),
+                  style: subtitleStyle ??
+                      AppTheme.bodyMedium.copyWith(
+                        color: AppTheme.textSecondaryColor,
+                      ),
                 ),
               ],
             ],

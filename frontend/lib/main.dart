@@ -1,11 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/theme/app_theme.dart';
 import 'providers/auth_provider.dart';
-import 'screens/login_screen.dart';
+import 'providers/locale_provider.dart';
+import 'providers/donation_provider.dart';
+import 'providers/request_provider.dart';
+import 'providers/message_provider.dart';
+import 'providers/notification_provider.dart';
+import 'providers/filter_provider.dart';
+import 'services/navigation_service.dart';
+import 'services/error_handler.dart';
+import 'services/offline_service.dart';
+import 'services/network_status_service.dart';
 import 'screens/dashboard_screen.dart';
+import 'screens/landing_screen.dart';
+import 'l10n/app_localizations.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize global error handler
+  GlobalErrorHandler.initialize();
+
+  // Initialize offline service
+  await OfflineService().initialize();
+
   runApp(const GivingBridgeApp());
 }
 
@@ -14,13 +34,58 @@ class GivingBridgeApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => AuthProvider(),
-      child: MaterialApp(
-        title: 'Giving Bridge',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme,
-        home: const AuthWrapper(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => LocaleProvider()),
+        ChangeNotifierProvider(create: (_) => DonationProvider()),
+        ChangeNotifierProvider(create: (_) => RequestProvider()),
+        ChangeNotifierProvider(create: (_) => MessageProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
+        ChangeNotifierProvider(create: (_) => FilterProvider()),
+        ChangeNotifierProvider(
+            create: (_) => NetworkStatusService()..initialize()),
+      ],
+      child: Consumer<LocaleProvider>(
+        builder: (context, localeProvider, child) {
+          return MaterialApp(
+            title: 'Giving Bridge',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            navigatorKey: NavigationService.navigatorKey,
+            onGenerateRoute: AppRouter.generateRoute,
+            initialRoute: '/',
+
+            // Localization support
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en', ''), // English
+              Locale('ar', ''), // Arabic
+            ],
+
+            // Use selected locale
+            locale: localeProvider.locale,
+
+            // Use system locale or fallback to English
+            localeResolutionCallback: (locale, supportedLocales) {
+              // Check if the current device locale is supported
+              for (var supportedLocale in supportedLocales) {
+                if (supportedLocale.languageCode == locale?.languageCode) {
+                  return supportedLocale;
+                }
+              }
+              // If not supported, return English
+              return supportedLocales.first;
+            },
+
+            home: const AuthWrapper(),
+          );
+        },
       ),
     );
   }
@@ -38,7 +103,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
   void initState() {
     super.initState();
     // Initialize auth state when app starts
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<AuthProvider>(context, listen: false).initialize();
     });
   }
@@ -56,7 +121,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
         if (authProvider.isAuthenticated) {
           return const DashboardScreen();
         } else {
-          return const LoginScreen();
+          return const LandingScreen();
         }
       },
     );
@@ -68,6 +133,8 @@ class LoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       body: Center(
@@ -78,7 +145,7 @@ class LoadingScreen extends StatelessWidget {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                color: AppTheme.primaryColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(AppTheme.radiusXL),
               ),
               child: const Icon(
@@ -89,14 +156,14 @@ class LoadingScreen extends StatelessWidget {
             ),
             const SizedBox(height: AppTheme.spacingXL),
             Text(
-              'Giving Bridge',
+              l10n.appTitle,
               style: AppTheme.headingLarge.copyWith(
                 color: AppTheme.primaryColor,
               ),
             ),
             const SizedBox(height: AppTheme.spacingM),
             Text(
-              'Connecting hearts, changing lives',
+              l10n.connectingHearts,
               style: AppTheme.bodyMedium.copyWith(
                 color: AppTheme.textSecondaryColor,
               ),

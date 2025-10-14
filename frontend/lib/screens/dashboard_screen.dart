@@ -4,14 +4,16 @@ import '../core/theme/app_theme.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/app_button.dart';
 import '../models/user.dart';
-import 'create_donation_screen.dart';
+import '../l10n/app_localizations.dart';
 import 'my_donations_screen.dart';
 import 'browse_donations_screen.dart';
 import 'my_requests_screen.dart';
 import 'incoming_requests_screen.dart';
-import 'messages_screen.dart';
-import 'admin_panel.dart';
+import 'messages_screen_enhanced.dart';
 import 'login_screen.dart';
+import 'donor_dashboard_enhanced.dart';
+import 'receiver_dashboard_enhanced.dart';
+import 'admin_dashboard_enhanced.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -24,63 +26,52 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
 
   void _onNavigationChanged(int index) {
-    print('🔥 Navigation clicked: index $index');
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final user = authProvider.user!;
-    final menuItems = _getMenuItems(user.role);
+    final l10n = AppLocalizations.of(context)!;
+    final menuItems = _getMenuItems(user.role, l10n);
     final selectedItem = menuItems[index];
-    print('🔥 Selected item: ${selectedItem.title}');
 
     // Handle navigation based on menu item
-    switch (selectedItem.title) {
-      case 'My Donations':
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const MyDonationsScreen()),
-        );
-        break;
-      case 'Browse Donations':
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => const BrowseDonationsScreen()),
-        );
-        break;
-      case 'My Requests':
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const MyRequestsScreen()),
-        );
-        break;
-      case 'Browse Requests':
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => const IncomingRequestsScreen()),
-        );
-        break;
-      case 'Messages':
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const MessagesScreen()),
-        );
-        break;
-      case 'Users':
-      case 'Donations':
-      case 'Requests':
-      case 'Analytics':
-      case 'Settings':
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const AdminPanelScreen()),
-        );
-        break;
-      default:
-        // For dashboard and other items, just update the selected index
-        setState(() {
-          _selectedIndex = index;
-        });
-        break;
+    if (selectedItem.title == l10n.myDonations) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const MyDonationsScreen()),
+      );
+    } else if (selectedItem.title == l10n.browseDonations) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const BrowseDonationsScreen()),
+      );
+    } else if (selectedItem.title == l10n.myRequests) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const MyRequestsScreen()),
+      );
+    } else if (selectedItem.title == l10n.browseRequests) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const IncomingRequestsScreen()),
+      );
+    } else if (selectedItem.title == l10n.messages) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const MessagesScreenEnhanced()),
+      );
+    } else if (selectedItem.title == l10n.users ||
+        selectedItem.title == l10n.donations ||
+        selectedItem.title == l10n.requests ||
+        selectedItem.title == l10n.analytics ||
+        selectedItem.title == l10n.settings) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const AdminDashboardEnhanced()),
+      );
+    } else {
+      // For dashboard and other items, just update the selected index
+      setState(() {
+        _selectedIndex = index;
+      });
     }
   }
 
@@ -137,7 +128,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildSidebar(User user) {
-    final menuItems = _getMenuItems(user.role);
+    final l10n = AppLocalizations.of(context)!;
+    final menuItems = _getMenuItems(user.role, l10n);
 
     return Column(
       children: [
@@ -150,7 +142,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                  color: AppTheme.primaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(AppTheme.radiusM),
                 ),
                 child: const Icon(
@@ -161,7 +153,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               const SizedBox(width: AppTheme.spacingM),
               Text(
-                'Giving Bridge',
+                l10n.appTitle,
                 style: AppTheme.headingSmall.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
@@ -195,7 +187,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       padding: const EdgeInsets.all(AppTheme.spacingM),
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? AppTheme.primaryColor.withValues(alpha: 0.1)
+                            ? AppTheme.primaryColor.withOpacity(0.1)
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(AppTheme.radiusM),
                       ),
@@ -241,7 +233,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 children: [
                   CircleAvatar(
                     radius: 20,
-                    backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
+                    backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
                     child: Text(
                       user.name.isNotEmpty ? user.name[0].toUpperCase() : 'U',
                       style: AppTheme.bodyMedium.copyWith(
@@ -276,7 +268,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               const SizedBox(height: AppTheme.spacingM),
               AppButton(
-                text: 'Sign Out',
+                text: l10n.logout,
                 onPressed: _handleLogout,
                 variant: ButtonVariant.outline,
                 size: ButtonSize.small,
@@ -318,7 +310,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               vertical: AppTheme.spacingS,
             ),
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withValues(alpha: 0.1),
+              color: AppTheme.primaryColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(AppTheme.radiusM),
             ),
             child: Row(
@@ -366,216 +358,59 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildDonorContent(User user) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.volunteer_activism,
-            size: 80,
-            color: AppTheme.primaryColor.withValues(alpha: 0.3),
-          ),
-          const SizedBox(height: AppTheme.spacingL),
-          Text(
-            'Welcome, ${user.name}!',
-            style: AppTheme.headingLarge,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppTheme.spacingM),
-          Text(
-            'Your generosity makes a difference. Start by creating a donation or browse requests from receivers.',
-            style: AppTheme.bodyLarge.copyWith(
-              color: AppTheme.textSecondaryColor,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppTheme.spacingXL),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              AppButton(
-                text: 'Create Donation',
-                onPressed: () {
-                  print('🔥 Create Donation button clicked!');
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const CreateDonationScreen()),
-                  );
-                },
-                leftIcon: const Icon(Icons.add, size: 18, color: Colors.white),
-              ),
-              const SizedBox(width: AppTheme.spacingM),
-              AppButton(
-                text: 'View Requests',
-                onPressed: () {},
-                variant: ButtonVariant.outline,
-                leftIcon: const Icon(Icons.list, size: 18),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+    return const DonorDashboardEnhanced();
   }
 
   Widget _buildReceiverContent(User user) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.person_outline,
-            size: 80,
-            color: AppTheme.secondaryColor.withValues(alpha: 0.3),
-          ),
-          const SizedBox(height: AppTheme.spacingL),
-          Text(
-            'Welcome, ${user.name}!',
-            style: AppTheme.headingLarge,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppTheme.spacingM),
-          Text(
-            'Browse available donations and make requests for items you need.',
-            style: AppTheme.bodyLarge.copyWith(
-              color: AppTheme.textSecondaryColor,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppTheme.spacingXL),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              AppButton(
-                text: 'Browse Donations',
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const BrowseDonationsScreen()),
-                  );
-                },
-                variant: ButtonVariant.secondary,
-                leftIcon:
-                    const Icon(Icons.search, size: 18, color: Colors.white),
-              ),
-              const SizedBox(width: AppTheme.spacingM),
-              AppButton(
-                text: 'My Requests',
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const MyRequestsScreen()),
-                  );
-                },
-                variant: ButtonVariant.outline,
-                leftIcon: const Icon(Icons.inbox, size: 18),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+    return const ReceiverDashboardEnhanced();
   }
 
   Widget _buildAdminContent(User user) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.admin_panel_settings,
-            size: 80,
-            color: AppTheme.warningColor.withValues(alpha: 0.3),
-          ),
-          const SizedBox(height: AppTheme.spacingL),
-          Text(
-            'Admin Dashboard',
-            style: AppTheme.headingLarge,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppTheme.spacingM),
-          Text(
-            'Manage users, monitor donations, and oversee platform activities.',
-            style: AppTheme.bodyLarge.copyWith(
-              color: AppTheme.textSecondaryColor,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppTheme.spacingXL),
-          Wrap(
-            spacing: AppTheme.spacingM,
-            runSpacing: AppTheme.spacingM,
-            children: [
-              AppButton(
-                text: 'Manage Users',
-                onPressed: () {},
-                variant: ButtonVariant.secondary,
-                leftIcon:
-                    const Icon(Icons.people, size: 18, color: Colors.white),
-              ),
-              AppButton(
-                text: 'View Analytics',
-                onPressed: () {},
-                variant: ButtonVariant.outline,
-                leftIcon: const Icon(Icons.analytics, size: 18),
-              ),
-              AppButton(
-                text: 'Platform Settings',
-                onPressed: () {},
-                variant: ButtonVariant.outline,
-                leftIcon: const Icon(Icons.settings, size: 18),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+    return const AdminDashboardEnhanced();
   }
 
   Widget _buildDefaultContent(User user) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Text(
-        'Welcome to Giving Bridge, ${user.name}!',
+        l10n.welcomeUser(user.name),
         style: AppTheme.headingLarge,
         textAlign: TextAlign.center,
       ),
     );
   }
 
-  List<MenuItem> _getMenuItems(String role) {
+  List<MenuItem> _getMenuItems(String role, AppLocalizations l10n) {
     switch (role) {
       case 'donor':
         return [
-          MenuItem('Dashboard', Icons.dashboard),
-          MenuItem('My Donations', Icons.volunteer_activism),
-          MenuItem('Browse Requests', Icons.list),
-          MenuItem('Messages', Icons.message),
-          MenuItem('Profile', Icons.person),
+          MenuItem(l10n.dashboard, Icons.dashboard),
+          MenuItem(l10n.myDonations, Icons.volunteer_activism),
+          MenuItem(l10n.browseRequests, Icons.list),
+          MenuItem(l10n.messages, Icons.message),
+          MenuItem(l10n.profile, Icons.person),
         ];
       case 'receiver':
         return [
-          MenuItem('Dashboard', Icons.dashboard),
-          MenuItem('Browse Donations', Icons.search),
-          MenuItem('My Requests', Icons.inbox),
-          MenuItem('Messages', Icons.message),
-          MenuItem('Profile', Icons.person),
+          MenuItem(l10n.dashboard, Icons.dashboard),
+          MenuItem(l10n.browseDonations, Icons.search),
+          MenuItem(l10n.myRequests, Icons.inbox),
+          MenuItem(l10n.messages, Icons.message),
+          MenuItem(l10n.profile, Icons.person),
         ];
       case 'admin':
         return [
-          MenuItem('Dashboard', Icons.dashboard),
-          MenuItem('Users', Icons.people),
-          MenuItem('Donations', Icons.volunteer_activism),
-          MenuItem('Requests', Icons.inbox),
-          MenuItem('Analytics', Icons.analytics),
-          MenuItem('Settings', Icons.settings),
+          MenuItem(l10n.dashboard, Icons.dashboard),
+          MenuItem(l10n.users, Icons.people),
+          MenuItem(l10n.donations, Icons.volunteer_activism),
+          MenuItem(l10n.requests, Icons.inbox),
+          MenuItem(l10n.analytics, Icons.analytics),
+          MenuItem(l10n.settings, Icons.settings),
         ];
       default:
         return [
-          MenuItem('Dashboard', Icons.dashboard),
-          MenuItem('Profile', Icons.person),
+          MenuItem(l10n.dashboard, Icons.dashboard),
+          MenuItem(l10n.profile, Icons.person),
         ];
     }
   }

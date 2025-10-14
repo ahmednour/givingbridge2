@@ -1,114 +1,90 @@
-// Mock donation storage (replace with database in production)
-let donations = [];
-let nextDonationId = 1;
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/db');
 
-class Donation {
-  constructor({
-    title,
-    description,
-    category,
-    condition,
-    location,
-    donorId,
-    donorName,
-    imageUrl = null,
-    isAvailable = true,
-  }) {
-    this.id = nextDonationId++;
-    this.title = title;
-    this.description = description;
-    this.category = category;
-    this.condition = condition;
-    this.location = location;
-    this.donorId = donorId;
-    this.donorName = donorName;
-    this.imageUrl = imageUrl;
-    this.isAvailable = isAvailable;
-    this.createdAt = new Date().toISOString();
-    this.updatedAt = new Date().toISOString();
-  }
-
-  static create(donationData) {
-    const donation = new Donation(donationData);
-    donations.push(donation);
-    return donation;
-  }
-
-  static findAll(filters = {}) {
-    let filteredDonations = donations;
-
-    if (filters.category) {
-      filteredDonations = filteredDonations.filter(
-        (d) => d.category.toLowerCase() === filters.category.toLowerCase()
-      );
-    }
-
-    if (filters.location) {
-      filteredDonations = filteredDonations.filter((d) =>
-        d.location.toLowerCase().includes(filters.location.toLowerCase())
-      );
-    }
-
-    if (filters.isAvailable !== undefined) {
-      filteredDonations = filteredDonations.filter(
-        (d) => d.isAvailable === filters.isAvailable
-      );
-    }
-
-    if (filters.donorId) {
-      filteredDonations = filteredDonations.filter(
-        (d) => d.donorId === filters.donorId
-      );
-    }
-
-    return filteredDonations.sort(
-      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-    );
-  }
-
-  static findById(id) {
-    return donations.find((d) => d.id === parseInt(id));
-  }
-
-  static findByDonorId(donorId) {
-    return donations.filter((d) => d.donorId === donorId);
-  }
-
-  static update(id, updateData) {
-    const donationIndex = donations.findIndex((d) => d.id === parseInt(id));
-    if (donationIndex === -1) return null;
-
-    donations[donationIndex] = {
-      ...donations[donationIndex],
-      ...updateData,
-      updatedAt: new Date().toISOString(),
-    };
-
-    return donations[donationIndex];
-  }
-
-  static delete(id) {
-    const donationIndex = donations.findIndex((d) => d.id === parseInt(id));
-    if (donationIndex === -1) return false;
-
-    donations.splice(donationIndex, 1);
-    return true;
-  }
-
-  static getStats() {
-    return {
-      total: donations.length,
-      available: donations.filter((d) => d.isAvailable).length,
-      categories: {
-        food: donations.filter((d) => d.category === "food").length,
-        clothes: donations.filter((d) => d.category === "clothes").length,
-        books: donations.filter((d) => d.category === "books").length,
-        electronics: donations.filter((d) => d.category === "electronics")
-          .length,
-        other: donations.filter((d) => d.category === "other").length,
-      },
-    };
-  }
-}
+const Donation = sequelize.define('Donation', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  title: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: true,
+      len: [3, 255],
+    },
+  },
+  description: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+    validate: {
+      notEmpty: true,
+      len: [10, 5000],
+    },
+  },
+  category: {
+    type: DataTypes.ENUM('food', 'clothes', 'books', 'electronics', 'other'),
+    allowNull: false,
+  },
+  condition: {
+    type: DataTypes.ENUM('new', 'like-new', 'good', 'fair'),
+    allowNull: false,
+    defaultValue: 'good',
+  },
+  location: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: true,
+      len: [2, 255],
+    },
+  },
+  donorId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'users',
+      key: 'id',
+    },
+  },
+  donorName: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  imageUrl: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    validate: {
+      len: [0, 500],
+    },
+  },
+  isAvailable: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: true,
+  },
+  status: {
+    type: DataTypes.ENUM('available', 'pending', 'completed', 'cancelled'),
+    allowNull: false,
+    defaultValue: 'available',
+  },
+}, {
+  tableName: 'donations',
+  timestamps: true,
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  indexes: [
+    {
+      fields: ['donorId'],
+    },
+    {
+      fields: ['category'],
+    },
+    {
+      fields: ['isAvailable'],
+    },
+  ],
+});
 
 module.exports = Donation;

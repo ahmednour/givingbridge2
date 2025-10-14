@@ -99,7 +99,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
               color: isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor,
               border: Border(
                 bottom: BorderSide(
-                  color: isDark ? AppTheme.darkBorderColor : AppTheme.borderColor,
+                  color:
+                      isDark ? AppTheme.darkBorderColor : AppTheme.borderColor,
                   width: 1,
                 ),
               ),
@@ -264,8 +265,9 @@ class _NotificationsScreenState extends State<NotificationsScreen>
           Icon(
             Icons.notifications_none,
             size: 64,
-            color:
-                isDark ? AppTheme.textDisabledColor : AppTheme.textDisabledColor,
+            color: isDark
+                ? AppTheme.textDisabledColor
+                : AppTheme.textDisabledColor,
           ),
           const SizedBox(height: AppTheme.spacingM),
           Text(
@@ -299,8 +301,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       onTap: () => _markAsRead(notification['id']),
       backgroundColor: !isRead
           ? (isDark
-              ? AppTheme.primaryColor.withValues(alpha: 0.05)
-              : AppTheme.primaryColor.withValues(alpha: 0.03))
+              ? AppTheme.primaryColor.withOpacity(0.05)
+              : AppTheme.primaryColor.withOpacity(0.03))
           : null,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -310,7 +312,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: (notification['color'] as Color).withValues(alpha: 0.1),
+              color: (notification['color'] as Color).withOpacity(0.1),
               borderRadius: BorderRadius.circular(AppTheme.radiusM),
             ),
             child: Icon(
@@ -562,7 +564,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 ),
               );
             },
-            activeThumbColor: AppTheme.primaryColor,
+            activeColor: AppTheme.primaryColor,
           ),
         ],
       ),

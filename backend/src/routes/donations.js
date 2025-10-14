@@ -1,7 +1,9 @@
 const express = require("express");
 const { body, validationResult } = require("express-validator");
 const router = express.Router();
-const Donation = require("../models/Donation");
+const DonationController = require("../controllers/donationController");
+const User = require("../models/User");
+const { loadUser, requireAdmin, asyncHandler } = require("../middleware");
 
 // Import authentication middleware from auth routes
 const { authenticateToken } = require("./auth");
@@ -10,13 +12,11 @@ const { authenticateToken } = require("./auth");
 router.get("/", async (req, res) => {
   try {
     const { category, location, available } = req.query;
-
-    const filters = {};
-    if (category) filters.category = category;
-    if (location) filters.location = location;
-    if (available !== undefined) filters.isAvailable = available === "true";
-
-    const donations = Donation.findAll(filters);
+    const donations = await DonationController.getAllDonations({
+      category,
+      location,
+      available,
+    });
 
     res.json({
       message: "Donations retrieved successfully",
@@ -36,7 +36,7 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const donation = Donation.findById(id);
+    const donation = await DonationController.getDonationById(id);
 
     if (!donation) {
       return res.status(404).json({
@@ -58,23 +58,21 @@ router.get("/:id", async (req, res) => {
 });
 
 // Get donations by donor (requires authentication)
-router.get("/donor/my-donations", authenticateToken, async (req, res) => {
-  try {
-    const donations = Donation.findByDonorId(req.user.userId);
+router.get(
+  "/donor/my-donations",
+  authenticateToken,
+  asyncHandler(async (req, res) => {
+    const donations = await DonationController.getDonationsByDonor(
+      req.user.userId
+    );
 
     res.json({
       message: "Your donations retrieved successfully",
       donations,
       total: donations.length,
     });
-  } catch (error) {
-    console.error("Get my donations error:", error);
-    res.status(500).json({
-      message: "Failed to retrieve your donations",
-      error: error.message,
-    });
-  }
-});
+  })
+);
 
 // Create new donation (requires authentication)
 router.post(
@@ -111,29 +109,10 @@ router.post(
         });
       }
 
-      const { title, description, category, condition, location, imageUrl } =
-        req.body;
-
-      // Get user info from token
-      const { users } = require("./auth");
-      const user = users.find((u) => u.id === req.user.userId);
-
-      if (!user) {
-        return res.status(404).json({
-          message: "User not found",
-        });
-      }
-
-      const donation = Donation.create({
-        title,
-        description,
-        category,
-        condition,
-        location,
-        donorId: user.id,
-        donorName: user.name,
-        imageUrl: imageUrl || null,
-      });
+      const donation = await DonationController.createDonation(
+        req.body,
+        req.user.userId
+      );
 
       res.status(201).json({
         message: "Donation created successfully",
@@ -190,29 +169,18 @@ router.put(
       }
 
       const { id } = req.params;
-      const donation = Donation.findById(id);
+      const user = await User.findByPk(req.user.userId);
 
-      if (!donation) {
-        return res.status(404).json({
-          message: "Donation not found",
-        });
-      }
-
-      // Check ownership (only donor can update their donation, or admin)
-      const { users } = require("./auth");
-      const user = users.find((u) => u.id === req.user.userId);
-
-      if (donation.donorId !== req.user.userId && user.role !== "admin") {
-        return res.status(403).json({
-          message: "You can only update your own donations",
-        });
-      }
-
-      const updatedDonation = Donation.update(id, req.body);
+      const donation = await DonationController.updateDonation(
+        id,
+        req.body,
+        req.user.userId,
+        user.role
+      );
 
       res.json({
         message: "Donation updated successfully",
-        donation: updatedDonation,
+        donation,
       });
     } catch (error) {
       console.error("Update donation error:", error);
@@ -228,35 +196,13 @@ router.put(
 router.delete("/:id", authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
-    const donation = Donation.findById(id);
+    const user = await User.findByPk(req.user.userId);
 
-    if (!donation) {
-      return res.status(404).json({
-        message: "Donation not found",
-      });
-    }
+    await DonationController.deleteDonation(id, req.user.userId, user.role);
 
-    // Check ownership (only donor can delete their donation, or admin)
-    const { users } = require("./auth");
-    const user = users.find((u) => u.id === req.user.userId);
-
-    if (donation.donorId !== req.user.userId && user.role !== "admin") {
-      return res.status(403).json({
-        message: "You can only delete your own donations",
-      });
-    }
-
-    const deleted = Donation.delete(id);
-
-    if (deleted) {
-      res.json({
-        message: "Donation deleted successfully",
-      });
-    } else {
-      res.status(500).json({
-        message: "Failed to delete donation",
-      });
-    }
+    res.json({
+      message: "Donation deleted successfully",
+    });
   } catch (error) {
     console.error("Delete donation error:", error);
     res.status(500).json({
@@ -267,31 +213,18 @@ router.delete("/:id", authenticateToken, async (req, res) => {
 });
 
 // Get donation statistics (for admin dashboard)
-router.get("/admin/stats", authenticateToken, async (req, res) => {
-  try {
-    // Check if user is admin
-    const { users } = require("./auth");
-    const user = users.find((u) => u.id === req.user.userId);
-
-    if (user.role !== "admin") {
-      return res.status(403).json({
-        message: "Admin access required",
-      });
-    }
-
-    const stats = Donation.getStats();
+router.get(
+  "/admin/stats",
+  authenticateToken,
+  requireAdmin,
+  asyncHandler(async (req, res) => {
+    const stats = await DonationController.getDonationStats();
 
     res.json({
       message: "Donation statistics retrieved successfully",
       stats,
     });
-  } catch (error) {
-    console.error("Get donation stats error:", error);
-    res.status(500).json({
-      message: "Failed to retrieve donation statistics",
-      error: error.message,
-    });
-  }
-});
+  })
+);
 
 module.exports = router;

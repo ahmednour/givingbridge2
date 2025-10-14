@@ -54,7 +54,7 @@ class AppTheme {
   // Shadows
   static List<BoxShadow> shadowSM = [
     BoxShadow(
-      color: Colors.black.withValues(alpha: 0.05),
+      color: Colors.black.withOpacity(0.05),
       blurRadius: 2,
       offset: const Offset(0, 1),
     ),
@@ -62,7 +62,7 @@ class AppTheme {
 
   static List<BoxShadow> shadowMD = [
     BoxShadow(
-      color: Colors.black.withValues(alpha: 0.1),
+      color: Colors.black.withOpacity(0.1),
       blurRadius: 6,
       offset: const Offset(0, 4),
     ),
@@ -70,56 +70,56 @@ class AppTheme {
 
   static List<BoxShadow> shadowLG = [
     BoxShadow(
-      color: Colors.black.withValues(alpha: 0.15),
+      color: Colors.black.withOpacity(0.15),
       blurRadius: 10,
       offset: const Offset(0, 10),
     ),
   ];
 
-  // Text Styles
-  static TextStyle get headingLarge => GoogleFonts.inter(
+  // Text Styles with Cairo font
+  static TextStyle get headingLarge => GoogleFonts.cairo(
         fontSize: 32,
         fontWeight: FontWeight.w700,
         color: textPrimaryColor,
         height: 1.2,
       );
 
-  static TextStyle get headingMedium => GoogleFonts.inter(
+  static TextStyle get headingMedium => GoogleFonts.cairo(
         fontSize: 24,
         fontWeight: FontWeight.w600,
         color: textPrimaryColor,
         height: 1.3,
       );
 
-  static TextStyle get headingSmall => GoogleFonts.inter(
+  static TextStyle get headingSmall => GoogleFonts.cairo(
         fontSize: 20,
         fontWeight: FontWeight.w600,
         color: textPrimaryColor,
         height: 1.3,
       );
 
-  static TextStyle get bodyLarge => GoogleFonts.inter(
+  static TextStyle get bodyLarge => GoogleFonts.cairo(
         fontSize: 16,
         fontWeight: FontWeight.w400,
         color: textPrimaryColor,
         height: 1.5,
       );
 
-  static TextStyle get bodyMedium => GoogleFonts.inter(
+  static TextStyle get bodyMedium => GoogleFonts.cairo(
         fontSize: 14,
         fontWeight: FontWeight.w400,
         color: textPrimaryColor,
         height: 1.5,
       );
 
-  static TextStyle get bodySmall => GoogleFonts.inter(
+  static TextStyle get bodySmall => GoogleFonts.cairo(
         fontSize: 12,
         fontWeight: FontWeight.w400,
         color: textSecondaryColor,
         height: 1.4,
       );
 
-  static TextStyle get buttonText => GoogleFonts.inter(
+  static TextStyle get buttonText => GoogleFonts.cairo(
         fontSize: 14,
         fontWeight: FontWeight.w500,
         color: Colors.white,
@@ -136,15 +136,18 @@ class AppTheme {
       canvasColor: surfaceColor,
       cardColor: cardColor,
       dividerColor: dividerColor,
+      fontFamily: GoogleFonts.cairo().fontFamily,
 
       // Text theme
-      textTheme: TextTheme(
-        headlineLarge: headingLarge,
-        headlineMedium: headingMedium,
-        headlineSmall: headingSmall,
-        bodyLarge: bodyLarge,
-        bodyMedium: bodyMedium,
-        bodySmall: bodySmall,
+      textTheme: GoogleFonts.cairoTextTheme(
+        TextTheme(
+          headlineLarge: headingLarge,
+          headlineMedium: headingMedium,
+          headlineSmall: headingSmall,
+          bodyLarge: bodyLarge,
+          bodyMedium: bodyMedium,
+          bodySmall: bodySmall,
+        ),
       ),
 
       // AppBar theme
@@ -157,15 +160,15 @@ class AppTheme {
         toolbarHeight: 72,
       ),
 
-      // Card theme
-      cardTheme: CardThemeData(
-        color: cardColor,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(radiusL),
-          side: const BorderSide(color: borderColor, width: 1),
-        ),
-      ),
+      // Card theme - commented out for Docker compatibility
+      // cardTheme: CardThemeData(
+      //   color: cardColor,
+      //   elevation: 0,
+      //   shape: RoundedRectangleBorder(
+      //     borderRadius: BorderRadius.circular(radiusL),
+      //     side: const BorderSide(color: borderColor, width: 1),
+      //   ),
+      // ),
 
       // Elevated button theme
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -217,9 +220,9 @@ class AppTheme {
   static MaterialColor _createMaterialColor(Color color) {
     List<double> strengths = <double>[.05];
     Map<int, Color> swatch = <int, Color>{};
-    final int r = (color.r * 255.0).round() & 0xff,
-              g = (color.g * 255.0).round() & 0xff,
-              b = (color.b * 255.0).round() & 0xff;
+    final int r = (color.red * 255.0).round() & 0xff,
+        g = (color.green * 255.0).round() & 0xff,
+        b = (color.blue * 255.0).round() & 0xff;
 
     for (int i = 1; i < 10; i++) {
       strengths.add(0.1 * i);

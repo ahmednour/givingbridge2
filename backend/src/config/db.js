@@ -17,8 +17,11 @@ const sequelize = new Sequelize({
   },
   define: {
     timestamps: true,
-    createdAt: "created_at",
-    updatedAt: "updated_at",
+    createdAt: "createdAt",
+    updatedAt: "updatedAt",
+  },
+  dialectOptions: {
+    charset: "utf8mb4",
   },
 });
 

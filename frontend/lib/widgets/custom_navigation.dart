@@ -22,8 +22,8 @@ class CustomBottomNavigation extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
 
-  const CustomBottomNavigation({ 
-    super.key, 
+  const CustomBottomNavigation({
+    super.key,
     required this.items,
     required this.currentIndex,
     required this.onTap,
@@ -39,7 +39,7 @@ class CustomBottomNavigation extends StatelessWidget {
         color: isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
+            color: Colors.black.withOpacity( 0.08),
             blurRadius: 20,
             offset: const Offset(0, -2),
           ),
@@ -164,7 +164,8 @@ class _NavItemState extends State<_NavItem>
                     padding: const EdgeInsets.all(AppTheme.spacingS),
                     decoration: widget.isSelected
                         ? BoxDecoration(
-                            color: AppTheme.primaryColor.withValues(alpha: 0.15),
+                            color:
+                                AppTheme.primaryColor.withOpacity( 0.15),
                             borderRadius:
                                 BorderRadius.circular(AppTheme.radiusM),
                           )
@@ -393,9 +394,7 @@ class _SideNavItemState extends State<_SideNavItem>
               final backgroundColor = widget.isSelected
                   ? AppTheme.primaryColor
                   : _isHovered
-                      ? (isDark
-                          ? AppTheme.darkCardColor
-                          : AppTheme.cardColor)
+                      ? (isDark ? AppTheme.darkCardColor : AppTheme.cardColor)
                       : Colors.transparent;
 
               return AnimatedContainer(

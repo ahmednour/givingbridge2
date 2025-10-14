@@ -3,7 +3,7 @@ import '../core/theme/app_theme.dart';
 import '../widgets/app_button.dart';
 import '../services/api_service.dart';
 import '../models/donation.dart';
-import 'create_donation_screen.dart';
+import 'create_donation_screen_enhanced.dart';
 
 class MyDonationsScreen extends StatefulWidget {
   const MyDonationsScreen({Key? key}) : super(key: key);
@@ -67,7 +67,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const CreateDonationScreen(),
+        builder: (context) => const CreateDonationScreenEnhanced(),
       ),
     );
 
@@ -80,8 +80,8 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            CreateDonationScreen(donation: donation), // Corrected this line
+        builder: (context) => CreateDonationScreenEnhanced(
+            donation: donation), // Corrected this line
       ),
     );
 
@@ -212,7 +212,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
             width: 100,
             height: 100,
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withValues(alpha: 0.1),
+              color: AppTheme.primaryColor.withOpacity( 0.1),
               borderRadius: BorderRadius.circular(50),
             ),
             child: const Icon(
@@ -259,7 +259,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
         boxShadow: AppTheme.shadowMD,
         border: donation.isAvailable
             ? null
-            : Border.all(color: Colors.grey.withValues(alpha: 0.5)),
+            : Border.all(color: Colors.grey.withOpacity( 0.5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -333,8 +333,8 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                       ),
                       decoration: BoxDecoration(
                         color: donation.isAvailable
-                            ? Colors.green.withValues(alpha: 0.1)
-                            : Colors.grey.withValues(alpha: 0.1),
+                            ? Colors.green.withOpacity( 0.1)
+                            : Colors.grey.withOpacity( 0.1),
                         borderRadius: BorderRadius.circular(AppTheme.radiusL),
                       ),
                       child: Text(
@@ -354,7 +354,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                         vertical: AppTheme.spacingM,
                       ),
                       decoration: BoxDecoration(
-                        color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                        color: AppTheme.primaryColor.withOpacity( 0.1),
                         borderRadius: BorderRadius.circular(AppTheme.radiusL),
                       ),
                       child: Text(
@@ -487,7 +487,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                       ),
                       decoration: BoxDecoration(
                         color: _getConditionColor(donation.condition)
-                            .withValues(alpha: 0.1),
+                            .withOpacity( 0.1),
                         borderRadius: BorderRadius.circular(AppTheme.radiusL),
                       ),
                       child: Text(

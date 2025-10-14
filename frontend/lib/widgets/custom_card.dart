@@ -124,7 +124,8 @@ class _CustomCardState extends State<CustomCard>
     if (widget.backgroundColor != null) {
       backgroundColor = widget.backgroundColor!;
     } else {
-      backgroundColor = isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor;
+      backgroundColor =
+          isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor;
     }
 
     switch (widget.variant) {
@@ -207,9 +208,7 @@ class DonationCard extends StatelessWidget {
                   topLeft: Radius.circular(AppTheme.radiusM),
                   topRight: Radius.circular(AppTheme.radiusM),
                 ),
-                color: isDark
-                    ? AppTheme.darkCardColor
-                    : AppTheme.cardColor,
+                color: isDark ? AppTheme.darkCardColor : AppTheme.cardColor,
               ),
               child: ClipRRect(
                 borderRadius: const BorderRadius.only(
@@ -253,7 +252,7 @@ class DonationCard extends StatelessWidget {
                       vertical: AppTheme.spacingXS,
                     ),
                     decoration: BoxDecoration(
-                      color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                      color: AppTheme.primaryColor.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(AppTheme.radiusS),
                     ),
                     child: Text(
@@ -393,7 +392,7 @@ class StatCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12.0),
             decoration: BoxDecoration(
-              color: (iconColor ?? AppTheme.primaryColor).withValues(alpha: 0.1),
+              color: (iconColor ?? AppTheme.primaryColor).withOpacity(0.1),
               borderRadius: BorderRadius.circular(AppTheme.radiusM),
             ),
             child: Icon(

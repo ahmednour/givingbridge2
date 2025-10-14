@@ -4,6 +4,7 @@ import '../core/theme/app_theme.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/app_button.dart';
 import '../widgets/app_input.dart';
+import '../l10n/app_localizations.dart';
 import 'dashboard_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -20,7 +21,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
   final _phoneController = TextEditingController();
   final _locationController = TextEditingController();
-  
+
   String _selectedRole = 'donor';
   bool _isLoading = false;
   String? _errorMessage;
@@ -44,14 +45,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    
+
     final success = await authProvider.register(
       name: _nameController.text.trim(),
       email: _emailController.text.trim(),
       password: _passwordController.text,
       role: _selectedRole,
-      phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
-      location: _locationController.text.trim().isEmpty ? null : _locationController.text.trim(),
+      phone: _phoneController.text.trim().isEmpty
+          ? null
+          : _phoneController.text.trim(),
+      location: _locationController.text.trim().isEmpty
+          ? null
+          : _locationController.text.trim(),
     );
 
     setState(() {
@@ -80,27 +85,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   String? _validateEmail(String? value) {
+    final l10n = AppLocalizations.of(context)!;
     if (value == null || value.isEmpty) {
-      return 'Email is required';
+      return l10n.requiredField;
     }
     if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-      return 'Please enter a valid email';
+      return l10n.invalidEmail;
     }
     return null;
   }
 
   String? _validatePassword(String? value) {
+    final l10n = AppLocalizations.of(context)!;
     if (value == null || value.isEmpty) {
-      return 'Password is required';
+      return l10n.requiredField;
     }
     if (value.length < 6) {
-      return 'Password must be at least 6 characters';
+      return l10n.passwordTooShort;
     }
     return null;
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       body: Center(
@@ -134,13 +143,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             child: Column(
                               children: [
                                 Text(
-                                  'Create Account',
+                                  '${l10n.signUp}',
                                   style: AppTheme.headingLarge,
                                   textAlign: TextAlign.center,
                                 ),
                                 const SizedBox(height: AppTheme.spacingS),
                                 Text(
-                                  'Join Giving Bridge today',
+                                  'Join ${l10n.appTitle} today',
                                   style: AppTheme.bodyMedium.copyWith(
                                     color: AppTheme.textSecondaryColor,
                                   ),
@@ -152,18 +161,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           const SizedBox(width: 48), // Balance the back button
                         ],
                       ),
-                      
+
                       const SizedBox(height: AppTheme.spacingXL),
-                      
+
                       // Error message
                       if (_errorMessage != null) ...[
                         Container(
                           padding: const EdgeInsets.all(AppTheme.spacingM),
                           decoration: BoxDecoration(
-                            color: AppTheme.errorColor.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(AppTheme.radiusM),
+                            color: AppTheme.errorColor.withOpacity(0.1),
+                            borderRadius:
+                                BorderRadius.circular(AppTheme.radiusM),
                             border: Border.all(
-                              color: AppTheme.errorColor.withValues(alpha: 0.3),
+                              color: AppTheme.errorColor.withOpacity(0.3),
                             ),
                           ),
                           child: Row(
@@ -187,7 +197,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         const SizedBox(height: AppTheme.spacingL),
                       ],
-                      
+
                       // Role selection
                       Text(
                         'Account Type',
@@ -200,21 +210,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       Row(
                         children: [
                           Expanded(
-                            child: _buildRoleOption('donor', 'Donor', Icons.volunteer_activism),
+                            child: _buildRoleOption(
+                                'donor', l10n.donor, Icons.volunteer_activism),
                           ),
                           const SizedBox(width: AppTheme.spacingS),
                           Expanded(
-                            child: _buildRoleOption('receiver', 'Receiver', Icons.person_outline),
+                            child: _buildRoleOption('receiver', l10n.receiver,
+                                Icons.person_outline),
                           ),
                         ],
                       ),
-                      
+
                       const SizedBox(height: AppTheme.spacingL),
-                      
+
                       // Form fields
                       AppInput(
-                        label: 'Full Name',
-                        hint: 'Enter your full name',
+                        label: l10n.name,
+                        hint: 'Enter your ${l10n.name.toLowerCase()}',
                         controller: _nameController,
                         prefixIcon: const Icon(
                           Icons.person_outline,
@@ -223,12 +235,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         validator: _validateName,
                       ),
-                      
+
                       const SizedBox(height: AppTheme.spacingL),
-                      
+
                       AppInput(
-                        label: 'Email',
-                        hint: 'Enter your email address',
+                        label: l10n.email,
+                        hint: 'Enter your ${l10n.email.toLowerCase()}',
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         prefixIcon: const Icon(
@@ -238,12 +250,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         validator: _validateEmail,
                       ),
-                      
+
                       const SizedBox(height: AppTheme.spacingL),
-                      
+
                       AppInput(
-                        label: 'Password',
-                        hint: 'Enter your password',
+                        label: l10n.password,
+                        hint: 'Enter your ${l10n.password.toLowerCase()}',
                         controller: _passwordController,
                         obscureText: true,
                         prefixIcon: const Icon(
@@ -253,12 +265,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         validator: _validatePassword,
                       ),
-                      
+
                       const SizedBox(height: AppTheme.spacingL),
-                      
+
                       AppInput(
-                        label: 'Phone (Optional)',
-                        hint: 'Enter your phone number',
+                        label: '${l10n.phone} (Optional)',
+                        hint: 'Enter your ${l10n.phone.toLowerCase()}',
                         controller: _phoneController,
                         keyboardType: TextInputType.phone,
                         prefixIcon: const Icon(
@@ -267,12 +279,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           size: 20,
                         ),
                       ),
-                      
+
                       const SizedBox(height: AppTheme.spacingL),
-                      
+
                       AppInput(
-                        label: 'Location (Optional)',
-                        hint: 'Enter your location',
+                        label: '${l10n.location} (Optional)',
+                        hint: 'Enter your ${l10n.location.toLowerCase()}',
                         controller: _locationController,
                         prefixIcon: const Icon(
                           Icons.location_on_outlined,
@@ -280,26 +292,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           size: 20,
                         ),
                       ),
-                      
+
                       const SizedBox(height: AppTheme.spacingXL),
-                      
+
                       // Register button
                       AppButton(
-                        text: 'Create Account',
+                        text: l10n.signUp,
                         onPressed: _handleRegister,
                         isLoading: _isLoading,
                         size: ButtonSize.large,
                         width: double.infinity,
                       ),
-                      
+
                       const SizedBox(height: AppTheme.spacingL),
-                      
+
                       // Login link
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Already have an account? ',
+                            '${l10n.alreadyHaveAccount} ',
                             style: AppTheme.bodyMedium.copyWith(
                               color: AppTheme.textSecondaryColor,
                             ),
@@ -307,7 +319,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           GestureDetector(
                             onTap: () => Navigator.of(context).pop(),
                             child: Text(
-                              'Sign in',
+                              l10n.signIn,
                               style: AppTheme.bodyMedium.copyWith(
                                 color: AppTheme.primaryColor,
                                 fontWeight: FontWeight.w600,
@@ -329,13 +341,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Widget _buildRoleOption(String value, String title, IconData icon) {
     final isSelected = _selectedRole == value;
-    
+
     return GestureDetector(
       onTap: () => setState(() => _selectedRole = value),
       child: Container(
         padding: const EdgeInsets.all(AppTheme.spacingM),
         decoration: BoxDecoration(
-          color: isSelected ? AppTheme.primaryColor.withValues(alpha: 0.1) : Colors.transparent,
+          color: isSelected
+              ? AppTheme.primaryColor.withOpacity(0.1)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(AppTheme.radiusM),
           border: Border.all(
             color: isSelected ? AppTheme.primaryColor : AppTheme.borderColor,
@@ -346,14 +360,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
           children: [
             Icon(
               icon,
-              color: isSelected ? AppTheme.primaryColor : AppTheme.textSecondaryColor,
+              color: isSelected
+                  ? AppTheme.primaryColor
+                  : AppTheme.textSecondaryColor,
               size: 24,
             ),
             const SizedBox(height: AppTheme.spacingXS),
             Text(
               title,
               style: AppTheme.bodyMedium.copyWith(
-                color: isSelected ? AppTheme.primaryColor : AppTheme.textPrimaryColor,
+                color: isSelected
+                    ? AppTheme.primaryColor
+                    : AppTheme.textPrimaryColor,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
               ),
             ),

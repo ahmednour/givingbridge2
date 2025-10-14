@@ -9,6 +9,7 @@ class Donation {
   final String donorName;
   final String? imageUrl;
   final bool isAvailable;
+  final String status;
   final String createdAt;
   final String updatedAt;
 
@@ -23,6 +24,7 @@ class Donation {
     required this.donorName,
     this.imageUrl,
     required this.isAvailable,
+    required this.status,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -39,6 +41,7 @@ class Donation {
       donorName: json['donorName'],
       imageUrl: json['imageUrl'],
       isAvailable: json['isAvailable'] ?? true,
+      status: json['status'] ?? 'available',
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
     );
@@ -56,6 +59,7 @@ class Donation {
       'donorName': donorName,
       'imageUrl': imageUrl,
       'isAvailable': isAvailable,
+      'status': status,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
     };
@@ -90,6 +94,21 @@ class Donation {
         return 'Fair';
       default:
         return condition;
+    }
+  }
+
+  String get statusDisplayName {
+    switch (status) {
+      case 'available':
+        return 'Available';
+      case 'pending':
+        return 'Pending';
+      case 'completed':
+        return 'Completed';
+      case 'cancelled':
+        return 'Cancelled';
+      default:
+        return status;
     }
   }
 }

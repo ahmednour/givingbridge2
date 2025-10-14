@@ -75,12 +75,12 @@ class _AppButtonState extends State<AppButton>
             : AppTheme.secondaryColor;
       case ButtonVariant.danger:
         return _isHovered
-            ? AppTheme.errorColor.withValues(alpha: 0.9)
+            ? AppTheme.errorColor.withOpacity(0.9)
             : AppTheme.errorColor;
       case ButtonVariant.outline:
       case ButtonVariant.ghost:
         return _isHovered
-            ? AppTheme.primaryColor.withValues(alpha: 0.1)
+            ? AppTheme.primaryColor.withOpacity(0.1)
             : Colors.transparent;
     }
   }

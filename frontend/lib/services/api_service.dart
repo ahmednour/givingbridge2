@@ -4,9 +4,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import '../models/donation.dart';
 import '../models/user.dart';
+import '../core/config/api_config.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://localhost:3000/api';
+  static String get baseUrl => ApiConfig.baseUrl;
 
   // Auth endpoints
   static const String loginEndpoint = '/auth/login';
@@ -860,16 +861,16 @@ class ChatMessage {
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
     return ChatMessage(
       id: json['id'],
-      senderId: json['senderId'],
-      senderName: json['senderName'],
-      receiverId: json['receiverId'],
-      receiverName: json['receiverName'],
-      donationId: json['donationId'],
-      requestId: json['requestId'],
+      senderId: json['senderId'] ?? json['sender_id'],
+      senderName: json['senderName'] ?? json['sender_name'],
+      receiverId: json['receiverId'] ?? json['receiver_id'],
+      receiverName: json['receiverName'] ?? json['receiver_name'],
+      donationId: json['donationId'] ?? json['donation_id'],
+      requestId: json['requestId'] ?? json['request_id'],
       content: json['content'],
-      isRead: json['isRead'],
-      createdAt: json['createdAt'],
-      updatedAt: json['updatedAt'],
+      isRead: json['isRead'] ?? json['is_read'],
+      createdAt: json['createdAt'] ?? json['created_at'] ?? json['createdAt'],
+      updatedAt: json['updatedAt'] ?? json['updated_at'] ?? json['updatedAt'],
     );
   }
 

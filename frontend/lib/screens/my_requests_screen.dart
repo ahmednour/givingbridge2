@@ -270,7 +270,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withValues(alpha: 0.1),
+              color: AppTheme.primaryColor.withOpacity( 0.1),
               borderRadius: BorderRadius.circular(40),
             ),
             child: const Icon(
@@ -332,7 +332,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
                     vertical: AppTheme.spacingXS,
                   ),
                   decoration: BoxDecoration(
-                    color: request.statusColor.withValues(alpha: 0.1),
+                    color: request.statusColor.withOpacity( 0.1),
                     borderRadius: BorderRadius.circular(AppTheme.radiusS),
                   ),
                   child: Text(
