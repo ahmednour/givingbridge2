@@ -8,20 +8,26 @@ const { loadUser, requireAdmin, asyncHandler } = require("../middleware");
 // Import authentication middleware from auth routes
 const { authenticateToken } = require("./auth");
 
-// Get all donations with optional filters
+// Get all donations with optional filters and pagination
 router.get("/", async (req, res) => {
   try {
-    const { category, location, available } = req.query;
-    const donations = await DonationController.getAllDonations({
-      category,
-      location,
-      available,
-    });
+    const { category, location, available, page, limit } = req.query;
+    const result = await DonationController.getAllDonations(
+      {
+        category,
+        location,
+        available,
+      },
+      {
+        page: page || 1,
+        limit: limit || 20,
+      }
+    );
 
     res.json({
       message: "Donations retrieved successfully",
-      donations,
-      total: donations.length,
+      donations: result.donations,
+      pagination: result.pagination,
     });
   } catch (error) {
     console.error("Get donations error:", error);

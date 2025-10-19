@@ -1,4 +1,6 @@
 /// Donation-related constants and enums
+import 'package:flutter/material.dart';
+
 enum DonationCategory {
   food('food', 'Food', 'طعام'),
   clothes('clothes', 'Clothes', 'ملابس'),
@@ -210,4 +212,86 @@ class DonationConstants {
   static const String successDonationDeleted = 'Donation deleted successfully';
   static const String successRequestSent = 'Request sent successfully';
   static const String successRequestUpdated = 'Request updated successfully';
+}
+
+/// Helper class for category-related utilities
+class CategoryHelper {
+  /// Get all categories with icons (for filter/browse screens)
+  static List<Map<String, dynamic>> getAllCategories() {
+    return [
+      {'value': 'all', 'label': 'All', 'icon': Icons.apps},
+      {
+        'value': DonationCategory.food.value,
+        'label': 'Food',
+        'icon': Icons.restaurant
+      },
+      {
+        'value': DonationCategory.clothes.value,
+        'label': 'Clothes',
+        'icon': Icons.checkroom
+      },
+      {
+        'value': DonationCategory.books.value,
+        'label': 'Books',
+        'icon': Icons.menu_book
+      },
+      {
+        'value': DonationCategory.electronics.value,
+        'label': 'Electronics',
+        'icon': Icons.devices
+      },
+      {
+        'value': DonationCategory.other.value,
+        'label': 'Other',
+        'icon': Icons.category
+      },
+    ];
+  }
+
+  /// Get category icon
+  static IconData getCategoryIcon(String category) {
+    switch (category) {
+      case 'food':
+        return Icons.restaurant;
+      case 'clothes':
+        return Icons.checkroom;
+      case 'books':
+        return Icons.menu_book;
+      case 'electronics':
+        return Icons.devices;
+      default:
+        return Icons.category;
+    }
+  }
+
+  /// Get category color
+  static Color getCategoryColor(String category) {
+    switch (category) {
+      case 'food':
+        return const Color(0xFF10B981); // Green
+      case 'clothes':
+        return const Color(0xFF8B5CF6); // Purple
+      case 'books':
+        return const Color(0xFF3B82F6); // Blue
+      case 'electronics':
+        return const Color(0xFFF59E0B); // Orange
+      default:
+        return const Color(0xFF6B7280); // Gray
+    }
+  }
+
+  /// Get status color
+  static Color getStatusColor(String status) {
+    return Color(DonationConstants.statusColors[status] ?? 0xFF6B7280);
+  }
+
+  /// Get condition color
+  static Color getConditionColor(String condition) {
+    return Color(DonationConstants.conditionColors[condition] ?? 0xFF6B7280);
+  }
+
+  /// Get request status color
+  static Color getRequestStatusColor(String status) {
+    return Color(DonationConstants.requestStatusColors[status] ?? 0xFF6B7280);
+  }
 }

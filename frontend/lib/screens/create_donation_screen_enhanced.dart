@@ -6,6 +6,7 @@ import '../core/theme/app_theme_enhanced.dart';
 import '../core/utils/rtl_utils.dart';
 import '../core/constants/ui_constants.dart';
 import '../core/constants/donation_constants.dart';
+import '../widgets/common/gb_button.dart';
 import '../widgets/app_components.dart';
 import '../providers/donation_provider.dart';
 import '../models/donation.dart';
@@ -40,6 +41,7 @@ class _CreateDonationScreenEnhancedState
   // State variables
   int _currentStep = 0;
   bool _isLoading = false;
+  bool _isPickingImages = false;
   String _selectedCategory = DonationCategory.values.first.value;
   String _selectedCondition = DonationCondition.values.first.value;
   List<XFile> _selectedImages = [];
@@ -73,6 +75,9 @@ class _CreateDonationScreenEnhancedState
   }
 
   void _populateFormFields() {
+    // Set default values for new donations
+    _quantityController.text = '1'; // Default quantity
+
     if (widget.donation != null) {
       final donation = widget.donation!;
       _titleController.text = donation.title;
@@ -80,8 +85,6 @@ class _CreateDonationScreenEnhancedState
       _locationController.text = donation.location;
       _selectedCategory = donation.category;
       _selectedCondition = donation.condition;
-      _quantityController.text = '1'; // Default quantity
-      _notesController.text = ''; // Default empty notes
     }
   }
 
@@ -132,11 +135,13 @@ class _CreateDonationScreenEnhancedState
   }
 
   Future<void> _pickImages() async {
+    setState(() => _isPickingImages = true);
+
     try {
       final List<XFile> images = await _imagePicker.pickMultiImage(
-        maxWidth: 1920,
-        maxHeight: 1080,
-        imageQuality: 85,
+        maxWidth: 1200, // Reduced from 1920
+        maxHeight: 800, // Reduced from 1080
+        imageQuality: 70, // Reduced from 85 for smaller file size
       );
 
       if (images.isNotEmpty) {
@@ -146,16 +151,20 @@ class _CreateDonationScreenEnhancedState
       }
     } catch (e) {
       _showErrorSnackbar('Error picking images: ${e.toString()}');
+    } finally {
+      setState(() => _isPickingImages = false);
     }
   }
 
   Future<void> _takePhoto() async {
+    setState(() => _isPickingImages = true);
+
     try {
       final XFile? image = await _imagePicker.pickImage(
         source: ImageSource.camera,
-        maxWidth: 1920,
-        maxHeight: 1080,
-        imageQuality: 85,
+        maxWidth: 1200, // Reduced from 1920
+        maxHeight: 800, // Reduced from 1080
+        imageQuality: 70, // Reduced from 85
       );
 
       if (image != null) {
@@ -165,6 +174,8 @@ class _CreateDonationScreenEnhancedState
       }
     } catch (e) {
       _showErrorSnackbar('Error taking photo: ${e.toString()}');
+    } finally {
+      setState(() => _isPickingImages = false);
     }
   }
 
@@ -175,9 +186,12 @@ class _CreateDonationScreenEnhancedState
   }
 
   Future<void> _submitDonation() async {
-    // Final validation check
-    if (_formKey.currentState?.validate() != true) {
-      _showErrorSnackbar('Please fill in all required fields correctly');
+    // Basic validation - check required fields have values
+    if (_titleController.text.trim().isEmpty ||
+        _descriptionController.text.trim().isEmpty ||
+        _locationController.text.trim().isEmpty) {
+      _showErrorSnackbar(
+          AppLocalizations.of(context)!.pleaseFillRequiredFields);
       _goToStep(0);
       return;
     }
@@ -833,19 +847,19 @@ class _CreateDonationScreenEnhancedState
                 Row(
                   children: [
                     Expanded(
-                      child: AppButton(
+                      child: GBSecondaryButton(
                         text: l10n.selectFromGallery,
-                        icon: Icons.photo_library_outlined,
-                        type: AppButtonType.secondary,
+                        leftIcon:
+                            const Icon(Icons.photo_library_outlined, size: 20),
                         onPressed: _pickImages,
                       ),
                     ),
                     AppSpacing.horizontal(UIConstants.spacingM),
                     Expanded(
-                      child: AppButton(
+                      child: GBSecondaryButton(
                         text: l10n.takePhoto,
-                        icon: Icons.camera_alt_outlined,
-                        type: AppButtonType.secondary,
+                        leftIcon:
+                            const Icon(Icons.camera_alt_outlined, size: 20),
                         onPressed: _takePhoto,
                       ),
                     ),
@@ -1124,16 +1138,15 @@ class _CreateDonationScreenEnhancedState
         children: [
           if (_currentStep > 0)
             Expanded(
-              child: AppButton(
+              child: GBSecondaryButton(
                 text: l10n.previous,
-                type: AppButtonType.secondary,
                 onPressed: _previousStep,
               ),
             ),
           if (_currentStep > 0) AppSpacing.horizontal(UIConstants.spacingM),
           Expanded(
             flex: _currentStep == 0 ? 1 : 1,
-            child: AppButton(
+            child: GBPrimaryButton(
               text: _currentStep == 3
                   ? (widget.donation != null
                       ? l10n.updateDonation
@@ -1143,9 +1156,12 @@ class _CreateDonationScreenEnhancedState
                   ? null
                   : (_currentStep == 3 ? _submitDonation : _nextStep),
               isLoading: _isLoading && _currentStep == 3,
-              icon: _currentStep == 3
-                  ? (widget.donation != null ? Icons.update : Icons.add)
-                  : Icons.arrow_forward,
+              leftIcon: Icon(
+                _currentStep == 3
+                    ? (widget.donation != null ? Icons.update : Icons.add)
+                    : Icons.arrow_forward,
+                size: 20,
+              ),
             ),
           ),
         ],

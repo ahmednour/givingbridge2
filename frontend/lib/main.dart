@@ -15,6 +15,7 @@ import 'services/offline_service.dart';
 import 'services/network_status_service.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/landing_screen.dart';
+import 'widgets/offline_banner.dart';
 import 'l10n/app_localizations.dart';
 
 void main() async {
@@ -117,12 +118,17 @@ class _AuthWrapperState extends State<AuthWrapper> {
           return const LoadingScreen();
         }
 
-        // Show appropriate screen based on auth state
-        if (authProvider.isAuthenticated) {
-          return const DashboardScreen();
-        } else {
-          return const LandingScreen();
-        }
+        // Show appropriate screen based on auth state with offline banner
+        return Column(
+          children: [
+            const AnimatedOfflineBanner(),
+            Expanded(
+              child: authProvider.isAuthenticated
+                  ? const DashboardScreen()
+                  : const LandingScreen(),
+            ),
+          ],
+        );
       },
     );
   }

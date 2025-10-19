@@ -7,11 +7,13 @@ const { sequelize } = require("../config/db");
 
 describe("Model Tests", () => {
   beforeEach(async () => {
-    // Clear all tables
-    await Message.destroy({ where: {}, force: true });
-    await Request.destroy({ where: {}, force: true });
-    await Donation.destroy({ where: {}, force: true });
-    await User.destroy({ where: {}, force: true });
+    // Clear all tables in correct order to avoid foreign key constraints
+    await sequelize.query("SET FOREIGN_KEY_CHECKS = 0");
+    await sequelize.query("TRUNCATE TABLE messages");
+    await sequelize.query("TRUNCATE TABLE requests");
+    await sequelize.query("TRUNCATE TABLE donations");
+    await sequelize.query("TRUNCATE TABLE users");
+    await sequelize.query("SET FOREIGN_KEY_CHECKS = 1");
   });
 
   describe("User Model", () => {

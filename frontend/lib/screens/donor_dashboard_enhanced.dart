@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../core/theme/app_theme.dart';
-import '../widgets/app_button.dart';
+import '../widgets/common/gb_button.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../models/donation.dart';
 import 'create_donation_screen_enhanced.dart';
+import 'donor_browse_requests_screen.dart';
+import 'donor_impact_screen.dart';
 import '../l10n/app_localizations.dart';
 
 class DonorDashboardEnhanced extends StatefulWidget {
@@ -435,14 +437,28 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced>
         'description': l10n.seeWhatPeopleNeed,
         'icon': Icons.search,
         'color': const Color(0xFF8B5CF6),
-        'onTap': () {},
+        'onTap': () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const DonorBrowseRequestsScreen(),
+            ),
+          );
+        },
       },
       {
         'title': l10n.viewImpact,
         'description': l10n.seeContributionStats,
         'icon': Icons.analytics_outlined,
         'color': AppTheme.warningColor,
-        'onTap': () {},
+        'onTap': () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const DonorImpactScreen(),
+            ),
+          );
+        },
       },
     ];
 
@@ -577,10 +593,11 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced>
                           color: AppTheme.textPrimaryColor,
                         ),
                       ),
-                      AppButton(
-                        variant: ButtonVariant.primary,
+                      GBPrimaryButton(
                         text: l10n.newButton,
-                        size: isDesktop ? ButtonSize.medium : ButtonSize.small,
+                        size: isDesktop
+                            ? GBButtonSize.medium
+                            : GBButtonSize.small,
                         leftIcon: const Icon(Icons.add, size: 18),
                         onPressed: () => _navigateToCreateDonation(),
                       ),
@@ -652,8 +669,7 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced>
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppTheme.spacingXL),
-            AppButton(
-              variant: ButtonVariant.primary,
+            GBPrimaryButton(
               text: l10n.createFirstDonation,
               leftIcon: const Icon(Icons.add, size: 20),
               onPressed: () => _navigateToCreateDonation(),

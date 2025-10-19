@@ -1,11 +1,13 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../core/theme/app_theme.dart';
-import '../widgets/app_button.dart';
+import '../widgets/common/gb_button.dart';
 import '../services/api_service.dart';
 import '../providers/auth_provider.dart';
 import '../models/donation.dart';
 import '../models/user.dart';
+import '../l10n/app_localizations.dart';
 
 class BrowseDonationsScreen extends StatefulWidget {
   const BrowseDonationsScreen({Key? key}) : super(key: key);
@@ -21,6 +23,7 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
   String _selectedCategory = 'all';
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
+  Timer? _debounce;
 
   final List<Map<String, dynamic>> _categories = [
     {'value': 'all', 'label': 'All', 'icon': Icons.apps},
@@ -39,6 +42,7 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _searchController.dispose();
     super.dispose();
   }
@@ -52,7 +56,7 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
       final response = await ApiService.getDonations(available: true);
       if (response.success && response.data != null) {
         setState(() {
-          _donations = response.data!;
+          _donations = response.data!.items;
           _applyFilters();
         });
       } else {
@@ -98,10 +102,16 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
   }
 
   void _onSearchChanged(String query) {
-    setState(() {
-      _searchQuery = query;
+    // Cancel previous debounce timer
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+    // Set new debounce timer
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      setState(() {
+        _searchQuery = query;
+      });
+      _applyFilters();
     });
-    _applyFilters();
   }
 
   void _showErrorSnackbar(String message) {
@@ -291,7 +301,7 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity( 0.1),
+              color: AppTheme.primaryColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(40),
             ),
             child: const Icon(
@@ -320,10 +330,9 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
             ),
           ),
           const SizedBox(height: AppTheme.spacingL),
-          AppButton(
+          GBOutlineButton(
             text: 'Refresh',
             onPressed: _loadDonations,
-            variant: ButtonVariant.outline,
           ),
         ],
       ),
@@ -382,7 +391,7 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
                         vertical: AppTheme.spacingM,
                       ),
                       decoration: BoxDecoration(
-                        color: AppTheme.primaryColor.withOpacity( 0.1),
+                        color: AppTheme.primaryColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(AppTheme.radiusL),
                       ),
                       child: Text(
@@ -402,7 +411,7 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
                       ),
                       decoration: BoxDecoration(
                         color: _getConditionColor(donation.condition)
-                            .withOpacity( 0.1),
+                            .withOpacity(0.1),
                         borderRadius: BorderRadius.circular(AppTheme.radiusL),
                       ),
                       child: Text(
@@ -485,11 +494,11 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
 
                 // Action Button (only for receivers)
                 if (user.isReceiver)
-                  AppButton(
+                  GBPrimaryButton(
                     text: 'Request Donation',
                     onPressed: () => _requestDonation(donation),
-                    size: ButtonSize.small,
-                    width: double.infinity,
+                    size: GBButtonSize.small,
+                    fullWidth: true,
                   ),
               ],
             ),
@@ -536,7 +545,7 @@ class _RequestDialogState extends State<_RequestDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Request Donation'),
+      title: Text(AppLocalizations.of(context)!.requestDonation),
       content: SizedBox(
         width: 400,
         child: Column(
@@ -571,9 +580,9 @@ class _RequestDialogState extends State<_RequestDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
-        AppButton(
+        GBPrimaryButton(
           text: 'Send Request',
           onPressed: () {
             Navigator.pop(context, {
@@ -583,7 +592,7 @@ class _RequestDialogState extends State<_RequestDialog> {
                   : _messageController.text.trim(),
             });
           },
-          size: ButtonSize.small,
+          size: GBButtonSize.small,
         ),
       ],
     );

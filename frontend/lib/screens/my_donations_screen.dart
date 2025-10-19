@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import '../core/theme/app_theme.dart';
-import '../widgets/app_button.dart';
+import '../widgets/common/gb_button.dart';
 import '../services/api_service.dart';
 import '../models/donation.dart';
 import 'create_donation_screen_enhanced.dart';
+import '../l10n/app_localizations.dart';
 
 class MyDonationsScreen extends StatefulWidget {
   const MyDonationsScreen({Key? key}) : super(key: key);
@@ -114,19 +115,19 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Donation'),
+        title: Text(AppLocalizations.of(context)!.deleteDonation),
         content: Text(
             'Are you sure you want to delete "${donation.title}"? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
-          AppButton(
+          GBButton(
             text: 'Delete',
             onPressed: () => Navigator.pop(context, true),
-            variant: ButtonVariant.danger,
-            size: ButtonSize.small,
+            variant: GBButtonVariant.danger,
+            size: GBButtonSize.small,
           ),
         ],
       ),
@@ -212,7 +213,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
             width: 100,
             height: 100,
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity( 0.1),
+              color: AppTheme.primaryColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(50),
             ),
             child: const Icon(
@@ -240,10 +241,10 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
             ),
           ),
           const SizedBox(height: AppTheme.spacingL),
-          AppButton(
+          GBPrimaryButton(
             text: 'Create First Donation',
             onPressed: _createDonation,
-            size: ButtonSize.large,
+            size: GBButtonSize.large,
           ),
         ],
       ),
@@ -259,7 +260,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
         boxShadow: AppTheme.shadowMD,
         border: donation.isAvailable
             ? null
-            : Border.all(color: Colors.grey.withOpacity( 0.5)),
+            : Border.all(color: Colors.grey.withOpacity(0.5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -333,8 +334,8 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                       ),
                       decoration: BoxDecoration(
                         color: donation.isAvailable
-                            ? Colors.green.withOpacity( 0.1)
-                            : Colors.grey.withOpacity( 0.1),
+                            ? Colors.green.withOpacity(0.1)
+                            : Colors.grey.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(AppTheme.radiusL),
                       ),
                       child: Text(
@@ -354,7 +355,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                         vertical: AppTheme.spacingM,
                       ),
                       decoration: BoxDecoration(
-                        color: AppTheme.primaryColor.withOpacity( 0.1),
+                        color: AppTheme.primaryColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(AppTheme.radiusL),
                       ),
                       child: Text(
@@ -389,7 +390,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                             children: [
                               Icon(Icons.edit, size: 16),
                               SizedBox(width: 8),
-                              Text('Edit'),
+                              Text(AppLocalizations.of(context)!.edit),
                             ],
                           ),
                         ),
@@ -416,7 +417,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                             children: [
                               Icon(Icons.delete, size: 16, color: Colors.red),
                               SizedBox(width: 8),
-                              Text('Delete',
+                              Text(AppLocalizations.of(context)!.deleteAction,
                                   style: TextStyle(color: Colors.red)),
                             ],
                           ),
@@ -487,7 +488,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                       ),
                       decoration: BoxDecoration(
                         color: _getConditionColor(donation.condition)
-                            .withOpacity( 0.1),
+                            .withOpacity(0.1),
                         borderRadius: BorderRadius.circular(AppTheme.radiusL),
                       ),
                       child: Text(
@@ -508,22 +509,21 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                 Row(
                   children: [
                     Expanded(
-                      child: AppButton(
+                      child: GBOutlineButton(
                         text: 'Edit',
                         onPressed: () => _editDonation(donation),
-                        variant: ButtonVariant.outline,
-                        size: ButtonSize.small,
+                        size: GBButtonSize.small,
                       ),
                     ),
                     const SizedBox(width: AppTheme.spacingM),
                     Expanded(
-                      child: AppButton(
+                      child: GBButton(
                         text: donation.isAvailable ? 'Hide' : 'Show',
                         onPressed: () => _toggleAvailability(donation),
                         variant: donation.isAvailable
-                            ? ButtonVariant.secondary
-                            : ButtonVariant.primary,
-                        size: ButtonSize.small,
+                            ? GBButtonVariant.secondary
+                            : GBButtonVariant.primary,
+                        size: GBButtonSize.small,
                       ),
                     ),
                   ],

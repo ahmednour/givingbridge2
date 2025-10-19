@@ -6,6 +6,49 @@ import '../models/donation.dart';
 import '../models/user.dart';
 import '../core/config/api_config.dart';
 
+/// Pagination information from API
+class PaginationInfo {
+  final int total;
+  final int page;
+  final int limit;
+  final int totalPages;
+  final bool hasMore;
+
+  PaginationInfo({
+    required this.total,
+    required this.page,
+    required this.limit,
+    required this.totalPages,
+    required this.hasMore,
+  });
+
+  factory PaginationInfo.fromJson(Map<String, dynamic> json) {
+    return PaginationInfo(
+      total: json['total'] ?? 0,
+      page: json['page'] ?? 1,
+      limit: json['limit'] ?? 20,
+      totalPages: json['totalPages'] ?? 0,
+      hasMore: json['hasMore'] ?? false,
+    );
+  }
+}
+
+/// Paginated response wrapper
+class PaginatedResponse<T> {
+  final List<T> items;
+  final PaginationInfo pagination;
+
+  PaginatedResponse({
+    required this.items,
+    required this.pagination,
+  });
+
+  bool get hasMore => pagination.hasMore;
+  int get currentPage => pagination.page;
+  int get totalPages => pagination.totalPages;
+  int get totalItems => pagination.total;
+}
+
 class ApiService {
   static String get baseUrl => ApiConfig.baseUrl;
 
@@ -19,6 +62,43 @@ class ApiService {
 
   // Requests endpoints
   static const String requestsEndpoint = '/requests';
+
+  // Retry configuration
+  static const int maxRetries = 3;
+  static const Duration retryDelay = Duration(seconds: 2);
+
+  /// Retry HTTP requests with exponential backoff
+  static Future<http.Response> _retryRequest(
+    Future<http.Response> Function() request, {
+    int maxAttempts = maxRetries,
+  }) async {
+    int attempt = 0;
+
+    while (attempt < maxAttempts) {
+      try {
+        final response = await request();
+
+        // Retry on 5xx server errors
+        if (response.statusCode >= 500 && attempt < maxAttempts - 1) {
+          attempt++;
+          await Future.delayed(
+              retryDelay * (attempt + 1)); // Exponential backoff
+          continue;
+        }
+
+        return response;
+      } catch (e) {
+        attempt++;
+        if (attempt >= maxAttempts) {
+          rethrow;
+        }
+        // Wait before retrying with exponential backoff
+        await Future.delayed(retryDelay * attempt);
+      }
+    }
+
+    throw Exception('Max retries exceeded');
+  }
 
   // Helper method to get headers with auth token
   static Future<Map<String, String>> _getHeaders(
@@ -62,13 +142,16 @@ class ApiService {
   static Future<ApiResponse<AuthResult>> login(
       String email, String password) async {
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl$loginEndpoint'),
-        headers: await _getHeaders(),
-        body: jsonEncode({
-          'email': email,
-          'password': password,
-        }),
+      final headers = await _getHeaders();
+      final response = await _retryRequest(
+        () => http.post(
+          Uri.parse('$baseUrl$loginEndpoint'),
+          headers: headers,
+          body: jsonEncode({
+            'email': email,
+            'password': password,
+          }),
+        ),
       );
 
       if (response.statusCode == 200) {
@@ -174,7 +257,8 @@ class ApiService {
         return ApiResponse.success(user);
       } else {
         final error = jsonDecode(response.body);
-        return ApiResponse.error(error['message'] ?? 'Failed to update profile');
+        return ApiResponse.error(
+            error['message'] ?? 'Failed to update profile');
       }
     } catch (e) {
       return ApiResponse.error('Network error: ${e.toString()}');
@@ -205,23 +289,24 @@ class ApiService {
 
   // ========== DONATION METHODS ==========
 
-  // Get all donations with optional filters
-  static Future<ApiResponse<List<Donation>>> getDonations({
+  // Get all donations with optional filters and pagination
+  static Future<ApiResponse<PaginatedResponse<Donation>>> getDonations({
     String? category,
     String? location,
     bool? available,
+    int page = 1,
+    int limit = 20,
   }) async {
     try {
-      String queryParams = '';
       List<String> params = [];
 
       if (category != null) params.add('category=$category');
       if (location != null) params.add('location=$location');
       if (available != null) params.add('available=$available');
+      params.add('page=$page');
+      params.add('limit=$limit');
 
-      if (params.isNotEmpty) {
-        queryParams = '?${params.join('&')}';
-      }
+      final queryParams = '?${params.join('&')}';
 
       final response = await http.get(
         Uri.parse('$baseUrl/donations$queryParams'),
@@ -233,7 +318,15 @@ class ApiService {
         final donations = (data['donations'] as List)
             .map((json) => Donation.fromJson(json))
             .toList();
-        return ApiResponse.success(donations);
+
+        final pagination = PaginationInfo.fromJson(data['pagination']);
+
+        return ApiResponse.success(
+          PaginatedResponse<Donation>(
+            items: donations,
+            pagination: pagination,
+          ),
+        );
       } else {
         final error = jsonDecode(response.body);
         return ApiResponse.error(
@@ -390,21 +483,22 @@ class ApiService {
 
   // ========== REQUEST METHODS ==========
 
-  // Get all requests (filtered by user role)
-  static Future<ApiResponse<List<DonationRequest>>> getRequests({
+  // Get all requests (filtered by user role) with pagination
+  static Future<ApiResponse<PaginatedResponse<DonationRequest>>> getRequests({
     String? donationId,
     String? status,
+    int page = 1,
+    int limit = 20,
   }) async {
     try {
-      String queryParams = '';
       List<String> params = [];
 
       if (donationId != null) params.add('donationId=$donationId');
       if (status != null) params.add('status=$status');
+      params.add('page=$page');
+      params.add('limit=$limit');
 
-      if (params.isNotEmpty) {
-        queryParams = '?${params.join('&')}';
-      }
+      final queryParams = '?${params.join('&')}';
 
       final response = await http.get(
         Uri.parse('$baseUrl/requests$queryParams'),
@@ -416,7 +510,15 @@ class ApiService {
         final requests = (data['requests'] as List)
             .map((json) => DonationRequest.fromJson(json))
             .toList();
-        return ApiResponse.success(requests);
+
+        final pagination = PaginationInfo.fromJson(data['pagination']);
+
+        return ApiResponse.success(
+          PaginatedResponse<DonationRequest>(
+            items: requests,
+            pagination: pagination,
+          ),
+        );
       } else {
         final error = jsonDecode(response.body);
         return ApiResponse.error(error['message'] ?? 'Failed to load requests');
@@ -554,6 +656,24 @@ class ApiService {
     } catch (e) {
       return ApiResponse.error('Network error: ${e.toString()}');
     }
+  }
+
+  // Approve request (convenience method)
+  static Future<ApiResponse<DonationRequest>> approveRequest(
+      int requestId) async {
+    return updateRequestStatus(
+      requestId: requestId.toString(),
+      status: 'approved',
+    );
+  }
+
+  // Decline request (convenience method)
+  static Future<ApiResponse<DonationRequest>> declineRequest(
+      int requestId) async {
+    return updateRequestStatus(
+      requestId: requestId.toString(),
+      status: 'declined',
+    );
   }
 
   // ========== MESSAGE METHODS ==========

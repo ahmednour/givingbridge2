@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
+import '../l10n/app_localizations.dart';
 
 /// Custom exception classes for different types of errors
 class AppException implements Exception {
@@ -271,17 +272,20 @@ class ErrorHandler {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        icon: Icon(icon, color: color, size: 48),
-        title: Text('Error'),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text('OK'),
-          ),
-        ],
-      ),
+      builder: (context) {
+        final l10n = AppLocalizations.of(context)!;
+        return AlertDialog(
+          icon: Icon(icon, color: color, size: 48),
+          title: Text(l10n.error),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(l10n.ok),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -294,21 +298,24 @@ class ErrorHandler {
 
     return await showDialog<bool>(
           context: context,
-          builder: (context) => AlertDialog(
-            icon: Icon(icon, color: color, size: 48),
-            title: Text('Error'),
-            content: Text(message),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text('Retry'),
-              ),
-            ],
-          ),
+          builder: (context) {
+            final l10n = AppLocalizations.of(context)!;
+            return AlertDialog(
+              icon: Icon(icon, color: color, size: 48),
+              title: Text(l10n.error),
+              content: Text(message),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: Text(l10n.cancel),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: Text(l10n.retry),
+                ),
+              ],
+            );
+          },
         ) ??
         false;
   }
@@ -398,7 +405,7 @@ class _DefaultErrorWidget extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh),
-                label: const Text('Try Again'),
+                label: Text(AppLocalizations.of(context)!.tryAgain),
               ),
             ],
           ],

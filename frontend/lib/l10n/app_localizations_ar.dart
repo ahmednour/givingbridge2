@@ -180,7 +180,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get basicInfoDescription => 'قدم معلومات أساسية عن تبرعك';
 
   @override
-  String get donationTitle => 'عنوان التبرع';
+  String get donationTitle => 'التبرع';
 
   @override
   String get donationTitleHint => 'أدخل عنواناً وصفياً لتبرعك';
@@ -450,7 +450,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'جسر العطاء يربط المتبرعين السخيين بالمحتاجين، مما يخلق مجتمعاً حيث يتدفق اللطف بحرية وكل تبرع يُحدث فرقاً حقيقياً.';
 
   @override
-  String get startDonating => 'ابدأ التبرع';
+  String get startDonating => 'ابدأ بالتبرع لترى تأثيرك!';
 
   @override
   String get learnMore => 'اعرف المزيد';
@@ -598,7 +598,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get helpSupportComingSoon => 'المساعدة والدعم قريباً!';
 
   @override
-  String get selectLanguage => 'اختر اللغة';
+  String get selectLanguage => 'Select Language / اختر اللغة';
 
   @override
   String get overview => 'نظرة عامة';
@@ -728,4 +728,472 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get joinCommunity => 'انضم إلى مجتمعنا لإحداث فرق';
+
+  @override
+  String get declineRequest => 'رفض الطلب';
+
+  @override
+  String get approveRequest => 'قبول الطلب';
+
+  @override
+  String get approvalMessage => 'رسالة القبول';
+
+  @override
+  String get provideDeclineReason => 'يرجى تقديم سبب للرفض (اختياري)...';
+
+  @override
+  String get provideApprovalMessage => 'أضف رسالة للمستلم (اختياري)...';
+
+  @override
+  String get responseMessageHint => 'أدخل رسالتك هنا...';
+
+  @override
+  String get requestUpdatedSuccess => 'تم تحديث الطلب بنجاح!';
+
+  @override
+  String get failedToUpdateRequest => 'فشل تحديث الطلب';
+
+  @override
+  String get networkError => 'خطأ في الشبكة';
+
+  @override
+  String get failedToLoadRequests => 'فشل تحميل الطلبات';
+
+  @override
+  String requestFrom(String name) {
+    return 'طلب من';
+  }
+
+  @override
+  String get noRequestsFound => 'لا توجد طلبات';
+
+  @override
+  String get noRequestsDescription => 'ليس لديك أي طلبات تطابق الفلتر المحدد.';
+
+  @override
+  String get respondedAt => 'تم الرد';
+
+  @override
+  String get requestedAt => 'تم الطلب';
+
+  @override
+  String get notifications => 'الإشعارات';
+
+  @override
+  String get markAllRead => 'وضع علامة مقروء على الكل';
+
+  @override
+  String unreadNotifications(int count) {
+    return '$count إشعارات غير مقروءة';
+  }
+
+  @override
+  String get noNotifications => 'لا توجد إشعارات';
+
+  @override
+  String get allCaughtUp => 'لقد قرأت كل شيء!';
+
+  @override
+  String get justNow => 'الآن';
+
+  @override
+  String minutesAgo(int minutes) {
+    return '$minutes د';
+  }
+
+  @override
+  String hoursAgo(int hours) {
+    return '$hours س';
+  }
+
+  @override
+  String daysAgo(int days) {
+    return '$days ي';
+  }
+
+  @override
+  String get markAsRead => 'وضع علامة مقروء';
+
+  @override
+  String get notificationSettings => 'إعدادات الإشعارات';
+
+  @override
+  String get pushNotifications => 'الإشعارات الفورية';
+
+  @override
+  String get donationRequests => 'طلبات التبرع';
+
+  @override
+  String get notifyDonationRequests =>
+      'احصل على إشعار عندما يطلب شخص ما تبرعاتك';
+
+  @override
+  String get newDonations => 'تبرعات جديدة';
+
+  @override
+  String get notifyNewDonations =>
+      'احصل على إشعار حول التبرعات الجديدة في منطقتك';
+
+  @override
+  String get statusUpdates => 'تحديثات الحالة';
+
+  @override
+  String get notifyStatusUpdates => 'احصل على إشعار حول تغييرات حالة التبرع';
+
+  @override
+  String get reminders => 'التذكيرات';
+
+  @override
+  String get notifyReminders =>
+      'احصل على تذكير بأوقات الاستلام والمواعيد النهائية';
+
+  @override
+  String get emailNotifications => 'إشعارات البريد الإلكتروني';
+
+  @override
+  String get weeklySummary => 'ملخص أسبوعي';
+
+  @override
+  String get receiveWeeklySummary => 'احصل على ملخص أسبوعي لنشاطك';
+
+  @override
+  String get importantUpdates => 'تحديثات مهمة';
+
+  @override
+  String get receiveImportantUpdates => 'احصل على تحديثات مهمة للمنصة';
+
+  @override
+  String get marketingEmails => 'رسائل التسويق';
+
+  @override
+  String get receiveMarketingEmails => 'احصل على نصائح وإعلانات عن الميزات';
+
+  @override
+  String get clearAllNotifications => 'مسح كل الإشعارات';
+
+  @override
+  String get enabled => 'مُفعّل';
+
+  @override
+  String get disabled => 'معطل';
+
+  @override
+  String get allNotificationsRead => 'تم وضع علامة مقروء على جميع الإشعارات';
+
+  @override
+  String get notificationDeleted => 'تم حذف الإشعار';
+
+  @override
+  String get clearAllConfirm =>
+      'هل أنت متأكد من أنك تريد مسح جميع الإشعارات؟ لا يمكن التراجع عن هذا الإجراء.';
+
+  @override
+  String get allNotificationsCleared => 'تم مسح جميع الإشعارات';
+
+  @override
+  String get notificationsRefreshed => 'تم تحديث الإشعارات';
+
+  @override
+  String get newDonationRequest => 'طلب تبرع جديد';
+
+  @override
+  String get donationApproved => 'تم قبول التبرع!';
+
+  @override
+  String get pickupReminder => 'تذكير بالاستلام';
+
+  @override
+  String get donationCompleted => 'اكتمل التبرع';
+
+  @override
+  String get newDonationAvailable => 'تبرع جديد متاح';
+
+  @override
+  String get clearAll => 'مسح الكل';
+
+  @override
+  String get cancelRequest => 'إلغاء الطلب';
+
+  @override
+  String get cancelRequestConfirm =>
+      'هل أنت متأكد من أنك تريد إلغاء هذا الطلب؟';
+
+  @override
+  String get yesCancelRequest => 'نعم، إلغاء';
+
+  @override
+  String get markAsCompleted => 'وضع علامة كمكتمل';
+
+  @override
+  String get haveReceivedDonation => 'هل استلمت هذا التبرع؟';
+
+  @override
+  String get notYet => 'ليس بعد';
+
+  @override
+  String get requestCancelled => 'تم إلغاء الطلب بنجاح';
+
+  @override
+  String get requestMarkedCompleted => 'تم وضع علامة مكتمل على الطلب';
+
+  @override
+  String get failedToCancelRequest => 'فشل إلغاء الطلب';
+
+  @override
+  String get failedToCompleteRequest => 'فشل إكمال الطلب';
+
+  @override
+  String get profileUpdatedSuccess => 'تم تحديث الملف الشخصي بنجاح!';
+
+  @override
+  String get failedToUpdateProfile => 'فشل تحديث الملف الشخصي';
+
+  @override
+  String get logoutConfirm => 'هل أنت متأكد من أنك تريد تسجيل الخروج؟';
+
+  @override
+  String get english => 'الإنجليزية';
+
+  @override
+  String get arabic => 'العربية';
+
+  @override
+  String get deleteAction => 'حذف';
+
+  @override
+  String get blockUser => 'حظر المستخدم';
+
+  @override
+  String get reportUser => 'الإبلاغ عن المستخدم';
+
+  @override
+  String get ok => 'موافق';
+
+  @override
+  String get noRouteDefined => 'لم يتم تحديد مسار لـ';
+
+  @override
+  String get securePlatform => 'منصة آمنة';
+
+  @override
+  String get securePlatformDesc => 'تشفير شامل ومعالجة دفع آمنة لراحة بالك.';
+
+  @override
+  String get support247 => 'دعم على مدار الساعة';
+
+  @override
+  String get support247Desc =>
+      'فريق الدعم المخصص لدينا جاهز دائمًا لمساعدتك في إحداث فرق.';
+
+  @override
+  String get simpleSteps => 'خطوات بسيطة لإحداث فرق';
+
+  @override
+  String get whatCommunitySays => 'ماذا يقول مجتمعنا';
+
+  @override
+  String get realStories =>
+      'قصص حقيقية من المتبرعين والمستقبلين الذين يحدثون فرقًا كل يوم';
+
+  @override
+  String get testimonial1Text =>
+      'بعد خسارة عملي بسبب الوباء، وجدت نفسي بحاجة للمساعدة. في غضون يومين، قدم متبرع البقالة لعائلتي. الآن بعد أن عدت إلى قدمي، أتبرع بانتظام لرد الجميل. هذه المنصة أنقذتنا.';
+
+  @override
+  String get testimonial2Text =>
+      'أنسق التبرعات لحيي. جعلت جيفينج بريدج كل شيء أبسط - من نشر الطلبات إلى تتبع التسليمات. ساعدنا 23 عائلة هذا العام وحده. التأثير حقيقي وقابل للقياس.';
+
+  @override
+  String get testimonial3Text =>
+      'كأم عزباء تعمل في وظيفتين، كان تحمل تكاليف اللوازم المدرسية صعبًا. من خلال جيفينج بريدج، حصل أطفالي على الكتب وجهاز كمبيوتر محمول وملابس. كان المتبرعون محترمين ولطفاء. هذه المنصة نعمة.';
+
+  @override
+  String get enterYourName => 'أدخل اسمك';
+
+  @override
+  String get enterYourEmail => 'أدخل بريدك الإلكتروني';
+
+  @override
+  String get enterYourPassword => 'أدخل كلمة المرور';
+
+  @override
+  String get enterYourPhone => 'أدخل رقم هاتفك';
+
+  @override
+  String get enterYourLocation => 'أدخل موقعك';
+
+  @override
+  String get optional => '(اختياري)';
+
+  @override
+  String get pleaseEnterYourName => 'يرجى إدخال اسمك';
+
+  @override
+  String get pleaseFillRequiredFields =>
+      'يرجى ملء جميع الحقول المطلوبة بشكل صحيح';
+
+  @override
+  String get requestsForMyDonations => 'طلبات تبرعاتي';
+
+  @override
+  String get noIncomingRequests => 'لا توجد طلبات واردة بعد';
+
+  @override
+  String get whenReceiversRequest => 'عندما يطلب المستقبلون تبرعاتك، ستظهر هنا';
+
+  @override
+  String get requestedOn => 'تم الطلب في';
+
+  @override
+  String get myImpact => 'تأثيري';
+
+  @override
+  String get contributionStatistics => 'إحصائيات المساهمة';
+
+  @override
+  String get totalDonationsMade => 'إجمالي التبرعات المقدمة';
+
+  @override
+  String get activeDonations => 'التبرعات النشطة';
+
+  @override
+  String get completedDonations => 'التبرعات المكتملة';
+
+  @override
+  String get peopleHelped => 'الأشخاص الذين تمت مساعدتهم';
+
+  @override
+  String get approvedRequests => 'الطلبات المقبولة';
+
+  @override
+  String get pendingRequests => 'الطلبات المعلقة';
+
+  @override
+  String get impactOverTime => 'التأثير عبر الزمن';
+
+  @override
+  String get thisMonth => 'هذا الشهر';
+
+  @override
+  String get thisYear => 'هذا العام';
+
+  @override
+  String get allTime => 'طوال الوقت';
+
+  @override
+  String get categoryBreakdown => 'التوزيع حسب الفئة';
+
+  @override
+  String get recentActivity => 'النشاط الأخير';
+
+  @override
+  String get viewDetails => 'عرض التفاصيل';
+
+  @override
+  String get noActivityYet => 'لا يوجد نشاط بعد';
+
+  @override
+  String get requestDetails => 'تفاصيل الطلب';
+
+  @override
+  String get requester => 'الطالب';
+
+  @override
+  String get contactRequester => 'الاتصال بالطالب';
+
+  @override
+  String get statistics => 'الإحصائيات';
+
+  @override
+  String get requestApproved => 'تم قبول الطلب بنجاح';
+
+  @override
+  String get requestDeclined => 'تم رفض الطلب';
+
+  @override
+  String get communities => 'المجتمعات';
+
+  @override
+  String get activeDonors => 'المتبرعين النشطين';
+
+  @override
+  String get donationsToday => 'تبرعات اليوم';
+
+  @override
+  String get peopleHelpedCount => 'أشخاص تم مساعدتهم';
+
+  @override
+  String get secure100 => 'آمن 100%';
+
+  @override
+  String get popularBadge => '🔥 شائع';
+
+  @override
+  String get trendingUp => '+18%';
+
+  @override
+  String get newCommunities => '+3 جديدة';
+
+  @override
+  String get trendingUp24 => '+24%';
+
+  @override
+  String get trustedBadge => 'موثوق';
+
+  @override
+  String get aiPoweredBadge => '✨ مدعوم بالذكاء الاصطناعي';
+
+  @override
+  String get verifiedBadge => '✓ موثق';
+
+  @override
+  String get realtimeBadge => '📊 في الوقت الفعلي';
+
+  @override
+  String get secureBadge => '🔒 آمن';
+
+  @override
+  String get supportBadge => '🆘 دعم 24/7';
+
+  @override
+  String get newBadge => '🆕 جديد';
+
+  @override
+  String get receiveDonationNotifications => 'تلقي إشعارات حول التبرعات';
+
+  @override
+  String get receiveEmailUpdates => 'تلقي تحديثات البريد الإلكتروني حول نشاطك';
+
+  @override
+  String get notifyOnNewRequests => 'الإشعار عند طلب تبرعاتك';
+
+  @override
+  String get donationApprovals => 'موافقات التبرع';
+
+  @override
+  String get notifyOnApprovals => 'الإشعار عند الموافقة على طلبات التبرع';
+
+  @override
+  String get notifyOnNewMessages => 'الإشعار عند تلقي رسائل جديدة';
+
+  @override
+  String get systemUpdates => 'تحديثات النظام';
+
+  @override
+  String get notifyOnSystemUpdates => 'الإشعار حول تحديثات التطبيق والصيانة';
+
+  @override
+  String get manageYourNotifications => 'إدارة تفضيلات الإشعارات';
+
+  @override
+  String get allNotifications => 'جميع الإشعارات';
+
+  @override
+  String get turnOnAllNotifications => 'تشغيل جميع الإشعارات';
+
+  @override
+  String get language => 'اللغة';
+
+  @override
+  String get changeAppLanguage => 'تغيير لغة التطبيق';
 }

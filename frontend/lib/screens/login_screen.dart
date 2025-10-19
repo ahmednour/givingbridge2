@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../core/theme/app_theme.dart';
+import '../core/theme/design_system.dart';
 import '../providers/auth_provider.dart';
 import '../providers/locale_provider.dart';
-import '../widgets/app_button.dart';
-import '../widgets/app_input.dart';
+import '../widgets/common/gb_button.dart';
+import '../widgets/common/gb_text_field.dart';
 import '../l10n/app_localizations.dart';
 import 'register_screen.dart';
 import 'dashboard_screen.dart';
@@ -187,64 +188,62 @@ class _LoginScreenState extends State<LoginScreen> {
                         ],
 
                         // Form fields
-                        AppInput(
+                        GBTextField(
                           label: l10n.email,
-                          hint: 'Enter your ${l10n.email.toLowerCase()}',
+                          hint: l10n.enterYourEmail,
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
                           prefixIcon: const Icon(
                             Icons.email_outlined,
-                            color: AppTheme.textSecondaryColor,
                             size: 20,
                           ),
                           validator: _validateEmail,
                         ),
 
-                        const SizedBox(height: AppTheme.spacingL),
+                        const SizedBox(height: DesignSystem.spaceL),
 
-                        AppInput(
+                        GBTextField(
                           label: l10n.password,
-                          hint: 'Enter your ${l10n.password.toLowerCase()}',
+                          hint: l10n.enterYourPassword,
                           controller: _passwordController,
-                          obscureText: true,
+                          obscureText: true, // Auto password toggle!
                           prefixIcon: const Icon(
                             Icons.lock_outline,
-                            color: AppTheme.textSecondaryColor,
                             size: 20,
                           ),
                           validator: _validatePassword,
                           onSubmitted: (_) => _handleLogin(),
                         ),
 
-                        const SizedBox(height: AppTheme.spacingXL),
+                        const SizedBox(height: DesignSystem.spaceXL),
 
                         // Login button
-                        AppButton(
+                        GBPrimaryButton(
                           text: l10n.signIn,
                           onPressed: _handleLogin,
                           isLoading: _isLoading,
-                          size: ButtonSize.large,
-                          width: double.infinity,
+                          size: GBButtonSize.large,
+                          fullWidth: true,
+                          leftIcon: const Icon(Icons.login, size: 20),
                         ),
 
-                        const SizedBox(height: AppTheme.spacingL),
+                        const SizedBox(height: DesignSystem.spaceL),
 
                         // Quick login buttons for testing
                         Wrap(
-                          spacing: AppTheme.spacingS,
-                          runSpacing: AppTheme.spacingS,
+                          spacing: DesignSystem.spaceS,
+                          runSpacing: DesignSystem.spaceS,
                           children: [
-                            AppButton(
+                            GBOutlineButton(
                               text: 'Demo Donor',
                               onPressed: () {
                                 _emailController.text = 'demo@example.com';
                                 _passwordController.text = 'demo123';
                                 _handleLogin();
                               },
-                              variant: ButtonVariant.outline,
-                              size: ButtonSize.small,
+                              size: GBButtonSize.small,
                             ),
-                            AppButton(
+                            GBOutlineButton(
                               text: 'Demo Admin',
                               onPressed: () {
                                 _emailController.text =
@@ -252,18 +251,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                 _passwordController.text = 'admin123';
                                 _handleLogin();
                               },
-                              variant: ButtonVariant.outline,
-                              size: ButtonSize.small,
+                              size: GBButtonSize.small,
                             ),
-                            AppButton(
+                            GBOutlineButton(
                               text: 'Demo Receiver',
                               onPressed: () {
                                 _emailController.text = 'receiver@example.com';
                                 _passwordController.text = 'receive123';
                                 _handleLogin();
                               },
-                              variant: ButtonVariant.outline,
-                              size: ButtonSize.small,
+                              size: GBButtonSize.small,
                             ),
                           ],
                         ),

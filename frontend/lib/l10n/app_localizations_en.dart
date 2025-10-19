@@ -181,7 +181,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Provide basic information about your donation';
 
   @override
-  String get donationTitle => 'Donation Title';
+  String get donationTitle => 'Donation';
 
   @override
   String get donationTitleHint => 'Enter a descriptive title for your donation';
@@ -457,7 +457,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Giving Bridge connects generous donors with those in need, creating a community where kindness flows freely and every donation makes a real difference.';
 
   @override
-  String get startDonating => 'Start Donating';
+  String get startDonating => 'Start donating to see your impact!';
 
   @override
   String get learnMore => 'Learn More';
@@ -610,7 +610,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get helpSupportComingSoon => 'Help & Support coming soon!';
 
   @override
-  String get selectLanguage => 'Select Language';
+  String get selectLanguage => 'Select Language / اختر اللغة';
 
   @override
   String get overview => 'Overview';
@@ -741,4 +741,482 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get joinCommunity => 'Join our community to make a difference';
+
+  @override
+  String get declineRequest => 'Decline Request';
+
+  @override
+  String get approveRequest => 'Approve Request';
+
+  @override
+  String get approvalMessage => 'Approval Message';
+
+  @override
+  String get provideDeclineReason =>
+      'Please provide a reason for declining (optional)...';
+
+  @override
+  String get provideApprovalMessage =>
+      'Add a message for the receiver (optional)...';
+
+  @override
+  String get responseMessageHint => 'Enter your message here...';
+
+  @override
+  String get requestUpdatedSuccess => 'Request updated successfully!';
+
+  @override
+  String get failedToUpdateRequest => 'Failed to update request';
+
+  @override
+  String get networkError => 'Network error';
+
+  @override
+  String get failedToLoadRequests => 'Failed to load requests';
+
+  @override
+  String requestFrom(String name) {
+    return 'Request from';
+  }
+
+  @override
+  String get noRequestsFound => 'No requests found';
+
+  @override
+  String get noRequestsDescription =>
+      'You don\'t have any requests matching the selected filter.';
+
+  @override
+  String get respondedAt => 'Responded';
+
+  @override
+  String get requestedAt => 'Requested';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get markAllRead => 'Mark all read';
+
+  @override
+  String unreadNotifications(int count) {
+    return '$count unread notifications';
+  }
+
+  @override
+  String get noNotifications => 'No notifications';
+
+  @override
+  String get allCaughtUp => 'You\'re all caught up!';
+
+  @override
+  String get justNow => 'Just now';
+
+  @override
+  String minutesAgo(int minutes) {
+    return '${minutes}m ago';
+  }
+
+  @override
+  String hoursAgo(int hours) {
+    return '${hours}h ago';
+  }
+
+  @override
+  String daysAgo(int days) {
+    return '${days}d ago';
+  }
+
+  @override
+  String get markAsRead => 'Mark as read';
+
+  @override
+  String get notificationSettings => 'Notification Settings';
+
+  @override
+  String get pushNotifications => 'Push Notifications';
+
+  @override
+  String get donationRequests => 'Donation Requests';
+
+  @override
+  String get notifyDonationRequests =>
+      'Get notified when someone requests your donations';
+
+  @override
+  String get newDonations => 'New Donations';
+
+  @override
+  String get notifyNewDonations =>
+      'Get notified about new donations in your area';
+
+  @override
+  String get statusUpdates => 'Status Updates';
+
+  @override
+  String get notifyStatusUpdates =>
+      'Get notified about donation status changes';
+
+  @override
+  String get reminders => 'Reminders';
+
+  @override
+  String get notifyReminders => 'Get reminded about pickup times and deadlines';
+
+  @override
+  String get emailNotifications => 'Email Notifications';
+
+  @override
+  String get weeklySummary => 'Weekly Summary';
+
+  @override
+  String get receiveWeeklySummary =>
+      'Receive a weekly summary of your activity';
+
+  @override
+  String get importantUpdates => 'Important Updates';
+
+  @override
+  String get receiveImportantUpdates => 'Receive important platform updates';
+
+  @override
+  String get marketingEmails => 'Marketing Emails';
+
+  @override
+  String get receiveMarketingEmails => 'Receive tips and feature announcements';
+
+  @override
+  String get clearAllNotifications => 'Clear All Notifications';
+
+  @override
+  String get enabled => 'Enabled';
+
+  @override
+  String get disabled => 'Disabled';
+
+  @override
+  String get allNotificationsRead => 'All notifications marked as read';
+
+  @override
+  String get notificationDeleted => 'Notification deleted';
+
+  @override
+  String get clearAllConfirm =>
+      'Are you sure you want to clear all notifications? This action cannot be undone.';
+
+  @override
+  String get allNotificationsCleared => 'All notifications cleared';
+
+  @override
+  String get notificationsRefreshed => 'Notifications refreshed';
+
+  @override
+  String get newDonationRequest => 'New donation request';
+
+  @override
+  String get donationApproved => 'Donation approved!';
+
+  @override
+  String get pickupReminder => 'Pickup reminder';
+
+  @override
+  String get donationCompleted => 'Donation completed';
+
+  @override
+  String get newDonationAvailable => 'New donation available';
+
+  @override
+  String get clearAll => 'Clear All';
+
+  @override
+  String get cancelRequest => 'Cancel Request';
+
+  @override
+  String get cancelRequestConfirm =>
+      'Are you sure you want to cancel this request?';
+
+  @override
+  String get yesCancelRequest => 'Yes, Cancel';
+
+  @override
+  String get markAsCompleted => 'Mark as Completed';
+
+  @override
+  String get haveReceivedDonation => 'Have you received this donation?';
+
+  @override
+  String get notYet => 'Not Yet';
+
+  @override
+  String get requestCancelled => 'Request cancelled successfully';
+
+  @override
+  String get requestMarkedCompleted => 'Request marked as completed';
+
+  @override
+  String get failedToCancelRequest => 'Failed to cancel request';
+
+  @override
+  String get failedToCompleteRequest => 'Failed to complete request';
+
+  @override
+  String get profileUpdatedSuccess => 'Profile updated successfully!';
+
+  @override
+  String get failedToUpdateProfile => 'Failed to update profile';
+
+  @override
+  String get logoutConfirm => 'Are you sure you want to logout?';
+
+  @override
+  String get english => 'English';
+
+  @override
+  String get arabic => 'العربية';
+
+  @override
+  String get deleteAction => 'Delete';
+
+  @override
+  String get blockUser => 'Block User';
+
+  @override
+  String get reportUser => 'Report User';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get noRouteDefined => 'No route defined for';
+
+  @override
+  String get securePlatform => 'Secure Platform';
+
+  @override
+  String get securePlatformDesc =>
+      'End-to-end encryption and secure payment processing for your peace of mind.';
+
+  @override
+  String get support247 => '24/7 Support';
+
+  @override
+  String get support247Desc =>
+      'Our dedicated support team is always ready to help you make a difference.';
+
+  @override
+  String get simpleSteps => 'Simple steps to make a difference';
+
+  @override
+  String get whatCommunitySays => 'What Our Community Says';
+
+  @override
+  String get realStories =>
+      'Real stories from donors and receivers who make a difference every day';
+
+  @override
+  String get testimonial1Text =>
+      'After losing my business due to the pandemic, I found myself needing help. Within 2 days, a donor provided groceries for my family. Now that I\'m back on my feet, I donate regularly to pay it forward. This platform saved us.';
+
+  @override
+  String get testimonial2Text =>
+      'I coordinate donations for my neighborhood. GivingBridge streamlined everything - from posting requests to tracking deliveries. We\'ve helped 23 families this year alone. The impact is real and measurable.';
+
+  @override
+  String get testimonial3Text =>
+      'As a single mother working two jobs, affording school supplies was tough. Through GivingBridge, my kids got books, a laptop, and clothes. The donors were respectful and kind. This platform is a blessing.';
+
+  @override
+  String get enterYourName => 'Enter your name';
+
+  @override
+  String get enterYourEmail => 'Enter your email';
+
+  @override
+  String get enterYourPassword => 'Enter your password';
+
+  @override
+  String get enterYourPhone => 'Enter your phone number';
+
+  @override
+  String get enterYourLocation => 'Enter your location';
+
+  @override
+  String get optional => '(Optional)';
+
+  @override
+  String get pleaseEnterYourName => 'Please enter your name';
+
+  @override
+  String get pleaseFillRequiredFields =>
+      'Please fill in all required fields correctly';
+
+  @override
+  String get requestsForMyDonations => 'Requests for my donations';
+
+  @override
+  String get noIncomingRequests => 'No incoming requests yet';
+
+  @override
+  String get whenReceiversRequest =>
+      'When receivers request your donations, they will appear here';
+
+  @override
+  String get requestedOn => 'Requested on';
+
+  @override
+  String get myImpact => 'My Impact';
+
+  @override
+  String get contributionStatistics => 'Contribution Statistics';
+
+  @override
+  String get totalDonationsMade => 'Total Donations Made';
+
+  @override
+  String get activeDonations => 'Active Donations';
+
+  @override
+  String get completedDonations => 'Completed Donations';
+
+  @override
+  String get peopleHelped => 'People Helped';
+
+  @override
+  String get approvedRequests => 'Approved Requests';
+
+  @override
+  String get pendingRequests => 'Pending Requests';
+
+  @override
+  String get impactOverTime => 'Impact Over Time';
+
+  @override
+  String get thisMonth => 'This Month';
+
+  @override
+  String get thisYear => 'This Year';
+
+  @override
+  String get allTime => 'All Time';
+
+  @override
+  String get categoryBreakdown => 'Category Breakdown';
+
+  @override
+  String get recentActivity => 'Recent Activity';
+
+  @override
+  String get viewDetails => 'View Details';
+
+  @override
+  String get noActivityYet => 'No activity yet';
+
+  @override
+  String get requestDetails => 'Request Details';
+
+  @override
+  String get requester => 'Requester';
+
+  @override
+  String get contactRequester => 'Contact Requester';
+
+  @override
+  String get statistics => 'Statistics';
+
+  @override
+  String get requestApproved => 'Request approved successfully';
+
+  @override
+  String get requestDeclined => 'Request declined';
+
+  @override
+  String get communities => 'Communities';
+
+  @override
+  String get activeDonors => 'Active Donors';
+
+  @override
+  String get donationsToday => 'donations today';
+
+  @override
+  String get peopleHelpedCount => 'people helped';
+
+  @override
+  String get secure100 => 'Secure 100%';
+
+  @override
+  String get popularBadge => '🔥 Popular';
+
+  @override
+  String get trendingUp => '+18%';
+
+  @override
+  String get newCommunities => '+3 new';
+
+  @override
+  String get trendingUp24 => '+24%';
+
+  @override
+  String get trustedBadge => 'Trusted';
+
+  @override
+  String get aiPoweredBadge => '✨ AI Powered';
+
+  @override
+  String get verifiedBadge => '✓ Verified';
+
+  @override
+  String get realtimeBadge => '📊 Real-time';
+
+  @override
+  String get secureBadge => '🔒 Secure';
+
+  @override
+  String get supportBadge => '🆘 24/7 Support';
+
+  @override
+  String get newBadge => '🆕 New';
+
+  @override
+  String get receiveDonationNotifications =>
+      'Receive notifications about donations';
+
+  @override
+  String get receiveEmailUpdates => 'Receive email updates about your activity';
+
+  @override
+  String get notifyOnNewRequests =>
+      'Notify when someone requests your donations';
+
+  @override
+  String get donationApprovals => 'Donation Approvals';
+
+  @override
+  String get notifyOnApprovals =>
+      'Notify when your donation requests are approved';
+
+  @override
+  String get notifyOnNewMessages => 'Notify when you receive new messages';
+
+  @override
+  String get systemUpdates => 'System Updates';
+
+  @override
+  String get notifyOnSystemUpdates =>
+      'Notify about app updates and maintenance';
+
+  @override
+  String get manageYourNotifications => 'Manage your notification preferences';
+
+  @override
+  String get allNotifications => 'All Notifications';
+
+  @override
+  String get turnOnAllNotifications => 'Turn on all notifications';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get changeAppLanguage => 'Change app language';
 }

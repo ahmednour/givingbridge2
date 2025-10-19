@@ -10,10 +10,10 @@ const { sequelize } = require("../config/db");
 // Import authentication middleware from auth routes
 const { authenticateToken } = require("./auth");
 
-// Get all requests with optional filters
+// Get all requests with optional filters and pagination
 router.get("/", authenticateToken, async (req, res) => {
   try {
-    const { donationId, status } = req.query;
+    const { donationId, status, page, limit } = req.query;
     const user = await User.findByPk(req.user.userId);
 
     if (!user) {
@@ -32,15 +32,27 @@ router.get("/", authenticateToken, async (req, res) => {
     }
     // Admin can see all requests (no additional filter)
 
-    const requestsData = await Request.findAll({
+    const pageNum = parseInt(page) || 1;
+    const limitNum = parseInt(limit) || 20;
+    const offset = (pageNum - 1) * limitNum;
+
+    const { rows, count } = await Request.findAndCountAll({
       where,
       order: [["createdAt", "DESC"]],
+      limit: limitNum,
+      offset: offset,
     });
 
     res.json({
       message: "Requests retrieved successfully",
-      requests: requestsData,
-      total: requestsData.length,
+      requests: rows,
+      pagination: {
+        total: count,
+        page: pageNum,
+        limit: limitNum,
+        totalPages: Math.ceil(count / limitNum),
+        hasMore: offset + rows.length < count,
+      },
     });
   } catch (error) {
     console.error("Get requests error:", error);

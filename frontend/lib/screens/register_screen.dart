@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../core/theme/app_theme.dart';
+import '../core/theme/design_system.dart';
 import '../providers/auth_provider.dart';
-import '../widgets/app_button.dart';
-import '../widgets/app_input.dart';
+import '../widgets/common/gb_button.dart';
+import '../widgets/common/gb_text_field.dart';
 import '../l10n/app_localizations.dart';
 import 'dashboard_screen.dart';
 
@@ -221,87 +222,83 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ],
                       ),
 
-                      const SizedBox(height: AppTheme.spacingL),
+                      const SizedBox(height: DesignSystem.spaceL),
 
                       // Form fields
-                      AppInput(
+                      GBTextField(
                         label: l10n.name,
-                        hint: 'Enter your ${l10n.name.toLowerCase()}',
+                        hint: l10n.enterYourName,
                         controller: _nameController,
                         prefixIcon: const Icon(
                           Icons.person_outline,
-                          color: AppTheme.textSecondaryColor,
                           size: 20,
                         ),
                         validator: _validateName,
                       ),
 
-                      const SizedBox(height: AppTheme.spacingL),
+                      const SizedBox(height: DesignSystem.spaceL),
 
-                      AppInput(
+                      GBTextField(
                         label: l10n.email,
-                        hint: 'Enter your ${l10n.email.toLowerCase()}',
+                        hint: l10n.enterYourEmail,
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         prefixIcon: const Icon(
                           Icons.email_outlined,
-                          color: AppTheme.textSecondaryColor,
                           size: 20,
                         ),
                         validator: _validateEmail,
                       ),
 
-                      const SizedBox(height: AppTheme.spacingL),
+                      const SizedBox(height: DesignSystem.spaceL),
 
-                      AppInput(
+                      GBTextField(
                         label: l10n.password,
-                        hint: 'Enter your ${l10n.password.toLowerCase()}',
+                        hint: l10n.enterYourPassword,
                         controller: _passwordController,
-                        obscureText: true,
+                        obscureText: true, // Auto password toggle!
                         prefixIcon: const Icon(
                           Icons.lock_outline,
-                          color: AppTheme.textSecondaryColor,
                           size: 20,
                         ),
                         validator: _validatePassword,
                       ),
 
-                      const SizedBox(height: AppTheme.spacingL),
+                      const SizedBox(height: DesignSystem.spaceL),
 
-                      AppInput(
-                        label: '${l10n.phone} (Optional)',
-                        hint: 'Enter your ${l10n.phone.toLowerCase()}',
+                      GBTextField(
+                        label: '${l10n.phone} ${l10n.optional}',
+                        hint: l10n.enterYourPhone,
                         controller: _phoneController,
                         keyboardType: TextInputType.phone,
                         prefixIcon: const Icon(
                           Icons.phone_outlined,
-                          color: AppTheme.textSecondaryColor,
                           size: 20,
                         ),
                       ),
 
-                      const SizedBox(height: AppTheme.spacingL),
+                      const SizedBox(height: DesignSystem.spaceL),
 
-                      AppInput(
-                        label: '${l10n.location} (Optional)',
-                        hint: 'Enter your ${l10n.location.toLowerCase()}',
+                      GBTextField(
+                        label: '${l10n.location} ${l10n.optional}',
+                        hint: l10n.enterYourLocation,
                         controller: _locationController,
                         prefixIcon: const Icon(
                           Icons.location_on_outlined,
-                          color: AppTheme.textSecondaryColor,
                           size: 20,
                         ),
                       ),
 
-                      const SizedBox(height: AppTheme.spacingXL),
+                      const SizedBox(height: DesignSystem.spaceXL),
 
                       // Register button
-                      AppButton(
+                      GBPrimaryButton(
                         text: l10n.signUp,
                         onPressed: _handleRegister,
                         isLoading: _isLoading,
-                        size: ButtonSize.large,
-                        width: double.infinity,
+                        size: GBButtonSize.large,
+                        fullWidth: true,
+                        leftIcon: const Icon(Icons.person_add, size: 20),
                       ),
 
                       const SizedBox(height: AppTheme.spacingL),

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../core/theme/app_theme.dart';
-import '../widgets/app_button.dart';
+import '../widgets/common/gb_button.dart';
 import '../services/api_service.dart';
+import '../l10n/app_localizations.dart';
 
 class MyRequestsScreen extends StatefulWidget {
   const MyRequestsScreen({Key? key}) : super(key: key);
@@ -15,13 +16,16 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
   bool _isLoading = true;
   String _selectedFilter = 'all';
 
-  final List<Map<String, dynamic>> _filters = [
-    {'value': 'all', 'label': 'All', 'icon': Icons.all_inbox},
-    {'value': 'pending', 'label': 'Pending', 'icon': Icons.pending},
-    {'value': 'approved', 'label': 'Approved', 'icon': Icons.check_circle},
-    {'value': 'declined', 'label': 'Declined', 'icon': Icons.cancel},
-    {'value': 'completed', 'label': 'Completed', 'icon': Icons.done_all},
-  ];
+  List<Map<String, dynamic>> _getFilters(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return [
+      {'value': 'all', 'label': l10n.all, 'icon': Icons.all_inbox},
+      {'value': 'pending', 'label': l10n.pending, 'icon': Icons.pending},
+      {'value': 'approved', 'label': l10n.approved, 'icon': Icons.check_circle},
+      {'value': 'declined', 'label': l10n.declined, 'icon': Icons.cancel},
+      {'value': 'completed', 'label': l10n.completed, 'icon': Icons.done_all},
+    ];
+  }
 
   @override
   void initState() {
@@ -41,10 +45,12 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
           _requests = response.data!;
         });
       } else {
-        _showErrorSnackbar(response.error ?? 'Failed to load requests');
+        final l10n = AppLocalizations.of(context)!;
+        _showErrorSnackbar(response.error ?? l10n.failedToLoadRequests);
       }
     } catch (e) {
-      _showErrorSnackbar('Network error: ${e.toString()}');
+      final l10n = AppLocalizations.of(context)!;
+      _showErrorSnackbar('${l10n.networkError}: ${e.toString()}');
     } finally {
       setState(() {
         _isLoading = false;
@@ -78,21 +84,22 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
   }
 
   Future<void> _cancelRequest(DonationRequest request) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Cancel Request'),
-        content: const Text('Are you sure you want to cancel this request?'),
+        title: Text(l10n.cancelRequest),
+        content: Text(l10n.cancelRequestConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('No'),
+            child: Text(l10n.no),
           ),
-          AppButton(
-            text: 'Yes, Cancel',
+          GBButton(
+            text: l10n.yesCancelRequest,
             onPressed: () => Navigator.pop(context, true),
-            variant: ButtonVariant.danger,
-            size: ButtonSize.small,
+            variant: GBButtonVariant.danger,
+            size: GBButtonSize.small,
           ),
         ],
       ),
@@ -106,32 +113,36 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
         );
 
         if (response.success) {
-          _showSuccessSnackbar('Request cancelled successfully');
+          final l10n = AppLocalizations.of(context)!;
+          _showSuccessSnackbar(l10n.requestCancelled);
           _loadRequests(); // Refresh the list
         } else {
-          _showErrorSnackbar(response.error ?? 'Failed to cancel request');
+          final l10n = AppLocalizations.of(context)!;
+          _showErrorSnackbar(response.error ?? l10n.failedToCancelRequest);
         }
       } catch (e) {
-        _showErrorSnackbar('Network error: ${e.toString()}');
+        final l10n = AppLocalizations.of(context)!;
+        _showErrorSnackbar('${l10n.networkError}: ${e.toString()}');
       }
     }
   }
 
   Future<void> _markAsCompleted(DonationRequest request) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Mark as Completed'),
-        content: const Text('Have you received this donation?'),
+        title: Text(l10n.markAsCompleted),
+        content: Text(l10n.haveReceivedDonation),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Not Yet'),
+            child: Text(l10n.notYet),
           ),
-          AppButton(
-            text: 'Yes, Received',
+          GBPrimaryButton(
+            text: l10n.yes,
             onPressed: () => Navigator.pop(context, true),
-            size: ButtonSize.small,
+            size: GBButtonSize.small,
           ),
         ],
       ),
@@ -145,13 +156,16 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
         );
 
         if (response.success) {
-          _showSuccessSnackbar('Request marked as completed!');
+          final l10n = AppLocalizations.of(context)!;
+          _showSuccessSnackbar(l10n.requestMarkedCompleted);
           _loadRequests(); // Refresh the list
         } else {
-          _showErrorSnackbar(response.error ?? 'Failed to update request');
+          final l10n = AppLocalizations.of(context)!;
+          _showErrorSnackbar(response.error ?? l10n.failedToCompleteRequest);
         }
       } catch (e) {
-        _showErrorSnackbar('Network error: ${e.toString()}');
+        final l10n = AppLocalizations.of(context)!;
+        _showErrorSnackbar('${l10n.networkError}: ${e.toString()}');
       }
     }
   }
@@ -169,9 +183,9 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
           icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimaryColor),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'My Requests',
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context)!.myRequests,
+          style: const TextStyle(
             color: AppTheme.textPrimaryColor,
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -189,9 +203,9 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
               height: 50,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: _filters.length,
+                itemCount: _getFilters(context).length,
                 itemBuilder: (context, index) {
-                  final filter = _filters[index];
+                  final filter = _getFilters(context)[index];
                   final isSelected = _selectedFilter == filter['value'];
 
                   return Container(
@@ -270,7 +284,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity( 0.1),
+              color: AppTheme.primaryColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(40),
             ),
             child: const Icon(
@@ -300,10 +314,9 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
             ),
           ),
           const SizedBox(height: AppTheme.spacingM),
-          AppButton(
+          GBOutlineButton(
             text: 'Browse Donations',
             onPressed: () => Navigator.pop(context),
-            variant: ButtonVariant.outline,
           ),
         ],
       ),
@@ -332,7 +345,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
                     vertical: AppTheme.spacingXS,
                   ),
                   decoration: BoxDecoration(
-                    color: request.statusColor.withOpacity( 0.1),
+                    color: request.statusColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(AppTheme.radiusS),
                   ),
                   child: Text(
@@ -421,19 +434,18 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
               children: [
                 if (request.isPending) ...[
                   Expanded(
-                    child: AppButton(
+                    child: GBOutlineButton(
                       text: 'Cancel Request',
                       onPressed: () => _cancelRequest(request),
-                      variant: ButtonVariant.outline,
-                      size: ButtonSize.small,
+                      size: GBButtonSize.small,
                     ),
                   ),
                 ] else if (request.isApproved) ...[
                   Expanded(
-                    child: AppButton(
+                    child: GBPrimaryButton(
                       text: 'Mark as Received',
                       onPressed: () => _markAsCompleted(request),
-                      size: ButtonSize.small,
+                      size: GBButtonSize.small,
                     ),
                   ),
                 ] else ...[

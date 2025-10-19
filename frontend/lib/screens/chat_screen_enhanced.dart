@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import '../core/theme/app_theme_enhanced.dart';
 import '../core/utils/rtl_utils.dart';
 import '../core/constants/ui_constants.dart';
+import '../widgets/common/gb_button.dart';
 import '../widgets/app_components.dart';
 import '../providers/auth_provider.dart';
 import '../providers/message_provider.dart';
@@ -245,6 +248,34 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
     );
   }
 
+  void _showLoadingSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+            ),
+            AppSpacing.horizontal(UIConstants.spacingS),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: AppTheme.primaryColor,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(UIConstants.radiusM),
+        ),
+        margin: EdgeInsets.all(UIConstants.spacingM),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _typingAnimationController.dispose();
@@ -353,7 +384,7 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity( 0.1),
+              color: AppTheme.primaryColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Center(
@@ -435,7 +466,7 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                 children: [
                   Icon(Icons.block, size: 20, color: AppTheme.errorColor),
                   AppSpacing.horizontal(UIConstants.spacingS),
-                  Text('Block User',
+                  Text(AppLocalizations.of(context)!.blockUser,
                       style: TextStyle(color: AppTheme.errorColor)),
                 ],
               ),
@@ -446,7 +477,7 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                 children: [
                   Icon(Icons.report, size: 20, color: AppTheme.warningColor),
                   AppSpacing.horizontal(UIConstants.spacingS),
-                  Text('Report User',
+                  Text(AppLocalizations.of(context)!.reportUser,
                       style: TextStyle(color: AppTheme.warningColor)),
                 ],
               ),
@@ -487,7 +518,7 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity( 0.1),
+              color: AppTheme.primaryColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(40),
             ),
             child: Icon(
@@ -559,7 +590,7 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity( 0.1),
+                          color: Colors.black.withOpacity(0.1),
                           blurRadius: 4,
                           offset: const Offset(0, 2),
                         ),
@@ -569,16 +600,22 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Message Content
-                        Text(
-                          message.content,
-                          style:
-                              Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: isFromCurrentUser
-                                        ? Colors.white
-                                        : AppTheme.textPrimaryColor,
-                                    height: 1.3,
-                                  ),
-                        ),
+                        if (message.messageType == 'image' &&
+                            message.attachmentUrl != null)
+                          _buildImageMessage(message, isFromCurrentUser)
+                        else
+                          Text(
+                            message.content,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: isFromCurrentUser
+                                      ? Colors.white
+                                      : AppTheme.textPrimaryColor,
+                                  height: 1.3,
+                                ),
+                          ),
 
                         AppSpacing.vertical(UIConstants.spacingXS),
 
@@ -593,7 +630,7 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                                   .bodySmall
                                   ?.copyWith(
                                     color: isFromCurrentUser
-                                        ? Colors.white.withOpacity( 0.7)
+                                        ? Colors.white.withOpacity(0.7)
                                         : AppTheme.textSecondaryColor,
                                     fontSize: 11,
                                   ),
@@ -605,7 +642,7 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                                 size: 14,
                                 color: message.isRead
                                     ? Colors.white
-                                    : Colors.white.withOpacity( 0.7),
+                                    : Colors.white.withOpacity(0.7),
                               ),
                             ],
                           ],
@@ -631,7 +668,7 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
       width: 32,
       height: 32,
       decoration: BoxDecoration(
-        color: AppTheme.primaryColor.withOpacity( 0.1),
+        color: AppTheme.primaryColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Center(
@@ -676,7 +713,7 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
               borderRadius: BorderRadius.circular(18),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity( 0.1),
+                  color: Colors.black.withOpacity(0.1),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -827,10 +864,9 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
             Row(
               children: [
                 Expanded(
-                  child: AppButton(
+                  child: GBSecondaryButton(
                     text: 'Camera',
-                    icon: Icons.camera_alt,
-                    type: AppButtonType.secondary,
+                    leftIcon: const Icon(Icons.camera_alt, size: 20),
                     onPressed: () {
                       Navigator.pop(context);
                       _takePhoto();
@@ -839,10 +875,9 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                 ),
                 AppSpacing.horizontal(UIConstants.spacingM),
                 Expanded(
-                  child: AppButton(
+                  child: GBSecondaryButton(
                     text: 'Gallery',
-                    icon: Icons.photo_library,
-                    type: AppButtonType.secondary,
+                    leftIcon: const Icon(Icons.photo_library, size: 20),
                     onPressed: () {
                       Navigator.pop(context);
                       _pickImage();
@@ -858,14 +893,216 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
     );
   }
 
-  void _takePhoto() {
-    // TODO: Implement camera functionality
-    _showErrorSnackbar('Camera functionality coming soon');
+  void _pickImage() async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1920,
+        maxHeight: 1080,
+        imageQuality: 85,
+      );
+
+      if (image != null) {
+        await _sendImageMessage(image);
+      }
+    } catch (e) {
+      _showErrorSnackbar('Failed to pick image: ${e.toString()}');
+    }
   }
 
-  void _pickImage() {
-    // TODO: Implement image picker functionality
-    _showErrorSnackbar('Image picker functionality coming soon');
+  void _takePhoto() async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(
+        source: ImageSource.camera,
+        maxWidth: 1920,
+        maxHeight: 1080,
+        imageQuality: 85,
+      );
+
+      if (image != null) {
+        await _sendImageMessage(image);
+      }
+    } catch (e) {
+      _showErrorSnackbar('Failed to take photo: ${e.toString()}');
+    }
+  }
+
+  Future<void> _sendImageMessage(XFile imageFile) async {
+    try {
+      // Show loading indicator
+      _showLoadingSnackbar('Sending image...');
+
+      // Convert XFile to File
+      final File imageFileObj = File(imageFile.path);
+
+      // Get file size
+      final int fileSizeInBytes = await imageFileObj.length();
+      final double fileSizeInMB = fileSizeInBytes / (1024 * 1024);
+
+      // Check file size limit (5MB)
+      if (fileSizeInMB > 5.0) {
+        _showErrorSnackbar('Image size must be less than 5MB');
+        return;
+      }
+
+      // Create message with image
+      final messageProvider =
+          Provider.of<MessageProvider>(context, listen: false);
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+      // For now, we'll send the image as a text message with file path
+      // In a real implementation, you would upload the image to a server first
+      // Note: We create a ChatMessage object for future use but currently send via MessageProvider
+      final message = ChatMessage(
+        id: DateTime.now().millisecondsSinceEpoch,
+        senderId: int.parse(authProvider.user?.id.toString() ?? '0'),
+        senderName: authProvider.user?.name ?? '',
+        receiverId: int.parse(widget.otherUserId),
+        receiverName: widget.otherUserName,
+        content: '📷 Image: ${imageFile.name}',
+        messageType: 'image',
+        donationId:
+            widget.donationId != null ? int.parse(widget.donationId!) : null,
+        requestId:
+            widget.requestId != null ? int.parse(widget.requestId!) : null,
+        createdAt: DateTime.now().toIso8601String(),
+        updatedAt: DateTime.now().toIso8601String(),
+        isRead: false,
+        attachmentUrl: imageFile.path, // Store local path for now
+        attachmentName: imageFile.name,
+        attachmentSize: fileSizeInBytes,
+      );
+
+      // Send message via MessageProvider (current implementation)
+      await messageProvider.sendMessage(
+        receiverId: widget.otherUserId,
+        content: '📷 Image: ${imageFile.name}',
+        donationId: widget.donationId,
+        requestId: widget.requestId,
+      );
+
+      // TODO: In future, integrate the ChatMessage object with the actual message sending
+      // This will allow proper image handling and display
+
+      // Clear loading
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    } catch (e) {
+      _showErrorSnackbar('Failed to send image: ${e.toString()}');
+    }
+  }
+
+  Widget _buildImageMessage(ChatMessage message, bool isFromCurrentUser) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Image preview
+        GestureDetector(
+          onTap: () => _showImagePreview(message.attachmentUrl!),
+          child: Container(
+            constraints: const BoxConstraints(
+              maxWidth: 200,
+              maxHeight: 200,
+            ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: isFromCurrentUser
+                    ? Colors.white.withOpacity(0.3)
+                    : AppTheme.borderColor,
+                width: 1,
+              ),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.file(
+                File(message.attachmentUrl!),
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    height: 100,
+                    color: Colors.grey[300],
+                    child: const Icon(
+                      Icons.broken_image,
+                      color: Colors.grey,
+                      size: 40,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 8),
+
+        // Image info
+        Text(
+          message.content,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: isFromCurrentUser
+                    ? Colors.white.withOpacity(0.8)
+                    : AppTheme.textSecondaryColor,
+                fontSize: 12,
+              ),
+        ),
+      ],
+    );
+  }
+
+  void _showImagePreview(String imagePath) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Stack(
+            children: [
+              // Full screen image
+              Center(
+                child: InteractiveViewer(
+                  child: Image.file(
+                    File(imagePath),
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        width: 300,
+                        height: 300,
+                        color: Colors.grey[300],
+                        child: const Icon(
+                          Icons.broken_image,
+                          color: Colors.grey,
+                          size: 60,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+
+              // Close button
+              Positioned(
+                top: 40,
+                right: 20,
+                child: IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(
+                    Icons.close,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                  style: IconButton.styleFrom(
+                    backgroundColor: Colors.black.withOpacity(0.5),
+                    shape: const CircleBorder(),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void _showConversationInfo() {

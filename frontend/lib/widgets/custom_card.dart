@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/theme/app_theme.dart';
-import 'custom_button.dart';
+import 'common/gb_button.dart';
 
 enum CardVariant { filled, outlined, elevated }
 
@@ -346,9 +346,9 @@ class DonationCard extends StatelessWidget {
 
                     // Request button
                     if (showRequestButton && onRequest != null)
-                      PrimaryButton(
+                      GBPrimaryButton(
                         text: 'Request',
-                        size: ButtonSize.small,
+                        size: GBButtonSize.small,
                         onPressed: onRequest,
                       ),
                   ],

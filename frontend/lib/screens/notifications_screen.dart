@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../core/theme/app_theme.dart';
+import '../widgets/common/gb_card.dart';
+import '../widgets/common/gb_button.dart';
 import '../widgets/custom_card.dart';
-import '../widgets/custom_button.dart';
+import '../l10n/app_localizations.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({Key? key}) : super(key: key);
@@ -118,7 +120,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text('All'),
+                      Text(AppLocalizations.of(context)!.all),
                       const SizedBox(width: AppTheme.spacingXS),
                       _buildNotificationBadge(_notifications.length),
                     ],
@@ -128,13 +130,13 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text('Unread'),
+                      Text(AppLocalizations.of(context)!.unread),
                       const SizedBox(width: AppTheme.spacingXS),
                       _buildNotificationBadge(_getUnreadCount()),
                     ],
                   ),
                 ),
-                const Tab(text: 'Settings'),
+                Tab(text: AppLocalizations.of(context)!.settings),
               ],
             ),
           ),
@@ -158,6 +160,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   }
 
   Widget _buildHeader(BuildContext context, ThemeData theme, bool isDark) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(AppTheme.spacingM),
       decoration: BoxDecoration(
@@ -176,14 +179,14 @@ class _NotificationsScreenState extends State<NotificationsScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Notifications',
+                  l10n.notifications,
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 if (_getUnreadCount() > 0)
                   Text(
-                    '${_getUnreadCount()} unread notifications',
+                    l10n.unreadNotifications(_getUnreadCount()),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: isDark
                           ? AppTheme.darkTextSecondaryColor
@@ -196,9 +199,10 @@ class _NotificationsScreenState extends State<NotificationsScreen>
 
           // Mark all as read
           if (_getUnreadCount() > 0)
-            GhostButton(
-              text: 'Mark all read',
-              size: ButtonSize.small,
+            GBButton(
+              text: l10n.markAllRead,
+              size: GBButtonSize.small,
+              variant: GBButtonVariant.ghost,
               onPressed: _markAllAsRead,
             ),
         ],
@@ -258,6 +262,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   }
 
   Widget _buildEmptyState(BuildContext context, ThemeData theme, bool isDark) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -271,7 +276,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
           ),
           const SizedBox(height: AppTheme.spacingM),
           Text(
-            'No notifications',
+            l10n.noNotifications,
             style: theme.textTheme.titleMedium?.copyWith(
               color: isDark
                   ? AppTheme.darkTextSecondaryColor
@@ -280,7 +285,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
           ),
           const SizedBox(height: AppTheme.spacingS),
           Text(
-            'You\'re all caught up!',
+            l10n.allCaughtUp,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: isDark
                   ? AppTheme.textDisabledColor
@@ -296,8 +301,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       Map<String, dynamic> notification, ThemeData theme, bool isDark) {
     final isRead = notification['isRead'] as bool;
 
-    return CustomCard(
-      isInteractive: true,
+    return GBCard(
       onTap: () => _markAsRead(notification['id']),
       backgroundColor: !isRead
           ? (isDark
@@ -386,13 +390,13 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             ),
             itemBuilder: (context) => [
               if (!isRead)
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'mark_read',
-                  child: Text('Mark as read'),
+                  child: Text(AppLocalizations.of(context)!.markAsRead),
                 ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'delete',
-                child: Text('Delete'),
+                child: Text(AppLocalizations.of(context)!.delete),
               ),
             ],
             onSelected: (value) {
@@ -410,6 +414,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
 
   Widget _buildNotificationSettings(
       BuildContext context, ThemeData theme, bool isDark, bool isDesktop) {
+    final l10n = AppLocalizations.of(context)!;
     return SingleChildScrollView(
       padding:
           EdgeInsets.all(isDesktop ? AppTheme.spacingXL : AppTheme.spacingM),
@@ -417,7 +422,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Notification Settings',
+            l10n.notificationSettings,
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w600,
             ),
@@ -431,36 +436,36 @@ class _NotificationsScreenState extends State<NotificationsScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Push Notifications',
+                  l10n.pushNotifications,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: AppTheme.spacingM),
                 _buildSettingToggle(
-                  'Donation Requests',
-                  'Get notified when someone requests your donations',
+                  l10n.donationRequests,
+                  l10n.notifyDonationRequests,
                   true,
                   theme,
                   isDark,
                 ),
                 _buildSettingToggle(
-                  'New Donations',
-                  'Get notified about new donations in your area',
+                  l10n.newDonations,
+                  l10n.notifyNewDonations,
                   true,
                   theme,
                   isDark,
                 ),
                 _buildSettingToggle(
-                  'Status Updates',
-                  'Get notified about donation status changes',
+                  l10n.statusUpdates,
+                  l10n.notifyStatusUpdates,
                   true,
                   theme,
                   isDark,
                 ),
                 _buildSettingToggle(
-                  'Reminders',
-                  'Get reminded about pickup times and deadlines',
+                  l10n.reminders,
+                  l10n.notifyReminders,
                   false,
                   theme,
                   isDark,
@@ -477,29 +482,29 @@ class _NotificationsScreenState extends State<NotificationsScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Email Notifications',
+                  l10n.emailNotifications,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: AppTheme.spacingM),
                 _buildSettingToggle(
-                  'Weekly Summary',
-                  'Receive a weekly summary of your activity',
+                  l10n.weeklySummary,
+                  l10n.receiveWeeklySummary,
                   true,
                   theme,
                   isDark,
                 ),
                 _buildSettingToggle(
-                  'Important Updates',
-                  'Receive important platform updates',
+                  l10n.importantUpdates,
+                  l10n.receiveImportantUpdates,
                   true,
                   theme,
                   isDark,
                 ),
                 _buildSettingToggle(
-                  'Marketing Emails',
-                  'Receive tips and feature announcements',
+                  l10n.marketingEmails,
+                  l10n.receiveMarketingEmails,
                   false,
                   theme,
                   isDark,
@@ -511,11 +516,12 @@ class _NotificationsScreenState extends State<NotificationsScreen>
           const SizedBox(height: AppTheme.spacingXL),
 
           // Clear all notifications
-          DangerButton(
-            text: 'Clear All Notifications',
-            width: double.infinity,
+          GBButton(
+            text: l10n.clearAllNotifications,
+            fullWidth: true,
             leftIcon: const Icon(Icons.clear_all, size: 20),
             onPressed: _clearAllNotifications,
+            variant: GBButtonVariant.danger,
           ),
         ],
       ),
@@ -558,9 +564,11 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             value: value,
             onChanged: (newValue) {
               // TODO: Implement setting toggle
+              final l10n = AppLocalizations.of(context)!;
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('${newValue ? 'Enabled' : 'Disabled'} $title'),
+                  content:
+                      Text('${newValue ? l10n.enabled : l10n.disabled} $title'),
                 ),
               );
             },
@@ -594,9 +602,10 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       }
     });
 
+    final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('All notifications marked as read'),
+      SnackBar(
+        content: Text(l10n.allNotificationsRead),
       ),
     );
   }
@@ -606,24 +615,25 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       _notifications.removeWhere((n) => n['id'] == notificationId);
     });
 
+    final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Notification deleted'),
+      SnackBar(
+        content: Text(l10n.notificationDeleted),
       ),
     );
   }
 
   void _clearAllNotifications() {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Clear All Notifications'),
-        content: const Text(
-            'Are you sure you want to clear all notifications? This action cannot be undone.'),
+        title: Text(l10n.clearAllNotifications),
+        content: Text(l10n.clearAllConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () {
@@ -632,15 +642,15 @@ class _NotificationsScreenState extends State<NotificationsScreen>
               });
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('All notifications cleared'),
+                SnackBar(
+                  content: Text(l10n.allNotificationsCleared),
                 ),
               );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.errorColor,
             ),
-            child: const Text('Clear All'),
+            child: Text(l10n.clearAll),
           ),
         ],
       ),
@@ -652,9 +662,10 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     await Future.delayed(const Duration(seconds: 1));
 
     if (mounted) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Notifications refreshed'),
+        SnackBar(
+          content: Text(l10n.notificationsRefreshed),
         ),
       );
     }
@@ -663,15 +674,16 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   String _formatTimestamp(DateTime timestamp) {
     final now = DateTime.now();
     final difference = now.difference(timestamp);
+    final l10n = AppLocalizations.of(context)!;
 
     if (difference.inMinutes < 1) {
-      return 'Just now';
+      return l10n.justNow;
     } else if (difference.inHours < 1) {
-      return '${difference.inMinutes}m ago';
+      return l10n.minutesAgo(difference.inMinutes);
     } else if (difference.inDays < 1) {
-      return '${difference.inHours}h ago';
+      return l10n.hoursAgo(difference.inHours);
     } else if (difference.inDays < 7) {
-      return '${difference.inDays}d ago';
+      return l10n.daysAgo(difference.inDays);
     } else {
       return '${timestamp.day}/${timestamp.month}/${timestamp.year}';
     }

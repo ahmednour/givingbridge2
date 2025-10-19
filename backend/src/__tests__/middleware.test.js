@@ -1,7 +1,7 @@
 const request = require("supertest");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const app = require("../server");
+const { app } = require("../server");
 const User = require("../models/User");
 const Donation = require("../models/Donation");
 
@@ -43,6 +43,7 @@ describe("Middleware Tests", () => {
       condition: "good",
       location: "Test City",
       donorId: testUser.id,
+      donorName: testUser.name,
       isAvailable: true,
       status: "available",
     });
@@ -68,14 +69,13 @@ describe("Middleware Tests", () => {
         .set("Authorization", `Bearer ${authToken}`)
         .expect(200);
 
-      expect(response.body.success).toBe(true);
-      expect(response.body.data.id).toBe(testUser.id);
+      expect(response.body.user).toBeDefined();
+      expect(response.body.user.id).toBe(testUser.id);
     });
 
     it("should reject access without token", async () => {
       const response = await request(app).get("/api/auth/me").expect(401);
 
-      expect(response.body.success).toBe(false);
       expect(response.body.message).toContain("Access denied");
     });
 
@@ -288,6 +288,7 @@ describe("Middleware Tests", () => {
           condition: "good",
           location: "Test City",
           donorId: testUser.id,
+          donorName: testUser.name,
           isAvailable: true,
           status: "available",
         });
@@ -338,6 +339,7 @@ describe("Middleware Tests", () => {
         condition: "good",
         location: "Test City",
         donorId: testUser.id,
+        donorName: testUser.name,
         isAvailable: true,
         status: "available",
       });
@@ -351,6 +353,7 @@ describe("Middleware Tests", () => {
         condition: "excellent",
         location: "Test City",
         donorId: testUser.id,
+        donorName: testUser.name,
         isAvailable: true,
         status: "available",
       });

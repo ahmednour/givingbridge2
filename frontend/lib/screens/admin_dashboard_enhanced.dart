@@ -58,18 +58,18 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced>
 
   Future<void> _loadDonations() async {
     final response = await ApiService.getDonations();
-    if (response.success && mounted) {
+    if (response.success && response.data != null && mounted) {
       setState(() {
-        _donations = response.data ?? [];
+        _donations = response.data!.items;
       });
     }
   }
 
   Future<void> _loadRequests() async {
     final response = await ApiService.getRequests();
-    if (response.success && mounted) {
+    if (response.success && response.data != null && mounted) {
       setState(() {
-        _requests = response.data ?? [];
+        _requests = response.data!.items;
       });
     }
   }
@@ -77,8 +77,8 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced>
   Future<void> _loadStats() async {
     // Calculate donation stats
     final donationResponse = await ApiService.getDonations();
-    if (donationResponse.success) {
-      final donations = donationResponse.data ?? [];
+    if (donationResponse.success && donationResponse.data != null) {
+      final donations = donationResponse.data!.items;
       setState(() {
         _donationStats = {
           'total': donations.length,
@@ -94,8 +94,8 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced>
 
     // Calculate request stats
     final requestResponse = await ApiService.getRequests();
-    if (requestResponse.success) {
-      final requests = requestResponse.data ?? [];
+    if (requestResponse.success && requestResponse.data != null) {
+      final requests = requestResponse.data!.items;
       setState(() {
         _requestStats = {
           'total': requests.length,

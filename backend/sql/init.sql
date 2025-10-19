@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS donations (
     location VARCHAR(255) NOT NULL,
     imageUrl VARCHAR(500),
     donorId INT NOT NULL,
+    donorName VARCHAR(255) NOT NULL,
     isAvailable BOOLEAN DEFAULT TRUE,
     status ENUM('available', 'pending', 'completed', 'cancelled') DEFAULT 'available',
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -72,21 +73,21 @@ CREATE TABLE IF NOT EXISTS messages (
 
 -- Insert default admin user (password: admin123)
 INSERT IGNORE INTO users (name, email, password, role) VALUES 
-('Admin User', 'admin@givingbridge.com', '$2a$12$9d9xWajdFCBw8wNuGtumeuJ1nme/ubR10xZ8Mc..D/jSyetVRac/K', 'admin');
+('Admin User', 'admin@givingbridge.com', '$2a$12$oRJ0mn3mo9u..50fz1l.5eeCjCmh379MLWR2kxBdMkAU54EwxAiH6', 'admin');
 
--- Insert sample donor user (password: donor123)
+-- Insert sample donor user (password: demo123)
 INSERT IGNORE INTO users (name, email, password, role, phone, location) VALUES 
-('John Doe', 'john@example.com', '$2a$12$GEfh06w4kEYD9Jn7fXIzleRmeUODGipcI878uLIXSwNyik15IYWu6', 'donor', '+1234567890', 'New York, NY');
+('Demo Donor', 'demo@example.com', '$2a$12$/01zymVuTo..zNB4.BM7xuSn0LlZuZQ6T0bLCDS9rwuGL2X6MCAdW', 'donor', '+1234567890', 'New York, NY');
 
--- Insert sample receiver user (password: receiver123)
+-- Insert sample receiver user (password: receive123)
 INSERT IGNORE INTO users (name, email, password, role, phone, location) VALUES 
-('Jane Smith', 'jane@example.com', '$2a$12$1q/XLOehcMemegBwdNVSk.mK.Wh8nBDMXdV2wJwOdYc..YVs7BSC6', 'receiver', '+0987654321', 'Los Angeles, CA');
+('Demo Receiver', 'receiver@example.com', '$2a$12$liwuo1PLf3FjvKcwdpAoAuiRfTmtFkmmN1vbyywBuOy5tM//R6e4e', 'receiver', '+1234567892', 'Los Angeles, CA');
 
 -- Insert sample donations
-INSERT IGNORE INTO donations (title, description, category, `condition`, location, donorId) VALUES 
-('Old Books Collection', 'A collection of classic novels and textbooks in good condition', 'books', 'good', 'New York, NY', 2),
-('Winter Clothes', 'Warm winter jackets and sweaters for adults', 'clothes', 'excellent', 'New York, NY', 2),
-('Kitchen Appliances', 'Various kitchen appliances including blender and toaster', 'electronics', 'good', 'Los Angeles, CA', 2);
+INSERT IGNORE INTO donations (title, description, category, `condition`, location, donorId, donorName) VALUES 
+('Old Books Collection', 'A collection of classic novels and textbooks in good condition', 'books', 'good', 'New York, NY', 2, 'Demo Donor'),
+('Winter Clothes', 'Warm winter jackets and sweaters for adults', 'clothes', 'excellent', 'New York, NY', 2, 'Demo Donor'),
+('Kitchen Appliances', 'Various kitchen appliances including blender and toaster', 'electronics', 'good', 'Los Angeles, CA', 2, 'Demo Donor');
 
 -- Insert sample requests
 INSERT IGNORE INTO requests (donationId, donorId, donorName, receiverId, receiverName, receiverEmail, receiverPhone, message, status) VALUES 

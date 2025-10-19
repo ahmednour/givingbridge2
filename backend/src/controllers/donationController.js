@@ -4,22 +4,39 @@ const User = require("../models/User");
 
 class DonationController {
   /**
-   * Get all donations with optional filters
+   * Get all donations with optional filters and pagination
    * @param {Object} filters - Filter options
-   * @returns {Promise<Array>} List of donations
+   * @param {Object} pagination - Pagination options (page, limit)
+   * @returns {Promise<Object>} Paginated list of donations with metadata
    */
-  static async getAllDonations(filters = {}) {
+  static async getAllDonations(filters = {}, pagination = {}) {
     const { category, location, available } = filters;
+    const { page = 1, limit = 20 } = pagination;
 
     const where = {};
     if (category) where.category = category;
     if (location) where.location = { [Op.like]: `%${location}%` };
     if (available !== undefined) where.isAvailable = available === "true";
 
-    return await Donation.findAll({
+    const offset = (page - 1) * limit;
+
+    const { rows, count } = await Donation.findAndCountAll({
       where,
       order: [["createdAt", "DESC"]],
+      limit: parseInt(limit),
+      offset: parseInt(offset),
     });
+
+    return {
+      donations: rows,
+      pagination: {
+        total: count,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        totalPages: Math.ceil(count / limit),
+        hasMore: offset + rows.length < count,
+      },
+    };
   }
 
   /**

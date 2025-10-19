@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../core/theme/app_theme.dart';
-import '../widgets/app_button.dart';
+import '../widgets/common/gb_button.dart';
 import '../services/api_service.dart';
 import 'chat_screen_enhanced.dart';
+import '../l10n/app_localizations.dart';
 
 class IncomingRequestsScreen extends StatefulWidget {
   const IncomingRequestsScreen({Key? key}) : super(key: key);
@@ -16,13 +17,16 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
   bool _isLoading = true;
   String _selectedFilter = 'all';
 
-  final List<Map<String, dynamic>> _filters = [
-    {'value': 'all', 'label': 'All', 'icon': Icons.all_inbox},
-    {'value': 'pending', 'label': 'Pending', 'icon': Icons.pending},
-    {'value': 'approved', 'label': 'Approved', 'icon': Icons.check_circle},
-    {'value': 'declined', 'label': 'Declined', 'icon': Icons.cancel},
-    {'value': 'completed', 'label': 'Completed', 'icon': Icons.done_all},
-  ];
+  List<Map<String, dynamic>> _getFilters(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return [
+      {'value': 'all', 'label': l10n.all, 'icon': Icons.all_inbox},
+      {'value': 'pending', 'label': l10n.pending, 'icon': Icons.pending},
+      {'value': 'approved', 'label': l10n.approved, 'icon': Icons.check_circle},
+      {'value': 'declined', 'label': l10n.declined, 'icon': Icons.cancel},
+      {'value': 'completed', 'label': l10n.completed, 'icon': Icons.done_all},
+    ];
+  }
 
   @override
   void initState() {
@@ -42,10 +46,12 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
           _requests = response.data!;
         });
       } else {
-        _showErrorSnackbar(response.error ?? 'Failed to load requests');
+        final l10n = AppLocalizations.of(context)!;
+        _showErrorSnackbar(response.error ?? l10n.failedToLoadRequests);
       }
     } catch (e) {
-      _showErrorSnackbar('Network error: ${e.toString()}');
+      final l10n = AppLocalizations.of(context)!;
+      _showErrorSnackbar('${l10n.networkError}: ${e.toString()}');
     } finally {
       setState(() {
         _isLoading = false;
@@ -79,6 +85,7 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
   }
 
   Future<void> _respondToRequest(DonationRequest request, String action) async {
+    final l10n = AppLocalizations.of(context)!;
     String? responseMessage;
 
     if (action == 'declined') {
@@ -86,9 +93,9 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
       final result = await showDialog<String?>(
         context: context,
         builder: (context) => _ResponseDialog(
-          title: 'Decline Request',
-          hint: 'Please provide a reason for declining (optional)...',
-          action: 'Decline',
+          title: l10n.declineRequest,
+          hint: l10n.provideDeclineReason,
+          action: l10n.decline,
         ),
       );
 
@@ -99,9 +106,9 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
       final result = await showDialog<String?>(
         context: context,
         builder: (context) => _ResponseDialog(
-          title: 'Approve Request',
-          hint: 'Add a message for the receiver (optional)...',
-          action: 'Approve',
+          title: l10n.approveRequest,
+          hint: l10n.provideApprovalMessage,
+          action: l10n.approve,
         ),
       );
 
@@ -117,15 +124,13 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
       );
 
       if (response.success) {
-        _showSuccessSnackbar(action == 'approved'
-            ? 'Request approved! Receiver will be notified.'
-            : 'Request declined.');
+        _showSuccessSnackbar(l10n.requestUpdatedSuccess);
         _loadRequests(); // Refresh the list
       } else {
-        _showErrorSnackbar(response.error ?? 'Failed to update request');
+        _showErrorSnackbar(response.error ?? l10n.failedToUpdateRequest);
       }
     } catch (e) {
-      _showErrorSnackbar('Network error: ${e.toString()}');
+      _showErrorSnackbar('${l10n.networkError}: ${e.toString()}');
     }
   }
 
@@ -176,9 +181,9 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
               height: 50,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: _filters.length,
+                itemCount: _getFilters(context).length,
                 itemBuilder: (context, index) {
-                  final filter = _filters[index];
+                  final filter = _getFilters(context)[index];
                   final isSelected = _selectedFilter == filter['value'];
 
                   return Container(
@@ -463,29 +468,27 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: AppButton(
+                    child: GBOutlineButton(
                       text: 'Message',
                       onPressed: () => _contactReceiver(request),
-                      variant: ButtonVariant.outline,
-                      size: ButtonSize.small,
+                      size: GBButtonSize.small,
                       leftIcon: const Icon(Icons.message_outlined, size: 16),
                     ),
                   ),
                   const SizedBox(width: AppTheme.spacingS),
                   Expanded(
-                    child: AppButton(
+                    child: GBOutlineButton(
                       text: 'Decline',
                       onPressed: () => _respondToRequest(request, 'declined'),
-                      variant: ButtonVariant.outline,
-                      size: ButtonSize.small,
+                      size: GBButtonSize.small,
                     ),
                   ),
                   const SizedBox(width: AppTheme.spacingS),
                   Expanded(
-                    child: AppButton(
+                    child: GBPrimaryButton(
                       text: 'Approve',
                       onPressed: () => _respondToRequest(request, 'approved'),
-                      size: ButtonSize.small,
+                      size: GBButtonSize.small,
                     ),
                   ),
                 ],
@@ -508,11 +511,10 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
                       ),
                     ),
                   ),
-                  AppButton(
+                  GBOutlineButton(
                     text: 'Message',
                     onPressed: () => _contactReceiver(request),
-                    variant: ButtonVariant.outline,
-                    size: ButtonSize.small,
+                    size: GBButtonSize.small,
                     leftIcon: const Icon(Icons.message_outlined, size: 16),
                   ),
                 ],
@@ -608,9 +610,9 @@ class _ResponseDialogState extends State<_ResponseDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
-        AppButton(
+        GBButton(
           text: widget.action,
           onPressed: () {
             Navigator.pop(
@@ -619,10 +621,10 @@ class _ResponseDialogState extends State<_ResponseDialog> {
                     ? null
                     : _messageController.text.trim());
           },
-          size: ButtonSize.small,
+          size: GBButtonSize.small,
           variant: widget.action == 'Decline'
-              ? ButtonVariant.outline
-              : ButtonVariant.primary,
+              ? GBButtonVariant.outline
+              : GBButtonVariant.primary,
         ),
       ],
     );

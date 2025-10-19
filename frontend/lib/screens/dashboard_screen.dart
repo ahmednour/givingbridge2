@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../core/theme/app_theme.dart';
 import '../providers/auth_provider.dart';
-import '../widgets/app_button.dart';
+import '../widgets/common/gb_button.dart';
 import '../models/user.dart';
 import '../l10n/app_localizations.dart';
 import 'my_donations_screen.dart';
@@ -14,6 +14,7 @@ import 'login_screen.dart';
 import 'donor_dashboard_enhanced.dart';
 import 'receiver_dashboard_enhanced.dart';
 import 'admin_dashboard_enhanced.dart';
+import 'profile_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -57,6 +58,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const MessagesScreenEnhanced()),
+      );
+    } else if (selectedItem.title == l10n.profile) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ProfileScreen()),
       );
     } else if (selectedItem.title == l10n.users ||
         selectedItem.title == l10n.donations ||
@@ -267,16 +273,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ],
               ),
               const SizedBox(height: AppTheme.spacingM),
-              AppButton(
+              GBOutlineButton(
                 text: l10n.logout,
                 onPressed: _handleLogout,
-                variant: ButtonVariant.outline,
-                size: ButtonSize.small,
-                width: double.infinity,
+                size: GBButtonSize.small,
+                fullWidth: true,
                 leftIcon: const Icon(
                   Icons.logout,
                   size: 16,
-                  color: AppTheme.textSecondaryColor,
                 ),
               ),
             ],

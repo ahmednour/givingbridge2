@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../core/theme/app_theme.dart';
-import '../widgets/app_button.dart';
+import '../widgets/common/gb_button.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../models/donation.dart';
@@ -68,9 +68,9 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced>
       available: true,
     );
 
-    if (response.success && mounted) {
+    if (response.success && response.data != null && mounted) {
       setState(() {
-        _availableDonations = response.data ?? [];
+        _availableDonations = response.data!.items;
       });
     }
 
@@ -617,18 +617,16 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced>
                   ),
                 ),
               ),
-              AppButton(
+              GBOutlineButton(
                 text: l10n.message,
-                size: ButtonSize.small,
-                variant: ButtonVariant.outline,
+                size: GBButtonSize.small,
                 onPressed: () => _contactDonor(donation),
                 leftIcon: const Icon(Icons.message_outlined, size: 16),
               ),
               const SizedBox(width: AppTheme.spacingS),
-              AppButton(
+              GBSecondaryButton(
                 text: l10n.request,
-                size: ButtonSize.small,
-                variant: ButtonVariant.secondary,
+                size: GBButtonSize.small,
                 onPressed: () => _requestDonation(donation),
                 leftIcon: const Icon(Icons.send, size: 16),
               ),

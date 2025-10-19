@@ -10,13 +10,15 @@ const {
 
 class RequestController {
   /**
-   * Get all requests with optional filters
+   * Get all requests with optional filters and pagination
    * @param {Object} filters - Filter options
    * @param {Object} user - Current user
-   * @returns {Promise<Array>} List of requests
+   * @param {Object} pagination - Pagination options
+   * @returns {Promise<Object>} Paginated requests with metadata
    */
-  static async getAllRequests(filters = {}, user) {
+  static async getAllRequests(filters = {}, user, pagination = {}) {
     const { donationId, status } = filters;
+    const { page = 1, limit = 20 } = pagination;
     const where = {};
 
     if (donationId) where.donationId = donationId;
@@ -30,9 +32,13 @@ class RequestController {
     }
     // Admin can see all requests (no additional filter)
 
-    return await Request.findAll({
+    const offset = (page - 1) * limit;
+
+    const { rows, count } = await Request.findAndCountAll({
       where,
       order: [["createdAt", "DESC"]],
+      limit: parseInt(limit),
+      offset: parseInt(offset),
       include: [
         {
           model: Donation,
@@ -58,6 +64,17 @@ class RequestController {
         },
       ],
     });
+
+    return {
+      requests: rows,
+      pagination: {
+        total: count,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        totalPages: Math.ceil(count / limit),
+        hasMore: offset + rows.length < count,
+      },
+    };
   }
 
   /**

@@ -23,8 +23,13 @@ beforeAll(async () => {
 // Cleanup after each test
 afterEach(async () => {
   try {
-    // Clear all tables
-    await sequelize.truncate({ cascade: true });
+    // Clear all tables in correct order to avoid foreign key constraints
+    await sequelize.query("SET FOREIGN_KEY_CHECKS = 0");
+    await sequelize.query("TRUNCATE TABLE messages");
+    await sequelize.query("TRUNCATE TABLE requests");
+    await sequelize.query("TRUNCATE TABLE donations");
+    await sequelize.query("TRUNCATE TABLE users");
+    await sequelize.query("SET FOREIGN_KEY_CHECKS = 1");
   } catch (error) {
     console.warn("⚠️ Failed to truncate test database:", error.message);
   }

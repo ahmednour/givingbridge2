@@ -160,15 +160,18 @@ void main() {
       notificationProvider = NotificationProvider();
     });
 
-    test('should initialize with empty state', () {
-      expect(notificationProvider.notifications, isEmpty);
-      expect(notificationProvider.isLoading, isFalse);
-      expect(notificationProvider.error, isNull);
+    test('should initialize with default settings', () {
+      expect(notificationProvider.pushNotifications, isTrue);
+      expect(notificationProvider.emailNotifications, isTrue);
+      expect(notificationProvider.donationRequests, isTrue);
+      expect(notificationProvider.donationApprovals, isTrue);
+      expect(notificationProvider.messages, isTrue);
+      expect(notificationProvider.systemUpdates, isTrue);
     });
 
-    test('should load notifications', () async {
-      await notificationProvider.loadNotifications();
-      expect(notificationProvider.isLoading, isFalse);
+    test('should update push notifications setting', () async {
+      await notificationProvider.updatePushNotifications(false);
+      expect(notificationProvider.pushNotifications, isFalse);
     });
   });
 
