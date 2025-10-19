@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../core/theme/app_theme.dart';
+import '../core/theme/design_system.dart';
 import '../widgets/common/gb_button.dart';
+import '../widgets/common/gb_dashboard_components.dart';
+import '../widgets/common/gb_confetti.dart';
+import '../widgets/common/gb_empty_state.dart';
+import '../widgets/common/gb_search_bar.dart';
+import '../widgets/common/gb_filter_chips.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../models/donation.dart';
@@ -22,7 +28,12 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced>
   late TabController _tabController;
 
   List<Donation> _donations = [];
+  List<Donation> _filteredDonations = []; // Filtered/searched donations
   bool _isLoading = false;
+  int _previousDonationCount =
+      0; // Track previous count for milestone detection
+  String _searchQuery = ''; // Search query
+  List<String> _selectedStatuses = []; // Status filter
 
   @override
   void initState() {
@@ -42,12 +53,106 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced>
 
     final response = await ApiService.getMyDonations();
     if (response.success && mounted) {
+      final newDonations = response.data ?? [];
+      final newCount = newDonations.length;
+
+      // Check for milestones (10th, 20th, 50th, 100th donation)
+      if (_previousDonationCount > 0 && newCount > _previousDonationCount) {
+        _checkMilestones(newCount);
+      }
+
       setState(() {
-        _donations = response.data ?? [];
+        _donations = newDonations;
+        _previousDonationCount = newCount;
       });
+
+      // Apply filters after loading
+      _applyFiltersAndSearch();
     }
 
     setState(() => _isLoading = false);
+  }
+
+  void _applyFiltersAndSearch() {
+    var results = List<Donation>.from(_donations);
+
+    // Apply status filter
+    if (_selectedStatuses.isNotEmpty) {
+      results = results
+          .where((donation) => _selectedStatuses.contains(donation.status))
+          .toList();
+    }
+
+    // Apply search filter
+    if (_searchQuery.isNotEmpty) {
+      final query = _searchQuery.toLowerCase();
+      results = results.where((donation) {
+        return donation.title.toLowerCase().contains(query) ||
+            donation.description.toLowerCase().contains(query) ||
+            donation.category.toLowerCase().contains(query) ||
+            donation.location.toLowerCase().contains(query);
+      }).toList();
+    }
+
+    setState(() {
+      _filteredDonations = results;
+    });
+  }
+
+  void _onSearchChanged(String query) {
+    setState(() {
+      _searchQuery = query;
+    });
+    _applyFiltersAndSearch();
+  }
+
+  void _onStatusFilterChanged(List<String> statuses) {
+    setState(() {
+      _selectedStatuses = statuses;
+    });
+    _applyFiltersAndSearch();
+  }
+
+  void _checkMilestones(int count) {
+    // Milestone thresholds
+    final milestones = [10, 20, 50, 100, 200, 500];
+
+    for (final milestone in milestones) {
+      if (count == milestone && _previousDonationCount < milestone) {
+        // Trigger confetti celebration
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (mounted) {
+            GBConfetti.show(
+              context,
+              particleCount: milestone >= 100 ? 100 : 50,
+              duration: const Duration(seconds: 3),
+            );
+
+            // Show congratulations message
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: [
+                    const Icon(Icons.celebration, color: Colors.white),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        '🎉 Congratulations! You\'ve reached $milestone donations!',
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ],
+                ),
+                backgroundColor: DesignSystem.success,
+                duration: const Duration(seconds: 4),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          }
+        });
+        break; // Only celebrate one milestone at a time
+      }
+    }
   }
 
   Future<void> _navigateToCreateDonation({Donation? donation}) async {
@@ -72,13 +177,13 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced>
     final isDesktop = size.width > 768;
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: DesignSystem.getBackgroundColor(context),
       body: Column(
         children: [
           // Modern Tab Bar
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: DesignSystem.getSurfaceColor(context),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.05),
@@ -163,6 +268,11 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced>
 
                   // Recent Activity
                   _buildRecentActivity(context, theme, isDark),
+
+                  const SizedBox(height: AppTheme.spacingXL),
+
+                  // Progress Tracking
+                  _buildProgressTracking(context, theme, isDesktop),
 
                   const SizedBox(height: AppTheme.spacingXL),
 
@@ -259,128 +369,102 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced>
   Widget _buildStatsSection(
       BuildContext context, ThemeData theme, bool isDesktop) {
     final l10n = AppLocalizations.of(context)!;
-    final stats = [
-      {
-        'title': l10n.totalDonations,
-        'value': _donations.length.toString(),
-        'icon': Icons.volunteer_activism,
-        'color': AppTheme.primaryColor,
-        'bgColor': AppTheme.primaryColor.withOpacity(0.1),
-      },
-      {
-        'title': l10n.active,
-        'value':
-            _donations.where((d) => d.status == 'available').length.toString(),
-        'icon': Icons.check_circle_outline,
-        'color': AppTheme.successColor,
-        'bgColor': AppTheme.successColor.withOpacity(0.1),
-      },
-      {
-        'title': l10n.completed,
-        'value':
-            _donations.where((d) => d.status == 'completed').length.toString(),
-        'icon': Icons.handshake_outlined,
-        'color': const Color(0xFF8B5CF6),
-        'bgColor': const Color(0xFF8B5CF6).withOpacity(0.1),
-      },
-      {
-        'title': l10n.impactScore,
-        'value': (_donations.length * 10).toString(),
-        'icon': Icons.trending_up,
-        'color': AppTheme.warningColor,
-        'bgColor': AppTheme.warningColor.withOpacity(0.1),
-      },
-    ];
+    final totalDonations = _donations.length;
+    final activeDonations =
+        _donations.where((d) => d.status == 'available').length;
+    final completedDonations =
+        _donations.where((d) => d.status == 'completed').length;
+    final impactScore = totalDonations * 10;
 
-    if (isDesktop) {
-      return Row(
-        children: stats.map((stat) {
-          return Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(right: AppTheme.spacingL),
-              child: _buildStatCard(stat),
-            ),
-          );
-        }).toList(),
-      );
-    } else {
-      return GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: AppTheme.spacingM,
-          mainAxisSpacing: AppTheme.spacingM,
-          childAspectRatio: 1.3,
+    // Calculate trends (mock data - replace with real data from previous period)
+    final totalTrend = totalDonations > 10 ? 12.5 : 0.0;
+    final activeTrend = activeDonations > 5 ? 8.3 : 0.0;
+    final completedTrend = completedDonations > 0 ? 15.7 : 0.0;
+
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: isDesktop ? 4 : 2,
+      crossAxisSpacing: DesignSystem.spaceL,
+      mainAxisSpacing: DesignSystem.spaceL,
+      childAspectRatio: 1.2,
+      children: [
+        GBStatCard(
+          title: l10n.totalDonations,
+          value: totalDonations.toString(),
+          icon: Icons.volunteer_activism,
+          color: DesignSystem.primaryBlue,
+          trend: totalTrend,
+          subtitle:
+              '+${(totalTrend * totalDonations / 100).toInt()} this month',
+          isLoading: _isLoading,
         ),
-        itemCount: stats.length,
-        itemBuilder: (context, index) => _buildStatCard(stats[index]),
-      );
-    }
-  }
-
-  Widget _buildStatCard(Map<String, dynamic> stat) {
-    return Container(
-      padding: const EdgeInsets.all(AppTheme.spacingL),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppTheme.radiusL),
-        border: Border.all(color: AppTheme.borderColor),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(AppTheme.spacingM),
-                decoration: BoxDecoration(
-                  color: stat['bgColor'],
-                  borderRadius: BorderRadius.circular(AppTheme.radiusM),
-                ),
-                child: Icon(
-                  stat['icon'],
-                  color: stat['color'],
-                  size: 24,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppTheme.spacingM),
-          Text(
-            stat['value'],
-            style: const TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.w700,
-              color: AppTheme.textPrimaryColor,
-            ),
-          ),
-          const SizedBox(height: AppTheme.spacingXS),
-          Text(
-            stat['title'],
-            style: const TextStyle(
-              fontSize: 14,
-              color: AppTheme.textSecondaryColor,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
+        GBStatCard(
+          title: l10n.active,
+          value: activeDonations.toString(),
+          icon: Icons.check_circle_outline,
+          color: DesignSystem.success,
+          trend: activeTrend,
+          subtitle: 'Available now',
+          isLoading: _isLoading,
+        ),
+        GBStatCard(
+          title: l10n.completed,
+          value: completedDonations.toString(),
+          icon: Icons.handshake_outlined,
+          color: DesignSystem.accentPurple,
+          trend: completedTrend,
+          subtitle: 'All time',
+          isLoading: _isLoading,
+        ),
+        GBStatCard(
+          title: l10n.impactScore,
+          value: impactScore.toString(),
+          icon: Icons.trending_up,
+          color: DesignSystem.accentAmber,
+          subtitle: 'Top 10%',
+          isLoading: _isLoading,
+        ),
+      ],
     );
   }
 
   Widget _buildRecentActivity(
       BuildContext context, ThemeData theme, bool isDark) {
     final l10n = AppLocalizations.of(context)!;
+
+    // Sample activity data - replace with real data from API
+    final activities = [
+      {
+        'title': 'New request received',
+        'description': 'John requested your winter jacket',
+        'time': '5 min ago',
+        'icon': Icons.inbox,
+        'color': DesignSystem.primaryBlue,
+      },
+      {
+        'title': 'Donation marked complete',
+        'description': 'Your book donation was successfully delivered',
+        'time': '2 hours ago',
+        'icon': Icons.check_circle,
+        'color': DesignSystem.success,
+      },
+      {
+        'title': 'Item viewed',
+        'description': '12 people viewed your laptop donation',
+        'time': '1 day ago',
+        'icon': Icons.visibility,
+        'color': DesignSystem.accentPurple,
+      },
+      {
+        'title': 'Message received',
+        'description': 'Sarah sent you a thank you message',
+        'time': '2 days ago',
+        'icon': Icons.message,
+        'color': DesignSystem.accentPink,
+      },
+    ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -388,7 +472,7 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              l10n.recentDonations,
+              'Recent Activity',
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
@@ -396,7 +480,12 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced>
               ),
             ),
             TextButton.icon(
-              onPressed: () => _tabController.animateTo(1),
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text('Full activity log coming soon')),
+                );
+              },
               icon: const Icon(Icons.arrow_forward, size: 16),
               label: Text(l10n.viewAll),
               style: TextButton.styleFrom(
@@ -406,17 +495,30 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced>
           ],
         ),
         const SizedBox(height: AppTheme.spacingL),
-        if (_isLoading)
-          const Center(child: CircularProgressIndicator())
-        else if (_donations.isEmpty)
-          _buildEmptyState()
-        else
-          ..._donations.take(3).map(
-                (donation) => Padding(
-                  padding: const EdgeInsets.only(bottom: AppTheme.spacingM),
-                  child: _buildDonationCard(donation, compact: true),
-                ),
-              ),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(AppTheme.radiusL),
+            border: Border.all(color: AppTheme.borderColor),
+          ),
+          padding: const EdgeInsets.all(AppTheme.spacingL),
+          child: Column(
+            children: activities
+                .asMap()
+                .entries
+                .map(
+                  (entry) => GBActivityItem(
+                    title: entry.value['title'] as String,
+                    description: entry.value['description'] as String,
+                    time: entry.value['time'] as String,
+                    icon: entry.value['icon'] as IconData,
+                    color: entry.value['color'] as Color,
+                    isLast: entry.key == activities.length - 1,
+                  ),
+                )
+                .toList(),
+          ),
+        ),
       ],
     );
   }
@@ -424,49 +526,88 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced>
   Widget _buildQuickActions(
       BuildContext context, ThemeData theme, bool isDesktop) {
     final l10n = AppLocalizations.of(context)!;
-    final actions = [
-      {
-        'title': l10n.createDonation,
-        'description': l10n.shareItemsNeed,
-        'icon': Icons.add_circle_outline,
-        'color': AppTheme.primaryColor,
-        'onTap': () => _navigateToCreateDonation(),
-      },
-      {
-        'title': l10n.browseRequests,
-        'description': l10n.seeWhatPeopleNeed,
-        'icon': Icons.search,
-        'color': const Color(0xFF8B5CF6),
-        'onTap': () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const DonorBrowseRequestsScreen(),
-            ),
-          );
-        },
-      },
-      {
-        'title': l10n.viewImpact,
-        'description': l10n.seeContributionStats,
-        'icon': Icons.analytics_outlined,
-        'color': AppTheme.warningColor,
-        'onTap': () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const DonorImpactScreen(),
-            ),
-          );
-        },
-      },
-    ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           l10n.quickActions,
+          style: DesignSystem.titleLarge(context).copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: DesignSystem.spaceL),
+        GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: isDesktop ? 4 : 2,
+          crossAxisSpacing: DesignSystem.spaceL,
+          mainAxisSpacing: DesignSystem.spaceL,
+          childAspectRatio: 1.0,
+          children: [
+            GBQuickActionCard(
+              title: l10n.createDonation,
+              description: l10n.shareItemsNeed,
+              icon: Icons.add_circle_outline,
+              color: DesignSystem.primaryBlue,
+              onTap: () => _navigateToCreateDonation(),
+            ),
+            GBQuickActionCard(
+              title: l10n.browseRequests,
+              description: l10n.seeWhatPeopleNeed,
+              icon: Icons.search,
+              color: DesignSystem.accentPurple,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const DonorBrowseRequestsScreen(),
+                  ),
+                );
+              },
+            ),
+            GBQuickActionCard(
+              title: l10n.viewImpact,
+              description: l10n.seeContributionStats,
+              icon: Icons.analytics_outlined,
+              color: DesignSystem.accentAmber,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const DonorImpactScreen(),
+                  ),
+                );
+              },
+            ),
+            GBQuickActionCard(
+              title: l10n.messages,
+              description: 'Chat with recipients',
+              icon: Icons.message_outlined,
+              color: DesignSystem.accentPink,
+              onTap: () {
+                // Navigate to messages
+              },
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProgressTracking(
+      BuildContext context, ThemeData theme, bool isDesktop) {
+    final l10n = AppLocalizations.of(context)!;
+    final totalDonations = _donations.length;
+    final monthlyGoal = 10;
+    final impactScore = totalDonations * 10;
+    final impactGoal = 100;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Goal Tracking',
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w700,
@@ -474,99 +615,63 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced>
           ),
         ),
         const SizedBox(height: AppTheme.spacingL),
-        if (isDesktop)
-          Row(
-            children: actions.map((action) {
-              return Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(right: AppTheme.spacingL),
-                  child: _buildActionCard(action),
-                ),
-              );
-            }).toList(),
-          )
-        else
-          ...actions.map(
-            (action) => Padding(
-              padding: const EdgeInsets.only(bottom: AppTheme.spacingM),
-              child: _buildActionCard(action),
-            ),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(AppTheme.radiusL),
+            border: Border.all(color: AppTheme.borderColor),
           ),
+          padding: const EdgeInsets.all(AppTheme.spacingXL),
+          child: isDesktop
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    GBProgressRing(
+                      progress: totalDonations / monthlyGoal,
+                      label: 'Monthly Goal',
+                      color: DesignSystem.primaryBlue,
+                      size: 140,
+                    ),
+                    const SizedBox(width: AppTheme.spacingXL),
+                    GBProgressRing(
+                      progress: impactScore / impactGoal,
+                      label: 'Impact Score',
+                      color: DesignSystem.accentAmber,
+                      size: 140,
+                    ),
+                  ],
+                )
+              : Column(
+                  children: [
+                    GBProgressRing(
+                      progress: totalDonations / monthlyGoal,
+                      label: 'Monthly Goal',
+                      color: DesignSystem.primaryBlue,
+                      size: 140,
+                    ),
+                    const SizedBox(height: AppTheme.spacingXL),
+                    GBProgressRing(
+                      progress: impactScore / impactGoal,
+                      label: 'Impact Score',
+                      color: DesignSystem.accentAmber,
+                      size: 140,
+                    ),
+                  ],
+                ),
+        ),
       ],
-    );
-  }
-
-  Widget _buildActionCard(Map<String, dynamic> action) {
-    return InkWell(
-      onTap: action['onTap'],
-      borderRadius: BorderRadius.circular(AppTheme.radiusL),
-      child: Container(
-        padding: const EdgeInsets.all(AppTheme.spacingL),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(AppTheme.radiusL),
-          border: Border.all(color: AppTheme.borderColor),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: (action['color'] as Color).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(AppTheme.radiusM),
-              ),
-              child: Icon(
-                action['icon'],
-                color: action['color'],
-                size: 24,
-              ),
-            ),
-            const SizedBox(width: AppTheme.spacingL),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    action['title'],
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: AppTheme.textPrimaryColor,
-                    ),
-                  ),
-                  const SizedBox(height: AppTheme.spacingXS),
-                  Text(
-                    action['description'],
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppTheme.textSecondaryColor,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(
-              Icons.arrow_forward_ios,
-              size: 16,
-              color: AppTheme.textSecondaryColor,
-            ),
-          ],
-        ),
-      ),
     );
   }
 
   Widget _buildDonationsTab(
       BuildContext context, ThemeData theme, bool isDark, bool isDesktop) {
     final l10n = AppLocalizations.of(context)!;
+
+    // Determine which list to display
+    final donationsToDisplay = _searchQuery.isEmpty && _selectedStatuses.isEmpty
+        ? _donations
+        : _filteredDonations;
+
     return RefreshIndicator(
       onRefresh: _loadUserDonations,
       child: SingleChildScrollView(
@@ -604,12 +709,101 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced>
                     ],
                   ),
                   const SizedBox(height: AppTheme.spacingL),
+
+                  // Search and Filter Section
+                  if (_donations.isNotEmpty && !_isLoading) ...[
+                    GBSearchBar<Donation>(
+                      hint:
+                          'Search donations by title, description, or category...',
+                      onSearch: (query) => _onSearchChanged(query),
+                      onChanged: (query) => _onSearchChanged(query),
+                    ),
+                    const SizedBox(height: AppTheme.spacingL),
+                    GBFilterChips<String>(
+                      label: 'Status',
+                      options: [
+                        GBFilterOption<String>(
+                          value: 'available',
+                          label: 'Available',
+                          icon: Icons.check_circle_outline,
+                          color: DesignSystem.success,
+                        ),
+                        GBFilterOption<String>(
+                          value: 'pending',
+                          label: 'Pending',
+                          icon: Icons.pending_outlined,
+                          color: DesignSystem.warning,
+                        ),
+                        GBFilterOption<String>(
+                          value: 'completed',
+                          label: 'Completed',
+                          icon: Icons.done_all,
+                          color: DesignSystem.primaryBlue,
+                        ),
+                      ],
+                      selectedValues: _selectedStatuses,
+                      onChanged: _onStatusFilterChanged,
+                      multiSelect: true,
+                      scrollable: true,
+                    ),
+                    const SizedBox(height: AppTheme.spacingL),
+
+                    // Result count
+                    if (_searchQuery.isNotEmpty || _selectedStatuses.isNotEmpty)
+                      Padding(
+                        padding:
+                            const EdgeInsets.only(bottom: AppTheme.spacingM),
+                        child: Row(
+                          children: [
+                            Text(
+                              'Found ${donationsToDisplay.length} donation${donationsToDisplay.length == 1 ? '' : 's'}',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: DesignSystem.neutral600,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(width: AppTheme.spacingS),
+                            if (_searchQuery.isNotEmpty ||
+                                _selectedStatuses.isNotEmpty)
+                              TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _searchQuery = '';
+                                    _selectedStatuses = [];
+                                  });
+                                  _applyFiltersAndSearch();
+                                },
+                                child: Text(
+                                  'Clear filters',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: DesignSystem.primaryBlue,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                  ],
+
                   if (_isLoading)
-                    const Center(child: CircularProgressIndicator())
+                    Column(
+                      children: List.generate(
+                        3,
+                        (index) => const Padding(
+                          padding: EdgeInsets.only(bottom: AppTheme.spacingL),
+                          child: GBSkeletonCard(),
+                        ),
+                      ),
+                    )
                   else if (_donations.isEmpty)
                     _buildEmptyState()
+                  else if (donationsToDisplay.isEmpty)
+                    _buildNoResultsState()
                   else
-                    ..._donations.map(
+                    ...donationsToDisplay.map(
                       (donation) => Padding(
                         padding:
                             const EdgeInsets.only(bottom: AppTheme.spacingL),
@@ -673,6 +867,72 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced>
               text: l10n.createFirstDonation,
               leftIcon: const Icon(Icons.add, size: 20),
               onPressed: () => _navigateToCreateDonation(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNoResultsState() {
+    return Container(
+      padding: const EdgeInsets.all(AppTheme.spacingXXL),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppTheme.radiusXL),
+        border: Border.all(color: AppTheme.borderColor),
+      ),
+      child: Center(
+        child: Column(
+          children: [
+            Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                color: DesignSystem.neutral100,
+                borderRadius: BorderRadius.circular(60),
+              ),
+              child: Icon(
+                Icons.search_off,
+                size: 60,
+                color: DesignSystem.neutral400,
+              ),
+            ),
+            const SizedBox(height: AppTheme.spacingXL),
+            Text(
+              'No donations found',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: DesignSystem.neutral900,
+              ),
+            ),
+            const SizedBox(height: AppTheme.spacingS),
+            Text(
+              'Try adjusting your search or filters',
+              style: TextStyle(
+                fontSize: 14,
+                color: DesignSystem.neutral600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppTheme.spacingXL),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _searchQuery = '';
+                  _selectedStatuses = [];
+                });
+                _applyFiltersAndSearch();
+              },
+              child: Text(
+                'Clear all filters',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: DesignSystem.primaryBlue,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ],
         ),

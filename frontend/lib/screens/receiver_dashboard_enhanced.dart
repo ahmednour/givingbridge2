@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../core/theme/app_theme.dart';
+import '../core/theme/design_system.dart';
 import '../widgets/common/gb_button.dart';
+import '../widgets/common/gb_dashboard_components.dart';
+import '../widgets/common/gb_confetti.dart';
+import '../widgets/common/gb_empty_state.dart';
+import '../widgets/common/gb_search_bar.dart';
+import '../widgets/common/gb_filter_chips.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../models/donation.dart';
@@ -21,9 +27,13 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced>
   late TabController _tabController;
 
   List<Donation> _availableDonations = [];
+  List<Donation> _filteredDonations = []; // Filtered/searched results
   List<dynamic> _myRequests = [];
   bool _isLoading = false;
   String _selectedCategory = 'all';
+  List<String> _selectedCategories = []; // Multiple category selection
+  String _searchQuery = ''; // Search query
+  int _previousApprovedCount = 0; // Track approved requests for celebrations
 
   List<Map<String, dynamic>> _getCategories(AppLocalizations l10n) {
     return [
@@ -71,17 +81,97 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced>
     if (response.success && response.data != null && mounted) {
       setState(() {
         _availableDonations = response.data!.items;
+        _applyFiltersAndSearch(); // Apply filters after loading
       });
     }
 
     setState(() => _isLoading = false);
   }
 
+  void _applyFiltersAndSearch() {
+    var results = List<Donation>.from(_availableDonations);
+
+    // Apply category filter
+    if (_selectedCategories.isNotEmpty) {
+      results = results
+          .where((donation) => _selectedCategories.contains(donation.category))
+          .toList();
+    }
+
+    // Apply search filter
+    if (_searchQuery.isNotEmpty) {
+      final query = _searchQuery.toLowerCase();
+      results = results.where((donation) {
+        return donation.title.toLowerCase().contains(query) ||
+            donation.description.toLowerCase().contains(query) ||
+            donation.category.toLowerCase().contains(query) ||
+            donation.location.toLowerCase().contains(query);
+      }).toList();
+    }
+
+    setState(() {
+      _filteredDonations = results;
+    });
+  }
+
+  void _onSearchChanged(String query) {
+    setState(() {
+      _searchQuery = query;
+    });
+    _applyFiltersAndSearch();
+  }
+
+  void _onCategoryFilterChanged(List<String> categories) {
+    setState(() {
+      _selectedCategories = categories;
+    });
+    _applyFiltersAndSearch();
+  }
+
   Future<void> _loadMyRequests() async {
     final response = await ApiService.getMyRequests();
     if (response.success && mounted) {
+      final newRequests = response.data ?? [];
+      final newApprovedCount =
+          newRequests.where((r) => r.status == 'approved').length;
+
+      // Check for new approvals and celebrate
+      if (_previousApprovedCount > 0 &&
+          newApprovedCount > _previousApprovedCount) {
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (mounted) {
+            GBConfetti.show(
+              context,
+              particleCount: 50,
+              duration: const Duration(seconds: 2),
+            );
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: [
+                    const Icon(Icons.celebration, color: Colors.white),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        '🎉 Great news! Your request has been approved!',
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ],
+                ),
+                backgroundColor: DesignSystem.success,
+                duration: const Duration(seconds: 3),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          }
+        });
+      }
+
       setState(() {
-        _myRequests = response.data ?? [];
+        _myRequests = newRequests;
+        _previousApprovedCount = newApprovedCount;
       });
     }
   }
@@ -95,13 +185,13 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced>
     final isDesktop = size.width > 768;
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: DesignSystem.getBackgroundColor(context),
       body: Column(
         children: [
           // Modern Tab Bar
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: DesignSystem.getSurfaceColor(context),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.05),
@@ -170,6 +260,21 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced>
 
                   // Stats Cards
                   _buildStatsSection(context, theme, isDesktop),
+
+                  const SizedBox(height: AppTheme.spacingXL),
+
+                  // Quick Actions
+                  _buildQuickActions(context, theme, isDesktop),
+
+                  const SizedBox(height: AppTheme.spacingXL),
+
+                  // Recent Activity
+                  _buildRecentActivity(context, theme, isDesktop),
+
+                  const SizedBox(height: AppTheme.spacingXL),
+
+                  // Progress Tracking
+                  _buildProgressTracking(context, theme, isDesktop),
 
                   const SizedBox(height: AppTheme.spacingXL),
 
@@ -266,194 +371,329 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced>
   Widget _buildStatsSection(
       BuildContext context, ThemeData theme, bool isDesktop) {
     final l10n = AppLocalizations.of(context)!;
-    final stats = [
-      {
-        'title': l10n.availableItems,
-        'value': _availableDonations.length.toString(),
-        'icon': Icons.inventory_2,
-        'color': AppTheme.secondaryColor,
-        'bgColor': AppTheme.secondaryColor.withOpacity(0.1),
-      },
-      {
-        'title': l10n.myRequests,
-        'value': _myRequests.length.toString(),
-        'icon': Icons.inbox_outlined,
-        'color': AppTheme.primaryColor,
-        'bgColor': AppTheme.primaryColor.withOpacity(0.1),
-      },
-      {
-        'title': l10n.pending,
-        'value':
-            _myRequests.where((r) => r.status == 'pending').length.toString(),
-        'icon': Icons.hourglass_empty,
-        'color': AppTheme.warningColor,
-        'bgColor': AppTheme.warningColor.withOpacity(0.1),
-      },
-      {
-        'title': l10n.approved,
-        'value':
-            _myRequests.where((r) => r.status == 'approved').length.toString(),
-        'icon': Icons.check_circle_outline,
-        'color': AppTheme.successColor,
-        'bgColor': AppTheme.successColor.withOpacity(0.1),
-      },
-    ];
+    final availableCount = _availableDonations.length;
+    final requestsCount = _myRequests.length;
+    final pendingCount = _myRequests.where((r) => r.status == 'pending').length;
+    final approvedCount =
+        _myRequests.where((r) => r.status == 'approved').length;
 
-    if (isDesktop) {
-      return Row(
-        children: stats.map((stat) {
-          return Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(right: AppTheme.spacingL),
-              child: _buildStatCard(stat),
-            ),
-          );
-        }).toList(),
-      );
-    } else {
-      return GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: AppTheme.spacingM,
-          mainAxisSpacing: AppTheme.spacingM,
-          childAspectRatio: 1.3,
+    // Calculate trends (mock data - replace with real data)
+    final availableTrend = availableCount > 10 ? 8.5 : 0.0;
+    final requestsTrend = requestsCount > 3 ? 15.2 : 0.0;
+    final approvalRate =
+        requestsCount > 0 ? (approvedCount / requestsCount * 100) : 0.0;
+
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: isDesktop ? 4 : 2,
+      crossAxisSpacing: DesignSystem.spaceL,
+      mainAxisSpacing: DesignSystem.spaceL,
+      childAspectRatio: 1.2,
+      children: [
+        GBStatCard(
+          title: l10n.availableItems,
+          value: availableCount.toString(),
+          icon: Icons.inventory_2,
+          color: DesignSystem.secondaryGreen,
+          trend: availableTrend,
+          subtitle: 'In your area',
+          isLoading: _isLoading,
         ),
-        itemCount: stats.length,
-        itemBuilder: (context, index) => _buildStatCard(stats[index]),
-      );
-    }
-  }
-
-  Widget _buildStatCard(Map<String, dynamic> stat) {
-    return Container(
-      padding: const EdgeInsets.all(AppTheme.spacingL),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppTheme.radiusL),
-        border: Border.all(color: AppTheme.borderColor),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(AppTheme.spacingM),
-            decoration: BoxDecoration(
-              color: stat['bgColor'],
-              borderRadius: BorderRadius.circular(AppTheme.radiusM),
-            ),
-            child: Icon(
-              stat['icon'],
-              color: stat['color'],
-              size: 24,
-            ),
-          ),
-          const SizedBox(height: AppTheme.spacingM),
-          Text(
-            stat['value'],
-            style: const TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.w700,
-              color: AppTheme.textPrimaryColor,
-            ),
-          ),
-          const SizedBox(height: AppTheme.spacingXS),
-          Text(
-            stat['title'],
-            style: const TextStyle(
-              fontSize: 14,
-              color: AppTheme.textSecondaryColor,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
+        GBStatCard(
+          title: l10n.myRequests,
+          value: requestsCount.toString(),
+          icon: Icons.inbox_outlined,
+          color: DesignSystem.primaryBlue,
+          trend: requestsTrend,
+          subtitle: 'Total requests',
+          isLoading: _isLoading,
+        ),
+        GBStatCard(
+          title: l10n.pending,
+          value: pendingCount.toString(),
+          icon: Icons.hourglass_empty,
+          color: DesignSystem.warning,
+          subtitle: 'Awaiting approval',
+          isLoading: _isLoading,
+        ),
+        GBStatCard(
+          title: l10n.approved,
+          value: approvedCount.toString(),
+          icon: Icons.check_circle_outline,
+          color: DesignSystem.success,
+          subtitle: '${approvalRate.toStringAsFixed(0)}% approval rate',
+          isLoading: _isLoading,
+        ),
+      ],
     );
   }
 
-  Widget _buildCategoryFilter(BuildContext context, ThemeData theme) {
+  Widget _buildQuickActions(
+      BuildContext context, ThemeData theme, bool isDesktop) {
     final l10n = AppLocalizations.of(context)!;
-    final categories = _getCategories(l10n);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          l10n.donationCategories,
+          l10n.quickActions,
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w700,
             color: AppTheme.textPrimaryColor,
           ),
         ),
-        const SizedBox(height: AppTheme.spacingM),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: categories.map((category) {
-              final isSelected = _selectedCategory == category['value'];
-              return Padding(
-                padding: const EdgeInsets.only(right: AppTheme.spacingS),
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedCategory = category['value'];
-                    });
-                    _loadAvailableDonations();
-                  },
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppTheme.spacingL,
-                      vertical: AppTheme.spacingM,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? AppTheme.secondaryColor
-                          : AppTheme.surfaceColor,
-                      borderRadius: BorderRadius.circular(AppTheme.radiusL),
-                      border: Border.all(
-                        color: isSelected
-                            ? AppTheme.secondaryColor
-                            : AppTheme.borderColor,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          category['icon'],
-                          size: 20,
-                          color: isSelected
-                              ? Colors.white
-                              : AppTheme.textSecondaryColor,
-                        ),
-                        const SizedBox(width: AppTheme.spacingS),
-                        Text(
-                          category['label'],
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: isSelected
-                                ? Colors.white
-                                : AppTheme.textPrimaryColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
+        const SizedBox(height: AppTheme.spacingL),
+        GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: isDesktop ? 4 : 2,
+          crossAxisSpacing: DesignSystem.spaceL,
+          mainAxisSpacing: DesignSystem.spaceL,
+          childAspectRatio: 1.1,
+          children: [
+            GBQuickActionCard(
+              title: l10n.browseDonations,
+              description: 'Find items you need',
+              icon: Icons.search,
+              color: DesignSystem.primaryBlue,
+              onTap: () => _tabController.animateTo(0),
+            ),
+            GBQuickActionCard(
+              title: l10n.myRequests,
+              description: 'View request status',
+              icon: Icons.inbox_outlined,
+              color: DesignSystem.secondaryGreen,
+              onTap: () => _tabController.animateTo(1),
+            ),
+            GBQuickActionCard(
+              title: l10n.message,
+              description: 'Contact donors',
+              icon: Icons.message_outlined,
+              color: DesignSystem.accentPink,
+              onTap: () {
+                // Navigate to messages
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Messages feature coming soon')),
+                );
+              },
+            ),
+            GBQuickActionCard(
+              title: 'Categories',
+              description: 'Filter by category',
+              icon: Icons.category,
+              color: DesignSystem.accentCyan,
+              onTap: () => _tabController.animateTo(0),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRecentActivity(
+      BuildContext context, ThemeData theme, bool isDesktop) {
+    final l10n = AppLocalizations.of(context)!;
+
+    // Sample activity data - replace with real data from API
+    final activities = [
+      {
+        'title': 'Request approved',
+        'description': 'Sarah approved your request for winter clothes',
+        'time': '10 min ago',
+        'icon': Icons.check_circle,
+        'color': DesignSystem.success,
+      },
+      {
+        'title': 'New donation available',
+        'description': 'Food items posted in your area',
+        'time': '1 hour ago',
+        'icon': Icons.inventory_2,
+        'color': DesignSystem.secondaryGreen,
+      },
+      {
+        'title': 'Message from donor',
+        'description': 'Mike sent you pickup instructions',
+        'time': '3 hours ago',
+        'icon': Icons.message,
+        'color': DesignSystem.accentPink,
+      },
+      {
+        'title': 'Request pending',
+        'description': 'Your book request is awaiting approval',
+        'time': '1 day ago',
+        'icon': Icons.hourglass_empty,
+        'color': DesignSystem.warning,
+      },
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Recent Activity',
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.textPrimaryColor,
+              ),
+            ),
+            TextButton.icon(
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text('Full activity log coming soon')),
+                );
+              },
+              icon: const Icon(Icons.arrow_forward, size: 16),
+              label: Text(l10n.viewAll),
+              style: TextButton.styleFrom(
+                foregroundColor: AppTheme.secondaryColor,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppTheme.spacingL),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(AppTheme.radiusL),
+            border: Border.all(color: AppTheme.borderColor),
           ),
+          padding: const EdgeInsets.all(AppTheme.spacingL),
+          child: Column(
+            children: activities
+                .asMap()
+                .entries
+                .map(
+                  (entry) => GBActivityItem(
+                    title: entry.value['title'] as String,
+                    description: entry.value['description'] as String,
+                    time: entry.value['time'] as String,
+                    icon: entry.value['icon'] as IconData,
+                    color: entry.value['color'] as Color,
+                    isLast: entry.key == activities.length - 1,
+                  ),
+                )
+                .toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCategoryFilter(BuildContext context, ThemeData theme) {
+    final l10n = AppLocalizations.of(context)!;
+    final categories = _getCategories(l10n);
+
+    // Build filter options for GBFilterChips
+    final filterOptions = categories
+        .where((cat) => cat['value'] != 'all')
+        .map((cat) => GBFilterOption<String>(
+              value: cat['value'] as String,
+              label: cat['label'] as String,
+              icon: cat['icon'] as IconData,
+            ))
+        .toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Search Bar
+        GBSearchBar<Donation>(
+          hint: 'Search donations by title, description, or location...',
+          onSearch: (query) => _onSearchChanged(query),
+          onChanged: (query) => _onSearchChanged(query),
+        ),
+
+        const SizedBox(height: AppTheme.spacingL),
+
+        // Filter Chips
+        GBFilterChips<String>(
+          label: l10n.donationCategories,
+          options: filterOptions,
+          selectedValues: _selectedCategories,
+          onChanged: _onCategoryFilterChanged,
+          multiSelect: true,
+          scrollable: true,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProgressTracking(
+      BuildContext context, ThemeData theme, bool isDesktop) {
+    final l10n = AppLocalizations.of(context)!;
+    final approvedRequests =
+        _myRequests.where((r) => r.status == 'approved').length;
+    final totalRequests = _myRequests.length;
+    final requestGoal = 5;
+
+    // Mock profile completion - replace with actual data
+    final profileCompletion = 0.8; // 80%
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Your Progress',
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            color: AppTheme.textPrimaryColor,
+          ),
+        ),
+        const SizedBox(height: AppTheme.spacingL),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(AppTheme.radiusL),
+            border: Border.all(color: AppTheme.borderColor),
+          ),
+          padding: const EdgeInsets.all(AppTheme.spacingXL),
+          child: isDesktop
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    GBProgressRing(
+                      progress: totalRequests > 0
+                          ? approvedRequests / requestGoal
+                          : 0.0,
+                      label: 'Requests Filled',
+                      color: DesignSystem.secondaryGreen,
+                      size: 140,
+                    ),
+                    const SizedBox(width: AppTheme.spacingXL),
+                    GBProgressRing(
+                      progress: profileCompletion,
+                      label: 'Profile Complete',
+                      color: DesignSystem.primaryBlue,
+                      size: 140,
+                    ),
+                  ],
+                )
+              : Column(
+                  children: [
+                    GBProgressRing(
+                      progress: totalRequests > 0
+                          ? approvedRequests / requestGoal
+                          : 0.0,
+                      label: 'Requests Filled',
+                      color: DesignSystem.secondaryGreen,
+                      size: 140,
+                    ),
+                    const SizedBox(height: AppTheme.spacingXL),
+                    GBProgressRing(
+                      progress: profileCompletion,
+                      label: 'Profile Complete',
+                      color: DesignSystem.primaryBlue,
+                      size: 140,
+                    ),
+                  ],
+                ),
         ),
       ],
     );
@@ -461,6 +701,12 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced>
 
   Widget _buildAvailableDonations(
       BuildContext context, ThemeData theme, bool isDark, bool isDesktop) {
+    // Use filtered donations if search/filter is active, otherwise use all
+    final donationsToShow =
+        _searchQuery.isNotEmpty || _selectedCategories.isNotEmpty
+            ? _filteredDonations
+            : _availableDonations;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -476,7 +722,7 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced>
               ),
             ),
             Text(
-              '${_availableDonations.length} items',
+              '${donationsToShow.length} items',
               style: const TextStyle(
                 fontSize: 14,
                 color: AppTheme.textSecondaryColor,
@@ -486,11 +732,19 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced>
         ),
         const SizedBox(height: AppTheme.spacingL),
         if (_isLoading)
-          const Center(child: CircularProgressIndicator())
-        else if (_availableDonations.isEmpty)
+          Column(
+            children: List.generate(
+              3,
+              (index) => const Padding(
+                padding: EdgeInsets.only(bottom: AppTheme.spacingL),
+                child: GBSkeletonCard(),
+              ),
+            ),
+          )
+        else if (donationsToShow.isEmpty)
           _buildEmptyState()
         else
-          ..._availableDonations.map(
+          ...donationsToShow.map(
             (donation) => Padding(
               padding: const EdgeInsets.only(bottom: AppTheme.spacingL),
               child: _buildDonationCard(donation),

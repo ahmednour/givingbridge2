@@ -7,6 +7,7 @@ import '../core/utils/rtl_utils.dart';
 import '../core/constants/ui_constants.dart';
 import '../core/constants/donation_constants.dart';
 import '../widgets/common/gb_button.dart';
+import '../widgets/common/gb_multiple_image_upload.dart';
 import '../widgets/app_components.dart';
 import '../providers/donation_provider.dart';
 import '../models/donation.dart';
@@ -41,11 +42,9 @@ class _CreateDonationScreenEnhancedState
   // State variables
   int _currentStep = 0;
   bool _isLoading = false;
-  bool _isPickingImages = false;
   String _selectedCategory = DonationCategory.values.first.value;
   String _selectedCondition = DonationCondition.values.first.value;
   List<XFile> _selectedImages = [];
-  final ImagePicker _imagePicker = ImagePicker();
 
   // Animation controllers
   late AnimationController _stepAnimationController;
@@ -132,57 +131,6 @@ class _CreateDonationScreenEnhancedState
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
-  }
-
-  Future<void> _pickImages() async {
-    setState(() => _isPickingImages = true);
-
-    try {
-      final List<XFile> images = await _imagePicker.pickMultiImage(
-        maxWidth: 1200, // Reduced from 1920
-        maxHeight: 800, // Reduced from 1080
-        imageQuality: 70, // Reduced from 85 for smaller file size
-      );
-
-      if (images.isNotEmpty) {
-        setState(() {
-          _selectedImages.addAll(images);
-        });
-      }
-    } catch (e) {
-      _showErrorSnackbar('Error picking images: ${e.toString()}');
-    } finally {
-      setState(() => _isPickingImages = false);
-    }
-  }
-
-  Future<void> _takePhoto() async {
-    setState(() => _isPickingImages = true);
-
-    try {
-      final XFile? image = await _imagePicker.pickImage(
-        source: ImageSource.camera,
-        maxWidth: 1200, // Reduced from 1920
-        maxHeight: 800, // Reduced from 1080
-        imageQuality: 70, // Reduced from 85
-      );
-
-      if (image != null) {
-        setState(() {
-          _selectedImages.add(image);
-        });
-      }
-    } catch (e) {
-      _showErrorSnackbar('Error taking photo: ${e.toString()}');
-    } finally {
-      setState(() => _isPickingImages = false);
-    }
-  }
-
-  void _removeImage(int index) {
-    setState(() {
-      _selectedImages.removeAt(index);
-    });
   }
 
   Future<void> _submitDonation() async {
@@ -787,172 +735,18 @@ class _CreateDonationScreenEnhancedState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
-          AppCard(
-            child: Row(
-              children: [
-                Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: AppTheme.accentColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(UIConstants.radiusM),
-                  ),
-                  child: Icon(
-                    Icons.photo_camera_outlined,
-                    color: AppTheme.accentColor,
-                    size: 28,
-                  ),
-                ),
-                AppSpacing.horizontal(UIConstants.spacingM),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.donationImages,
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                      ),
-                      AppSpacing.vertical(UIConstants.spacingXS),
-                      Text(
-                        l10n.imagesDescription,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: AppTheme.textSecondaryColor,
-                            ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          AppSpacing.vertical(UIConstants.spacingL),
-
-          // Image Upload Options
-          AppCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.addImages,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                ),
-                AppSpacing.vertical(UIConstants.spacingM),
-                Row(
-                  children: [
-                    Expanded(
-                      child: GBSecondaryButton(
-                        text: l10n.selectFromGallery,
-                        leftIcon:
-                            const Icon(Icons.photo_library_outlined, size: 20),
-                        onPressed: _pickImages,
-                      ),
-                    ),
-                    AppSpacing.horizontal(UIConstants.spacingM),
-                    Expanded(
-                      child: GBSecondaryButton(
-                        text: l10n.takePhoto,
-                        leftIcon:
-                            const Icon(Icons.camera_alt_outlined, size: 20),
-                        onPressed: _takePhoto,
-                      ),
-                    ),
-                  ],
-                ),
-                if (_selectedImages.isNotEmpty) ...[
-                  AppSpacing.vertical(UIConstants.spacingL),
-                  Text(
-                    l10n.selectedImages,
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                  ),
-                  AppSpacing.vertical(UIConstants.spacingM),
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: UIConstants.spacingS,
-                      mainAxisSpacing: UIConstants.spacingS,
-                      childAspectRatio: 1,
-                    ),
-                    itemCount: _selectedImages.length,
-                    itemBuilder: (context, index) {
-                      final xFile = _selectedImages[index];
-                      return Stack(
-                        children: [
-                          kIsWeb
-                              ? FutureBuilder<Uint8List>(
-                                  future: xFile.readAsBytes(),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.hasData) {
-                                      return Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                              UIConstants.radiusM),
-                                          image: DecorationImage(
-                                            image: MemoryImage(snapshot.data!),
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                    return Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(
-                                            UIConstants.radiusM),
-                                        color: Colors.grey[300],
-                                      ),
-                                      child: const Center(
-                                        child: CircularProgressIndicator(),
-                                      ),
-                                    );
-                                  },
-                                )
-                              : Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(
-                                        UIConstants.radiusM),
-                                    image: DecorationImage(
-                                      image: NetworkImage(xFile.path),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                          Positioned(
-                            top: UIConstants.spacingXS,
-                            right: UIConstants.spacingXS,
-                            child: GestureDetector(
-                              onTap: () => _removeImage(index),
-                              child: Container(
-                                padding: EdgeInsets.all(UIConstants.spacingXS),
-                                decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(0.6),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  Icons.close,
-                                  color: Colors.white,
-                                  size: 16,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ],
-              ],
-            ),
+          // Multiple Image Upload Component
+          GBMultipleImageUpload(
+            label: l10n.donationImages,
+            helperText: l10n.imagesDescription,
+            maxImages: 6,
+            maxSizeMB: 5.0,
+            initialImages: _selectedImages,
+            onImagesChanged: (images) {
+              setState(() {
+                _selectedImages = images;
+              });
+            },
           ),
         ],
       ),

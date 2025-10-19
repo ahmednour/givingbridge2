@@ -238,4 +238,86 @@ class AppTheme {
     }
     return MaterialColor(color.value, swatch);
   }
+
+  // Dark Theme
+  static ThemeData get darkTheme {
+    return ThemeData(
+      useMaterial3: false,
+      brightness: Brightness.dark,
+      primaryColor: primaryColor,
+      scaffoldBackgroundColor: darkBackgroundColor,
+      canvasColor: darkSurfaceColor,
+      cardColor: darkCardColor,
+      dividerColor: darkBorderColor,
+      fontFamily: GoogleFonts.cairo().fontFamily,
+
+      // Text theme for dark mode
+      textTheme: GoogleFonts.cairoTextTheme(
+        TextTheme(
+          headlineLarge: headingLarge.copyWith(color: darkTextPrimaryColor),
+          headlineMedium: headingMedium.copyWith(color: darkTextPrimaryColor),
+          headlineSmall: headingSmall.copyWith(color: darkTextPrimaryColor),
+          bodyLarge: bodyLarge.copyWith(color: darkTextPrimaryColor),
+          bodyMedium: bodyMedium.copyWith(color: darkTextPrimaryColor),
+          bodySmall: bodySmall.copyWith(color: darkTextSecondaryColor),
+        ),
+      ),
+
+      // AppBar theme for dark mode
+      appBarTheme: AppBarTheme(
+        backgroundColor: darkSurfaceColor,
+        foregroundColor: darkTextPrimaryColor,
+        elevation: 0,
+        centerTitle: false,
+        titleTextStyle: headingMedium.copyWith(color: darkTextPrimaryColor),
+        toolbarHeight: 72,
+      ),
+
+      // Elevated button theme for dark mode
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(
+              horizontal: spacingL, vertical: spacingM),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(radiusM),
+          ),
+          textStyle: buttonText,
+        ),
+      ),
+
+      // Input decoration theme for dark mode
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: darkSurfaceColor,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(radiusM),
+          borderSide: BorderSide(color: darkBorderColor),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(radiusM),
+          borderSide: BorderSide(color: darkBorderColor),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(radiusM),
+          borderSide: const BorderSide(color: primaryColor, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(radiusM),
+          borderSide: const BorderSide(color: errorColor),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: spacingM,
+          vertical: spacingM,
+        ),
+        labelStyle: bodyMedium.copyWith(color: darkTextSecondaryColor),
+        hintStyle:
+            bodyMedium.copyWith(color: darkTextSecondaryColor.withOpacity(0.6)),
+      ),
+      colorScheme: ColorScheme.fromSwatch(
+              primarySwatch: _createMaterialColor(primaryColor),
+              brightness: Brightness.dark)
+          .copyWith(surface: darkBackgroundColor),
+    );
+  }
 }

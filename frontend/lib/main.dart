@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/theme/app_theme.dart';
 import 'providers/auth_provider.dart';
 import 'providers/locale_provider.dart';
+import 'providers/theme_provider.dart';
 import 'providers/donation_provider.dart';
 import 'providers/request_provider.dart';
 import 'providers/message_provider.dart';
@@ -39,6 +40,7 @@ class GivingBridgeApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => LocaleProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => DonationProvider()),
         ChangeNotifierProvider(create: (_) => RequestProvider()),
         ChangeNotifierProvider(create: (_) => MessageProvider()),
@@ -47,12 +49,14 @@ class GivingBridgeApp extends StatelessWidget {
         ChangeNotifierProvider(
             create: (_) => NetworkStatusService()..initialize()),
       ],
-      child: Consumer<LocaleProvider>(
-        builder: (context, localeProvider, child) {
+      child: Consumer2<LocaleProvider, ThemeProvider>(
+        builder: (context, localeProvider, themeProvider, child) {
           return MaterialApp(
             title: 'Giving Bridge',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeProvider.themeMode,
             navigatorKey: NavigationService.navigatorKey,
             onGenerateRoute: AppRouter.generateRoute,
             initialRoute: '/',

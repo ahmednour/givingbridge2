@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../core/theme/app_theme.dart';
 import '../widgets/common/gb_button.dart';
+import '../widgets/common/gb_review_dialog.dart';
+import '../widgets/common/gb_timeline.dart';
+import '../widgets/common/gb_status_badge.dart';
 import '../services/api_service.dart';
 import '../l10n/app_localizations.dart';
 
@@ -15,6 +18,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
   List<DonationRequest> _requests = [];
   bool _isLoading = true;
   String _selectedFilter = 'all';
+  String? _expandedRequestId;
 
   List<Map<String, dynamic>> _getFilters(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -167,6 +171,36 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
         final l10n = AppLocalizations.of(context)!;
         _showErrorSnackbar('${l10n.networkError}: ${e.toString()}');
       }
+    }
+  }
+
+  Future<void> _rateDonor(DonationRequest request) async {
+    final result = await GBReviewDialog.show(
+      context: context,
+      title: 'Rate Donor',
+      subtitle: 'Share your experience with this donation',
+      revieweeName: request.donorName,
+      requireComment: true,
+      minCommentLength: 10,
+      maxCommentLength: 500,
+      onSubmit: (rating, comment) async {
+        // TODO: Call API to submit rating
+        // await ApiService.submitRating(
+        //   donorId: request.donorId,
+        //   requestId: request.id.toString(),
+        //   rating: rating,
+        //   comment: comment,
+        // );
+
+        // For now, just show success message
+        await Future.delayed(const Duration(milliseconds: 500));
+      },
+    );
+
+    if (result == true && mounted) {
+      _showSuccessSnackbar('Thank you for your feedback!');
+      // TODO: Update request to mark as rated
+      _loadRequests();
     }
   }
 
@@ -339,29 +373,35 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
             // Status and Date
             Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppTheme.spacingS,
-                    vertical: AppTheme.spacingXS,
-                  ),
-                  decoration: BoxDecoration(
-                    color: request.statusColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(AppTheme.radiusS),
-                  ),
-                  child: Text(
-                    request.statusDisplayName,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: request.statusColor,
-                    ),
-                  ),
-                ),
+                _buildStatusBadge(request),
                 const Spacer(),
                 Text(
                   _formatDate(request.createdAt),
                   style: AppTheme.bodySmall.copyWith(
                     color: AppTheme.textSecondaryColor,
+                  ),
+                ),
+                const SizedBox(width: AppTheme.spacingS),
+                // Timeline toggle button
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      _expandedRequestId =
+                          _expandedRequestId == request.id.toString()
+                              ? null
+                              : request.id.toString();
+                    });
+                  },
+                  borderRadius: BorderRadius.circular(AppTheme.radiusS),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Icon(
+                      _expandedRequestId == request.id.toString()
+                          ? Icons.expand_less
+                          : Icons.timeline,
+                      size: 20,
+                      color: AppTheme.textSecondaryColor,
+                    ),
                   ),
                 ),
               ],
@@ -427,6 +467,47 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
               ),
             ],
 
+            // Timeline (expandable)
+            if (_expandedRequestId == request.id.toString()) ...[
+              const SizedBox(height: AppTheme.spacingM),
+              Container(
+                padding: const EdgeInsets.all(AppTheme.spacingM),
+                decoration: BoxDecoration(
+                  color: AppTheme.surfaceColor,
+                  borderRadius: BorderRadius.circular(AppTheme.radiusM),
+                  border: Border.all(
+                    color: AppTheme.primaryColor.withOpacity(0.1),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.timeline,
+                          size: 18,
+                          color: AppTheme.primaryColor,
+                        ),
+                        const SizedBox(width: AppTheme.spacingXS),
+                        Text(
+                          'Request Timeline',
+                          style: AppTheme.headingSmall.copyWith(
+                            color: AppTheme.primaryColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppTheme.spacingM),
+                    GBTimeline(
+                      events: _buildTimelineEvents(request),
+                      showTime: true,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+
             const SizedBox(height: AppTheme.spacingM),
 
             // Action Buttons
@@ -445,6 +526,15 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
                     child: GBPrimaryButton(
                       text: 'Mark as Received',
                       onPressed: () => _markAsCompleted(request),
+                      size: GBButtonSize.small,
+                    ),
+                  ),
+                ] else if (request.isCompleted) ...[
+                  Expanded(
+                    child: GBPrimaryButton(
+                      text: 'Rate Donor',
+                      leftIcon: const Icon(Icons.star, size: 18),
+                      onPressed: () => _rateDonor(request),
                       size: GBButtonSize.small,
                     ),
                   ),
@@ -475,5 +565,81 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
     } else {
       return 'Just now';
     }
+  }
+
+  Widget _buildStatusBadge(DonationRequest request) {
+    if (request.isPending) {
+      return GBStatusBadge.pending(size: GBStatusBadgeSize.small);
+    } else if (request.status == 'approved') {
+      return GBStatusBadge.approved(size: GBStatusBadgeSize.small);
+    } else if (request.status == 'declined') {
+      return GBStatusBadge.declined(size: GBStatusBadgeSize.small);
+    } else if (request.status == 'in_progress') {
+      return GBStatusBadge.inProgress(size: GBStatusBadgeSize.small);
+    } else if (request.isCompleted) {
+      return GBStatusBadge.completed(size: GBStatusBadgeSize.small);
+    } else if (request.status == 'cancelled') {
+      return GBStatusBadge.cancelled(size: GBStatusBadgeSize.small);
+    } else {
+      return GBStatusBadge(
+        label: request.statusDisplayName,
+        backgroundColor: request.statusColor.withOpacity(0.1),
+        textColor: request.statusColor,
+        size: GBStatusBadgeSize.small,
+      );
+    }
+  }
+
+  List<GBTimelineEvent> _buildTimelineEvents(DonationRequest request) {
+    final events = <GBTimelineEvent>[];
+
+    // 1. Request Created
+    events.add(GBTimelineEvent.requestCreated(
+      timestamp: DateTime.parse(request.createdAt),
+      message: request.message,
+    ));
+
+    // 2. Response (if any)
+    if (request.status == 'approved') {
+      events.add(GBTimelineEvent.requestApproved(
+        timestamp: request.updatedAt != null
+            ? DateTime.parse(request.updatedAt!)
+            : DateTime.parse(request.createdAt).add(Duration(hours: 2)),
+        donorMessage: request.responseMessage,
+      ));
+
+      // 3. In Progress (if applicable)
+      if (request.isCompleted || request.status == 'in_progress') {
+        events.add(GBTimelineEvent.donationInProgress(
+          timestamp: request.updatedAt != null
+              ? DateTime.parse(request.updatedAt!).add(Duration(days: 1))
+              : DateTime.parse(request.createdAt).add(Duration(days: 2)),
+        ));
+      }
+
+      // 4. Completed (if applicable)
+      if (request.isCompleted) {
+        events.add(GBTimelineEvent.donationCompleted(
+          timestamp: request.updatedAt != null
+              ? DateTime.parse(request.updatedAt!)
+              : DateTime.parse(request.createdAt).add(Duration(days: 3)),
+        ));
+      }
+    } else if (request.status == 'declined') {
+      events.add(GBTimelineEvent.requestDeclined(
+        timestamp: request.updatedAt != null
+            ? DateTime.parse(request.updatedAt!)
+            : DateTime.parse(request.createdAt).add(Duration(hours: 2)),
+        reason: request.responseMessage,
+      ));
+    } else if (request.status == 'cancelled') {
+      events.add(GBTimelineEvent.requestCancelled(
+        timestamp: request.updatedAt != null
+            ? DateTime.parse(request.updatedAt!)
+            : DateTime.parse(request.createdAt).add(Duration(hours: 1)),
+      ));
+    }
+
+    return events;
   }
 }

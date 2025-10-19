@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import '../core/theme/app_theme.dart';
+import '../core/theme/design_system.dart';
 import '../widgets/common/gb_card.dart';
 import '../widgets/common/gb_button.dart';
+import '../widgets/common/gb_notification_badge.dart';
+import '../widgets/common/gb_notification_card.dart';
 import '../widgets/custom_card.dart';
 import '../l10n/app_localizations.dart';
 
@@ -213,23 +216,9 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   Widget _buildNotificationBadge(int count) {
     if (count == 0) return const SizedBox.shrink();
 
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 6.0,
-        vertical: 2.0,
-      ),
-      decoration: BoxDecoration(
-        color: AppTheme.errorColor,
-        borderRadius: BorderRadius.circular(AppTheme.radiusXL),
-      ),
-      child: Text(
-        count > 99 ? '99+' : count.toString(),
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 10,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
+    return GBNotificationBadge.small(
+      count: count,
+      showPulse: count > 0 && _tabController.index == 1, // Pulse on unread tab
     );
   }
 
@@ -253,8 +242,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
         itemBuilder: (context, index) {
           final notification = notifications[index];
           return Padding(
-            padding: const EdgeInsets.only(bottom: 12.0),
-            child: _buildNotificationCard(notification, theme, isDark),
+            padding: const EdgeInsets.only(bottom: DesignSystem.spaceM),
+            child: _buildEnhancedNotificationCard(notification),
           );
         },
       ),
@@ -293,6 +282,49 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildEnhancedNotificationCard(Map<String, dynamic> notification) {
+    return GBNotificationCard(
+      title: notification['title'],
+      message: notification['message'],
+      timestamp: notification['timestamp'],
+      isRead: notification['isRead'],
+      type: _mapNotificationType(notification['type']),
+      onTap: () => _handleNotificationTap(notification),
+      onMarkAsRead: () => _markAsRead(notification['id']),
+      onDelete: () => _deleteNotification(notification['id']),
+      enableSwipeToDelete: true,
+      showActions: true,
+    );
+  }
+
+  GBNotificationType _mapNotificationType(String type) {
+    switch (type) {
+      case 'donation_request':
+        return GBNotificationType.donationRequest;
+      case 'donation_approved':
+        return GBNotificationType.donationApproved;
+      case 'new_donation':
+        return GBNotificationType.newDonation;
+      case 'reminder':
+        return GBNotificationType.reminder;
+      case 'donation_completed':
+        return GBNotificationType.celebration;
+      default:
+        return GBNotificationType.system;
+    }
+  }
+
+  void _handleNotificationTap(Map<String, dynamic> notification) {
+    _markAsRead(notification['id']);
+    // Navigate based on notification type
+    final l10n = AppLocalizations.of(context)!;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Opening: ${notification['title']}'),
       ),
     );
   }
