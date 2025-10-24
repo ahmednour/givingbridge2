@@ -62,12 +62,22 @@ const Message = sequelize.define(
       allowNull: false,
       defaultValue: false,
     },
+    archivedBySender: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    archivedByReceiver: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
   },
   {
     tableName: "messages",
     timestamps: true,
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
+    createdAt: "createdAt",
+    updatedAt: "updatedAt",
     indexes: [
       {
         fields: ["senderId"],
@@ -83,6 +93,12 @@ const Message = sequelize.define(
       },
       {
         fields: ["isRead"],
+      },
+      {
+        fields: ["archivedBySender"],
+      },
+      {
+        fields: ["archivedByReceiver"],
       },
       {
         fields: ["createdAt"],

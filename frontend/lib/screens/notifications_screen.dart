@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import '../core/theme/app_theme.dart';
+import 'package:provider/provider.dart';
 import '../core/theme/design_system.dart';
-import '../widgets/common/gb_card.dart';
 import '../widgets/common/gb_button.dart';
 import '../widgets/common/gb_notification_badge.dart';
 import '../widgets/common/gb_notification_card.dart';
-import '../widgets/custom_card.dart';
+import '../widgets/common/web_card.dart';
 import '../l10n/app_localizations.dart';
+import '../providers/backend_notification_provider.dart';
+import '../services/backend_notification_service.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({Key? key}) : super(key: key);
@@ -18,65 +19,15 @@ class NotificationsScreen extends StatefulWidget {
 class _NotificationsScreenState extends State<NotificationsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-
-  // Mock data for notifications
-  final List<Map<String, dynamic>> _notifications = [
-    {
-      'id': '1',
-      'type': 'donation_request',
-      'title': 'New donation request',
-      'message': 'Someone requested your donated books',
-      'timestamp': DateTime.now().subtract(const Duration(minutes: 30)),
-      'isRead': false,
-      'icon': Icons.handshake,
-      'color': AppTheme.primaryColor,
-    },
-    {
-      'id': '2',
-      'type': 'donation_approved',
-      'title': 'Donation approved!',
-      'message': 'Your request for winter clothes has been approved',
-      'timestamp': DateTime.now().subtract(const Duration(hours: 2)),
-      'isRead': false,
-      'icon': Icons.check_circle,
-      'color': AppTheme.successColor,
-    },
-    {
-      'id': '3',
-      'type': 'reminder',
-      'title': 'Pickup reminder',
-      'message': 'Don\'t forget to pick up your donated items today',
-      'timestamp': DateTime.now().subtract(const Duration(hours: 6)),
-      'isRead': true,
-      'icon': Icons.schedule,
-      'color': AppTheme.warningColor,
-    },
-    {
-      'id': '4',
-      'type': 'donation_completed',
-      'title': 'Donation completed',
-      'message': 'Thank you for your donation! It has reached the recipient.',
-      'timestamp': DateTime.now().subtract(const Duration(days: 1)),
-      'isRead': true,
-      'icon': Icons.celebration,
-      'color': AppTheme.secondaryColor,
-    },
-    {
-      'id': '5',
-      'type': 'new_donation',
-      'title': 'New donation available',
-      'message': 'Electronics donation available in your area',
-      'timestamp': DateTime.now().subtract(const Duration(days: 2)),
-      'isRead': true,
-      'icon': Icons.inventory,
-      'color': AppTheme.infoColor,
-    },
-  ];
+  late BackendNotificationProvider _notificationProvider;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _notificationProvider =
+        Provider.of<BackendNotificationProvider>(context, listen: false);
+    _notificationProvider.initialize();
   }
 
   @override
@@ -101,22 +52,19 @@ class _NotificationsScreenState extends State<NotificationsScreen>
           // Tab Bar
           Container(
             decoration: BoxDecoration(
-              color: isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor,
+              color: DesignSystem.getSurfaceColor(context),
               border: Border(
                 bottom: BorderSide(
-                  color:
-                      isDark ? AppTheme.darkBorderColor : AppTheme.borderColor,
+                  color: DesignSystem.getBorderColor(context),
                   width: 1,
                 ),
               ),
             ),
             child: TabBar(
               controller: _tabController,
-              labelColor: AppTheme.primaryColor,
-              unselectedLabelColor: isDark
-                  ? AppTheme.darkTextSecondaryColor
-                  : AppTheme.textSecondaryColor,
-              indicatorColor: AppTheme.primaryColor,
+              labelColor: DesignSystem.primaryBlue,
+              unselectedLabelColor: DesignSystem.textSecondary,
+              indicatorColor: DesignSystem.primaryBlue,
               indicatorWeight: 3,
               tabs: [
                 Tab(
@@ -124,8 +72,13 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(AppLocalizations.of(context)!.all),
-                      const SizedBox(width: AppTheme.spacingXS),
-                      _buildNotificationBadge(_notifications.length),
+                      const SizedBox(width: DesignSystem.spaceXS),
+                      Consumer<BackendNotificationProvider>(
+                        builder: (context, provider, child) {
+                          return _buildNotificationBadge(
+                              provider.notifications.length);
+                        },
+                      ),
                     ],
                   ),
                 ),
@@ -134,7 +87,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(AppLocalizations.of(context)!.unread),
-                      const SizedBox(width: AppTheme.spacingXS),
+                      const SizedBox(width: DesignSystem.spaceXS),
                       _buildNotificationBadge(_getUnreadCount()),
                     ],
                   ),
@@ -146,15 +99,20 @@ class _NotificationsScreenState extends State<NotificationsScreen>
 
           // Tab Content
           Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildNotificationsList(
-                    context, theme, isDark, isDesktop, _notifications),
-                _buildNotificationsList(context, theme, isDark, isDesktop,
-                    _getUnreadNotifications()),
-                _buildNotificationSettings(context, theme, isDark, isDesktop),
-              ],
+            child: Consumer<BackendNotificationProvider>(
+              builder: (context, provider, child) {
+                return TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildNotificationsList(context, theme, isDark, isDesktop,
+                        provider.notifications),
+                    _buildNotificationsList(context, theme, isDark, isDesktop,
+                        provider.unreadNotifications),
+                    _buildNotificationSettings(
+                        context, theme, isDark, isDesktop),
+                  ],
+                );
+              },
             ),
           ),
         ],
@@ -165,12 +123,12 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   Widget _buildHeader(BuildContext context, ThemeData theme, bool isDark) {
     final l10n = AppLocalizations.of(context)!;
     return Container(
-      padding: const EdgeInsets.all(AppTheme.spacingM),
+      padding: const EdgeInsets.all(DesignSystem.spaceM),
       decoration: BoxDecoration(
-        color: isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor,
+        color: DesignSystem.getSurfaceColor(context),
         border: Border(
           bottom: BorderSide(
-            color: isDark ? AppTheme.darkBorderColor : AppTheme.borderColor,
+            color: DesignSystem.getBorderColor(context),
             width: 1,
           ),
         ),
@@ -191,9 +149,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                   Text(
                     l10n.unreadNotifications(_getUnreadCount()),
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: isDark
-                          ? AppTheme.darkTextSecondaryColor
-                          : AppTheme.textSecondaryColor,
+                      color: DesignSystem.textSecondary,
                     ),
                   ),
               ],
@@ -227,7 +183,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     ThemeData theme,
     bool isDark,
     bool isDesktop,
-    List<Map<String, dynamic>> notifications,
+    List<BackendNotification> notifications,
   ) {
     if (notifications.isEmpty) {
       return _buildEmptyState(context, theme, isDark);
@@ -236,8 +192,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     return RefreshIndicator(
       onRefresh: _refreshNotifications,
       child: ListView.builder(
-        padding:
-            EdgeInsets.all(isDesktop ? AppTheme.spacingL : AppTheme.spacingM),
+        padding: EdgeInsets.all(
+            isDesktop ? DesignSystem.spaceL : DesignSystem.spaceM),
         itemCount: notifications.length,
         itemBuilder: (context, index) {
           final notification = notifications[index];
@@ -259,26 +215,20 @@ class _NotificationsScreenState extends State<NotificationsScreen>
           Icon(
             Icons.notifications_none,
             size: 64,
-            color: isDark
-                ? AppTheme.textDisabledColor
-                : AppTheme.textDisabledColor,
+            color: DesignSystem.neutral400,
           ),
-          const SizedBox(height: AppTheme.spacingM),
+          const SizedBox(height: DesignSystem.spaceM),
           Text(
             l10n.noNotifications,
             style: theme.textTheme.titleMedium?.copyWith(
-              color: isDark
-                  ? AppTheme.darkTextSecondaryColor
-                  : AppTheme.textSecondaryColor,
+              color: DesignSystem.textSecondary,
             ),
           ),
-          const SizedBox(height: AppTheme.spacingS),
+          const SizedBox(height: DesignSystem.spaceS),
           Text(
             l10n.allCaughtUp,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: isDark
-                  ? AppTheme.textDisabledColor
-                  : AppTheme.textDisabledColor,
+              color: DesignSystem.neutral400,
             ),
           ),
         ],
@@ -286,16 +236,16 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     );
   }
 
-  Widget _buildEnhancedNotificationCard(Map<String, dynamic> notification) {
+  Widget _buildEnhancedNotificationCard(BackendNotification notification) {
     return GBNotificationCard(
-      title: notification['title'],
-      message: notification['message'],
-      timestamp: notification['timestamp'],
-      isRead: notification['isRead'],
-      type: _mapNotificationType(notification['type']),
+      title: notification.title,
+      message: notification.message,
+      timestamp: notification.createdAt,
+      isRead: notification.isRead,
+      type: _mapNotificationType(notification.type),
       onTap: () => _handleNotificationTap(notification),
-      onMarkAsRead: () => _markAsRead(notification['id']),
-      onDelete: () => _deleteNotification(notification['id']),
+      onMarkAsRead: () => _markAsRead(notification.id),
+      onDelete: () => _deleteNotification(notification.id),
       enableSwipeToDelete: true,
       showActions: true,
     );
@@ -311,135 +261,23 @@ class _NotificationsScreenState extends State<NotificationsScreen>
         return GBNotificationType.newDonation;
       case 'reminder':
         return GBNotificationType.reminder;
-      case 'donation_completed':
+      case 'celebration':
         return GBNotificationType.celebration;
+      case 'message':
+        return GBNotificationType.message;
+      case 'system':
+        return GBNotificationType.system;
       default:
         return GBNotificationType.system;
     }
   }
 
-  void _handleNotificationTap(Map<String, dynamic> notification) {
-    _markAsRead(notification['id']);
+  void _handleNotificationTap(BackendNotification notification) {
+    _markAsRead(notification.id);
     // Navigate based on notification type
-    final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Opening: ${notification['title']}'),
-      ),
-    );
-  }
-
-  Widget _buildNotificationCard(
-      Map<String, dynamic> notification, ThemeData theme, bool isDark) {
-    final isRead = notification['isRead'] as bool;
-
-    return GBCard(
-      onTap: () => _markAsRead(notification['id']),
-      backgroundColor: !isRead
-          ? (isDark
-              ? AppTheme.primaryColor.withOpacity(0.05)
-              : AppTheme.primaryColor.withOpacity(0.03))
-          : null,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Icon
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: (notification['color'] as Color).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(AppTheme.radiusM),
-            ),
-            child: Icon(
-              notification['icon'],
-              color: notification['color'],
-              size: 24,
-            ),
-          ),
-
-          const SizedBox(width: 12.0),
-
-          // Content
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        notification['title'],
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight:
-                              isRead ? FontWeight.w500 : FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    if (!isRead)
-                      Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryColor,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: AppTheme.spacingXS),
-                Text(
-                  notification['message'],
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: isDark
-                        ? AppTheme.darkTextSecondaryColor
-                        : AppTheme.textSecondaryColor,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: AppTheme.spacingS),
-                Text(
-                  _formatTimestamp(notification['timestamp']),
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: isDark
-                        ? AppTheme.textDisabledColor
-                        : AppTheme.textDisabledColor,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Actions
-          PopupMenuButton<String>(
-            icon: Icon(
-              Icons.more_vert,
-              size: 20,
-              color: isDark
-                  ? AppTheme.textDisabledColor
-                  : AppTheme.textDisabledColor,
-            ),
-            itemBuilder: (context) => [
-              if (!isRead)
-                PopupMenuItem(
-                  value: 'mark_read',
-                  child: Text(AppLocalizations.of(context)!.markAsRead),
-                ),
-              PopupMenuItem(
-                value: 'delete',
-                child: Text(AppLocalizations.of(context)!.delete),
-              ),
-            ],
-            onSelected: (value) {
-              if (value == 'mark_read') {
-                _markAsRead(notification['id']);
-              } else if (value == 'delete') {
-                _deleteNotification(notification['id']);
-              }
-            },
-          ),
-        ],
+        content: Text('Opening: ${notification.title}'),
       ),
     );
   }
@@ -448,8 +286,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       BuildContext context, ThemeData theme, bool isDark, bool isDesktop) {
     final l10n = AppLocalizations.of(context)!;
     return SingleChildScrollView(
-      padding:
-          EdgeInsets.all(isDesktop ? AppTheme.spacingXL : AppTheme.spacingM),
+      padding: EdgeInsets.all(
+          isDesktop ? DesignSystem.spaceXL : DesignSystem.spaceM),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -460,10 +298,10 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             ),
           ),
 
-          const SizedBox(height: AppTheme.spacingL),
+          const SizedBox(height: DesignSystem.spaceL),
 
           // Push Notifications
-          CustomCard(
+          WebCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -473,7 +311,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: AppTheme.spacingM),
+                const SizedBox(height: DesignSystem.spaceM),
                 _buildSettingToggle(
                   l10n.donationRequests,
                   l10n.notifyDonationRequests,
@@ -506,10 +344,10 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             ),
           ),
 
-          const SizedBox(height: AppTheme.spacingL),
+          const SizedBox(height: DesignSystem.spaceL),
 
           // Email Notifications
-          CustomCard(
+          WebCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -519,7 +357,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: AppTheme.spacingM),
+                const SizedBox(height: DesignSystem.spaceM),
                 _buildSettingToggle(
                   l10n.weeklySummary,
                   l10n.receiveWeeklySummary,
@@ -545,7 +383,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             ),
           ),
 
-          const SizedBox(height: AppTheme.spacingXL),
+          const SizedBox(height: DesignSystem.spaceXL),
 
           // Clear all notifications
           GBButton(
@@ -568,7 +406,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     bool isDark,
   ) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppTheme.spacingM),
+      padding: const EdgeInsets.only(bottom: DesignSystem.spaceM),
       child: Row(
         children: [
           Expanded(
@@ -584,9 +422,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 Text(
                   subtitle,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: isDark
-                        ? AppTheme.darkTextSecondaryColor
-                        : AppTheme.textSecondaryColor,
+                    color: DesignSystem.textSecondary,
                   ),
                 ),
               ],
@@ -604,7 +440,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 ),
               );
             },
-            activeColor: AppTheme.primaryColor,
+            activeThumbColor: DesignSystem.primaryBlue,
           ),
         ],
       ),
@@ -612,27 +448,15 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   }
 
   int _getUnreadCount() {
-    return _notifications.where((n) => !(n['isRead'] as bool)).length;
+    return _notificationProvider.unreadCount;
   }
 
-  List<Map<String, dynamic>> _getUnreadNotifications() {
-    return _notifications.where((n) => !(n['isRead'] as bool)).toList();
-  }
-
-  void _markAsRead(String notificationId) {
-    setState(() {
-      final notification =
-          _notifications.firstWhere((n) => n['id'] == notificationId);
-      notification['isRead'] = true;
-    });
+  void _markAsRead(int notificationId) {
+    _notificationProvider.markAsRead(notificationId);
   }
 
   void _markAllAsRead() {
-    setState(() {
-      for (var notification in _notifications) {
-        notification['isRead'] = true;
-      }
-    });
+    _notificationProvider.markAllAsRead();
 
     final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -642,10 +466,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     );
   }
 
-  void _deleteNotification(String notificationId) {
-    setState(() {
-      _notifications.removeWhere((n) => n['id'] == notificationId);
-    });
+  void _deleteNotification(int notificationId) {
+    _notificationProvider.deleteNotification(notificationId);
 
     final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -670,7 +492,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
           ElevatedButton(
             onPressed: () {
               setState(() {
-                _notifications.clear();
+                // Clear all notifications using provider
+                _notificationProvider.deleteAllNotifications();
               });
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
@@ -680,7 +503,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.errorColor,
+              backgroundColor: DesignSystem.error,
             ),
             child: Text(l10n.clearAll),
           ),
@@ -690,8 +513,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   }
 
   Future<void> _refreshNotifications() async {
-    // Simulate API call
-    await Future.delayed(const Duration(seconds: 1));
+    await _notificationProvider.refresh();
 
     if (mounted) {
       final l10n = AppLocalizations.of(context)!;
@@ -700,24 +522,6 @@ class _NotificationsScreenState extends State<NotificationsScreen>
           content: Text(l10n.notificationsRefreshed),
         ),
       );
-    }
-  }
-
-  String _formatTimestamp(DateTime timestamp) {
-    final now = DateTime.now();
-    final difference = now.difference(timestamp);
-    final l10n = AppLocalizations.of(context)!;
-
-    if (difference.inMinutes < 1) {
-      return l10n.justNow;
-    } else if (difference.inHours < 1) {
-      return l10n.minutesAgo(difference.inMinutes);
-    } else if (difference.inDays < 1) {
-      return l10n.hoursAgo(difference.inHours);
-    } else if (difference.inDays < 7) {
-      return l10n.daysAgo(difference.inDays);
-    } else {
-      return '${timestamp.day}/${timestamp.month}/${timestamp.year}';
     }
   }
 }

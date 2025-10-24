@@ -1,11 +1,17 @@
 import 'dart:typed_data';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
-import '../core/theme/app_theme.dart';
+import 'package:path_provider/path_provider.dart';
+import '../core/theme/design_system.dart';
 import '../widgets/common/gb_image_upload.dart';
+import '../widgets/common/gb_button.dart';
+import '../widgets/common/web_card.dart';
 import '../providers/auth_provider.dart';
 import '../providers/theme_provider.dart';
-import '../l10n/app_localizations.dart';
+import '../services/api_service.dart';
+import 'notification_settings_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -50,6 +56,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             appBar: AppBar(
               title: const Text('Profile'),
               centerTitle: true,
+              backgroundColor: DesignSystem.getSurfaceColor(context),
             ),
             body: Center(
               child: Column(
@@ -58,7 +65,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const Icon(
                     Icons.error_outline,
                     size: 80,
-                    color: AppTheme.errorColor,
+                    color: DesignSystem.error,
                   ),
                   const SizedBox(height: 20),
                   const Text(
@@ -71,7 +78,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 10),
                   const Text('Please log in again'),
                   const SizedBox(height: 30),
-                  ElevatedButton(
+                  GBButton(
+                    text: 'Logout',
                     onPressed: () async {
                       await authProvider.logout();
                       if (mounted) {
@@ -82,14 +90,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         );
                       }
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.errorColor,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 40,
-                        vertical: 15,
-                      ),
-                    ),
-                    child: const Text('Logout'),
+                    variant: GBButtonVariant.danger,
+                    size: GBButtonSize.medium,
                   ),
                 ],
               ),
@@ -99,31 +101,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
         // Normal profile screen
         return Scaffold(
+          backgroundColor: DesignSystem.getBackgroundColor(context),
           appBar: AppBar(
             title: const Text('Profile'),
             centerTitle: true,
-            backgroundColor: Colors.white,
-            foregroundColor: AppTheme.textPrimaryColor,
+            backgroundColor: DesignSystem.getSurfaceColor(context),
+            foregroundColor: DesignSystem.textPrimary,
             elevation: 0,
           ),
           body: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(DesignSystem.spaceXL),
             child: Column(
               children: [
                 // Profile Avatar
-                _buildProfileAvatar(user),
-                const SizedBox(height: 30),
+                _buildProfileAvatar(user)
+                    .animate()
+                    .fadeIn(duration: 400.ms)
+                    .scale(),
+                const SizedBox(height: DesignSystem.spaceXXL),
 
                 // Profile Information Card
-                _buildProfileCard(user),
-                const SizedBox(height: 20),
+                _buildProfileCard(user)
+                    .animate(delay: 100.ms)
+                    .fadeIn(duration: 400.ms)
+                    .slideY(begin: 0.1, end: 0),
+                const SizedBox(height: DesignSystem.spaceXL),
 
                 // Settings Card
-                _buildSettingsCard(),
-                const SizedBox(height: 20),
+                _buildSettingsCard()
+                    .animate(delay: 200.ms)
+                    .fadeIn(duration: 400.ms)
+                    .slideY(begin: 0.1, end: 0),
+                const SizedBox(height: DesignSystem.spaceXL),
 
                 // Logout Button
-                _buildLogoutButton(authProvider),
+                _buildLogoutButton(authProvider)
+                    .animate(delay: 300.ms)
+                    .fadeIn(duration: 400.ms),
               ],
             ),
           ),
@@ -139,7 +153,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             CircleAvatar(
               radius: 60,
-              backgroundColor: AppTheme.primaryColor.withOpacity(0.2),
+              backgroundColor: DesignSystem.primaryBlue.withOpacity(0.1),
               child: user.avatarUrl != null
                   ? ClipOval(
                       child: Image.network(
@@ -151,7 +165,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           return const Icon(
                             Icons.person,
                             size: 60,
-                            color: AppTheme.primaryColor,
+                            color: DesignSystem.primaryBlue,
                           );
                         },
                       ),
@@ -159,7 +173,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   : const Icon(
                       Icons.person,
                       size: 60,
-                      color: AppTheme.primaryColor,
+                      color: DesignSystem.primaryBlue,
                     ),
             ),
             Positioned(
@@ -167,9 +181,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               right: 0,
               child: Container(
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryColor,
+                  color: DesignSystem.primaryBlue,
                   shape: BoxShape.circle,
                   border: Border.all(color: Colors.white, width: 2),
+                  boxShadow: DesignSystem.elevation2,
                 ),
                 child: IconButton(
                   icon: const Icon(Icons.camera_alt, size: 20),
@@ -180,25 +195,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 15),
+        const SizedBox(height: DesignSystem.spaceL),
         Text(
           user.name,
           style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
+            color: DesignSystem.textPrimary,
           ),
         ),
-        const SizedBox(height: 5),
+        const SizedBox(height: DesignSystem.spaceS),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+          padding: const EdgeInsets.symmetric(
+              horizontal: DesignSystem.spaceL, vertical: DesignSystem.spaceS),
           decoration: BoxDecoration(
-            color: AppTheme.primaryColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(20),
+            color: DesignSystem.primaryBlue.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(DesignSystem.radiusPill),
           ),
           child: Text(
             _getRoleLabel(user.role),
             style: const TextStyle(
-              color: AppTheme.primaryColor,
+              color: DesignSystem.primaryBlue,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -272,23 +289,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(DesignSystem.spaceS),
           decoration: BoxDecoration(
-            color: AppTheme.primaryColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
+            color: DesignSystem.primaryBlue.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(DesignSystem.radiusM),
           ),
-          child: Icon(icon, color: AppTheme.primaryColor, size: 20),
+          child: Icon(icon, color: DesignSystem.primaryBlue, size: 20),
         ),
-        const SizedBox(width: 15),
+        const SizedBox(width: DesignSystem.spaceL),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 label,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 12,
-                  color: Colors.grey[600],
+                  color: DesignSystem.textSecondary,
                 ),
               ),
               const SizedBox(height: 2),
@@ -297,6 +314,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
+                  color: DesignSystem.textPrimary,
                 ),
               ),
             ],
@@ -362,12 +380,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: ElevatedButton(
+                child: GBButton(
+                  text: 'Save Changes',
                   onPressed: () => _saveProfile(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryColor,
-                  ),
-                  child: const Text('Save Changes'),
+                  variant: GBButtonVariant.primary,
+                  size: GBButtonSize.medium,
                 ),
               ),
             ],
@@ -378,25 +395,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildSettingsCard() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
+    return WebCard(
+      padding: EdgeInsets.zero,
       child: Column(
         children: [
           Consumer<ThemeProvider>(
             builder: (context, themeProvider, child) {
               return ListTile(
                 leading: Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(DesignSystem.spaceS),
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    color: DesignSystem.primaryBlue.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(DesignSystem.radiusM),
                   ),
                   child: const Icon(
                     Icons.dark_mode,
-                    color: AppTheme.primaryColor,
+                    color: DesignSystem.primaryBlue,
                   ),
                 ),
                 title: const Text('Dark Mode'),
@@ -404,7 +418,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 trailing: Switch(
                   value: themeProvider.isDarkMode,
                   onChanged: (value) => themeProvider.toggleTheme(),
-                  activeColor: AppTheme.primaryColor,
+                  activeThumbColor: DesignSystem.primaryBlue,
                 ),
               );
             },
@@ -412,23 +426,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const Divider(height: 1),
           ListTile(
             leading: Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(DesignSystem.spaceS),
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
+                color: DesignSystem.primaryBlue.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(DesignSystem.radiusM),
               ),
               child: const Icon(
                 Icons.notifications,
-                color: AppTheme.primaryColor,
+                color: DesignSystem.primaryBlue,
               ),
             ),
             title: const Text('Notifications'),
             subtitle: const Text('Manage notification settings'),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Notification settings coming soon'),
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NotificationSettingsScreen(),
                 ),
               );
             },
@@ -436,14 +451,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const Divider(height: 1),
           ListTile(
             leading: Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(DesignSystem.spaceS),
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
+                color: DesignSystem.primaryBlue.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(DesignSystem.radiusM),
               ),
               child: const Icon(
                 Icons.language,
-                color: AppTheme.primaryColor,
+                color: DesignSystem.primaryBlue,
               ),
             ),
             title: const Text('Language'),
@@ -470,7 +485,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         icon: const Icon(Icons.logout),
         label: const Text('Logout'),
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppTheme.errorColor,
+          backgroundColor: DesignSystem.error,
           padding: const EdgeInsets.symmetric(vertical: 15),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -501,7 +516,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Profile updated successfully!'),
-            backgroundColor: AppTheme.successColor,
+            backgroundColor: DesignSystem.success,
           ),
         );
       }
@@ -510,7 +525,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Failed to update profile'),
-            backgroundColor: AppTheme.errorColor,
+            backgroundColor: DesignSystem.error,
           ),
         );
       }
@@ -531,7 +546,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.errorColor,
+              backgroundColor: DesignSystem.error,
             ),
             child: const Text('Logout'),
           ),
@@ -589,7 +604,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     }
                   : null,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryColor,
+                backgroundColor: DesignSystem.primaryBlue,
               ),
               child: const Text('Upload'),
             ),
@@ -618,28 +633,87 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
         duration: const Duration(seconds: 30),
-        backgroundColor: AppTheme.primaryColor,
+        backgroundColor: DesignSystem.primaryBlue,
       ),
     );
 
-    // TODO: Implement actual avatar upload to backend
-    // For now, show success message
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      // Convert Uint8List to File
+      final tempDir = await getTemporaryDirectory();
+      final file = File('${tempDir.path}/$imageName');
+      await file.writeAsBytes(imageData);
 
-    if (mounted) {
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Row(
-            children: [
-              Icon(Icons.check_circle, color: Colors.white),
-              SizedBox(width: 12),
-              Text('Avatar uploaded successfully!'),
-            ],
+      // Upload avatar to backend
+      final response = await ApiService.uploadAvatar(file);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+        if (response.success && response.data != null) {
+          // Manually update the user in auth provider
+          // We access the private field through reflection is not possible,
+          // so we'll call updateProfile with the new avatarUrl
+          final authProvider =
+              Provider.of<AuthProvider>(context, listen: false);
+
+          // The user object is already updated in the API response,
+          // we just need to trigger a refresh of the profile
+          await authProvider.updateProfile(
+            avatarUrl: response.data!.avatarUrl,
+          );
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.check_circle, color: Colors.white),
+                  SizedBox(width: 12),
+                  Text('Avatar uploaded successfully!'),
+                ],
+              ),
+              backgroundColor: DesignSystem.success,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.error, color: Colors.white),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(response.error ?? 'Failed to upload avatar'),
+                  ),
+                ],
+              ),
+              backgroundColor: DesignSystem.error,
+            ),
+          );
+        }
+      }
+
+      // Clean up temp file
+      if (await file.exists()) {
+        await file.delete();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.error, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text('Error uploading avatar: $e'),
+                ),
+              ],
+            ),
+            backgroundColor: DesignSystem.error,
           ),
-          backgroundColor: AppTheme.successColor,
-        ),
-      );
+        );
+      }
     }
   }
 

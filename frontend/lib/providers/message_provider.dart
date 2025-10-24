@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import '../repositories/message_repository.dart';
 import '../core/constants/api_constants.dart';
+import '../services/api_service.dart' hide ChatMessage;
+import '../models/chat_message.dart';
 
 /// Provider for managing message state and operations
 class MessageProvider extends ChangeNotifier {
@@ -17,6 +19,7 @@ class MessageProvider extends ChangeNotifier {
   String? _currentUserId;
   int _currentPage = 1;
   bool _hasMoreMessages = true;
+  Set<int> _blockedUserIds = {}; // Track blocked users
 
   // Getters
   List<dynamic> get conversations => _conversations;
@@ -36,10 +39,17 @@ class MessageProvider extends ChangeNotifier {
     _clearError();
 
     try {
+      // Load blocked users first
+      await _loadBlockedUsers();
+
       final response = await _repository.getConversations();
 
       if (response.success && response.data != null) {
-        _conversations = response.data!;
+        // Filter out conversations with blocked users
+        _conversations = response.data!.where((conversation) {
+          final userId = conversation['userId'] as int?;
+          return userId != null && !_blockedUserIds.contains(userId);
+        }).toList();
         notifyListeners();
       } else {
         _setError(response.error ?? 'Failed to load conversations');
@@ -290,8 +300,105 @@ class MessageProvider extends ChangeNotifier {
 
   /// Add new message (for real-time updates)
   void addNewMessage(dynamic message) {
-    _messages.add(message);
-    notifyListeners();
+    // Avoid duplicates
+    final exists = _messages.any((m) =>
+        m['id'] == message.id || (m is ChatMessage && m.id == message.id));
+
+    if (!exists) {
+      _messages.add(message);
+
+      // Update or create conversation in list
+      _updateConversationWithNewMessage(message);
+
+      notifyListeners();
+    }
+  }
+
+  /// Update conversation list with new message
+  void _updateConversationWithNewMessage(dynamic message) {
+    final senderId =
+        message is ChatMessage ? message.senderId : message['senderId'];
+    final receiverId =
+        message is ChatMessage ? message.receiverId : message['receiverId'];
+    final senderName =
+        message is ChatMessage ? message.senderName : message['senderName'];
+    final receiverName =
+        message is ChatMessage ? message.receiverName : message['receiverName'];
+    final content =
+        message is ChatMessage ? message.content : message['content'];
+    final createdAt =
+        message is ChatMessage ? message.createdAt : message['createdAt'];
+    final isRead = message is ChatMessage ? message.isRead : message['isRead'];
+
+    // Determine the other user (conversation partner)
+    int otherUserId;
+    String otherUserName;
+
+    // Assuming current user info is available through auth
+    // For now, we'll use a simple check
+    if (_currentUserId != null) {
+      final currentId = int.tryParse(_currentUserId!);
+      if (currentId == senderId) {
+        otherUserId =
+            receiverId is int ? receiverId : int.parse(receiverId.toString());
+        otherUserName = receiverName ?? 'Unknown';
+      } else {
+        otherUserId =
+            senderId is int ? senderId : int.parse(senderId.toString());
+        otherUserName = senderName ?? 'Unknown';
+      }
+    } else {
+      // Fallback
+      otherUserId = senderId is int ? senderId : int.parse(senderId.toString());
+      otherUserName = senderName ?? 'Unknown';
+    }
+
+    // Find existing conversation
+    final conversationIndex =
+        _conversations.indexWhere((c) => c['userId'] == otherUserId);
+
+    if (conversationIndex != -1) {
+      // Update existing conversation
+      final conversation = _conversations[conversationIndex];
+      conversation['lastMessage'] = {
+        'content': content,
+        'createdAt': createdAt,
+        'isRead': isRead,
+      };
+
+      // Increment unread count if message is for current user and unread
+      if (_currentUserId != null &&
+          receiverId.toString() == _currentUserId &&
+          !isRead) {
+        conversation['unreadCount'] = (conversation['unreadCount'] ?? 0) + 1;
+      }
+
+      // Move conversation to top
+      _conversations.removeAt(conversationIndex);
+      _conversations.insert(0, conversation);
+    } else {
+      // Create new conversation
+      final newConversation = {
+        'userId': otherUserId,
+        'userName': otherUserName,
+        'lastMessage': {
+          'content': content,
+          'createdAt': createdAt,
+          'isRead': isRead,
+        },
+        'unreadCount': (_currentUserId != null &&
+                receiverId.toString() == _currentUserId &&
+                !isRead)
+            ? 1
+            : 0,
+        'donationId':
+            message is ChatMessage ? message.donationId : message['donationId'],
+        'requestId':
+            message is ChatMessage ? message.requestId : message['requestId'],
+      };
+
+      _conversations.insert(0, newConversation);
+    }
   }
 
   /// Update message (for real-time updates)
@@ -307,6 +414,96 @@ class MessageProvider extends ChangeNotifier {
   void updateUnreadCount(int count) {
     _unreadCount = count;
     notifyListeners();
+  }
+
+  /// Load blocked users
+  Future<void> _loadBlockedUsers() async {
+    try {
+      final response = await ApiService.getBlockedUsers();
+      if (response.success && response.data != null) {
+        _blockedUserIds = response.data!.map((bu) => bu.blockedId).toSet();
+      }
+    } catch (e) {
+      debugPrint('Error loading blocked users: ${e.toString()}');
+    }
+  }
+
+  /// Check if user is blocked
+  bool isUserBlocked(int userId) {
+    return _blockedUserIds.contains(userId);
+  }
+
+  /// Refresh blocked users list
+  Future<void> refreshBlockedUsers() async {
+    await _loadBlockedUsers();
+    await loadConversations(); // Reload conversations to apply filter
+  }
+
+  /// Archive a conversation
+  Future<bool> archiveConversation(int userId) async {
+    try {
+      final response = await ApiService.archiveConversation(userId);
+
+      if (response.success) {
+        // Remove conversation from list
+        _conversations.removeWhere((c) => c['userId'] == userId);
+        notifyListeners();
+        return true;
+      } else {
+        _setError(response.error ?? 'Failed to archive conversation');
+        return false;
+      }
+    } catch (e) {
+      _setError('Error archiving conversation: ${e.toString()}');
+      return false;
+    }
+  }
+
+  /// Unarchive a conversation
+  Future<bool> unarchiveConversation(int userId) async {
+    try {
+      final response = await ApiService.unarchiveConversation(userId);
+
+      if (response.success) {
+        // Reload conversations to show unarchived one
+        await loadConversations();
+        return true;
+      } else {
+        _setError(response.error ?? 'Failed to unarchive conversation');
+        return false;
+      }
+    } catch (e) {
+      _setError('Error unarchiving conversation: ${e.toString()}');
+      return false;
+    }
+  }
+
+  /// Start a new conversation with a user
+  Future<bool> startConversation(int userId, String userName) async {
+    // Check if conversation already exists
+    final existingConversation = _conversations.firstWhere(
+      (c) => c['userId'] == userId,
+      orElse: () => null,
+    );
+
+    if (existingConversation != null) {
+      // Conversation already exists, just navigate to it
+      return true;
+    }
+
+    // Create a placeholder conversation (will be populated when first message is sent)
+    final newConversation = {
+      'userId': userId,
+      'userName': userName,
+      'lastMessage': null,
+      'unreadCount': 0,
+      'donationId': null,
+      'requestId': null,
+    };
+
+    _conversations.insert(0, newConversation);
+    notifyListeners();
+    return true;
   }
 
   // Private helper methods

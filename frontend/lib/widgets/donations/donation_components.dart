@@ -4,10 +4,12 @@ import '../../core/constants/ui_constants.dart';
 import '../../core/constants/donation_constants.dart';
 import '../../core/theme/app_theme_enhanced.dart';
 import '../../core/utils/rtl_utils.dart';
-import '../../widgets/app_components.dart';
 import '../../providers/filter_provider.dart';
 import '../../models/donation.dart';
 import '../../l10n/app_localizations.dart';
+import '../common/web_card.dart';
+import '../common/gb_button.dart';
+import '../common/gb_text_field.dart';
 
 /// Enhanced donation card with better design and RTL support
 class EnhancedDonationCard extends StatelessWidget {
@@ -31,7 +33,7 @@ class EnhancedDonationCard extends StatelessWidget {
     final isRTL = RTLUtils.isRTL(context);
     final l10n = AppLocalizations.of(context)!;
 
-    return AppCard(
+    return WebCard(
       onTap: onTap,
       child: Column(
         crossAxisAlignment:
@@ -69,7 +71,7 @@ class EnhancedDonationCard extends StatelessWidget {
               ),
             ],
           ),
-          AppSpacing.vertical(UIConstants.spacingM),
+          SizedBox(height: UIConstants.spacingM),
 
           // Title and description
           Text(
@@ -80,7 +82,7 @@ class EnhancedDonationCard extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          AppSpacing.vertical(UIConstants.spacingS),
+          SizedBox(height: UIConstants.spacingS),
           Text(
             donation.description,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -89,7 +91,7 @@ class EnhancedDonationCard extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          AppSpacing.vertical(UIConstants.spacingM),
+          SizedBox(height: UIConstants.spacingM),
 
           // Category and condition
           Row(
@@ -101,7 +103,7 @@ class EnhancedDonationCard extends StatelessWidget {
                 Icons.category,
                 AppTheme.primaryColor,
               ),
-              AppSpacing.horizontal(UIConstants.spacingS),
+              SizedBox(width: UIConstants.spacingS),
               _buildInfoChip(
                 context,
                 DonationCondition.fromString(donation.condition)
@@ -111,7 +113,7 @@ class EnhancedDonationCard extends StatelessWidget {
               ),
             ],
           ),
-          AppSpacing.vertical(UIConstants.spacingM),
+          SizedBox(height: UIConstants.spacingM),
 
           // Location and donor
           Row(
@@ -121,7 +123,7 @@ class EnhancedDonationCard extends StatelessWidget {
                 size: UIConstants.iconS,
                 color: AppTheme.textSecondaryColor,
               ),
-              AppSpacing.horizontal(UIConstants.spacingXS),
+              SizedBox(width: UIConstants.spacingXS),
               Expanded(
                 child: Text(
                   donation.location,
@@ -134,7 +136,7 @@ class EnhancedDonationCard extends StatelessWidget {
               ),
             ],
           ),
-          AppSpacing.vertical(UIConstants.spacingS),
+          SizedBox(height: UIConstants.spacingS),
           Row(
             children: [
               Icon(
@@ -142,7 +144,7 @@ class EnhancedDonationCard extends StatelessWidget {
                 size: UIConstants.iconS,
                 color: AppTheme.textSecondaryColor,
               ),
-              AppSpacing.horizontal(UIConstants.spacingXS),
+              SizedBox(width: UIConstants.spacingXS),
               Expanded(
                 child: Text(
                   donation.donorName,
@@ -155,37 +157,33 @@ class EnhancedDonationCard extends StatelessWidget {
               ),
             ],
           ),
-          AppSpacing.vertical(UIConstants.spacingM),
+          SizedBox(height: UIConstants.spacingM),
 
           // Action buttons
           Row(
             children: [
               if (onRequest != null && donation.isAvailable) ...[
                 Expanded(
-                  child: AppButton(
+                  child: GBButton(
                     text: l10n.request,
-                    type: AppButtonType.primary,
-                    size: AppButtonSize.small,
+                    variant: GBButtonVariant.primary,
                     onPressed: onRequest,
                   ),
                 ),
-                AppSpacing.horizontal(UIConstants.spacingS),
+                SizedBox(width: UIConstants.spacingS),
               ],
               if (onEdit != null) ...[
-                AppButton(
+                GBButton(
                   text: l10n.edit,
-                  type: AppButtonType.secondary,
-                  size: AppButtonSize.small,
+                  variant: GBButtonVariant.secondary,
                   onPressed: onEdit,
                 ),
-                AppSpacing.horizontal(UIConstants.spacingS),
+                SizedBox(width: UIConstants.spacingS),
               ],
               if (onDelete != null) ...[
-                AppButton(
+                GBButton(
                   text: l10n.delete,
-                  type: AppButtonType.text,
-                  size: AppButtonSize.small,
-                  textColor: AppTheme.errorColor,
+                  variant: GBButtonVariant.ghost,
                   onPressed: onDelete,
                 ),
               ],
@@ -223,7 +221,7 @@ class EnhancedDonationCard extends StatelessWidget {
         vertical: UIConstants.spacingXS,
       ),
       decoration: BoxDecoration(
-        color: (color as Color).withOpacity( 0.9),
+        color: (color as Color).withOpacity(0.9),
         borderRadius: BorderRadius.circular(UIConstants.radiusS),
       ),
       child: Text(
@@ -244,7 +242,7 @@ class EnhancedDonationCard extends StatelessWidget {
         vertical: UIConstants.spacingXS,
       ),
       decoration: BoxDecoration(
-        color: color.withOpacity( 0.1),
+        color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(UIConstants.radiusS),
       ),
       child: Row(
@@ -255,7 +253,7 @@ class EnhancedDonationCard extends StatelessWidget {
             size: UIConstants.iconXS,
             color: color,
           ),
-          AppSpacing.horizontal(UIConstants.spacingXS),
+          SizedBox(width: UIConstants.spacingXS),
           Text(
             text,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -295,7 +293,7 @@ class _DonationFilterWidgetState extends State<DonationFilterWidget> {
     final isRTL = RTLUtils.isRTL(context);
     final l10n = AppLocalizations.of(context)!;
 
-    return AppCard(
+    return WebCard(
       child: Column(
         crossAxisAlignment:
             isRTL ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -318,7 +316,7 @@ class _DonationFilterWidgetState extends State<DonationFilterWidget> {
               ),
             ],
           ),
-          AppSpacing.vertical(UIConstants.spacingL),
+          SizedBox(height: UIConstants.spacingL),
 
           // Category filter
           Text(
@@ -327,7 +325,7 @@ class _DonationFilterWidgetState extends State<DonationFilterWidget> {
                   fontWeight: FontWeight.w500,
                 ),
           ),
-          AppSpacing.vertical(UIConstants.spacingS),
+          SizedBox(height: UIConstants.spacingS),
           Wrap(
             spacing: UIConstants.spacingS,
             children: [
@@ -341,7 +339,7 @@ class _DonationFilterWidgetState extends State<DonationFilterWidget> {
               }),
             ],
           ),
-          AppSpacing.vertical(UIConstants.spacingL),
+          SizedBox(height: UIConstants.spacingL),
 
           // Condition filter
           Text(
@@ -350,7 +348,7 @@ class _DonationFilterWidgetState extends State<DonationFilterWidget> {
                   fontWeight: FontWeight.w500,
                 ),
           ),
-          AppSpacing.vertical(UIConstants.spacingS),
+          SizedBox(height: UIConstants.spacingS),
           Wrap(
             spacing: UIConstants.spacingS,
             children: [
@@ -364,7 +362,7 @@ class _DonationFilterWidgetState extends State<DonationFilterWidget> {
               }),
             ],
           ),
-          AppSpacing.vertical(UIConstants.spacingL),
+          SizedBox(height: UIConstants.spacingL),
 
           // Status filter
           Text(
@@ -373,7 +371,7 @@ class _DonationFilterWidgetState extends State<DonationFilterWidget> {
                   fontWeight: FontWeight.w500,
                 ),
           ),
-          AppSpacing.vertical(UIConstants.spacingS),
+          SizedBox(height: UIConstants.spacingS),
           Wrap(
             spacing: UIConstants.spacingS,
             children: [
@@ -387,7 +385,7 @@ class _DonationFilterWidgetState extends State<DonationFilterWidget> {
               }),
             ],
           ),
-          AppSpacing.vertical(UIConstants.spacingL),
+          SizedBox(height: UIConstants.spacingL),
 
           // Available only toggle
           Row(
@@ -409,14 +407,14 @@ class _DonationFilterWidgetState extends State<DonationFilterWidget> {
               ),
             ],
           ),
-          AppSpacing.vertical(UIConstants.spacingL),
+          SizedBox(height: UIConstants.spacingL),
 
           // Apply filters button
           SizedBox(
             width: double.infinity,
-            child: AppButton(
+            child: GBButton(
               text: 'تطبيق الفلاتر',
-              type: AppButtonType.primary,
+              variant: GBButtonVariant.primary,
               onPressed: () {
                 _applyFilters();
                 widget.onFilterChanged?.call();
@@ -457,7 +455,7 @@ class _DonationFilterWidgetState extends State<DonationFilterWidget> {
           }
         });
       },
-      selectedColor: AppTheme.primaryColor.withOpacity( 0.2),
+      selectedColor: AppTheme.primaryColor.withOpacity(0.2),
       checkmarkColor: AppTheme.primaryColor,
     );
   }
@@ -516,13 +514,13 @@ class _DonationSearchBarState extends State<DonationSearchBar> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return AppCard(
+    return WebCard(
       child: Row(
         children: [
           Expanded(
-            child: AppTextField(
+            child: GBTextField(
               controller: _controller,
-              hint: l10n.search,
+              label: l10n.search,
               prefixIcon: Icon(
                 Icons.search,
                 color: AppTheme.textSecondaryColor,
@@ -544,16 +542,13 @@ class _DonationSearchBarState extends State<DonationSearchBar> {
                 setState(() {});
                 widget.onSearchChanged?.call(value);
               },
-              onSubmitted: (value) {
-                widget.onSearchSubmitted?.call();
-              },
             ),
           ),
-          AppSpacing.horizontal(UIConstants.spacingM),
-          AppButton(
+          SizedBox(width: UIConstants.spacingM),
+          GBButton(
             text: l10n.filter,
-            type: AppButtonType.secondary,
-            icon: Icons.filter_list,
+            variant: GBButtonVariant.secondary,
+            leftIcon: Icon(Icons.filter_list),
             onPressed: () {
               // Show filter bottom sheet
               _showFilterBottomSheet();

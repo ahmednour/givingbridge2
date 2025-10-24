@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
-import '../core/theme/app_theme.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:provider/provider.dart';
+import '../core/theme/design_system.dart';
 import '../widgets/common/gb_button.dart';
 import '../widgets/common/gb_review_dialog.dart';
 import '../widgets/common/gb_timeline.dart';
 import '../widgets/common/gb_status_badge.dart';
+import '../widgets/common/gb_filter_chips.dart';
+import '../widgets/common/gb_empty_state.dart';
 import '../services/api_service.dart';
+import '../providers/rating_provider.dart';
 import '../l10n/app_localizations.dart';
+
+// Import DonationRequest model from api_service.dart
+export '../services/api_service.dart' show DonationRequest;
 
 class MyRequestsScreen extends StatefulWidget {
   const MyRequestsScreen({Key? key}) : super(key: key);
@@ -19,21 +27,27 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
   bool _isLoading = true;
   String _selectedFilter = 'all';
   String? _expandedRequestId;
+  late RatingProvider _ratingProvider;
 
-  List<Map<String, dynamic>> _getFilters(BuildContext context) {
+  List<GBFilterOption<String>> _getFilters(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return [
-      {'value': 'all', 'label': l10n.all, 'icon': Icons.all_inbox},
-      {'value': 'pending', 'label': l10n.pending, 'icon': Icons.pending},
-      {'value': 'approved', 'label': l10n.approved, 'icon': Icons.check_circle},
-      {'value': 'declined', 'label': l10n.declined, 'icon': Icons.cancel},
-      {'value': 'completed', 'label': l10n.completed, 'icon': Icons.done_all},
+      GBFilterOption(value: 'all', label: l10n.all, icon: Icons.all_inbox),
+      GBFilterOption(
+          value: 'pending', label: l10n.pending, icon: Icons.pending),
+      GBFilterOption(
+          value: 'approved', label: l10n.approved, icon: Icons.check_circle),
+      GBFilterOption(
+          value: 'declined', label: l10n.declined, icon: Icons.cancel),
+      GBFilterOption(
+          value: 'completed', label: l10n.completed, icon: Icons.done_all),
     ];
   }
 
   @override
   void initState() {
     super.initState();
+    _ratingProvider = Provider.of<RatingProvider>(context, listen: false);
     _loadRequests();
   }
 
@@ -72,7 +86,14 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
   void _showErrorSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Row(
+          children: [
+            const Icon(Icons.error_outline, color: Colors.white),
+            const SizedBox(width: DesignSystem.spaceM),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: DesignSystem.error,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -81,7 +102,14 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
   void _showSuccessSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.white),
+            const SizedBox(width: DesignSystem.spaceM),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: DesignSystem.success,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -184,16 +212,12 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
       minCommentLength: 10,
       maxCommentLength: 500,
       onSubmit: (rating, comment) async {
-        // TODO: Call API to submit rating
-        // await ApiService.submitRating(
-        //   donorId: request.donorId,
-        //   requestId: request.id.toString(),
-        //   rating: rating,
-        //   comment: comment,
-        // );
-
-        // For now, just show success message
-        await Future.delayed(const Duration(milliseconds: 500));
+        // Submit rating using the rating provider
+        await _ratingProvider.submitRating(
+          requestId: request.id,
+          rating: rating.toInt(),
+          feedback: comment,
+        );
       },
     );
 
@@ -209,18 +233,18 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
     final filteredRequests = _filteredRequests;
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: DesignSystem.getBackgroundColor(context),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: DesignSystem.getSurfaceColor(context),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimaryColor),
+          icon: const Icon(Icons.arrow_back, color: DesignSystem.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           AppLocalizations.of(context)!.myRequests,
           style: const TextStyle(
-            color: AppTheme.textPrimaryColor,
+            color: DesignSystem.textPrimary,
             fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
@@ -229,55 +253,20 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
       ),
       body: Column(
         children: [
-          // Filter Tabs
+          // Filter Chips
           Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(AppTheme.spacingM),
-            child: SizedBox(
-              height: 50,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: _getFilters(context).length,
-                itemBuilder: (context, index) {
-                  final filter = _getFilters(context)[index];
-                  final isSelected = _selectedFilter == filter['value'];
-
-                  return Container(
-                    margin: const EdgeInsets.only(right: AppTheme.spacingS),
-                    child: FilterChip(
-                      selected: isSelected,
-                      label: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            filter['icon'],
-                            size: 16,
-                            color: isSelected
-                                ? Colors.white
-                                : AppTheme.textSecondaryColor,
-                          ),
-                          const SizedBox(width: AppTheme.spacingXS),
-                          Text(filter['label']),
-                        ],
-                      ),
-                      onSelected: (_) {
-                        setState(() {
-                          _selectedFilter = filter['value'];
-                        });
-                      },
-                      backgroundColor: AppTheme.surfaceColor,
-                      selectedColor: AppTheme.primaryColor,
-                      checkmarkColor: Colors.white,
-                      labelStyle: TextStyle(
-                        color: isSelected
-                            ? Colors.white
-                            : AppTheme.textPrimaryColor,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  );
-                },
-              ),
+            color: DesignSystem.getSurfaceColor(context),
+            padding: const EdgeInsets.all(DesignSystem.spaceL),
+            child: GBFilterChips<String>(
+              options: _getFilters(context),
+              selectedValues: _selectedFilter == 'all' ? [] : [_selectedFilter],
+              onChanged: (selected) {
+                setState(() {
+                  _selectedFilter = selected.isEmpty ? 'all' : selected.first;
+                });
+              },
+              multiSelect: false,
+              scrollable: true,
             ),
           ),
 
@@ -285,21 +274,22 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
           Expanded(
             child: _isLoading
                 ? const Center(
-                    child: CircularProgressIndicator(
-                      valueColor:
-                          AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
-                    ),
+                    child: CircularProgressIndicator(),
                   )
                 : filteredRequests.isEmpty
                     ? _buildEmptyState()
                     : RefreshIndicator(
                         onRefresh: _loadRequests,
                         child: ListView.builder(
-                          padding: const EdgeInsets.all(AppTheme.spacingM),
+                          padding: const EdgeInsets.all(DesignSystem.spaceL),
                           itemCount: filteredRequests.length,
                           itemBuilder: (context, index) {
                             final request = filteredRequests[index];
-                            return _buildRequestCard(request);
+                            return _buildRequestCard(request)
+                                .animate()
+                                .fadeIn(
+                                    duration: 300.ms, delay: (index * 50).ms)
+                                .slideY(begin: 0.1, end: 0);
                           },
                         ),
                       ),
@@ -310,63 +300,36 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(40),
-            ),
-            child: const Icon(
-              Icons.inbox,
-              size: 40,
-              color: AppTheme.primaryColor,
-            ),
-          ),
-          const SizedBox(height: AppTheme.spacingM),
-          Text(
-            _selectedFilter == 'all'
-                ? 'No requests yet'
-                : 'No ${_selectedFilter} requests',
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: AppTheme.textPrimaryColor,
-            ),
-          ),
-          const SizedBox(height: AppTheme.spacingXS),
-          Text(
-            _selectedFilter == 'all'
-                ? 'Start browsing donations to make requests'
-                : 'Try adjusting your filter or browse more donations',
-            style: AppTheme.bodyMedium.copyWith(
-              color: AppTheme.textSecondaryColor,
-            ),
-          ),
-          const SizedBox(height: AppTheme.spacingM),
-          GBOutlineButton(
-            text: 'Browse Donations',
-            onPressed: () => Navigator.pop(context),
-          ),
-        ],
-      ),
+    final l10n = AppLocalizations.of(context)!;
+    return GBEmptyState(
+      icon: Icons.inbox_outlined,
+      title: _selectedFilter == 'all'
+          ? 'No requests yet'
+          : 'No ${_selectedFilter} requests',
+      message: _selectedFilter == 'all'
+          ? 'Start browsing donations to make requests'
+          : 'Try adjusting your filter or browse more donations',
+      actionLabel: l10n.browseDonations,
+      onAction: () => Navigator.pop(context),
     );
   }
 
   Widget _buildRequestCard(DonationRequest request) {
     return Container(
-      margin: const EdgeInsets.only(bottom: AppTheme.spacingM),
+      margin: const EdgeInsets.only(bottom: DesignSystem.spaceM),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppTheme.radiusL),
-        boxShadow: AppTheme.shadowMD,
+        color: DesignSystem.getSurfaceColor(context),
+        borderRadius: BorderRadius.circular(DesignSystem.radiusL),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacingM),
+        padding: const EdgeInsets.all(DesignSystem.spaceM),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -377,11 +340,12 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
                 const Spacer(),
                 Text(
                   _formatDate(request.createdAt),
-                  style: AppTheme.bodySmall.copyWith(
-                    color: AppTheme.textSecondaryColor,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: DesignSystem.textSecondary,
                   ),
                 ),
-                const SizedBox(width: AppTheme.spacingS),
+                const SizedBox(width: DesignSystem.spaceS),
                 // Timeline toggle button
                 InkWell(
                   onTap: () {
@@ -392,7 +356,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
                               : request.id.toString();
                     });
                   },
-                  borderRadius: BorderRadius.circular(AppTheme.radiusS),
+                  borderRadius: BorderRadius.circular(DesignSystem.radiusS),
                   child: Padding(
                     padding: const EdgeInsets.all(4.0),
                     child: Icon(
@@ -400,67 +364,80 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
                           ? Icons.expand_less
                           : Icons.timeline,
                       size: 20,
-                      color: AppTheme.textSecondaryColor,
+                      color: DesignSystem.textSecondary,
                     ),
                   ),
                 ),
               ],
             ),
 
-            const SizedBox(height: AppTheme.spacingS),
+            const SizedBox(height: DesignSystem.spaceS),
 
             // Donation Info
             Text(
               'Requested from ${request.donorName}',
-              style: AppTheme.bodySmall.copyWith(
-                color: AppTheme.textSecondaryColor,
+              style: const TextStyle(
+                fontSize: 12,
+                color: DesignSystem.textSecondary,
               ),
             ),
-            const SizedBox(height: AppTheme.spacingXS),
+            const SizedBox(height: DesignSystem.spaceXS),
             Text(
               'Donation ID: ${request.donationId}',
-              style: AppTheme.headingSmall,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: DesignSystem.textPrimary,
+              ),
             ),
 
             if (request.message != null && request.message!.isNotEmpty) ...[
-              const SizedBox(height: AppTheme.spacingS),
-              Text(
+              const SizedBox(height: DesignSystem.spaceS),
+              const Text(
                 'Your message:',
-                style: AppTheme.bodySmall.copyWith(
-                  color: AppTheme.textSecondaryColor,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: DesignSystem.textSecondary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              const SizedBox(height: AppTheme.spacingXS),
+              const SizedBox(height: DesignSystem.spaceXS),
               Text(
                 request.message!,
-                style: AppTheme.bodyMedium,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: DesignSystem.textPrimary,
+                ),
               ),
             ],
 
             if (request.responseMessage != null &&
                 request.responseMessage!.isNotEmpty) ...[
-              const SizedBox(height: AppTheme.spacingS),
+              const SizedBox(height: DesignSystem.spaceS),
               Container(
-                padding: const EdgeInsets.all(AppTheme.spacingS),
+                padding: const EdgeInsets.all(DesignSystem.spaceS),
                 decoration: BoxDecoration(
-                  color: AppTheme.surfaceColor,
-                  borderRadius: BorderRadius.circular(AppTheme.radiusS),
+                  color: DesignSystem.getBackgroundColor(context),
+                  borderRadius: BorderRadius.circular(DesignSystem.radiusS),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Donor\'s response:',
-                      style: AppTheme.bodySmall.copyWith(
-                        color: AppTheme.textSecondaryColor,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: DesignSystem.textSecondary,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacingXS),
+                    const SizedBox(height: DesignSystem.spaceXS),
                     Text(
                       request.responseMessage!,
-                      style: AppTheme.bodyMedium,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: DesignSystem.textPrimary,
+                      ),
                     ),
                   ],
                 ),
@@ -469,36 +446,38 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
 
             // Timeline (expandable)
             if (_expandedRequestId == request.id.toString()) ...[
-              const SizedBox(height: AppTheme.spacingM),
+              const SizedBox(height: DesignSystem.spaceM),
               Container(
-                padding: const EdgeInsets.all(AppTheme.spacingM),
+                padding: const EdgeInsets.all(DesignSystem.spaceM),
                 decoration: BoxDecoration(
-                  color: AppTheme.surfaceColor,
-                  borderRadius: BorderRadius.circular(AppTheme.radiusM),
+                  color: DesignSystem.getBackgroundColor(context),
+                  borderRadius: BorderRadius.circular(DesignSystem.radiusM),
                   border: Border.all(
-                    color: AppTheme.primaryColor.withOpacity(0.1),
+                    color: DesignSystem.primaryBlue.withOpacity(0.1),
                   ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
+                    const Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.timeline,
                           size: 18,
-                          color: AppTheme.primaryColor,
+                          color: DesignSystem.primaryBlue,
                         ),
-                        const SizedBox(width: AppTheme.spacingXS),
+                        SizedBox(width: DesignSystem.spaceXS),
                         Text(
                           'Request Timeline',
-                          style: AppTheme.headingSmall.copyWith(
-                            color: AppTheme.primaryColor,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: DesignSystem.primaryBlue,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: AppTheme.spacingM),
+                    const SizedBox(height: DesignSystem.spaceM),
                     GBTimeline(
                       events: _buildTimelineEvents(request),
                       showTime: true,
@@ -508,33 +487,37 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
               ),
             ],
 
-            const SizedBox(height: AppTheme.spacingM),
+            const SizedBox(height: DesignSystem.spaceM),
 
             // Action Buttons
             Row(
               children: [
                 if (request.isPending) ...[
                   Expanded(
-                    child: GBOutlineButton(
+                    child: GBButton(
                       text: 'Cancel Request',
                       onPressed: () => _cancelRequest(request),
+                      variant: GBButtonVariant.outline,
                       size: GBButtonSize.small,
                     ),
                   ),
                 ] else if (request.isApproved) ...[
                   Expanded(
-                    child: GBPrimaryButton(
+                    child: GBButton(
                       text: 'Mark as Received',
                       onPressed: () => _markAsCompleted(request),
+                      variant: GBButtonVariant.primary,
                       size: GBButtonSize.small,
                     ),
                   ),
                 ] else if (request.isCompleted) ...[
                   Expanded(
-                    child: GBPrimaryButton(
+                    child: GBButton(
                       text: 'Rate Donor',
-                      leftIcon: const Icon(Icons.star, size: 18),
+                      leftIcon:
+                          const Icon(Icons.star, size: 18, color: Colors.white),
                       onPressed: () => _rateDonor(request),
+                      variant: GBButtonVariant.primary,
                       size: GBButtonSize.small,
                     ),
                   ),
@@ -602,41 +585,31 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
     // 2. Response (if any)
     if (request.status == 'approved') {
       events.add(GBTimelineEvent.requestApproved(
-        timestamp: request.updatedAt != null
-            ? DateTime.parse(request.updatedAt!)
-            : DateTime.parse(request.createdAt).add(Duration(hours: 2)),
+        timestamp: DateTime.parse(request.updatedAt),
         donorMessage: request.responseMessage,
       ));
 
       // 3. In Progress (if applicable)
       if (request.isCompleted || request.status == 'in_progress') {
         events.add(GBTimelineEvent.donationInProgress(
-          timestamp: request.updatedAt != null
-              ? DateTime.parse(request.updatedAt!).add(Duration(days: 1))
-              : DateTime.parse(request.createdAt).add(Duration(days: 2)),
+          timestamp: DateTime.parse(request.updatedAt).add(Duration(days: 1)),
         ));
       }
 
       // 4. Completed (if applicable)
       if (request.isCompleted) {
         events.add(GBTimelineEvent.donationCompleted(
-          timestamp: request.updatedAt != null
-              ? DateTime.parse(request.updatedAt!)
-              : DateTime.parse(request.createdAt).add(Duration(days: 3)),
+          timestamp: DateTime.parse(request.updatedAt),
         ));
       }
     } else if (request.status == 'declined') {
       events.add(GBTimelineEvent.requestDeclined(
-        timestamp: request.updatedAt != null
-            ? DateTime.parse(request.updatedAt!)
-            : DateTime.parse(request.createdAt).add(Duration(hours: 2)),
+        timestamp: DateTime.parse(request.updatedAt),
         reason: request.responseMessage,
       ));
     } else if (request.status == 'cancelled') {
       events.add(GBTimelineEvent.requestCancelled(
-        timestamp: request.updatedAt != null
-            ? DateTime.parse(request.updatedAt!)
-            : DateTime.parse(request.createdAt).add(Duration(hours: 1)),
+        timestamp: DateTime.parse(request.updatedAt),
       ));
     }
 

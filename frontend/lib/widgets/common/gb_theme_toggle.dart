@@ -108,7 +108,7 @@ class GBThemeToggle extends StatelessWidget {
         Switch(
           value: isDark,
           onChanged: (_) => themeProvider.toggleTheme(),
-          activeColor: DesignSystem.primaryBlue,
+          activeThumbColor: DesignSystem.primaryBlue,
         ),
         const SizedBox(width: DesignSystem.spaceS),
         Icon(

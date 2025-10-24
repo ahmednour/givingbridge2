@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_theme_enhanced.dart';
 import '../../core/constants/ui_constants.dart';
-import '../../widgets/app_components.dart';
+import '../../widgets/common/gb_button.dart';
 import '../../services/error_handler.dart';
 import '../../services/offline_service.dart';
 import '../../services/network_status_service.dart';
@@ -64,7 +64,7 @@ class _ErrorHandlingWidgetState extends State<ErrorHandlingWidget> {
                       color: Colors.white,
                       size: 16,
                     ),
-                    AppSpacing.horizontal(UIConstants.spacingS),
+                    SizedBox(width: UIConstants.spacingS),
                     Expanded(
                       child: Text(
                         l10n.offlineMode,
@@ -113,8 +113,7 @@ class _ErrorHandlingWidgetState extends State<ErrorHandlingWidget> {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color:
-                    ErrorHandler.getErrorColor(_error!).withOpacity( 0.1),
+                color: ErrorHandler.getErrorColor(_error!).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(40),
               ),
               child: Icon(
@@ -124,7 +123,7 @@ class _ErrorHandlingWidgetState extends State<ErrorHandlingWidget> {
               ),
             ),
 
-            AppSpacing.vertical(UIConstants.spacingL),
+            SizedBox(height: UIConstants.spacingL),
 
             // Error Title
             Text(
@@ -136,7 +135,7 @@ class _ErrorHandlingWidgetState extends State<ErrorHandlingWidget> {
               textAlign: TextAlign.center,
             ),
 
-            AppSpacing.vertical(UIConstants.spacingS),
+            SizedBox(height: UIConstants.spacingS),
 
             // Error Message
             Text(
@@ -147,26 +146,26 @@ class _ErrorHandlingWidgetState extends State<ErrorHandlingWidget> {
               textAlign: TextAlign.center,
             ),
 
-            AppSpacing.vertical(UIConstants.spacingL),
+            SizedBox(height: UIConstants.spacingL),
 
             // Action Buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (widget.showRetryButton && widget.onRetry != null) ...[
-                  AppButton(
+                  GBButton(
                     text: l10n.retry,
-                    icon: Icons.refresh,
-                    type: AppButtonType.primary,
+                    leftIcon: Icon(Icons.refresh),
+                    variant: GBButtonVariant.primary,
                     onPressed: _isRetrying ? null : _handleRetry,
                     isLoading: _isRetrying,
                   ),
-                  AppSpacing.horizontal(UIConstants.spacingM),
+                  SizedBox(width: UIConstants.spacingM),
                 ],
-                AppButton(
+                GBButton(
                   text: l10n.goBack,
-                  icon: Icons.arrow_back,
-                  type: AppButtonType.secondary,
+                  leftIcon: Icon(Icons.arrow_back),
+                  variant: GBButtonVariant.secondary,
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ],
@@ -184,10 +183,10 @@ class _ErrorHandlingWidgetState extends State<ErrorHandlingWidget> {
                   child: Container(
                     padding: EdgeInsets.all(UIConstants.spacingM),
                     decoration: BoxDecoration(
-                      color: AppTheme.infoColor.withOpacity( 0.1),
+                      color: AppTheme.infoColor.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(UIConstants.radiusM),
                       border: Border.all(
-                        color: AppTheme.infoColor.withOpacity( 0.3),
+                        color: AppTheme.infoColor.withOpacity(0.3),
                       ),
                     ),
                     child: Column(
@@ -199,7 +198,7 @@ class _ErrorHandlingWidgetState extends State<ErrorHandlingWidget> {
                               color: AppTheme.infoColor,
                               size: 20,
                             ),
-                            AppSpacing.horizontal(UIConstants.spacingS),
+                            SizedBox(width: UIConstants.spacingS),
                             Expanded(
                               child: Text(
                                 l10n.pendingOperations(
@@ -215,12 +214,12 @@ class _ErrorHandlingWidgetState extends State<ErrorHandlingWidget> {
                             ),
                           ],
                         ),
-                        AppSpacing.vertical(UIConstants.spacingS),
-                        AppButton(
+                        SizedBox(height: UIConstants.spacingS),
+                        GBButton(
                           text: l10n.syncNow,
-                          icon: Icons.sync,
-                          type: AppButtonType.secondary,
-                          size: AppButtonSize.small,
+                          leftIcon: Icon(Icons.sync),
+                          variant: GBButtonVariant.secondary,
+                          size: GBButtonSize.small,
                           onPressed: () => offlineService.forceSync(),
                         ),
                       ],
@@ -355,7 +354,7 @@ class OfflineAwareWidget extends StatelessWidget {
                       color: Colors.white,
                       size: 16,
                     ),
-                    AppSpacing.horizontal(UIConstants.spacingS),
+                    SizedBox(width: UIConstants.spacingS),
                     Expanded(
                       child: Text(
                         AppLocalizations.of(context)!.offlineMode,
@@ -389,8 +388,8 @@ class EnhancedRetryButton extends StatelessWidget {
   final String? text;
   final IconData? icon;
   final RetryConfig config;
-  final AppButtonType type;
-  final AppButtonSize size;
+  final GBButtonVariant variant;
+  final GBButtonSize size;
 
   const EnhancedRetryButton({
     Key? key,
@@ -398,18 +397,18 @@ class EnhancedRetryButton extends StatelessWidget {
     this.text,
     this.icon,
     this.config = RetryConfig.network,
-    this.type = AppButtonType.primary,
-    this.size = AppButtonSize.medium,
+    this.variant = GBButtonVariant.primary,
+    this.size = GBButtonSize.medium,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return AppButton(
+    return GBButton(
       text: text ?? l10n.retry,
-      icon: icon ?? Icons.refresh,
-      type: type,
+      leftIcon: Icon(icon ?? Icons.refresh),
+      variant: GBButtonVariant.primary,
       size: size,
       onPressed: () async {
         await RetryService.executeWithRetry<void>(
@@ -440,7 +439,7 @@ class ErrorSnackbar {
         content: Row(
           children: [
             Icon(icon, color: Colors.white),
-            AppSpacing.horizontal(UIConstants.spacingS),
+            SizedBox(width: UIConstants.spacingS),
             Expanded(child: Text(message)),
           ],
         ),

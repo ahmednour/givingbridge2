@@ -1,8 +1,14 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
-import '../core/theme/app_theme.dart';
+import '../core/theme/design_system.dart';
 import '../widgets/common/gb_button.dart';
+import '../widgets/common/gb_search_bar.dart';
+import '../widgets/common/gb_filter_chips.dart';
+import '../widgets/common/gb_empty_state.dart';
+import '../widgets/common/gb_skeleton_widgets.dart';
+import '../widgets/common/web_card.dart';
 import '../services/api_service.dart';
 import '../providers/auth_provider.dart';
 import '../models/donation.dart';
@@ -25,14 +31,16 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
   final TextEditingController _searchController = TextEditingController();
   Timer? _debounce;
 
-  final List<Map<String, dynamic>> _categories = [
-    {'value': 'all', 'label': 'All', 'icon': Icons.apps},
-    {'value': 'food', 'label': 'Food', 'icon': Icons.restaurant},
-    {'value': 'clothes', 'label': 'Clothes', 'icon': Icons.checkroom},
-    {'value': 'books', 'label': 'Books', 'icon': Icons.menu_book},
-    {'value': 'electronics', 'label': 'Electronics', 'icon': Icons.devices},
-    {'value': 'other', 'label': 'Other', 'icon': Icons.category},
+  final List<GBFilterOption<String>> _categoryOptions = [
+    GBFilterOption(value: 'all', label: 'All', icon: Icons.apps),
+    GBFilterOption(value: 'food', label: 'Food', icon: Icons.restaurant),
+    GBFilterOption(value: 'clothes', label: 'Clothes', icon: Icons.checkroom),
+    GBFilterOption(value: 'books', label: 'Books', icon: Icons.menu_book),
+    GBFilterOption(
+        value: 'electronics', label: 'Electronics', icon: Icons.devices),
+    GBFilterOption(value: 'other', label: 'Other', icon: Icons.category),
   ];
+  List<String> _selectedCategories = [];
 
   @override
   void initState() {
@@ -94,9 +102,10 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
     });
   }
 
-  void _onCategorySelected(String category) {
+  void _onCategorySelected(List<String> categories) {
     setState(() {
-      _selectedCategory = category;
+      _selectedCategories = categories;
+      _selectedCategory = categories.isEmpty ? 'all' : categories.first;
     });
     _applyFilters();
   }
@@ -117,7 +126,14 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
   void _showErrorSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Row(
+          children: [
+            const Icon(Icons.error_outline, color: Colors.white),
+            const SizedBox(width: DesignSystem.spaceM),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: DesignSystem.error,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -126,7 +142,14 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
   void _showSuccessSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.white),
+            const SizedBox(width: DesignSystem.spaceM),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: DesignSystem.success,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -165,18 +188,18 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
     final user = authProvider.user;
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: DesignSystem.getBackgroundColor(context),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: DesignSystem.getSurfaceColor(context),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimaryColor),
+          icon: Icon(Icons.arrow_back, color: DesignSystem.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           'Browse Donations',
           style: TextStyle(
-            color: AppTheme.textPrimaryColor,
+            color: DesignSystem.textPrimary,
             fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
@@ -187,78 +210,32 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
         children: [
           // Search and Filters
           Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(AppTheme.spacingL),
+            color: DesignSystem.getSurfaceColor(context),
+            padding: const EdgeInsets.all(DesignSystem.spaceL),
             child: Column(
               children: [
                 // Search Bar
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppTheme.surfaceColor,
-                    borderRadius: BorderRadius.circular(AppTheme.radiusL),
-                    border: Border.all(color: AppTheme.borderColor),
-                  ),
-                  child: TextField(
-                    controller: _searchController,
-                    onChanged: _onSearchChanged,
-                    decoration: const InputDecoration(
-                      hintText: 'Search donations...',
-                      prefixIcon: Icon(Icons.search,
-                          color: AppTheme.textSecondaryColor),
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: AppTheme.spacingL,
-                        vertical: AppTheme.spacingM,
-                      ),
-                    ),
-                  ),
+                GBSearchBar(
+                  hint: 'Search donations...',
+                  onSearch: (query) {
+                    setState(() {
+                      _searchQuery = query;
+                    });
+                    _applyFilters();
+                  },
+                  onChanged: _onSearchChanged,
+                  controller: _searchController,
                 ),
 
-                const SizedBox(height: AppTheme.spacingL),
+                const SizedBox(height: DesignSystem.spaceL),
 
                 // Category Filters
-                SizedBox(
-                  height: 50,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: _categories.length,
-                    itemBuilder: (context, index) {
-                      final category = _categories[index];
-                      final isSelected = _selectedCategory == category['value'];
-
-                      return Container(
-                        margin: const EdgeInsets.only(right: AppTheme.spacingM),
-                        child: FilterChip(
-                          selected: isSelected,
-                          label: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                category['icon'],
-                                size: 16,
-                                color: isSelected
-                                    ? Colors.white
-                                    : AppTheme.textSecondaryColor,
-                              ),
-                              const SizedBox(width: AppTheme.spacingM),
-                              Text(category['label']),
-                            ],
-                          ),
-                          onSelected: (_) =>
-                              _onCategorySelected(category['value']),
-                          backgroundColor: AppTheme.surfaceColor,
-                          selectedColor: AppTheme.primaryColor,
-                          checkmarkColor: Colors.white,
-                          labelStyle: TextStyle(
-                            color: isSelected
-                                ? Colors.white
-                                : AppTheme.textPrimaryColor,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                GBFilterChips<String>(
+                  options: _categoryOptions,
+                  selectedValues: _selectedCategories,
+                  onChanged: _onCategorySelected,
+                  multiSelect: false,
+                  scrollable: true,
                 ),
               ],
             ),
@@ -266,23 +243,22 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
 
           // Donations List
           Expanded(
-            child: _isLoading
-                ? const Center(
-                    child: CircularProgressIndicator(
-                      valueColor:
-                          AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
-                    ),
-                  )
+            child: _isLoading && _donations.isEmpty
+                ? const GBDonationListSkeleton(itemCount: 4)
                 : _filteredDonations.isEmpty
                     ? _buildEmptyState()
                     : RefreshIndicator(
                         onRefresh: _loadDonations,
                         child: ListView.builder(
-                          padding: const EdgeInsets.all(AppTheme.spacingL),
+                          padding: const EdgeInsets.all(DesignSystem.spaceL),
                           itemCount: _filteredDonations.length,
                           itemBuilder: (context, index) {
                             final donation = _filteredDonations[index];
-                            return _buildDonationCard(donation, user!);
+                            return _buildDonationCard(donation, user!)
+                                .animate()
+                                .fadeIn(
+                                    duration: 300.ms, delay: (index * 50).ms)
+                                .slideY(begin: 0.1, end: 0);
                           },
                         ),
                       ),
@@ -293,217 +269,182 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(40),
-            ),
-            child: const Icon(
-              Icons.volunteer_activism,
-              size: 40,
-              color: AppTheme.primaryColor,
-            ),
-          ),
-          const SizedBox(height: AppTheme.spacingL),
-          const Text(
-            'No donations found',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: AppTheme.textPrimaryColor,
-            ),
-          ),
-          const SizedBox(height: AppTheme.spacingM),
-          Text(
-            _searchQuery.isNotEmpty || _selectedCategory != 'all'
-                ? 'Try adjusting your filters'
-                : 'Be the first to make a donation!',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppTheme.textSecondaryColor,
-            ),
-          ),
-          const SizedBox(height: AppTheme.spacingL),
-          GBOutlineButton(
-            text: 'Refresh',
-            onPressed: _loadDonations,
-          ),
-        ],
-      ),
+    return GBEmptyState(
+      icon: Icons.volunteer_activism,
+      title: 'No donations found',
+      message: _searchQuery.isNotEmpty || _selectedCategory != 'all'
+          ? 'Try adjusting your filters'
+          : 'Be the first to make a donation!',
+      actionLabel: 'Refresh',
+      onAction: _loadDonations,
     );
   }
 
   Widget _buildDonationCard(Donation donation, User user) {
     return Container(
-      margin: const EdgeInsets.only(bottom: AppTheme.spacingL),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppTheme.radiusL),
-        boxShadow: AppTheme.shadowMD,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Image (if available)
-          if (donation.imageUrl != null && donation.imageUrl!.isNotEmpty)
-            ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(AppTheme.radiusL),
-                topRight: Radius.circular(AppTheme.radiusL),
+      margin: const EdgeInsets.only(bottom: DesignSystem.spaceL),
+      child: WebCard(
+        padding: EdgeInsets.zero,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image (if available)
+            if (donation.imageUrl != null && donation.imageUrl!.isNotEmpty)
+              ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(DesignSystem.radiusL),
+                  topRight: Radius.circular(DesignSystem.radiusL),
+                ),
+                child: Image.network(
+                  donation.imageUrl!,
+                  width: double.infinity,
+                  height: 200,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      width: double.infinity,
+                      height: 200,
+                      color: DesignSystem.neutral100,
+                      child: Icon(
+                        Icons.image_not_supported,
+                        size: 48,
+                        color: DesignSystem.textSecondary,
+                      ),
+                    );
+                  },
+                ),
               ),
-              child: Image.network(
-                donation.imageUrl!,
-                width: double.infinity,
-                height: 200,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    width: double.infinity,
-                    height: 200,
-                    color: AppTheme.surfaceColor,
-                    child: const Icon(
-                      Icons.image_not_supported,
-                      size: 48,
-                      color: AppTheme.textSecondaryColor,
-                    ),
-                  );
-                },
-              ),
-            ),
 
-          Padding(
-            padding: const EdgeInsets.all(AppTheme.spacingL),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Category and Condition
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppTheme.spacingM,
-                        vertical: AppTheme.spacingM,
+            Padding(
+              padding: const EdgeInsets.all(DesignSystem.spaceL),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Category and Condition
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: DesignSystem.spaceM,
+                          vertical: DesignSystem.spaceS,
+                        ),
+                        decoration: BoxDecoration(
+                          color: DesignSystem.primaryBlue.withOpacity(0.1),
+                          borderRadius:
+                              BorderRadius.circular(DesignSystem.radiusL),
+                        ),
+                        child: Text(
+                          donation.categoryDisplayName,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: DesignSystem.primaryBlue,
+                          ),
+                        ),
                       ),
-                      decoration: BoxDecoration(
-                        color: AppTheme.primaryColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(AppTheme.radiusL),
+                      const SizedBox(width: DesignSystem.spaceM),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: DesignSystem.spaceM,
+                          vertical: DesignSystem.spaceS,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _getConditionColor(donation.condition)
+                              .withOpacity(0.1),
+                          borderRadius:
+                              BorderRadius.circular(DesignSystem.radiusL),
+                        ),
+                        child: Text(
+                          donation.conditionDisplayName,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: _getConditionColor(donation.condition),
+                          ),
+                        ),
                       ),
-                      child: Text(
-                        donation.categoryDisplayName,
+                    ],
+                  ),
+
+                  const SizedBox(height: DesignSystem.spaceM),
+
+                  // Title
+                  Text(
+                    donation.title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: DesignSystem.textPrimary,
+                    ),
+                  ),
+
+                  const SizedBox(height: DesignSystem.spaceM),
+
+                  // Description
+                  Text(
+                    donation.description,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: DesignSystem.textSecondary,
+                      height: 1.4,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+
+                  const SizedBox(height: DesignSystem.spaceM),
+
+                  // Donor and Location
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.person_outline,
+                        size: 16,
+                        color: DesignSystem.textSecondary,
+                      ),
+                      const SizedBox(width: DesignSystem.spaceS),
+                      Text(
+                        donation.donorName,
                         style: const TextStyle(
                           fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: AppTheme.primaryColor,
+                          color: DesignSystem.textSecondary,
                         ),
                       ),
-                    ),
-                    const SizedBox(width: AppTheme.spacingM),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppTheme.spacingM,
-                        vertical: AppTheme.spacingM,
+                      const SizedBox(width: DesignSystem.spaceL),
+                      const Icon(
+                        Icons.location_on_outlined,
+                        size: 16,
+                        color: DesignSystem.textSecondary,
                       ),
-                      decoration: BoxDecoration(
-                        color: _getConditionColor(donation.condition)
-                            .withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(AppTheme.radiusL),
-                      ),
-                      child: Text(
-                        donation.conditionDisplayName,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: _getConditionColor(donation.condition),
+                      const SizedBox(width: DesignSystem.spaceS),
+                      Expanded(
+                        child: Text(
+                          donation.location,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: DesignSystem.textSecondary,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: AppTheme.spacingM),
-
-                // Title
-                Text(
-                  donation.title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.textPrimaryColor,
+                    ],
                   ),
-                ),
 
-                const SizedBox(height: AppTheme.spacingM),
+                  const SizedBox(height: DesignSystem.spaceL),
 
-                // Description
-                Text(
-                  donation.description,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppTheme.textSecondaryColor,
-                    height: 1.4,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-
-                const SizedBox(height: AppTheme.spacingM),
-
-                // Donor and Location
-                Row(
-                  children: [
-                    Icon(
-                      Icons.person_outline,
-                      size: 16,
-                      color: AppTheme.textSecondaryColor,
+                  // Action Button (only for receivers)
+                  if (user.isReceiver)
+                    GBPrimaryButton(
+                      text: 'Request Donation',
+                      onPressed: () => _requestDonation(donation),
+                      size: GBButtonSize.small,
+                      fullWidth: true,
                     ),
-                    const SizedBox(width: AppTheme.spacingM),
-                    Text(
-                      donation.donorName,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppTheme.textSecondaryColor,
-                      ),
-                    ),
-                    const SizedBox(width: AppTheme.spacingL),
-                    Icon(
-                      Icons.location_on_outlined,
-                      size: 16,
-                      color: AppTheme.textSecondaryColor,
-                    ),
-                    const SizedBox(width: AppTheme.spacingM),
-                    Expanded(
-                      child: Text(
-                        donation.location,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppTheme.textSecondaryColor,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: AppTheme.spacingL),
-
-                // Action Button (only for receivers)
-                if (user.isReceiver)
-                  GBPrimaryButton(
-                    text: 'Request Donation',
-                    onPressed: () => _requestDonation(donation),
-                    size: GBButtonSize.small,
-                    fullWidth: true,
-                  ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -517,9 +458,9 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
       case 'good':
         return Colors.orange;
       case 'fair':
-        return Colors.red;
+        return DesignSystem.error;
       default:
-        return AppTheme.textSecondaryColor;
+        return DesignSystem.textSecondary;
     }
   }
 }
@@ -554,9 +495,9 @@ class _RequestDialogState extends State<_RequestDialog> {
           children: [
             Text(
               'You are requesting "${widget.donation.title}" from ${widget.donation.donorName}.',
-              style: AppTheme.bodyMedium,
+              style: DesignSystem.bodyMedium(context),
             ),
-            const SizedBox(height: AppTheme.spacingM),
+            const SizedBox(height: DesignSystem.spaceM),
             TextField(
               controller: _messageController,
               maxLines: 3,
@@ -567,11 +508,11 @@ class _RequestDialogState extends State<_RequestDialog> {
                 border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: AppTheme.spacingS),
+            const SizedBox(height: DesignSystem.spaceS),
             Text(
               'The donor will see your contact information and can approve or decline your request.',
-              style: AppTheme.bodySmall.copyWith(
-                color: AppTheme.textSecondaryColor,
+              style: DesignSystem.bodySmall(context).copyWith(
+                color: DesignSystem.textSecondary,
               ),
             ),
           ],

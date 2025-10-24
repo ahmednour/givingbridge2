@@ -11,6 +11,12 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
+# Firebase credentials
+firebase-service-account.json
+config/firebase-service-account.json
+backend/config/firebase-service-account.json
+**/firebase-service-account.json
+
 # Build outputs
 dist/
 build/

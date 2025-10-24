@@ -12,7 +12,15 @@ const User = require("./models/User");
 const Donation = require("./models/Donation");
 const Request = require("./models/Request");
 const Message = require("./models/Message");
+const Notification = require("./models/Notification");
+const Rating = require("./models/Rating");
+const BlockedUser = require("./models/BlockedUser");
+const UserReport = require("./models/UserReport");
+const ActivityLog = require("./models/ActivityLog");
+const pushNotificationService = require("./services/pushNotificationService");
 require("dotenv").config();
+
+// GivingBridge Backend API Server
 
 const app = express();
 const server = http.createServer(app);
@@ -38,6 +46,9 @@ app.use(limiter);
 // Body parsing middleware
 app.use(express.json({ limit: `${config.maxFileSize}mb` }));
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static files (avatars)
+app.use("/uploads", express.static("uploads"));
 
 // Database initialization using Migrations
 async function initDatabase() {
@@ -139,6 +150,14 @@ app.use("/api/users", require("./routes/users"));
 app.use("/api/donations", require("./routes/donations"));
 app.use("/api/requests", require("./routes/requests"));
 app.use("/api/messages", require("./routes/messages"));
+app.use("/api/notifications", require("./routes/notifications"));
+app.use("/api/ratings", require("./routes/ratings"));
+app.use("/api/analytics", require("./routes/analytics"));
+app.use("/api/activity", require("./routes/activity"));
+app.use(
+  "/api/notification-preferences",
+  require("./routes/notificationPreferenceRoutes")
+);
 
 // Socket.io configuration
 require("./socket")(io);
@@ -150,6 +169,9 @@ app.use(errorHandler);
 // Start server
 async function startServer() {
   await initDatabase();
+
+  // Initialize push notifications
+  pushNotificationService.initialize();
 
   server.listen(PORT, "0.0.0.0", () => {
     console.log(`🚀 Server running on port ${PORT}`);

@@ -3,20 +3,25 @@ import 'package:provider/provider.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import '../core/theme/app_theme_enhanced.dart';
+import '../core/theme/design_system.dart';
 import '../core/utils/rtl_utils.dart';
-import '../core/constants/ui_constants.dart';
 import '../widgets/common/gb_button.dart';
-import '../widgets/app_components.dart';
+import '../widgets/common/gb_empty_state.dart';
+import '../widgets/common/gb_block_user_dialog.dart';
+import '../widgets/common/gb_report_user_dialog.dart';
+import '../widgets/common/gb_user_avatar.dart';
+import '../widgets/dialogs/conversation_info_dialog.dart';
 import '../providers/auth_provider.dart';
 import '../providers/message_provider.dart';
 import '../services/socket_service.dart';
 import '../models/chat_message.dart';
+import '../models/user.dart';
 import '../l10n/app_localizations.dart';
 
 class ChatScreenEnhanced extends StatefulWidget {
   final String otherUserId;
   final String otherUserName;
+  final String? otherUserAvatarUrl;
   final String? donationId;
   final String? requestId;
   final String? conversationId;
@@ -25,6 +30,7 @@ class ChatScreenEnhanced extends StatefulWidget {
     Key? key,
     required this.otherUserId,
     required this.otherUserName,
+    this.otherUserAvatarUrl,
     this.donationId,
     this.requestId,
     this.conversationId,
@@ -98,6 +104,9 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
     // Load messages for this conversation
     messageProvider.loadMessages(widget.conversationId ?? widget.otherUserId);
 
+    // Mark conversation as read
+    messageProvider.markConversationAsRead(widget.otherUserId);
+
     // Join conversation room for real-time updates
     SocketService().joinConversation(
       widget.conversationId ?? widget.otherUserId,
@@ -111,6 +120,13 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
               message.receiverId == widget.otherUserId)) {
         messageProvider.addNewMessage(message);
         _scrollToBottom();
+
+        // Auto-mark as read if conversation is open
+        if (message.senderId.toString() == widget.otherUserId) {
+          Future.delayed(const Duration(milliseconds: 500), () {
+            messageProvider.markMessageAsRead(message.id.toString());
+          });
+        }
       }
     };
 
@@ -151,18 +167,27 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
       final text = _messageController.text.trim();
 
       if (text.isNotEmpty && !_isTyping) {
-        _isTyping = true;
+        setState(() {
+          _isTyping = true;
+        });
         _sendTypingIndicator(true);
 
         _typingTimer?.cancel();
         _typingTimer = Timer(const Duration(seconds: 2), () {
-          _isTyping = false;
+          setState(() {
+            _isTyping = false;
+          });
           _sendTypingIndicator(false);
         });
       } else if (text.isEmpty && _isTyping) {
-        _isTyping = false;
+        setState(() {
+          _isTyping = false;
+        });
         _sendTypingIndicator(false);
         _typingTimer?.cancel();
+      } else {
+        // Update UI when text changes to enable/disable send button
+        setState(() {});
       }
     });
   }
@@ -234,16 +259,16 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
         content: Row(
           children: [
             const Icon(Icons.error_outline, color: Colors.white),
-            AppSpacing.horizontal(UIConstants.spacingS),
+            const SizedBox(width: 12),
             Expanded(child: Text(message)),
           ],
         ),
-        backgroundColor: AppTheme.errorColor,
+        backgroundColor: DesignSystem.error,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(UIConstants.radiusM),
+          borderRadius: BorderRadius.circular(12),
         ),
-        margin: EdgeInsets.all(UIConstants.spacingM),
+        margin: const EdgeInsets.all(16),
       ),
     );
   }
@@ -261,16 +286,16 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
               ),
             ),
-            AppSpacing.horizontal(UIConstants.spacingS),
+            const SizedBox(width: 12),
             Expanded(child: Text(message)),
           ],
         ),
-        backgroundColor: AppTheme.primaryColor,
+        backgroundColor: DesignSystem.primaryBlue,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(UIConstants.radiusM),
+          borderRadius: BorderRadius.circular(12),
         ),
-        margin: EdgeInsets.all(UIConstants.spacingM),
+        margin: const EdgeInsets.all(16),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -297,7 +322,7 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: DesignSystem.getBackgroundColor(context),
       appBar: _buildAppBar(),
       body: Column(
         children: [
@@ -322,7 +347,7 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                     // Messages List
                     ListView.builder(
                       controller: _scrollController,
-                      padding: EdgeInsets.all(UIConstants.spacingM),
+                      padding: const EdgeInsets.all(16),
                       itemCount: messages.length + (_isUserTyping ? 1 : 0),
                       itemBuilder: (context, index) {
                         if (index == messages.length && _isUserTyping) {
@@ -337,12 +362,12 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                     // Scroll to Bottom Button
                     if (_showScrollToBottom)
                       Positioned(
-                        bottom: UIConstants.spacingM,
-                        right: UIConstants.spacingM,
+                        bottom: 16,
+                        right: 16,
                         child: FloatingActionButton.small(
                           onPressed: _scrollToBottom,
-                          backgroundColor: AppTheme.primaryColor,
-                          child: Icon(
+                          backgroundColor: DesignSystem.primaryBlue,
+                          child: const Icon(
                             Icons.keyboard_arrow_down,
                             color: Colors.white,
                           ),
@@ -366,42 +391,28 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
 
   PreferredSizeWidget _buildAppBar() {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: DesignSystem.getSurfaceColor(context),
       elevation: 0,
       leading: IconButton(
         icon: Icon(
           RTLUtils.getDirectionalIcon(context, Icons.arrow_back,
               start: Icons.arrow_back, end: Icons.arrow_forward),
-          color: AppTheme.textPrimaryColor,
+          color: isDark ? DesignSystem.neutral200 : DesignSystem.neutral900,
         ),
         onPressed: () => Navigator.pop(context, true),
       ),
       title: Row(
         children: [
           // Avatar
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Center(
-              child: Text(
-                widget.otherUserName.isNotEmpty
-                    ? widget.otherUserName[0].toUpperCase()
-                    : 'U',
-                style: TextStyle(
-                  color: AppTheme.primaryColor,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                ),
-              ),
-            ),
+          GBUserAvatar(
+            avatarUrl: widget.otherUserAvatarUrl,
+            userName: widget.otherUserName,
+            size: 40,
           ),
 
-          AppSpacing.horizontal(UIConstants.spacingM),
+          const SizedBox(width: 16),
 
           // User Info
           Expanded(
@@ -412,7 +423,9 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                   widget.otherUserName,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: AppTheme.textPrimaryColor,
+                        color: isDark
+                            ? DesignSystem.neutral200
+                            : DesignSystem.neutral900,
                       ),
                 ),
                 if (widget.donationId != null || widget.requestId != null)
@@ -421,7 +434,7 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                         ? 'Donation #${widget.donationId}'
                         : '${l10n.request} #${widget.requestId}',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppTheme.primaryColor,
+                          color: DesignSystem.primaryBlue,
                         ),
                   ),
               ],
@@ -434,7 +447,7 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
         PopupMenuButton<String>(
           icon: Icon(
             Icons.more_vert,
-            color: AppTheme.textPrimaryColor,
+            color: isDark ? DesignSystem.neutral200 : DesignSystem.neutral900,
           ),
           onSelected: (value) {
             switch (value) {
@@ -454,9 +467,9 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
               value: 'info',
               child: Row(
                 children: [
-                  Icon(Icons.info_outline, size: 20),
-                  AppSpacing.horizontal(UIConstants.spacingS),
-                  Text(l10n.messages),
+                  const Icon(Icons.info_outline, size: 20),
+                  const SizedBox(width: 12),
+                  const Text('Conversation Info'),
                 ],
               ),
             ),
@@ -464,10 +477,10 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
               value: 'block',
               child: Row(
                 children: [
-                  Icon(Icons.block, size: 20, color: AppTheme.errorColor),
-                  AppSpacing.horizontal(UIConstants.spacingS),
+                  Icon(Icons.block, size: 20, color: DesignSystem.error),
+                  const SizedBox(width: 12),
                   Text(AppLocalizations.of(context)!.blockUser,
-                      style: TextStyle(color: AppTheme.errorColor)),
+                      style: TextStyle(color: DesignSystem.error)),
                 ],
               ),
             ),
@@ -475,10 +488,10 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
               value: 'report',
               child: Row(
                 children: [
-                  Icon(Icons.report, size: 20, color: AppTheme.warningColor),
-                  AppSpacing.horizontal(UIConstants.spacingS),
+                  Icon(Icons.report, size: 20, color: DesignSystem.warning),
+                  const SizedBox(width: 12),
                   Text(AppLocalizations.of(context)!.reportUser,
-                      style: TextStyle(color: AppTheme.warningColor)),
+                      style: TextStyle(color: DesignSystem.warning)),
                 ],
               ),
             ),
@@ -494,13 +507,13 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+            valueColor: AlwaysStoppedAnimation<Color>(DesignSystem.primaryBlue),
           ),
-          AppSpacing.vertical(UIConstants.spacingM),
+          const SizedBox(height: 16),
           Text(
             'Loading messages...',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppTheme.textSecondaryColor,
+                  color: DesignSystem.neutral600,
                 ),
           ),
         ],
@@ -510,40 +523,10 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
 
   Widget _buildEmptyState() {
     final l10n = AppLocalizations.of(context)!;
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(40),
-            ),
-            child: Icon(
-              Icons.chat_bubble_outline,
-              size: 40,
-              color: AppTheme.primaryColor,
-            ),
-          ),
-          AppSpacing.vertical(UIConstants.spacingL),
-          Text(
-            l10n.messages,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-          AppSpacing.vertical(UIConstants.spacingS),
-          Text(
-            'Send message to ${widget.otherUserName}',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppTheme.textSecondaryColor,
-                ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+    return GBEmptyState(
+      icon: Icons.chat_bubble_outline,
+      title: l10n.messages,
+      message: 'Send message to ${widget.otherUserName}',
     );
   }
 
@@ -558,7 +541,7 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
         return Transform.scale(
           scale: _messageAnimation.value,
           child: Container(
-            margin: EdgeInsets.only(bottom: UIConstants.spacingS),
+            margin: const EdgeInsets.only(bottom: 12),
             child: Row(
               mainAxisAlignment: isFromCurrentUser
                   ? MainAxisAlignment.end
@@ -566,20 +549,20 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
               children: [
                 if (!isFromCurrentUser) ...[
                   _buildSenderAvatar(message),
-                  AppSpacing.horizontal(UIConstants.spacingS),
+                  const SizedBox(width: 12),
                 ],
                 Flexible(
                   child: Container(
                     constraints: BoxConstraints(
                       maxWidth: MediaQuery.of(context).size.width * 0.75,
                     ),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: UIConstants.spacingM,
-                      vertical: UIConstants.spacingS,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
                     ),
                     decoration: BoxDecoration(
                       color: isFromCurrentUser
-                          ? AppTheme.primaryColor
+                          ? DesignSystem.primaryBlue
                           : Colors.white,
                       borderRadius: RTLUtils.getBorderRadius(
                         context,
@@ -612,12 +595,12 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                                 ?.copyWith(
                                   color: isFromCurrentUser
                                       ? Colors.white
-                                      : AppTheme.textPrimaryColor,
+                                      : DesignSystem.neutral900,
                                   height: 1.3,
                                 ),
                           ),
 
-                        AppSpacing.vertical(UIConstants.spacingXS),
+                        const SizedBox(height: 8),
 
                         // Message Info
                         Row(
@@ -631,12 +614,12 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                                   ?.copyWith(
                                     color: isFromCurrentUser
                                         ? Colors.white.withOpacity(0.7)
-                                        : AppTheme.textSecondaryColor,
+                                        : DesignSystem.neutral600,
                                     fontSize: 11,
                                   ),
                             ),
                             if (isFromCurrentUser) ...[
-                              AppSpacing.horizontal(UIConstants.spacingXS),
+                              const SizedBox(width: 8),
                               Icon(
                                 message.isRead ? Icons.done_all : Icons.done,
                                 size: 14,
@@ -652,7 +635,7 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                   ),
                 ),
                 if (isFromCurrentUser) ...[
-                  AppSpacing.horizontal(UIConstants.spacingS),
+                  const SizedBox(width: 12),
                   _buildSenderAvatar(message),
                 ],
               ],
@@ -664,31 +647,16 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
   }
 
   Widget _buildSenderAvatar(ChatMessage message) {
-    return Container(
-      width: 32,
-      height: 32,
-      decoration: BoxDecoration(
-        color: AppTheme.primaryColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Center(
-        child: Text(
-          message.senderName.isNotEmpty
-              ? message.senderName[0].toUpperCase()
-              : 'U',
-          style: TextStyle(
-            color: AppTheme.primaryColor,
-            fontWeight: FontWeight.w600,
-            fontSize: 12,
-          ),
-        ),
-      ),
+    return GBUserAvatar(
+      avatarUrl: widget.otherUserAvatarUrl,
+      userName: message.senderName,
+      size: 32,
     );
   }
 
   Widget _buildTypingIndicator() {
     return Container(
-      margin: EdgeInsets.only(bottom: UIConstants.spacingS),
+      margin: const EdgeInsets.only(bottom: 12),
       child: Row(
         children: [
           _buildSenderAvatar(ChatMessage(
@@ -702,11 +670,11 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
             createdAt: '',
             updatedAt: '',
           )),
-          AppSpacing.horizontal(UIConstants.spacingS),
+          const SizedBox(width: 12),
           Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: UIConstants.spacingM,
-              vertical: UIConstants.spacingS,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
             ),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -728,11 +696,11 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                     Text(
                       'Typing...',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppTheme.textSecondaryColor,
+                            color: DesignSystem.neutral600,
                             fontStyle: FontStyle.italic,
                           ),
                     ),
-                    AppSpacing.horizontal(UIConstants.spacingXS),
+                    const SizedBox(width: 8),
                     SizedBox(
                       width: 20,
                       height: 20,
@@ -740,14 +708,14 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: List.generate(3, (index) {
                           return AnimatedContainer(
-                            duration: Duration(milliseconds: 300),
+                            duration: const Duration(milliseconds: 300),
                             width: 4,
                             height: 4,
                             decoration: BoxDecoration(
-                              color: AppTheme.primaryColor,
+                              color: DesignSystem.primaryBlue,
                               shape: BoxShape.circle,
                             ),
-                            margin: EdgeInsets.symmetric(horizontal: 1),
+                            margin: const EdgeInsets.symmetric(horizontal: 1),
                           );
                         }),
                       ),
@@ -764,13 +732,14 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
 
   Widget _buildMessageInput() {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      color: Colors.white,
+      color: DesignSystem.getSurfaceColor(context),
       padding: EdgeInsets.only(
-        left: UIConstants.spacingM,
-        right: UIConstants.spacingM,
-        top: UIConstants.spacingS,
-        bottom: UIConstants.spacingS + MediaQuery.of(context).padding.bottom,
+        left: 16,
+        right: 16,
+        top: 12,
+        bottom: 12 + MediaQuery.of(context).padding.bottom,
       ),
       child: Row(
         children: [
@@ -779,7 +748,7 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
             onPressed: _showAttachmentOptions,
             icon: Icon(
               Icons.attach_file,
-              color: AppTheme.textSecondaryColor,
+              color: DesignSystem.neutral600,
             ),
           ),
 
@@ -787,9 +756,13 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                color: AppTheme.surfaceColor,
+                color:
+                    isDark ? DesignSystem.neutral800 : DesignSystem.neutral100,
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: AppTheme.borderColor),
+                border: Border.all(
+                    color: isDark
+                        ? DesignSystem.neutral700
+                        : DesignSystem.neutral300),
               ),
               child: TextField(
                 controller: _messageController,
@@ -799,9 +772,9 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                 decoration: InputDecoration(
                   hintText: l10n.message,
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: UIConstants.spacingM,
-                    vertical: UIConstants.spacingS,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
                   ),
                 ),
                 onSubmitted: (_) => _sendMessage(),
@@ -809,7 +782,7 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
             ),
           ),
 
-          AppSpacing.horizontal(UIConstants.spacingS),
+          const SizedBox(width: 12),
 
           // Send Button
           Container(
@@ -817,8 +790,8 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
             height: 48,
             decoration: BoxDecoration(
               color: _messageController.text.trim().isNotEmpty
-                  ? AppTheme.primaryColor
-                  : AppTheme.borderColor,
+                  ? DesignSystem.primaryBlue
+                  : DesignSystem.neutral300,
               borderRadius: BorderRadius.circular(24),
             ),
             child: Material(
@@ -828,7 +801,7 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                     ? _sendMessage
                     : null,
                 borderRadius: BorderRadius.circular(24),
-                child: Icon(
+                child: const Icon(
                   Icons.send,
                   color: Colors.white,
                   size: 20,
@@ -844,13 +817,13 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
   void _showAttachmentOptions() {
     showModalBottomSheet(
       context: context,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
-          top: Radius.circular(UIConstants.radiusL),
+          top: Radius.circular(20),
         ),
       ),
       builder: (context) => Container(
-        padding: EdgeInsets.all(UIConstants.spacingL),
+        padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -860,12 +833,13 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                     fontWeight: FontWeight.w600,
                   ),
             ),
-            AppSpacing.vertical(UIConstants.spacingL),
+            const SizedBox(height: 24),
             Row(
               children: [
                 Expanded(
-                  child: GBSecondaryButton(
+                  child: GBButton(
                     text: 'Camera',
+                    variant: GBButtonVariant.secondary,
                     leftIcon: const Icon(Icons.camera_alt, size: 20),
                     onPressed: () {
                       Navigator.pop(context);
@@ -873,10 +847,11 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                     },
                   ),
                 ),
-                AppSpacing.horizontal(UIConstants.spacingM),
+                const SizedBox(width: 16),
                 Expanded(
-                  child: GBSecondaryButton(
+                  child: GBButton(
                     text: 'Gallery',
+                    variant: GBButtonVariant.secondary,
                     leftIcon: const Icon(Icons.photo_library, size: 20),
                     onPressed: () {
                       Navigator.pop(context);
@@ -886,7 +861,7 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                 ),
               ],
             ),
-            AppSpacing.vertical(UIConstants.spacingL),
+            const SizedBox(height: 24),
           ],
         ),
       ),
@@ -950,30 +925,11 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
       // Create message with image
       final messageProvider =
           Provider.of<MessageProvider>(context, listen: false);
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      Provider.of<AuthProvider>(context, listen: false);
 
       // For now, we'll send the image as a text message with file path
       // In a real implementation, you would upload the image to a server first
-      // Note: We create a ChatMessage object for future use but currently send via MessageProvider
-      final message = ChatMessage(
-        id: DateTime.now().millisecondsSinceEpoch,
-        senderId: int.parse(authProvider.user?.id.toString() ?? '0'),
-        senderName: authProvider.user?.name ?? '',
-        receiverId: int.parse(widget.otherUserId),
-        receiverName: widget.otherUserName,
-        content: '📷 Image: ${imageFile.name}',
-        messageType: 'image',
-        donationId:
-            widget.donationId != null ? int.parse(widget.donationId!) : null,
-        requestId:
-            widget.requestId != null ? int.parse(widget.requestId!) : null,
-        createdAt: DateTime.now().toIso8601String(),
-        updatedAt: DateTime.now().toIso8601String(),
-        isRead: false,
-        attachmentUrl: imageFile.path, // Store local path for now
-        attachmentName: imageFile.name,
-        attachmentSize: fileSizeInBytes,
-      );
+      // TODO: In future, integrate the ChatMessage object with the actual message sending
 
       // Send message via MessageProvider (current implementation)
       await messageProvider.sendMessage(
@@ -994,6 +950,7 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
   }
 
   Widget _buildImageMessage(ChatMessage message, bool isFromCurrentUser) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1010,7 +967,9 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
               border: Border.all(
                 color: isFromCurrentUser
                     ? Colors.white.withOpacity(0.3)
-                    : AppTheme.borderColor,
+                    : (isDark
+                        ? DesignSystem.neutral700
+                        : DesignSystem.neutral300),
                 width: 1,
               ),
             ),
@@ -1022,7 +981,7 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
                     height: 100,
-                    color: Colors.grey[300],
+                    color: DesignSystem.neutral300,
                     child: const Icon(
                       Icons.broken_image,
                       color: Colors.grey,
@@ -1043,7 +1002,7 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: isFromCurrentUser
                     ? Colors.white.withOpacity(0.8)
-                    : AppTheme.textSecondaryColor,
+                    : DesignSystem.neutral600,
                 fontSize: 12,
               ),
         ),
@@ -1105,19 +1064,80 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
     );
   }
 
-  void _showConversationInfo() {
-    // TODO: Implement conversation info dialog
-    _showErrorSnackbar('Conversation info coming soon');
+  Future<void> _showConversationInfo() async {
+    final messageProvider =
+        Provider.of<MessageProvider>(context, listen: false);
+    final messages = messageProvider.messages;
+    final firstMessage = messages.isNotEmpty ? messages.first : null;
+
+    // Create User object for the other user
+    final otherUser = User(
+      id: int.parse(widget.otherUserId),
+      name: widget.otherUserName,
+      email: '',
+      role: 'donor',
+      avatarUrl: widget.otherUserAvatarUrl,
+      createdAt: DateTime.now().toIso8601String(),
+      updatedAt: DateTime.now().toIso8601String(),
+    );
+
+    await showDialog(
+      context: context,
+      builder: (context) => ConversationInfoDialog(
+        otherUser: otherUser,
+        messageCount: messages.length,
+        firstMessageDate: firstMessage != null
+            ? DateTime.tryParse(firstMessage['createdAt'] ?? '')
+            : null,
+        onArchive: () {
+          _archiveConversation();
+        },
+        onBlock: () {
+          _showBlockConfirmation();
+        },
+        onReport: () {
+          _showReportDialog();
+        },
+      ),
+    );
+  }
+
+  Future<void> _archiveConversation() async {
+    final messageProvider =
+        Provider.of<MessageProvider>(context, listen: false);
+    final success = await messageProvider.archiveConversation(
+      int.parse(widget.otherUserId),
+    );
+
+    if (success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Conversation archived'),
+          backgroundColor: DesignSystem.success,
+        ),
+      );
+      Navigator.of(context).pop();
+    }
   }
 
   void _showBlockConfirmation() {
-    // TODO: Implement block confirmation dialog
-    _showErrorSnackbar('Block functionality coming soon');
+    GBBlockUserDialog.show(
+      context: context,
+      userId: int.parse(widget.otherUserId),
+      userName: widget.otherUserName,
+      onBlocked: () {
+        // Navigate back after blocking
+        Navigator.of(context).pop();
+      },
+    );
   }
 
   void _showReportDialog() {
-    // TODO: Implement report dialog
-    _showErrorSnackbar('Report functionality coming soon');
+    GBReportUserDialog.show(
+      context: context,
+      userId: int.parse(widget.otherUserId),
+      userName: widget.otherUserName,
+    );
   }
 
   String _formatMessageTime(String dateString) {

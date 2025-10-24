@@ -1,11 +1,14 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../core/theme/app_theme.dart';
 import '../core/theme/design_system.dart';
-import '../widgets/common/gb_button.dart';
+import '../core/theme/web_theme.dart';
+import '../widgets/common/web_button.dart';
+import '../widgets/common/web_card.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/locale_provider.dart';
+import '../providers/theme_provider.dart';
 
 class LandingScreen extends StatefulWidget {
   const LandingScreen({Key? key}) : super(key: key);
@@ -18,8 +21,8 @@ class _LandingScreenState extends State<LandingScreen>
     with TickerProviderStateMixin {
   late AnimationController _fadeController;
   late AnimationController _slideController;
-  late Animation<double> _fadeAnimation;
-  late Animation<Offset> _slideAnimation;
+  final GlobalKey _howItWorksKey = GlobalKey();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -35,22 +38,6 @@ class _LandingScreenState extends State<LandingScreen>
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeOut,
-    ));
-
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _slideController,
-      curve: Curves.easeOut,
-    ));
-
     // Start animations
     _fadeController.forward();
     Future.delayed(const Duration(milliseconds: 300), () {
@@ -62,7 +49,20 @@ class _LandingScreenState extends State<LandingScreen>
   void dispose() {
     _fadeController.dispose();
     _slideController.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _scrollToHowItWorks() {
+    final context = _howItWorksKey.currentContext;
+    if (context != null) {
+      Scrollable.ensureVisible(
+        context,
+        duration: const Duration(milliseconds: 800),
+        curve: Curves.easeInOut,
+        alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtStart,
+      );
+    }
   }
 
   void _showLanguageDialog(BuildContext context) {
@@ -102,6 +102,185 @@ class _LandingScreenState extends State<LandingScreen>
     localeProvider.setLocale(locale);
   }
 
+  void _showMobileMenu(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _buildMobileDrawer(context, l10n, isDark),
+    );
+  }
+
+  Widget _buildMobileDrawer(
+      BuildContext context, AppLocalizations l10n, bool isDark) {
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: DesignSystem.getSurfaceColor(context),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(DesignSystem.radiusXL),
+          topRight: Radius.circular(DesignSystem.radiusXL),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 20,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: DesignSystem.spaceL,
+            vertical: DesignSystem.spaceXL,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Semantics(
+                    label: 'Navigation menu',
+                    header: true,
+                    child: Text(
+                      'Menu',
+                      style: DesignSystem.headlineSmall(context).copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  Semantics(
+                    label: 'Close menu',
+                    button: true,
+                    child: IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                      tooltip: 'Close',
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: DesignSystem.spaceL),
+              const Divider(),
+              const SizedBox(height: DesignSystem.spaceM),
+
+              // Dark Mode Toggle
+              Semantics(
+                label: 'Theme setting: ${isDark ? "Dark mode" : "Light mode"}',
+                child: ListTile(
+                  leading: Icon(
+                    isDark ? Icons.light_mode : Icons.dark_mode,
+                    color: DesignSystem.primaryBlue,
+                  ),
+                  title: Text(
+                    isDark ? 'Light Mode' : 'Dark Mode',
+                    style: DesignSystem.bodyLarge(context),
+                  ),
+                  subtitle: Text(
+                    'Switch theme',
+                    style: DesignSystem.bodySmall(context),
+                  ),
+                  trailing: Semantics(
+                    label: 'Toggle theme',
+                    button: true,
+                    child: Switch(
+                      value: isDark,
+                      onChanged: (value) {
+                        themeProvider.toggleTheme();
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                  onTap: () {
+                    themeProvider.toggleTheme();
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+
+              const Divider(),
+
+              // Language Switcher
+              Semantics(
+                label:
+                    'Language setting: ${localeProvider.isArabic ? "Arabic" : "English"}',
+                child: ListTile(
+                  leading: const Icon(
+                    Icons.language,
+                    color: DesignSystem.primaryBlue,
+                  ),
+                  title: Text(
+                    l10n.language,
+                    style: DesignSystem.bodyLarge(context),
+                  ),
+                  subtitle: Text(
+                    localeProvider.isArabic ? 'العربية' : 'English',
+                    style: DesignSystem.bodySmall(context),
+                  ),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _showLanguageDialog(context);
+                  },
+                ),
+              ),
+
+              const Divider(),
+              const SizedBox(height: DesignSystem.spaceM),
+
+              // Login Button
+              Semantics(
+                label: 'Navigate to login page',
+                button: true,
+                child: WebButton(
+                  text: l10n.login,
+                  icon: Icons.login,
+                  variant: WebButtonVariant.outline,
+                  size: WebButtonSize.large,
+                  fullWidth: true,
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, '/login');
+                  },
+                ),
+              ),
+
+              const SizedBox(height: DesignSystem.spaceM),
+
+              // Get Started Button
+              Semantics(
+                label: 'Navigate to registration page',
+                button: true,
+                child: WebButton(
+                  text: l10n.getStarted,
+                  icon: Icons.arrow_forward,
+                  variant: WebButtonVariant.primary,
+                  size: WebButtonSize.large,
+                  fullWidth: true,
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, '/register');
+                  },
+                ),
+              ),
+
+              const SizedBox(height: DesignSystem.spaceL),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -111,6 +290,7 @@ class _LandingScreenState extends State<LandingScreen>
 
     return Scaffold(
       body: SingleChildScrollView(
+        controller: _scrollController,
         child: Column(
           children: [
             // Header
@@ -150,96 +330,198 @@ class _LandingScreenState extends State<LandingScreen>
 
   Widget _buildHeader(BuildContext context, bool isDark) {
     final l10n = AppLocalizations.of(context)!;
-    return ClipRRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppTheme.spacingL,
-            vertical: AppTheme.spacingM,
+    final size = MediaQuery.of(context).size;
+    final isDesktop = size.width >= DesignSystem.desktop;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: DesignSystem.getSurfaceColor(context).withOpacity(0.95),
+        border: Border(
+          bottom: BorderSide(
+            color: DesignSystem.getBorderColor(context),
+            width: 1,
           ),
-          decoration: BoxDecoration(
-            color: (isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor)
-                .withOpacity(0.8),
-            border: Border(
-              bottom: BorderSide(
-                color:
-                    (isDark ? AppTheme.darkBorderColor : AppTheme.borderColor)
-                        .withOpacity(0.3),
-                width: 1,
-              ),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.03),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              // Logo
-              Row(
+        ),
+        boxShadow: WebTheme.cardShadow,
+      ),
+      child: WebTheme.section(
+        maxWidth: WebTheme.maxContentWidthLarge,
+        padding: const EdgeInsets.symmetric(
+          horizontal: DesignSystem.spaceXL,
+          vertical: DesignSystem.spaceM,
+        ),
+        child: Row(
+          children: [
+            // Logo
+            Semantics(
+              label: '${l10n.appTitle} logo and home',
+              button: true,
+              child: Row(
                 children: [
                   Container(
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: AppTheme.primaryColor,
-                      borderRadius: BorderRadius.circular(AppTheme.radiusM),
+                      gradient: DesignSystem.primaryGradient,
+                      borderRadius: BorderRadius.circular(DesignSystem.radiusM),
+                      boxShadow: DesignSystem.coloredShadow(
+                        DesignSystem.primaryBlue,
+                        opacity: 0.2,
+                      ),
                     ),
                     child: const Icon(
                       Icons.favorite,
                       color: Colors.white,
-                      size: 24,
+                      size: 22,
                     ),
                   ),
-                  const SizedBox(width: AppTheme.spacingS + AppTheme.spacingXS),
+                  const SizedBox(width: DesignSystem.spaceM),
                   Text(
                     l10n.appTitle,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                    style: DesignSystem.headlineSmall(context).copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ],
               ),
+            ),
 
-              const Spacer(),
+            const Spacer(),
 
-              // Navigation buttons
+            // Navigation buttons
+            if (isDesktop) ...[
               Row(
                 children: [
-                  // Language Switcher
-                  Consumer<LocaleProvider>(
-                    builder: (context, localeProvider, child) {
-                      return TextButton.icon(
-                        icon: const Icon(Icons.language, size: 20),
-                        label: Text(
-                          localeProvider.isArabic ? 'EN' : 'عربي',
-                          style: const TextStyle(fontWeight: FontWeight.w600),
+                  // Dark Mode Toggle
+                  Consumer<ThemeProvider>(
+                    builder: (context, themeProvider, child) {
+                      return Semantics(
+                        label: isDark
+                            ? 'Switch to light mode'
+                            : 'Switch to dark mode',
+                        button: true,
+                        hint: 'Tap to toggle theme',
+                        child: MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: InkWell(
+                            onTap: () => themeProvider.toggleTheme(),
+                            borderRadius:
+                                BorderRadius.circular(DesignSystem.radiusM),
+                            child: Container(
+                              padding:
+                                  const EdgeInsets.all(DesignSystem.spaceS),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: DesignSystem.getBorderColor(context),
+                                ),
+                                borderRadius:
+                                    BorderRadius.circular(DesignSystem.radiusM),
+                              ),
+                              child: Icon(
+                                isDark ? Icons.light_mode : Icons.dark_mode,
+                                size: 20,
+                                color: DesignSystem.textPrimary,
+                              ),
+                            ),
+                          ),
                         ),
-                        onPressed: () => _showLanguageDialog(context),
                       );
                     },
                   ),
-                  const SizedBox(width: AppTheme.spacingS),
-                  GBButton(
+                  const SizedBox(width: DesignSystem.spaceM),
+                  // Language Switcher
+                  Consumer<LocaleProvider>(
+                    builder: (context, localeProvider, child) {
+                      final currentLang =
+                          localeProvider.isArabic ? 'Arabic' : 'English';
+                      return Semantics(
+                        label: 'Change language, current: $currentLang',
+                        button: true,
+                        hint: 'Tap to switch language',
+                        child: MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: InkWell(
+                            onTap: () => _showLanguageDialog(context),
+                            borderRadius:
+                                BorderRadius.circular(DesignSystem.radiusM),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: DesignSystem.spaceM,
+                                vertical: DesignSystem.spaceS,
+                              ),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: DesignSystem.getBorderColor(context),
+                                ),
+                                borderRadius:
+                                    BorderRadius.circular(DesignSystem.radiusM),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.language, size: 20),
+                                  const SizedBox(width: DesignSystem.spaceS),
+                                  Text(
+                                    localeProvider.isArabic ? 'EN' : 'عربي',
+                                    style: DesignSystem.labelLarge(context),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(width: DesignSystem.spaceM),
+                  WebButton(
                     text: l10n.login,
-                    variant: GBButtonVariant.ghost,
-                    size: GBButtonSize.medium,
+                    variant: WebButtonVariant.ghost,
                     onPressed: () => Navigator.pushNamed(context, '/login'),
                   ),
-                  const SizedBox(width: AppTheme.spacingS + AppTheme.spacingXS),
-                  GBPrimaryButton(
+                  const SizedBox(width: DesignSystem.spaceM),
+                  WebButton(
                     text: l10n.getStarted,
-                    size: GBButtonSize.medium,
+                    variant: WebButtonVariant.primary,
+                    icon: Icons.arrow_forward,
                     onPressed: () => Navigator.pushNamed(context, '/register'),
                   ),
                 ],
               ),
+            ] else ...[
+              Row(
+                children: [
+                  // Dark Mode Toggle for Mobile
+                  Consumer<ThemeProvider>(
+                    builder: (context, themeProvider, child) {
+                      return Semantics(
+                        label: isDark
+                            ? 'Switch to light mode'
+                            : 'Switch to dark mode',
+                        button: true,
+                        child: IconButton(
+                          icon: Icon(
+                            isDark ? Icons.light_mode : Icons.dark_mode,
+                          ),
+                          onPressed: () => themeProvider.toggleTheme(),
+                          tooltip: isDark ? 'Light mode' : 'Dark mode',
+                        ),
+                      );
+                    },
+                  ),
+                  Semantics(
+                    label: 'Open navigation menu',
+                    button: true,
+                    child: IconButton(
+                      icon: const Icon(Icons.menu),
+                      onPressed: () => _showMobileMenu(context),
+                      tooltip: 'Menu',
+                    ),
+                  ),
+                ],
+              ),
             ],
-          ),
+          ],
         ),
       ),
     );
@@ -248,50 +530,54 @@ class _LandingScreenState extends State<LandingScreen>
   Widget _buildHeroSection(
       BuildContext context, ThemeData theme, bool isDark, bool isDesktop) {
     final l10n = AppLocalizations.of(context)!;
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: isDesktop
-            ? AppTheme.spacingXXL + AppTheme.spacingM
-            : AppTheme.spacingL,
-        vertical: isDesktop
-            ? AppTheme.spacingXXL + AppTheme.spacingM
-            : AppTheme.spacingXXL,
-      ),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppTheme.primaryColor.withOpacity(0.05),
-            AppTheme.secondaryColor.withOpacity(0.05),
-          ],
+    final size = MediaQuery.of(context).size;
+    final isLargeDesktop = size.width >= DesignSystem.desktopLarge;
+
+    return Semantics(
+      label: 'Hero section: ${l10n.connectHeartsShareHope}',
+      container: true,
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              DesignSystem.primaryBlue.withOpacity(0.03),
+              DesignSystem.secondaryGreen.withOpacity(0.03),
+            ],
+          ),
         ),
-      ),
-      child: FadeTransition(
-        opacity: _fadeAnimation,
-        child: SlideTransition(
-          position: _slideAnimation,
-          child: Column(
-            children: [
-              if (isDesktop)
-                Row(
+        child: WebTheme.section(
+          maxWidth: WebTheme.maxContentWidthLarge,
+          padding: EdgeInsets.symmetric(
+            horizontal: isDesktop ? DesignSystem.spaceXXL : DesignSystem.spaceL,
+            vertical: isDesktop
+                ? WebTheme.sectionSpacingLarge
+                : DesignSystem.spaceXXL,
+          ),
+          child: isDesktop
+              ? Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Expanded(child: _buildHeroContent(theme, isDesktop, l10n)),
-                    const SizedBox(
-                        width: AppTheme.spacingXXL + AppTheme.spacingM),
-                    Expanded(child: _buildHeroIllustration(isDark)),
+                    Expanded(
+                      flex: isLargeDesktop ? 5 : 6,
+                      child: _buildHeroContent(theme, isDesktop, l10n),
+                    ),
+                    const SizedBox(width: DesignSystem.spaceXXXL),
+                    Expanded(
+                      flex: isLargeDesktop ? 5 : 4,
+                      child: _buildHeroIllustration(isDark),
+                    ),
                   ],
                 )
-              else
-                Column(
+              : Column(
                   children: [
                     _buildHeroContent(theme, isDesktop, l10n),
-                    const SizedBox(height: AppTheme.spacingXXL),
+                    const SizedBox(height: DesignSystem.spaceXXL),
                     _buildHeroIllustration(isDark),
                   ],
                 ),
-            ],
-          ),
         ),
       ),
     );
@@ -299,103 +585,134 @@ class _LandingScreenState extends State<LandingScreen>
 
   Widget _buildHeroContent(
       ThemeData theme, bool isDesktop, AppLocalizations l10n) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Column(
       crossAxisAlignment:
           isDesktop ? CrossAxisAlignment.start : CrossAxisAlignment.center,
       children: [
-        Text(
-          l10n.connectHeartsShareHope,
-          style: theme.textTheme.displayMedium?.copyWith(
-            fontWeight: FontWeight.w800,
-            height: 1.1,
-          ),
-          textAlign: isDesktop ? TextAlign.start : TextAlign.center,
+        // Main headline
+        Semantics(
+          label: 'Main heading',
+          header: true,
+          child: Text(
+            l10n.connectHeartsShareHope,
+            style: isDesktop
+                ? DesignSystem.displayLarge(context).copyWith(
+                    fontWeight: FontWeight.w800,
+                    height: 1.1,
+                    letterSpacing: -1,
+                  )
+                : DesignSystem.displayMedium(context).copyWith(
+                    fontWeight: FontWeight.w800,
+                    height: 1.15,
+                  ),
+            textAlign: isDesktop ? TextAlign.start : TextAlign.center,
+          )
+              .animate()
+              .fadeIn(duration: 600.ms, curve: Curves.easeOut)
+              .slideX(begin: -0.1, end: 0, curve: Curves.easeOut),
         ),
-        const SizedBox(height: AppTheme.spacingL),
+
+        const SizedBox(height: DesignSystem.spaceXL),
+
+        // Description
         Text(
           l10n.landingHeroDescription,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            color: isDark
-                ? AppTheme.darkTextSecondaryColor
-                : AppTheme.textSecondaryColor,
-            height: 1.6,
-            fontSize: 18,
+          style: DesignSystem.bodyLarge(context).copyWith(
+            color: DesignSystem.textSecondary,
+            height: 1.7,
+            fontSize: isDesktop ? 18 : 16,
           ),
           textAlign: isDesktop ? TextAlign.start : TextAlign.center,
-        ),
-        const SizedBox(height: AppTheme.spacingXL + AppTheme.spacingS),
+        )
+            .animate(delay: 200.ms)
+            .fadeIn(duration: 600.ms, curve: Curves.easeOut)
+            .slideY(begin: 0.2, end: 0, curve: Curves.easeOut),
+
+        const SizedBox(height: DesignSystem.spaceXXL),
+
+        // CTA Buttons
         if (isDesktop)
           Row(
             children: [
               Expanded(
-                child: GBPrimaryButton(
+                child: WebButton(
                   text: l10n.startDonating,
-                  size: GBButtonSize.large,
-                  leftIcon: const Icon(Icons.favorite, size: 20),
-                  onPressed: () => Navigator.pushNamed(context, '/register'),
+                  icon: Icons.favorite,
+                  variant: WebButtonVariant.primary,
+                  size: WebButtonSize.large,
                   fullWidth: true,
+                  onPressed: () => Navigator.pushNamed(context, '/register'),
                 ),
               ),
-              const SizedBox(width: AppTheme.spacingM),
+              const SizedBox(width: DesignSystem.spaceM),
               Expanded(
-                child: GBOutlineButton(
+                child: WebButton(
                   text: l10n.learnMore,
-                  size: GBButtonSize.large,
-                  leftIcon: const Icon(Icons.play_circle_outline, size: 20),
-                  onPressed: () {},
+                  icon: Icons.play_circle_outline,
+                  variant: WebButtonVariant.outline,
+                  size: WebButtonSize.large,
                   fullWidth: true,
+                  onPressed: _scrollToHowItWorks,
                 ),
               ),
             ],
           )
+              .animate(delay: 400.ms)
+              .fadeIn(duration: 600.ms)
+              .slideY(begin: 0.3, end: 0)
         else
           Column(
             children: [
-              GBPrimaryButton(
+              WebButton(
                 text: l10n.startDonating,
-                size: GBButtonSize.large,
+                icon: Icons.favorite,
+                variant: WebButtonVariant.primary,
+                size: WebButtonSize.large,
                 fullWidth: true,
-                leftIcon: const Icon(Icons.favorite, size: 20),
                 onPressed: () => Navigator.pushNamed(context, '/register'),
               ),
-              const SizedBox(height: AppTheme.spacingM),
-              GBOutlineButton(
+              const SizedBox(height: DesignSystem.spaceM),
+              WebButton(
                 text: l10n.learnMore,
-                size: GBButtonSize.large,
+                icon: Icons.play_circle_outline,
+                variant: WebButtonVariant.outline,
+                size: WebButtonSize.large,
                 fullWidth: true,
-                leftIcon: const Icon(Icons.play_circle_outline, size: 20),
-                onPressed: () {},
+                onPressed: _scrollToHowItWorks,
               ),
             ],
-          ),
+          )
+              .animate(delay: 400.ms)
+              .fadeIn(duration: 600.ms)
+              .slideY(begin: 0.3, end: 0),
 
-        // Feature icons section (like in the image)
-        const SizedBox(height: AppTheme.spacingXL),
+        // Trust indicators
+        const SizedBox(height: DesignSystem.spaceXXL),
         Row(
           mainAxisAlignment:
               isDesktop ? MainAxisAlignment.start : MainAxisAlignment.center,
           children: [
             _buildHeroFeature(
-              icon: Icons.people,
-              label: 'عدد المتبرعين',
-              isDark: isDark,
+              icon: Icons.people_outline,
+              label: '1000+ Donors',
             ),
-            SizedBox(width: isDesktop ? AppTheme.spacingXL : AppTheme.spacingL),
+            SizedBox(
+                width: isDesktop ? DesignSystem.spaceXL : DesignSystem.spaceL),
             _buildHeroFeature(
-              icon: Icons.attach_money,
-              label: 'إجمالي التبرعات',
-              isDark: isDark,
+              icon: Icons.volunteer_activism_outlined,
+              label: '5000+ Donations',
             ),
-            SizedBox(width: isDesktop ? AppTheme.spacingXL : AppTheme.spacingL),
+            SizedBox(
+                width: isDesktop ? DesignSystem.spaceXL : DesignSystem.spaceL),
             _buildHeroFeature(
-              icon: Icons.verified_user,
+              icon: Icons.verified_user_outlined,
               label: l10n.secure100,
-              isDark: isDark,
             ),
           ],
-        ),
+        )
+            .animate(delay: 600.ms)
+            .fadeIn(duration: 800.ms)
+            .slideY(begin: 0.2, end: 0),
       ],
     );
   }
@@ -403,7 +720,6 @@ class _LandingScreenState extends State<LandingScreen>
   Widget _buildHeroFeature({
     required IconData icon,
     required String label,
-    required bool isDark,
   }) {
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -411,19 +727,14 @@ class _LandingScreenState extends State<LandingScreen>
         Icon(
           icon,
           size: 20,
-          color: isDark
-              ? AppTheme.darkTextSecondaryColor
-              : AppTheme.textSecondaryColor,
+          color: DesignSystem.textSecondary,
         ),
-        const SizedBox(width: 6),
+        const SizedBox(width: DesignSystem.spaceS),
         Text(
           label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-            color: isDark
-                ? AppTheme.darkTextSecondaryColor
-                : AppTheme.textSecondaryColor,
+          style: DesignSystem.labelMedium(context).copyWith(
+            color: DesignSystem.textSecondary,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ],
@@ -433,163 +744,139 @@ class _LandingScreenState extends State<LandingScreen>
   Widget _buildHeroIllustration(bool isDark) {
     return Stack(
       children: [
-        // Main image - Hands holding (black & white aesthetic)
+        // Main image container
         Container(
           height: 500,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppTheme.radiusXL),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 30,
-                offset: const Offset(0, 10),
-              ),
-            ],
+            borderRadius: BorderRadius.circular(DesignSystem.radiusXL),
+            boxShadow: WebTheme.elevatedShadow,
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(AppTheme.radiusXL),
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.grey.shade300,
-                    Colors.grey.shade400,
-                  ],
-                ),
-              ),
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  // Real hero image from local assets
-                  Image.asset(
-                    'assets/images/hero/hero-hands.jpg',
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      // Fallback to gradient if image not found
-                      return Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              Colors.grey.shade800,
-                              Colors.grey.shade600,
-                            ],
-                          ),
-                        ),
-                        child: Center(
-                          child: Icon(
-                            Icons.volunteer_activism,
-                            size: 200,
-                            color: Colors.white.withOpacity(0.3),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  // Dark overlay for better text contrast
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.black.withOpacity(0.3),
-                          Colors.black.withOpacity(0.5),
-                        ],
+            borderRadius: BorderRadius.circular(DesignSystem.radiusXL),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                // Hero image
+                Image.asset(
+                  'web/assets/images/hero/hero-hands.jpg',
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    // Fallback gradient
+                    return Container(
+                      decoration: BoxDecoration(
+                        gradient: DesignSystem.heroGradient,
                       ),
+                      child: Center(
+                        child: Icon(
+                          Icons.volunteer_activism_outlined,
+                          size: 200,
+                          color: Colors.white.withOpacity(0.3),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                // Overlay
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withOpacity(0.2),
+                        Colors.black.withOpacity(0.4),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        ),
+        )
+            .animate()
+            .fadeIn(duration: 800.ms, delay: 300.ms)
+            .scale(begin: const Offset(0.9, 0.9), curve: Curves.easeOut),
 
-        // Floating badge - Top Left: "donations today 25+"
+        // Floating stat card - Top Left
         Positioned(
           top: 20,
           left: 20,
-          child: Container(
+          child: WebCard(
             padding: const EdgeInsets.symmetric(
-              horizontal: AppTheme.spacingL,
-              vertical: AppTheme.spacingM,
+              horizontal: DesignSystem.spaceL,
+              vertical: DesignSystem.spaceM,
             ),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(50),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.15),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
+            backgroundColor: Colors.white,
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(
-                  Icons.favorite,
-                  color: Color(0xFFEF4444),
-                  size: 20,
+                Container(
+                  padding: const EdgeInsets.all(DesignSystem.spaceS),
+                  decoration: BoxDecoration(
+                    color: DesignSystem.error.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(DesignSystem.radiusS),
+                  ),
+                  child: Icon(
+                    Icons.favorite,
+                    color: DesignSystem.error,
+                    size: 20,
+                  ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: DesignSystem.spaceS),
                 Text(
                   '8 donations today',
-                  style: TextStyle(
-                    fontSize: 13,
+                  style: DesignSystem.labelLarge(context).copyWith(
+                    color: DesignSystem.textPrimary,
                     fontWeight: FontWeight.w600,
-                    color: AppTheme.textPrimaryColor,
                   ),
                 ),
               ],
             ),
-          ),
+          )
+              .animate(delay: 800.ms)
+              .fadeIn(duration: 600.ms)
+              .slideY(begin: -0.3, end: 0),
         ),
 
-        // Floating badge - Bottom Right: "people helped 150"
+        // Floating stat card - Bottom Right
         Positioned(
           bottom: 20,
           right: 20,
-          child: Container(
+          child: WebCard(
             padding: const EdgeInsets.symmetric(
-              horizontal: AppTheme.spacingL,
-              vertical: AppTheme.spacingM,
+              horizontal: DesignSystem.spaceL,
+              vertical: DesignSystem.spaceM,
             ),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(50),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.15),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
+            backgroundColor: Colors.white,
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(
-                  Icons.people,
-                  color: Color(0xFF3B82F6),
-                  size: 20,
+                Container(
+                  padding: const EdgeInsets.all(DesignSystem.spaceS),
+                  decoration: BoxDecoration(
+                    color: DesignSystem.primaryBlue.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(DesignSystem.radiusS),
+                  ),
+                  child: Icon(
+                    Icons.people_outline,
+                    color: DesignSystem.primaryBlue,
+                    size: 20,
+                  ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: DesignSystem.spaceS),
                 Text(
                   '67 people helped',
-                  style: TextStyle(
-                    fontSize: 13,
+                  style: DesignSystem.labelLarge(context).copyWith(
+                    color: DesignSystem.textPrimary,
                     fontWeight: FontWeight.w600,
-                    color: AppTheme.textPrimaryColor,
                   ),
                 ),
               ],
             ),
-          ),
+          )
+              .animate(delay: 1000.ms)
+              .fadeIn(duration: 600.ms)
+              .slideY(begin: 0.3, end: 0),
         ),
       ],
     );
@@ -787,17 +1074,15 @@ class _LandingScreenState extends State<LandingScreen>
         'icon': Icons.favorite_outline,
         'title': l10n.easyDonations,
         'description': l10n.easyDonationsDesc,
-        'color': const Color(0xFFEC4899), // Pink
-        'lightColor': const Color(0xFFFCE7F3),
+        'color': DesignSystem.primaryBlue,
         'badge': l10n.popularBadge,
-        'badgeColor': const Color(0xFFEF4444),
+        'badgeColor': DesignSystem.error,
       },
       {
         'icon': Icons.search_outlined,
         'title': l10n.smartMatching,
         'description': l10n.smartMatchingDesc,
         'color': const Color(0xFF8B5CF6), // Purple
-        'lightColor': const Color(0xFFF3E8FF),
         'badge': l10n.aiPoweredBadge,
         'badgeColor': const Color(0xFF8B5CF6),
       },
@@ -806,7 +1091,6 @@ class _LandingScreenState extends State<LandingScreen>
         'title': l10n.verifiedUsers,
         'description': l10n.verifiedUsersDesc,
         'color': const Color(0xFF06B6D4), // Cyan
-        'lightColor': const Color(0xFFCFFAFE),
         'badge': l10n.verifiedBadge,
         'badgeColor': const Color(0xFF06B6D4),
       },
@@ -814,17 +1098,15 @@ class _LandingScreenState extends State<LandingScreen>
         'icon': Icons.analytics_outlined,
         'title': l10n.impactTracking,
         'description': l10n.impactTrackingDesc,
-        'color': const Color(0xFF10B981), // Green
-        'lightColor': const Color(0xFFD1FAE5),
+        'color': DesignSystem.secondaryGreen,
         'badge': l10n.realtimeBadge,
-        'badgeColor': const Color(0xFF10B981),
+        'badgeColor': DesignSystem.secondaryGreen,
       },
       {
         'icon': Icons.security_outlined,
         'title': l10n.securePlatform,
         'description': l10n.securePlatformDesc,
         'color': const Color(0xFFF59E0B), // Orange
-        'lightColor': const Color(0xFFFEF3C7),
         'badge': l10n.secureBadge,
         'badgeColor': const Color(0xFFF59E0B),
       },
@@ -833,63 +1115,81 @@ class _LandingScreenState extends State<LandingScreen>
         'title': l10n.support247,
         'description': l10n.support247Desc,
         'color': const Color(0xFF6366F1), // Indigo
-        'lightColor': const Color(0xFFE0E7FF),
         'badge': l10n.newBadge,
         'badgeColor': const Color(0xFF6366F1),
       },
     ];
 
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: isDesktop
-            ? AppTheme.spacingXXL + AppTheme.spacingM
-            : AppTheme.spacingL,
-        vertical: AppTheme.spacingXXL + AppTheme.spacingM,
-      ),
+    return WebTheme.section(
       child: Column(
         children: [
-          Text(
-            l10n.whyChooseGivingBridge,
-            style: theme.textTheme.headlineLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-            textAlign: TextAlign.center,
+          // Section header with modern typography
+          Semantics(
+            label: 'Section heading',
+            header: true,
+            child: Text(
+              l10n.whyChooseGivingBridge,
+              style: isDesktop
+                  ? DesignSystem.headlineLarge(context).copyWith(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 48,
+                      letterSpacing: -0.5,
+                    )
+                  : DesignSystem.headlineMedium(context).copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+              textAlign: TextAlign.center,
+            )
+                .animate()
+                .fadeIn(duration: 600.ms, curve: Curves.easeOut)
+                .slideY(begin: -0.2, end: 0),
           ),
-          const SizedBox(height: AppTheme.spacingM),
-          Text(
-            l10n.platformDescription,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: isDark
-                  ? AppTheme.darkTextSecondaryColor
-                  : AppTheme.textSecondaryColor,
-              fontSize: 18,
+
+          SizedBox(height: DesignSystem.spaceM),
+
+          SizedBox(
+            width: isDesktop ? 600 : null,
+            child: Text(
+              l10n.platformDescription,
+              style: DesignSystem.bodyLarge(context).copyWith(
+                fontSize: isDesktop ? 18 : 16,
+                height: 1.6,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppTheme.spacingXXL),
+          )
+              .animate(delay: 200.ms)
+              .fadeIn(duration: 600.ms)
+              .slideY(begin: 0.2, end: 0),
+
+          SizedBox(
+              height:
+                  isDesktop ? DesignSystem.spaceXXXL : DesignSystem.spaceXXL),
+
+          // Features grid with staggered animations
           if (isDesktop)
             GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount:
-                    3, // Changed from 4 to 3 for 6 cards (2 rows of 3)
-                crossAxisSpacing: AppTheme.spacingXL,
-                mainAxisSpacing: AppTheme.spacingXL,
-                childAspectRatio: 1.0, // Adjusted for better proportions
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: DesignSystem.spaceL,
+                mainAxisSpacing: DesignSystem.spaceL,
+                childAspectRatio: 0.95,
               ),
               itemCount: features.length,
               itemBuilder: (context, index) {
                 final feature = features[index];
-                return _buildFeatureCard(feature, theme, isDark);
+                return _buildFeatureCard(feature, theme, isDark, index);
               },
             )
           else
             Column(
-              children: features.map((feature) {
+              children: features.asMap().entries.map((entry) {
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: AppTheme.spacingL),
-                  child: _buildFeatureCard(feature, theme, isDark),
+                  padding: EdgeInsets.only(bottom: DesignSystem.spaceL),
+                  child:
+                      _buildFeatureCard(entry.value, theme, isDark, entry.key),
                 );
               }).toList(),
             ),
@@ -899,160 +1199,102 @@ class _LandingScreenState extends State<LandingScreen>
   }
 
   Widget _buildFeatureCard(
-      Map<String, dynamic> feature, ThemeData theme, bool isDark) {
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(AppTheme.spacingXL),
-        decoration: BoxDecoration(
-          color: isDark ? AppTheme.darkSurfaceColor : Colors.white,
-          borderRadius: BorderRadius.circular(AppTheme.radiusXL),
-          border: Border.all(
-            color: isDark
-                ? AppTheme.darkBorderColor
-                : AppTheme.borderColor.withOpacity(0.5),
-            width: 1,
+      Map<String, dynamic> feature, ThemeData theme, bool isDark, int index) {
+    return WebCard(
+      padding: EdgeInsets.all(DesignSystem.spaceXL),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Header with icon and badge
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Icon Container
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: feature['color'].withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(DesignSystem.radiusL),
+                  border: Border.all(
+                    color: feature['color'].withOpacity(0.2),
+                    width: 1,
+                  ),
+                ),
+                child: Icon(
+                  feature['icon'],
+                  size: 28,
+                  color: feature['color'],
+                ),
+              ),
+              // Badge
+              Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: DesignSystem.spaceM,
+                  vertical: DesignSystem.spaceXS,
+                ),
+                decoration: BoxDecoration(
+                  color: feature['badgeColor'].withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(DesignSystem.radiusS),
+                  border: Border.all(
+                    color: feature['badgeColor'].withOpacity(0.2),
+                    width: 1,
+                  ),
+                ),
+                child: Text(
+                  feature['badge'],
+                  style: TextStyle(
+                    color: feature['badgeColor'],
+                    fontWeight: FontWeight.w700,
+                    fontSize: 11,
+                  ),
+                ),
+              ),
+            ],
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
-            BoxShadow(
-              color: feature['color'].withOpacity(0.08),
-              blurRadius: 24,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Badge at the top
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Icon Container with Gradient
-                Container(
-                  width: 72,
-                  height: 72,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        feature['color'].withOpacity(0.8),
-                        feature['color'],
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(AppTheme.radiusL),
-                    boxShadow: [
-                      BoxShadow(
-                        color: feature['color'].withOpacity(0.3),
-                        blurRadius: 16,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Stack(
-                    children: [
-                      // Background pattern
-                      Positioned.fill(
-                        child: Opacity(
-                          opacity: 0.15,
-                          child: CustomPaint(
-                            painter: _DotPatternPainter(),
-                          ),
-                        ),
-                      ),
-                      // Icon
-                      Center(
-                        child: Icon(
-                          feature['icon'],
-                          size: 36,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // Badge
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppTheme.spacingM,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: feature['badgeColor'].withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: feature['badgeColor'].withOpacity(0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: Text(
-                    feature['badge'],
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: feature['badgeColor'],
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: AppTheme.spacingL),
 
-            // Title
-            Text(
-              feature['title'],
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w700,
-                fontSize: 20,
-                height: 1.3,
+          SizedBox(height: DesignSystem.spaceL),
+
+          // Title
+          Text(
+            feature['title'],
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w700,
+              fontSize: 20,
+            ),
+          ),
+
+          SizedBox(height: DesignSystem.spaceM),
+
+          // Description
+          Expanded(
+            child: Text(
+              feature['description'],
+              style: theme.textTheme.bodyMedium?.copyWith(
+                height: 1.6,
               ),
             ),
-            const SizedBox(height: AppTheme.spacingM),
+          ),
 
-            // Description
-            Expanded(
-              child: Text(
-                feature['description'],
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: isDark
-                      ? AppTheme.darkTextSecondaryColor
-                      : AppTheme.textSecondaryColor,
-                  height: 1.6,
-                  fontSize: 14,
-                ),
-                maxLines: 4,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
+          SizedBox(height: DesignSystem.spaceM),
 
-            // Decorative gradient bar at the bottom
-            const SizedBox(height: AppTheme.spacingM),
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    feature['color'],
-                    feature['color'].withOpacity(0.3),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(2),
-              ),
+          // Decorative accent
+          Container(
+            width: 32,
+            height: 3,
+            decoration: BoxDecoration(
+              color: feature['color'],
+              borderRadius: BorderRadius.circular(DesignSystem.radiusS),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
+    )
+        .animate(delay: Duration(milliseconds: 300 + (index * 100)))
+        .fadeIn(duration: 600.ms, curve: Curves.easeOut)
+        .slideY(begin: 0.3, end: 0, curve: Curves.easeOut);
   }
 
   Widget _buildHowItWorksSection(
@@ -1064,180 +1306,164 @@ class _LandingScreenState extends State<LandingScreen>
         'title': l10n.stepSignUp,
         'description': l10n.stepSignUpDesc,
         'icon': Icons.person_add_outlined,
-        'gradient': [const Color(0xFFEC4899), const Color(0xFFF472B6)], // Pink
+        'color': DesignSystem.primaryBlue,
       },
       {
         'number': '2',
         'title': l10n.stepBrowseOrPost,
         'description': l10n.stepBrowseOrPostDesc,
         'icon': Icons.inventory_outlined,
-        'gradient': [
-          const Color(0xFF8B5CF6),
-          const Color(0xFFA78BFA)
-        ], // Purple
+        'color': const Color(0xFF8B5CF6), // Purple
       },
       {
         'number': '3',
         'title': l10n.stepConnect,
         'description': l10n.stepConnectDesc,
         'icon': Icons.connect_without_contact_outlined,
-        'gradient': [const Color(0xFF06B6D4), const Color(0xFF22D3EE)], // Cyan
+        'color': DesignSystem.secondaryGreen,
       },
     ];
 
     return Container(
+      key: _howItWorksKey,
       padding: EdgeInsets.symmetric(
-        horizontal: isDesktop
-            ? AppTheme.spacingXXL + AppTheme.spacingM
-            : AppTheme.spacingL,
-        vertical: AppTheme.spacingXXL + AppTheme.spacingM,
+        horizontal: isDesktop ? DesignSystem.spaceXXXL : DesignSystem.spaceL,
+        vertical: isDesktop ? 120 : 64,
       ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            (isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor)
+            (isDark ? DesignSystem.neutral900 : DesignSystem.neutral50)
                 .withOpacity(0.3),
-            (isDark ? AppTheme.darkSurfaceColor : Colors.white)
-                .withOpacity(0.5),
+            (isDark ? DesignSystem.neutral900 : Colors.white).withOpacity(0.5),
           ],
         ),
       ),
-      child: Column(
-        children: [
-          Text(
-            l10n.howItWorks,
-            style: theme.textTheme.headlineLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppTheme.spacingM),
-          Text(
-            AppLocalizations.of(context)!.simpleSteps,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: isDark
-                  ? AppTheme.darkTextSecondaryColor
-                  : AppTheme.textSecondaryColor,
-              fontSize: 18,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppTheme.spacingXXL),
-          if (isDesktop)
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: steps.map((step) {
-                return Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: AppTheme.spacingM),
-                    child: _buildStepCard(step, theme, isDark),
-                  ),
-                );
-              }).toList(),
+      child: WebTheme.section(
+        child: Column(
+          children: [
+            // Section header
+            Text(
+              l10n.howItWorks,
+              style: isDesktop
+                  ? DesignSystem.headlineLarge(context).copyWith(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 48,
+                      letterSpacing: -0.5,
+                    )
+                  : DesignSystem.headlineMedium(context).copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+              textAlign: TextAlign.center,
             )
-          else
-            Column(
-              children: steps.map((step) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: AppTheme.spacingL),
-                  child: _buildStepCard(step, theme, isDark),
-                );
-              }).toList(),
-            ),
-        ],
+                .animate()
+                .fadeIn(duration: 600.ms, curve: Curves.easeOut)
+                .slideY(begin: -0.2, end: 0),
+
+            SizedBox(height: DesignSystem.spaceM),
+
+            Text(
+              l10n.simpleSteps,
+              style: DesignSystem.bodyLarge(context).copyWith(
+                fontSize: isDesktop ? 18 : 16,
+                height: 1.6,
+              ),
+              textAlign: TextAlign.center,
+            )
+                .animate(delay: 200.ms)
+                .fadeIn(duration: 600.ms)
+                .slideY(begin: 0.2, end: 0),
+
+            SizedBox(
+                height:
+                    isDesktop ? DesignSystem.spaceXXXL : DesignSystem.spaceXXL),
+
+            // Steps
+            if (isDesktop)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: steps.asMap().entries.map((entry) {
+                  return Expanded(
+                    child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: DesignSystem.spaceM),
+                      child:
+                          _buildStepCard(entry.value, theme, isDark, entry.key),
+                    ),
+                  );
+                }).toList(),
+              )
+            else
+              Column(
+                children: steps.asMap().entries.map((entry) {
+                  return Padding(
+                    padding: EdgeInsets.only(bottom: DesignSystem.spaceL),
+                    child:
+                        _buildStepCard(entry.value, theme, isDark, entry.key),
+                  );
+                }).toList(),
+              ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildStepCard(
-      Map<String, dynamic> step, ThemeData theme, bool isDark) {
-    final gradient = step['gradient'] as List;
-    final color1 = gradient[0] as Color;
-    final color2 = gradient[1] as Color;
+      Map<String, dynamic> step, ThemeData theme, bool isDark, int index) {
+    final color = step['color'] as Color;
 
-    return Container(
-      padding: const EdgeInsets.all(AppTheme.spacingXXL),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            color1.withOpacity(0.1),
-            color2.withOpacity(0.05),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(AppTheme.radiusXL),
-        border: Border.all(
-          color: color1.withOpacity(0.2),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: color1.withOpacity(0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
+    return WebCard(
+      padding: EdgeInsets.all(DesignSystem.spaceXXL),
+      backgroundColor: color.withOpacity(0.03),
       child: Column(
         children: [
-          // Icon with gradient background
+          // Number badge with icon
           Container(
-            width: 100,
-            height: 100,
+            width: 80,
+            height: 80,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [color1, color2],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: color.withOpacity(0.1),
               shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: color1.withOpacity(0.4),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
-                ),
-              ],
+              border: Border.all(
+                color: color.withOpacity(0.2),
+                width: 2,
+              ),
             ),
             child: Stack(
+              alignment: Alignment.center,
               children: [
-                // Icon
-                Center(
-                  child: Icon(
-                    step['icon'],
-                    size: 48,
-                    color: Colors.white,
-                  ),
+                Icon(
+                  step['icon'],
+                  size: 36,
+                  color: color,
                 ),
-                // Number badge
                 Positioned(
                   bottom: 0,
                   right: 0,
                   child: Container(
-                    width: 32,
-                    height: 32,
+                    width: 28,
+                    height: 28,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: color,
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: color.withOpacity(0.3),
                           blurRadius: 8,
-                          offset: const Offset(0, 2),
+                          offset: Offset(0, 2),
                         ),
                       ],
                     ),
                     child: Center(
                       child: Text(
                         step['number'],
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: color1,
+                        style: TextStyle(
+                          color: Colors.white,
                           fontWeight: FontWeight.w900,
-                          fontSize: 18,
+                          fontSize: 14,
                         ),
                       ),
                     ),
@@ -1246,7 +1472,8 @@ class _LandingScreenState extends State<LandingScreen>
               ],
             ),
           ),
-          const SizedBox(height: AppTheme.spacingXL),
+
+          SizedBox(height: DesignSystem.spaceXL),
 
           // Title
           Text(
@@ -1257,59 +1484,89 @@ class _LandingScreenState extends State<LandingScreen>
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: AppTheme.spacingM),
+
+          SizedBox(height: DesignSystem.spaceM),
 
           // Description
           Text(
             step['description'],
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: isDark
-                  ? AppTheme.darkTextSecondaryColor
-                  : AppTheme.textSecondaryColor,
               height: 1.6,
-              fontSize: 15,
             ),
             textAlign: TextAlign.center,
-            maxLines: 4,
-            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
-    );
+    )
+        .animate(delay: Duration(milliseconds: 400 + (index * 200)))
+        .fadeIn(duration: 600.ms, curve: Curves.easeOut)
+        .slideY(begin: 0.3, end: 0, curve: Curves.easeOut)
+        .then(delay: 200.ms)
+        .shimmer(duration: 800.ms, color: color.withOpacity(0.3));
   }
 
   Widget _buildStatsSection(
       BuildContext context, ThemeData theme, bool isDark, bool isDesktop) {
     final l10n = AppLocalizations.of(context)!;
     final stats = [
-      {'number': '10,000+', 'label': l10n.itemsDonated},
-      {'number': '5,000+', 'label': l10n.happyRecipients},
-      {'number': '50+', 'label': l10n.citiesCovered},
-      {'number': '95%', 'label': l10n.successRate},
+      {
+        'number': '10,000+',
+        'label': l10n.itemsDonated,
+        'icon': Icons.volunteer_activism,
+        'color': DesignSystem.primaryBlue,
+      },
+      {
+        'number': '5,000+',
+        'label': l10n.happyRecipients,
+        'icon': Icons.sentiment_very_satisfied,
+        'color': DesignSystem.secondaryGreen,
+      },
+      {
+        'number': '50+',
+        'label': l10n.citiesCovered,
+        'icon': Icons.location_city,
+        'color': const Color(0xFF8B5CF6),
+      },
+      {
+        'number': '95%',
+        'label': l10n.successRate,
+        'icon': Icons.verified,
+        'color': const Color(0xFFF59E0B),
+      },
     ];
 
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: isDesktop
-            ? AppTheme.spacingXXL + AppTheme.spacingM
-            : AppTheme.spacingL,
-        vertical: AppTheme.spacingXXL + AppTheme.spacingM,
-      ),
+    return WebTheme.section(
       child: Column(
         children: [
           Text(
             l10n.ourImpactInNumbers,
-            style: theme.textTheme.headlineLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+            style: isDesktop
+                ? DesignSystem.headlineLarge(context).copyWith(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 48,
+                    letterSpacing: -0.5,
+                  )
+                : DesignSystem.headlineMedium(context).copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
             textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppTheme.spacingXXL),
+          )
+              .animate()
+              .fadeIn(duration: 600.ms, curve: Curves.easeOut)
+              .slideY(begin: -0.2, end: 0),
+          SizedBox(
+              height:
+                  isDesktop ? DesignSystem.spaceXXXL : DesignSystem.spaceXXL),
           if (isDesktop)
             Row(
-              children: stats.map((stat) {
+              children: stats.asMap().entries.map((entry) {
                 return Expanded(
-                  child: _buildStatsDisplayCard(stat, theme),
+                  child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: DesignSystem.spaceM),
+                    child:
+                        _buildStatsDisplayCard(entry.value, theme, entry.key),
+                  ),
                 );
               }).toList(),
             )
@@ -1317,15 +1574,15 @@ class _LandingScreenState extends State<LandingScreen>
             GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                crossAxisSpacing: AppTheme.spacingM,
-                mainAxisSpacing: AppTheme.spacingM,
-                childAspectRatio: 1.5,
+                crossAxisSpacing: DesignSystem.spaceM,
+                mainAxisSpacing: DesignSystem.spaceM,
+                childAspectRatio: 1.3,
               ),
               itemCount: stats.length,
               itemBuilder: (context, index) {
-                return _buildStatsDisplayCard(stats[index], theme);
+                return _buildStatsDisplayCard(stats[index], theme, index);
               },
             ),
         ],
@@ -1333,26 +1590,66 @@ class _LandingScreenState extends State<LandingScreen>
     );
   }
 
-  Widget _buildStatsDisplayCard(Map<String, String> stat, ThemeData theme) {
-    return Column(
-      children: [
-        Text(
-          stat['number']!,
-          style: theme.textTheme.headlineLarge?.copyWith(
-            fontWeight: FontWeight.w800,
-            color: AppTheme.primaryColor,
+  Widget _buildStatsDisplayCard(
+      Map<String, dynamic> stat, ThemeData theme, int index) {
+    final color = stat['color'] as Color;
+
+    return WebCard(
+      padding: EdgeInsets.all(DesignSystem.spaceXL),
+      backgroundColor: color.withOpacity(0.03),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Icon
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(DesignSystem.radiusM),
+              border: Border.all(
+                color: color.withOpacity(0.2),
+                width: 1,
+              ),
+            ),
+            child: Icon(
+              stat['icon'],
+              size: 24,
+              color: color,
+            ),
           ),
-        ),
-        const SizedBox(height: AppTheme.spacingS),
-        Text(
-          stat['label']!,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            fontWeight: FontWeight.w500,
+
+          SizedBox(height: DesignSystem.spaceL),
+
+          // Number
+          Text(
+            stat['number']!,
+            style: theme.textTheme.headlineLarge?.copyWith(
+              fontWeight: FontWeight.w900,
+              fontSize: 40,
+              color: color,
+              letterSpacing: -1,
+            ),
           ),
-          textAlign: TextAlign.center,
-        ),
-      ],
-    );
+
+          SizedBox(height: DesignSystem.spaceS),
+
+          // Label
+          Text(
+            stat['label']!,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    )
+        .animate(delay: Duration(milliseconds: 200 + (index * 100)))
+        .fadeIn(duration: 600.ms, curve: Curves.easeOut)
+        .slideY(begin: 0.3, end: 0, curve: Curves.easeOut)
+        .then(delay: 100.ms)
+        .shimmer(duration: 1000.ms, color: color.withOpacity(0.2));
   }
 
   Widget _buildTestimonialsSection(
@@ -1366,7 +1663,7 @@ class _LandingScreenState extends State<LandingScreen>
             'https://ui-avatars.com/api/?name=Sarah+M&background=EC4899&color=fff&size=128&bold=true',
         'rating': 5,
         'text': l10n.testimonial1Text,
-        'color': const Color(0xFFEC4899),
+        'color': DesignSystem.primaryBlue,
       },
       {
         'name': 'Ahmed K.',
@@ -1384,100 +1681,93 @@ class _LandingScreenState extends State<LandingScreen>
             'https://ui-avatars.com/api/?name=Layla+H&background=10B981&color=fff&size=128&bold=true',
         'rating': 5,
         'text': l10n.testimonial3Text,
-        'color': const Color(0xFF10B981),
+        'color': DesignSystem.secondaryGreen,
       },
     ];
 
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: isDesktop
-            ? AppTheme.spacingXXL + AppTheme.spacingM
-            : AppTheme.spacingL,
-        vertical: AppTheme.spacingXXL + AppTheme.spacingM,
+        horizontal: isDesktop ? DesignSystem.spaceXXXL : DesignSystem.spaceL,
+        vertical: isDesktop ? 120 : 64,
       ),
       decoration: BoxDecoration(
-        color: (isDark ? AppTheme.darkSurfaceColor : Colors.grey.shade50)
-            .withOpacity(0.5),
+        color: (isDark ? DesignSystem.neutral900 : DesignSystem.neutral50)
+            .withOpacity(0.3),
       ),
-      child: Column(
-        children: [
-          Text(
-            AppLocalizations.of(context)!.whatCommunitySays,
-            style: theme.textTheme.headlineLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppTheme.spacingM),
-          Text(
-            AppLocalizations.of(context)!.realStories,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: isDark
-                  ? AppTheme.darkTextSecondaryColor
-                  : AppTheme.textSecondaryColor,
-              fontSize: 18,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppTheme.spacingXXL),
-          if (isDesktop)
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: testimonials
-                  .map((testimonial) => Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: AppTheme.spacingM),
-                          child:
-                              _buildTestimonialCard(testimonial, theme, isDark),
-                        ),
-                      ))
-                  .toList(),
+      child: WebTheme.section(
+        child: Column(
+          children: [
+            Text(
+              l10n.whatCommunitySays,
+              style: isDesktop
+                  ? DesignSystem.headlineLarge(context).copyWith(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 48,
+                      letterSpacing: -0.5,
+                    )
+                  : DesignSystem.headlineMedium(context).copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+              textAlign: TextAlign.center,
             )
-          else
-            Column(
-              children: testimonials
-                  .map((testimonial) => Padding(
-                        padding:
-                            const EdgeInsets.only(bottom: AppTheme.spacingL),
-                        child:
-                            _buildTestimonialCard(testimonial, theme, isDark),
-                      ))
-                  .toList(),
-            ),
-        ],
+                .animate()
+                .fadeIn(duration: 600.ms, curve: Curves.easeOut)
+                .slideY(begin: -0.2, end: 0),
+            SizedBox(height: DesignSystem.spaceM),
+            Text(
+              l10n.realStories,
+              style: DesignSystem.bodyLarge(context).copyWith(
+                fontSize: isDesktop ? 18 : 16,
+                height: 1.6,
+              ),
+              textAlign: TextAlign.center,
+            )
+                .animate(delay: 200.ms)
+                .fadeIn(duration: 600.ms)
+                .slideY(begin: 0.2, end: 0),
+            SizedBox(
+                height:
+                    isDesktop ? DesignSystem.spaceXXXL : DesignSystem.spaceXXL),
+            if (isDesktop)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: testimonials.asMap().entries.map((entry) {
+                  return Expanded(
+                    child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: DesignSystem.spaceM),
+                      child: _buildTestimonialCard(
+                          entry.value, theme, isDark, entry.key),
+                    ),
+                  );
+                }).toList(),
+              )
+            else
+              Column(
+                children: testimonials.asMap().entries.map((entry) {
+                  return Padding(
+                    padding: EdgeInsets.only(bottom: DesignSystem.spaceL),
+                    child: _buildTestimonialCard(
+                        entry.value, theme, isDark, entry.key),
+                  );
+                }).toList(),
+              ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildTestimonialCard(
-      Map<String, dynamic> testimonial, ThemeData theme, bool isDark) {
-    return Container(
-      padding: const EdgeInsets.all(AppTheme.spacingXL),
-      decoration: BoxDecoration(
-        color: isDark ? AppTheme.darkSurfaceColor : Colors.white,
-        borderRadius: BorderRadius.circular(AppTheme.radiusXL),
-        border: Border.all(
-          color: testimonial['color'].withOpacity(0.2),
-          width: 2,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-          BoxShadow(
-            color: testimonial['color'].withOpacity(0.1),
-            blurRadius: 30,
-            offset: const Offset(0, 15),
-          ),
-        ],
-      ),
+  Widget _buildTestimonialCard(Map<String, dynamic> testimonial,
+      ThemeData theme, bool isDark, int index) {
+    final color = testimonial['color'] as Color;
+
+    return WebCard(
+      padding: EdgeInsets.all(DesignSystem.spaceXL),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header with avatar and rating
+          // Header with avatar and info
           Row(
             children: [
               // Avatar
@@ -1486,11 +1776,15 @@ class _LandingScreenState extends State<LandingScreen>
                 height: 56,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
+                  border: Border.all(
+                    color: color.withOpacity(0.3),
+                    width: 2,
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: testimonial['color'].withOpacity(0.3),
+                      color: color.withOpacity(0.2),
                       blurRadius: 12,
-                      offset: const Offset(0, 4),
+                      offset: Offset(0, 4),
                     ),
                   ],
                 ),
@@ -1501,23 +1795,17 @@ class _LandingScreenState extends State<LandingScreen>
                     height: 56,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
-                      // Fallback to gradient with initials if image fails
                       return Container(
                         width: 56,
                         height: 56,
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              testimonial['color'].withOpacity(0.8),
-                              testimonial['color'],
-                            ],
-                          ),
+                          color: color,
                           shape: BoxShape.circle,
                         ),
                         child: Center(
                           child: Text(
                             testimonial['name'].substring(0, 1),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
@@ -1529,7 +1817,7 @@ class _LandingScreenState extends State<LandingScreen>
                   ),
                 ),
               ),
-              const SizedBox(width: AppTheme.spacingM),
+              SizedBox(width: DesignSystem.spaceM),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1540,21 +1828,18 @@ class _LandingScreenState extends State<LandingScreen>
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       testimonial['role'],
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: isDark
-                            ? AppTheme.darkTextSecondaryColor
-                            : AppTheme.textSecondaryColor,
-                      ),
+                      style: theme.textTheme.bodySmall,
                     ),
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: AppTheme.spacingM),
+
+          SizedBox(height: DesignSystem.spaceL),
 
           // Rating stars
           Row(
@@ -1563,200 +1848,238 @@ class _LandingScreenState extends State<LandingScreen>
               (index) => Icon(
                 Icons.star,
                 size: 18,
-                color: const Color(0xFFFBBF24),
+                color: Color(0xFFFBBF24),
               ),
             ),
           ),
-          const SizedBox(height: AppTheme.spacingL),
+
+          SizedBox(height: DesignSystem.spaceL),
 
           // Quote icon
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(DesignSystem.spaceS),
             decoration: BoxDecoration(
-              color: testimonial['color'].withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(DesignSystem.radiusM),
             ),
             child: Icon(
               Icons.format_quote,
-              color: testimonial['color'],
-              size: 24,
+              color: color,
+              size: 20,
             ),
           ),
-          const SizedBox(height: AppTheme.spacingM),
+
+          SizedBox(height: DesignSystem.spaceM),
 
           // Testimonial text
           Text(
             testimonial['text'],
             style: theme.textTheme.bodyMedium?.copyWith(
               height: 1.6,
-              fontSize: 15,
               fontStyle: FontStyle.italic,
             ),
           ),
         ],
       ),
-    );
+    )
+        .animate(delay: Duration(milliseconds: 300 + (index * 150)))
+        .fadeIn(duration: 600.ms, curve: Curves.easeOut)
+        .slideY(begin: 0.3, end: 0, curve: Curves.easeOut);
   }
 
   Widget _buildCTASection(
       BuildContext context, ThemeData theme, bool isDark, bool isDesktop) {
     final l10n = AppLocalizations.of(context)!;
+
     return Container(
       margin: EdgeInsets.symmetric(
-        horizontal: isDesktop
-            ? AppTheme.spacingXXL + AppTheme.spacingM
-            : AppTheme.spacingL,
-        vertical: AppTheme.spacingXXL,
+        horizontal: isDesktop ? DesignSystem.spaceXXXL : DesignSystem.spaceL,
+        vertical: isDesktop ? 80 : 48,
       ),
-      padding: EdgeInsets.all(
-        isDesktop
-            ? AppTheme.spacingXXL + AppTheme.spacingL
-            : AppTheme.spacingXXL,
-      ),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF3B82F6), // Blue
-            Color(0xFF8B5CF6), // Purple
-            Color(0xFF10B981), // Green
-          ],
-          stops: [0.0, 0.5, 1.0],
+      child: WebTheme.section(
+        child: Container(
+          padding: EdgeInsets.all(
+            isDesktop
+                ? DesignSystem.spaceXXXL + DesignSystem.spaceL
+                : DesignSystem.spaceXXL,
+          ),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                DesignSystem.primaryBlue,
+                Color(0xFF8B5CF6), // Purple
+                DesignSystem.secondaryGreen,
+              ],
+              stops: [0.0, 0.5, 1.0],
+            ),
+            borderRadius: BorderRadius.circular(DesignSystem.radiusXL),
+            boxShadow: [
+              BoxShadow(
+                color: DesignSystem.primaryBlue.withOpacity(0.3),
+                blurRadius: 30,
+                offset: Offset(0, 15),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              Text(
+                l10n.readyToMakeADifference,
+                style: isDesktop
+                    ? DesignSystem.headlineMedium(context).copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                        fontSize: 40,
+                      )
+                    : DesignSystem.headlineSmall(context).copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
+                textAlign: TextAlign.center,
+              ).animate().fadeIn(duration: 600.ms).slideY(begin: -0.2, end: 0),
+              SizedBox(height: DesignSystem.spaceM),
+              Text(
+                l10n.joinThousands,
+                style: DesignSystem.bodyLarge(context).copyWith(
+                  color: Colors.white.withOpacity(0.95),
+                  fontSize: isDesktop ? 18 : 16,
+                ),
+                textAlign: TextAlign.center,
+              )
+                  .animate(delay: 200.ms)
+                  .fadeIn(duration: 600.ms)
+                  .slideY(begin: 0.2, end: 0),
+              SizedBox(height: DesignSystem.spaceXXL),
+              if (isDesktop)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Primary CTA with white background
+                    _buildCTAButton(
+                      context,
+                      text: l10n.startDonating,
+                      icon: Icons.favorite,
+                      backgroundColor: Colors.white,
+                      textColor: DesignSystem.primaryBlue,
+                      onPressed: () =>
+                          Navigator.pushNamed(context, '/register'),
+                    ),
+                    SizedBox(width: DesignSystem.spaceL),
+                    // Secondary CTA with outline
+                    _buildCTAButton(
+                      context,
+                      text: l10n.browseDonationsAction,
+                      icon: Icons.explore,
+                      backgroundColor: Colors.transparent,
+                      textColor: Colors.white,
+                      borderColor: Colors.white,
+                      onPressed: () =>
+                          Navigator.pushNamed(context, '/register'),
+                    ),
+                  ],
+                )
+                    .animate(delay: 400.ms)
+                    .fadeIn(duration: 600.ms)
+                    .slideY(begin: 0.3, end: 0)
+              else
+                Column(
+                  children: [
+                    _buildCTAButton(
+                      context,
+                      text: l10n.startDonating,
+                      icon: Icons.favorite,
+                      backgroundColor: Colors.white,
+                      textColor: DesignSystem.primaryBlue,
+                      fullWidth: true,
+                      onPressed: () =>
+                          Navigator.pushNamed(context, '/register'),
+                    ),
+                    SizedBox(height: DesignSystem.spaceM),
+                    _buildCTAButton(
+                      context,
+                      text: l10n.browseDonationsAction,
+                      icon: Icons.explore,
+                      backgroundColor: Colors.transparent,
+                      textColor: Colors.white,
+                      borderColor: Colors.white,
+                      fullWidth: true,
+                      onPressed: () =>
+                          Navigator.pushNamed(context, '/register'),
+                    ),
+                  ],
+                )
+                    .animate(delay: 400.ms)
+                    .fadeIn(duration: 600.ms)
+                    .slideY(begin: 0.3, end: 0),
+            ],
+          ),
         ),
-        borderRadius: BorderRadius.circular(AppTheme.radiusXL),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF8B5CF6).withOpacity(0.3),
-            blurRadius: 30,
-            offset: const Offset(0, 15),
-          ),
-        ],
       ),
-      child: Column(
-        children: [
-          Text(
-            l10n.readyToMakeADifference,
-            style: theme.textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
-            textAlign: TextAlign.center,
+    );
+  }
+
+  Widget _buildCTAButton(
+    BuildContext context, {
+    required String text,
+    required IconData icon,
+    required Color backgroundColor,
+    required Color textColor,
+    Color? borderColor,
+    bool fullWidth = false,
+    required VoidCallback onPressed,
+  }) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: AnimatedContainer(
+        duration: WebTheme.hoverDuration,
+        curve: WebTheme.webCurve,
+        width: fullWidth ? double.infinity : null,
+        padding: EdgeInsets.symmetric(
+          horizontal: DesignSystem.spaceXXL,
+          vertical: DesignSystem.spaceL,
+        ),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(DesignSystem.radiusXL),
+          border: borderColor != null
+              ? Border.all(color: borderColor, width: 2)
+              : null,
+          boxShadow: backgroundColor != Colors.transparent
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 12,
+                    offset: Offset(0, 4),
+                  ),
+                ]
+              : null,
+        ),
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(DesignSystem.radiusXL),
+          child: Row(
+            mainAxisSize: fullWidth ? MainAxisSize.max : MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 20,
+                color: textColor,
+              ),
+              SizedBox(width: DesignSystem.spaceS),
+              Text(
+                text,
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                  color: textColor,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: AppTheme.spacingM),
-          Text(
-            l10n.joinThousands,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: Colors.white.withOpacity(0.9),
-              fontSize: 18,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppTheme.spacingXL + AppTheme.spacingS),
-          if (isDesktop)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () => Navigator.pushNamed(context, '/register'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: const Color(0xFF8B5CF6),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppTheme.spacingXXL,
-                      vertical: AppTheme.spacingL,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(50),
-                    ),
-                    elevation: 8,
-                    shadowColor: Colors.black.withOpacity(0.3),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.favorite, size: 20),
-                      const SizedBox(width: 8),
-                      Text(
-                        l10n.startDonating,
-                        style: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: AppTheme.spacingL),
-                OutlinedButton(
-                  onPressed: () => Navigator.pushNamed(context, '/register'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppTheme.spacingXXL,
-                      vertical: AppTheme.spacingL,
-                    ),
-                    side: const BorderSide(color: Colors.white, width: 2),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(50),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.explore, size: 20),
-                      const SizedBox(width: 8),
-                      Text(
-                        l10n.browseDonationsAction,
-                        style: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            )
-          else
-            Column(
-              children: [
-                ElevatedButton(
-                  onPressed: () => Navigator.pushNamed(context, '/register'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: const Color(0xFF8B5CF6),
-                    minimumSize: const Size(double.infinity, 56),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(50),
-                    ),
-                    elevation: 8,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.favorite, size: 20),
-                      const SizedBox(width: 8),
-                      Text(
-                        l10n.startDonating,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: AppTheme.spacingM),
-                GBOutlineButton(
-                  text: l10n.browseDonationsAction,
-                  size: GBButtonSize.large,
-                  fullWidth: true,
-                  onPressed: () => Navigator.pushNamed(context, '/register'),
-                ),
-              ],
-            ),
-        ],
+        ),
       ),
     );
   }
@@ -1775,7 +2098,7 @@ class _LandingScreenState extends State<LandingScreen>
         'location': 'Downtown, Cairo',
         'isNew': true,
         'image': Icons.checkroom,
-        'color': const Color(0xFF8B5CF6),
+        'color': DesignSystem.primaryBlue,
       },
       {
         'title': 'Calculus & Physics Textbooks',
@@ -1795,7 +2118,7 @@ class _LandingScreenState extends State<LandingScreen>
         'location': 'Nasr City',
         'isNew': true,
         'image': Icons.restaurant,
-        'color': const Color(0xFF10B981),
+        'color': DesignSystem.secondaryGreen,
       },
       {
         'title': 'Dell Laptop - Core i5, 8GB RAM',
@@ -1809,77 +2132,96 @@ class _LandingScreenState extends State<LandingScreen>
       },
     ];
 
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: isDesktop
-            ? AppTheme.spacingXXL + AppTheme.spacingM
-            : AppTheme.spacingL,
-        vertical: AppTheme.spacingXXL + AppTheme.spacingM,
-      ),
+    return WebTheme.section(
       child: Column(
         children: [
           Text(
             l10n.featuredDonations,
-            style: theme.textTheme.headlineLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+            style: isDesktop
+                ? DesignSystem.headlineLarge(context).copyWith(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 48,
+                    letterSpacing: -0.5,
+                  )
+                : DesignSystem.headlineMedium(context).copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
             textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppTheme.spacingM),
-          Text(
-            l10n.featuredDonationsDesc,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: isDark
-                  ? AppTheme.darkTextSecondaryColor
-                  : AppTheme.textSecondaryColor,
-              fontSize: 18,
+          )
+              .animate()
+              .fadeIn(duration: 600.ms, curve: Curves.easeOut)
+              .slideY(begin: -0.2, end: 0),
+
+          SizedBox(height: DesignSystem.spaceM),
+
+          SizedBox(
+            width: isDesktop ? 600 : null,
+            child: Text(
+              l10n.featuredDonationsDesc,
+              style: DesignSystem.bodyLarge(context).copyWith(
+                fontSize: isDesktop ? 18 : 16,
+                height: 1.6,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppTheme.spacingXXL),
+          )
+              .animate(delay: 200.ms)
+              .fadeIn(duration: 600.ms)
+              .slideY(begin: 0.2, end: 0),
+
+          SizedBox(
+              height:
+                  isDesktop ? DesignSystem.spaceXXXL : DesignSystem.spaceXXL),
 
           if (isDesktop)
             GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 4,
-                crossAxisSpacing: AppTheme.spacingL,
-                mainAxisSpacing: AppTheme.spacingL,
-                childAspectRatio: 0.8,
+                crossAxisSpacing: DesignSystem.spaceL,
+                mainAxisSpacing: DesignSystem.spaceL,
+                childAspectRatio: 0.75,
               ),
               itemCount: donations.length,
               itemBuilder: (context, index) {
                 return _buildDonationCard(
-                    donations[index], theme, isDark, l10n);
+                    donations[index], theme, isDark, l10n, index);
               },
             )
           else
             Column(
-              children: donations.map((donation) {
+              children: donations.asMap().entries.map((entry) {
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: AppTheme.spacingL),
-                  child: _buildDonationCard(donation, theme, isDark, l10n),
+                  padding: EdgeInsets.only(bottom: DesignSystem.spaceL),
+                  child: _buildDonationCard(
+                      entry.value, theme, isDark, l10n, entry.key),
                 );
               }).toList(),
             ),
 
-          const SizedBox(height: AppTheme.spacingXL),
+          SizedBox(height: DesignSystem.spaceXXL),
 
           // Call to Action Button
-          GBOutlineButton(
+          WebButton(
             text: l10n.viewAllDonations,
-            size: GBButtonSize.large,
+            icon: Icons.arrow_forward,
+            variant: WebButtonVariant.outline,
+            size: WebButtonSize.large,
             onPressed: () => Navigator.pushNamed(context, '/login'),
-            rightIcon: const Icon(Icons.arrow_forward, size: 20),
-          ),
+          )
+              .animate(delay: 600.ms)
+              .fadeIn(duration: 600.ms)
+              .slideY(begin: 0.3, end: 0),
         ],
       ),
     );
   }
 
   Widget _buildDonationCard(Map<String, dynamic> donation, ThemeData theme,
-      bool isDark, AppLocalizations l10n) {
+      bool isDark, AppLocalizations l10n, int index) {
+    final color = donation['color'] as Color;
+
     // Get initials from donor name for avatar
     String getInitials(String name) {
       List<String> names = name.split(' ');
@@ -1889,392 +2231,348 @@ class _LandingScreenState extends State<LandingScreen>
       return name[0].toUpperCase();
     }
 
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        decoration: BoxDecoration(
-          color: isDark ? AppTheme.darkSurfaceColor : Colors.white,
-          borderRadius: BorderRadius.circular(AppTheme.radiusXL),
-          border: Border.all(
-            color: isDark
-                ? AppTheme.darkBorderColor
-                : AppTheme.borderColor.withOpacity(0.5),
-            width: 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
-            BoxShadow(
-              color: donation['color'].withOpacity(0.1),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Image/Icon Section - Enhanced
-            Container(
-              height: 180,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    donation['color'].withOpacity(0.7),
-                    donation['color'],
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(AppTheme.radiusXL),
-                  topRight: Radius.circular(AppTheme.radiusXL),
-                ),
+    return WebCard(
+      padding: EdgeInsets.zero,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Image/Icon Section with gradient
+          Container(
+            height: 160,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(DesignSystem.radiusL),
+                topRight: Radius.circular(DesignSystem.radiusL),
               ),
-              child: Stack(
-                children: [
-                  // Background pattern
-                  Positioned.fill(
-                    child: Opacity(
-                      opacity: 0.1,
-                      child: CustomPaint(
-                        painter: _DotPatternPainter(),
+            ),
+            child: Stack(
+              children: [
+                // Icon
+                Center(
+                  child: Container(
+                    width: 72,
+                    height: 72,
+                    decoration: BoxDecoration(
+                      color: color.withOpacity(0.15),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: color.withOpacity(0.3),
+                        width: 2,
                       ),
                     ),
+                    child: Icon(
+                      donation['image'],
+                      size: 36,
+                      color: color,
+                    ),
                   ),
-                  // Icon
-                  Center(
+                ),
+                // New Badge
+                if (donation['isNew'])
+                  Positioned(
+                    top: DesignSystem.spaceM,
+                    right: DesignSystem.spaceM,
                     child: Container(
-                      padding: const EdgeInsets.all(20),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: DesignSystem.spaceM,
+                        vertical: DesignSystem.spaceS,
+                      ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        donation['image'],
-                        size: 48,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  // New Badge
-                  if (donation['isNew'])
-                    Positioned(
-                      top: AppTheme.spacingM,
-                      right: AppTheme.spacingM,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppTheme.spacingM,
-                          vertical: AppTheme.spacingS,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppTheme.successColor,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppTheme.successColor.withOpacity(0.4),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.fiber_new,
-                              color: Colors.white,
-                              size: 14,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              l10n.newLabel,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-
-            // Content Section - Enhanced
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(AppTheme.spacingL),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Title
-                        Text(
-                          donation['title'],
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16,
-                            height: 1.3,
+                        color: DesignSystem.secondaryGreen,
+                        borderRadius:
+                            BorderRadius.circular(DesignSystem.radiusS),
+                        boxShadow: [
+                          BoxShadow(
+                            color: DesignSystem.secondaryGreen.withOpacity(0.4),
+                            blurRadius: 8,
+                            offset: Offset(0, 2),
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: AppTheme.spacingM),
-
-                        // Category & Condition
-                        Wrap(
-                          spacing: AppTheme.spacingS,
-                          runSpacing: AppTheme.spacingS,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: AppTheme.spacingM,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: donation['color'].withOpacity(0.15),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    donation['image'],
-                                    size: 12,
-                                    color: donation['color'],
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    donation['category'],
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w700,
-                                      color: donation['color'],
-                                      letterSpacing: 0.3,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: AppTheme.spacingM,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: (isDark
-                                    ? Colors.grey.shade700
-                                    : Colors.grey.shade100),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                donation['condition'],
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: isDark
-                                      ? AppTheme.darkTextSecondaryColor
-                                      : AppTheme.textSecondaryColor,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-
-                    // Donor Info - Fixed with proper avatar
-                    Container(
-                      padding: const EdgeInsets.all(AppTheme.spacingM),
-                      decoration: BoxDecoration(
-                        color: (isDark
-                            ? Colors.grey.shade800
-                            : Colors.grey.shade50),
-                        borderRadius: BorderRadius.circular(AppTheme.radiusM),
+                        ],
                       ),
                       child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          // Donor Avatar with Initials
-                          Container(
-                            width: 36,
-                            height: 36,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  donation['color'].withOpacity(0.8),
-                                  donation['color'],
-                                ],
-                              ),
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: donation['color'].withOpacity(0.3),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Center(
-                              child: Text(
-                                getInitials(donation['donorName']),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
+                          Icon(
+                            Icons.fiber_new,
+                            color: Colors.white,
+                            size: 12,
                           ),
-                          const SizedBox(width: AppTheme.spacingM),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  donation['donorName'],
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 12,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 2),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.location_on,
-                                      size: 11,
-                                      color: isDark
-                                          ? AppTheme.darkTextSecondaryColor
-                                          : AppTheme.textSecondaryColor,
-                                    ),
-                                    const SizedBox(width: 2),
-                                    Expanded(
-                                      child: Text(
-                                        donation['location'],
-                                        style:
-                                            theme.textTheme.bodySmall?.copyWith(
-                                          color: isDark
-                                              ? AppTheme.darkTextSecondaryColor
-                                              : AppTheme.textSecondaryColor,
-                                          fontSize: 11,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                          SizedBox(width: 4),
+                          Text(
+                            l10n.newLabel,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+              ],
+            ),
+          ),
+
+          // Content Section
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.all(DesignSystem.spaceL),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Title
+                      Text(
+                        donation['title'],
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 15,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(height: DesignSystem.spaceM),
+
+                      // Category & Condition Tags
+                      Wrap(
+                        spacing: DesignSystem.spaceS,
+                        runSpacing: DesignSystem.spaceS,
+                        children: [
+                          // Category
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: DesignSystem.spaceM,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: color.withOpacity(0.1),
+                              borderRadius:
+                                  BorderRadius.circular(DesignSystem.radiusS),
+                              border: Border.all(
+                                color: color.withOpacity(0.2),
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  donation['image'],
+                                  size: 10,
+                                  color: color,
+                                ),
+                                SizedBox(width: 4),
+                                Text(
+                                  donation['category'],
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w700,
+                                    color: color,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          // Condition
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: DesignSystem.spaceM,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: DesignSystem.neutral100,
+                              borderRadius:
+                                  BorderRadius.circular(DesignSystem.radiusS),
+                            ),
+                            child: Text(
+                              donation['condition'],
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+
+                  // Donor Info
+                  Container(
+                    padding: EdgeInsets.all(DesignSystem.spaceM),
+                    decoration: BoxDecoration(
+                      color: DesignSystem.neutral50,
+                      borderRadius: BorderRadius.circular(DesignSystem.radiusM),
+                    ),
+                    child: Row(
+                      children: [
+                        // Donor Avatar
+                        Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: color,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Text(
+                              getInitials(donation['donorName']),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: DesignSystem.spaceM),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                donation['donorName'],
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 11,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              SizedBox(height: 2),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.location_on,
+                                    size: 10,
+                                    color: DesignSystem.textSecondary,
+                                  ),
+                                  SizedBox(width: 2),
+                                  Expanded(
+                                    child: Text(
+                                      donation['location'],
+                                      style:
+                                          theme.textTheme.bodySmall?.copyWith(
+                                        fontSize: 10,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
+    )
+        .animate(delay: Duration(milliseconds: 200 + (index * 100)))
+        .fadeIn(duration: 600.ms, curve: Curves.easeOut)
+        .slideY(begin: 0.3, end: 0, curve: Curves.easeOut);
   }
 
   Widget _buildFooter(BuildContext context, ThemeData theme, bool isDark) {
     final l10n = AppLocalizations.of(context)!;
+    final isDesktop = MediaQuery.of(context).size.width >= 1024;
+
     return Container(
-      padding: const EdgeInsets.all(AppTheme.spacingXL),
+      padding: EdgeInsets.symmetric(
+        horizontal: isDesktop ? DesignSystem.spaceXXXL : DesignSystem.spaceL,
+        vertical: isDesktop ? DesignSystem.spaceXXXL : DesignSystem.spaceXXL,
+      ),
       decoration: BoxDecoration(
-        color: isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor,
+        color: isDark ? DesignSystem.neutral900 : DesignSystem.neutral50,
         border: Border(
           top: BorderSide(
-            color: isDark ? AppTheme.darkBorderColor : AppTheme.borderColor,
+            color: DesignSystem.getBorderColor(context),
             width: 1,
           ),
         ),
       ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryColor,
-                  borderRadius: BorderRadius.circular(AppTheme.radiusS),
+      child: WebTheme.section(
+        child: Column(
+          children: [
+            // Logo and Title
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        DesignSystem.primaryBlue,
+                        DesignSystem.primaryBlueDark,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(DesignSystem.radiusM),
+                    boxShadow: [
+                      BoxShadow(
+                        color: DesignSystem.primaryBlue.withOpacity(0.3),
+                        blurRadius: 12,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    Icons.favorite,
+                    color: Colors.white,
+                    size: 24,
+                  ),
                 ),
-                child: const Icon(
-                  Icons.favorite,
-                  color: Colors.white,
-                  size: 20,
+                SizedBox(width: DesignSystem.spaceM),
+                Text(
+                  l10n.appTitle,
+                  style: DesignSystem.titleLarge(context).copyWith(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 22,
+                  ),
                 ),
+              ],
+            ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, end: 0),
+
+            SizedBox(height: DesignSystem.spaceL),
+
+            // Tagline
+            Text(
+              l10n.madeWithLove,
+              style: DesignSystem.bodyMedium(context).copyWith(
+                fontSize: 14,
               ),
-              const SizedBox(width: AppTheme.spacingS),
-              Text(
-                l10n.appTitle,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+              textAlign: TextAlign.center,
+            ).animate(delay: 200.ms).fadeIn(duration: 600.ms),
+
+            SizedBox(height: DesignSystem.spaceM),
+
+            // Copyright
+            Text(
+              l10n.copyright,
+              style: DesignSystem.bodySmall(context).copyWith(
+                fontSize: 13,
               ),
-            ],
-          ),
-          const SizedBox(height: AppTheme.spacingM),
-          Text(
-            l10n.copyright,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: isDark
-                  ? AppTheme.darkTextSecondaryColor
-                  : AppTheme.textSecondaryColor,
-            ),
-          ),
-          const SizedBox(height: AppTheme.spacingS),
-          Text(
-            l10n.madeWithLove,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: isDark
-                  ? AppTheme.darkTextSecondaryColor
-                  : AppTheme.textSecondaryColor,
-            ),
-          ),
-        ],
+              textAlign: TextAlign.center,
+            ).animate(delay: 400.ms).fadeIn(duration: 600.ms),
+          ],
+        ),
       ),
     );
   }
 }
 
 // Custom painter for dot pattern background
-class _DotPatternPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.fill;
-
-    const spacing = 20.0;
-    const dotRadius = 2.0;
-
-    for (double x = 0; x < size.width; x += spacing) {
-      for (double y = 0; y < size.height; y += spacing) {
-        canvas.drawCircle(Offset(x, y), dotRadius, paint);
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}

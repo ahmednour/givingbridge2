@@ -220,9 +220,9 @@ class AppTheme {
   static MaterialColor _createMaterialColor(Color color) {
     List<double> strengths = <double>[.05];
     Map<int, Color> swatch = <int, Color>{};
-    final int r = (color.red * 255.0).round() & 0xff,
-        g = (color.green * 255.0).round() & 0xff,
-        b = (color.blue * 255.0).round() & 0xff;
+    final int r = color.red.toInt(),
+        g = color.green.toInt(),
+        b = color.blue.toInt();
 
     for (int i = 1; i < 10; i++) {
       strengths.add(0.1 * i);

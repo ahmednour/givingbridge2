@@ -147,6 +147,48 @@ router.get("/me", authenticateToken, async (req, res) => {
   }
 });
 
+// Update FCM token for push notifications
+router.post(
+  "/fcm-token",
+  authenticateToken,
+  [
+    body("fcmToken")
+      .notEmpty()
+      .withMessage("FCM token is required")
+      .isString()
+      .withMessage("FCM token must be a string"),
+  ],
+  async (req, res) => {
+    try {
+      // Check for validation errors
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(HTTP_STATUS.BAD_REQUEST).json({
+          message: ERROR_MESSAGES.VALIDATION_FAILED,
+          errors: errors.array(),
+        });
+      }
+
+      const { fcmToken } = req.body;
+      const result = await AuthController.updateFCMToken(
+        req.user.userId,
+        fcmToken
+      );
+
+      res.json({
+        message: "FCM token updated successfully",
+        ...result,
+      });
+    } catch (error) {
+      console.error("Update FCM token error:", error);
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+        message: "Failed to update FCM token",
+        error: error.message,
+      });
+    }
+  }
+);
+
 // Export the router and middleware
 module.exports = router;
 module.exports.authenticateToken = authenticateToken;

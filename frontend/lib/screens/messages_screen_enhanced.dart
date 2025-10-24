@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../core/theme/app_theme_enhanced.dart';
-import '../core/constants/ui_constants.dart';
-import '../widgets/app_components.dart';
+import '../core/theme/design_system.dart';
+import '../widgets/common/web_card.dart';
+import '../widgets/common/gb_text_field.dart';
+import '../widgets/common/gb_empty_state.dart';
+import '../widgets/common/gb_user_avatar.dart';
+import '../widgets/common/gb_skeleton_widgets.dart';
+import '../widgets/dialogs/start_conversation_dialog.dart';
 import '../providers/message_provider.dart';
 import '../providers/auth_provider.dart';
 import '../models/conversation.dart';
+import '../models/user.dart';
 import '../screens/chat_screen_enhanced.dart';
 import '../l10n/app_localizations.dart';
 
@@ -73,7 +78,7 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: DesignSystem.getBackgroundColor(context),
       appBar: _buildAppBar(),
       body: FadeTransition(
         opacity: _fadeAnimation,
@@ -88,8 +93,9 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
               Expanded(
                 child: Consumer<MessageProvider>(
                   builder: (context, messageProvider, child) {
-                    if (messageProvider.isLoading) {
-                      return _buildLoadingState();
+                    if (messageProvider.isLoadingConversations &&
+                        messageProvider.conversations.isEmpty) {
+                      return const GBConversationListSkeleton();
                     }
 
                     final conversations = _filterConversations(
@@ -105,7 +111,7 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
                         await messageProvider.loadConversations();
                       },
                       child: ListView.builder(
-                        padding: EdgeInsets.all(UIConstants.spacingM),
+                        padding: const EdgeInsets.all(16),
                         itemCount: conversations.length,
                         itemBuilder: (context, index) {
                           final conversation = conversations[index];
@@ -122,8 +128,8 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _startNewConversation,
-        backgroundColor: AppTheme.primaryColor,
-        child: Icon(
+        backgroundColor: DesignSystem.primaryBlue,
+        child: const Icon(
           Icons.edit,
           color: Colors.white,
         ),
@@ -133,14 +139,15 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
 
   PreferredSizeWidget _buildAppBar() {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: DesignSystem.getSurfaceColor(context),
       elevation: 0,
       title: Text(
         l10n.messages,
         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: AppTheme.textPrimaryColor,
+              color: isDark ? DesignSystem.neutral200 : DesignSystem.neutral900,
               fontWeight: FontWeight.w600,
             ),
       ),
@@ -154,7 +161,7 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
                 onPressed: () => messageProvider.loadUnreadCount(),
                 icon: Icon(
                   Icons.done_all,
-                  color: AppTheme.primaryColor,
+                  color: DesignSystem.primaryBlue,
                 ),
                 tooltip: l10n.markAllAsRead,
               );
@@ -167,7 +174,7 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
         PopupMenuButton<String>(
           icon: Icon(
             Icons.more_vert,
-            color: AppTheme.textPrimaryColor,
+            color: isDark ? DesignSystem.neutral200 : DesignSystem.neutral900,
           ),
           onSelected: (value) {
             switch (value) {
@@ -187,8 +194,8 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
               value: 'settings',
               child: Row(
                 children: [
-                  Icon(Icons.settings, size: 20),
-                  AppSpacing.horizontal(UIConstants.spacingS),
+                  const Icon(Icons.settings, size: 20),
+                  const SizedBox(width: 12),
                   Text(l10n.messageSettings),
                 ],
               ),
@@ -197,8 +204,8 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
               value: 'archived',
               child: Row(
                 children: [
-                  Icon(Icons.archive, size: 20),
-                  AppSpacing.horizontal(UIConstants.spacingS),
+                  const Icon(Icons.archive, size: 20),
+                  const SizedBox(width: 12),
                   Text(l10n.archivedConversations),
                 ],
               ),
@@ -207,8 +214,8 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
               value: 'blocked',
               child: Row(
                 children: [
-                  Icon(Icons.block, size: 20),
-                  AppSpacing.horizontal(UIConstants.spacingS),
+                  const Icon(Icons.block, size: 20),
+                  const SizedBox(width: 12),
                   Text(l10n.blockedUsers),
                 ],
               ),
@@ -223,14 +230,14 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
     final l10n = AppLocalizations.of(context)!;
 
     return Container(
-      color: Colors.white,
-      padding: EdgeInsets.all(UIConstants.spacingM),
+      color: DesignSystem.getSurfaceColor(context),
+      padding: const EdgeInsets.all(16),
       child: Column(
         children: [
           // Search Bar
-          AppTextField(
-            hint: l10n.searchMessages,
-            prefixIcon: Icon(Icons.search),
+          GBTextField(
+            label: l10n.searchMessages,
+            prefixIcon: const Icon(Icons.search),
             onChanged: (value) {
               setState(() {
                 _searchQuery = value;
@@ -238,7 +245,7 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
             },
           ),
 
-          AppSpacing.vertical(UIConstants.spacingM),
+          const SizedBox(height: 16),
 
           // Filter Chips
           SingleChildScrollView(
@@ -246,11 +253,11 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
             child: Row(
               children: [
                 _buildFilterChip(l10n.all, 'all'),
-                AppSpacing.horizontal(UIConstants.spacingS),
+                const SizedBox(width: 12),
                 _buildFilterChip(l10n.unread, 'unread'),
-                AppSpacing.horizontal(UIConstants.spacingS),
+                const SizedBox(width: 12),
                 _buildFilterChip(l10n.donations, 'donations'),
-                AppSpacing.horizontal(UIConstants.spacingS),
+                const SizedBox(width: 12),
                 _buildFilterChip(l10n.requests, 'requests'),
               ],
             ),
@@ -262,6 +269,7 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
 
   Widget _buildFilterChip(String label, String value) {
     final isSelected = _selectedFilter == value;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return GestureDetector(
       onTap: () {
@@ -271,21 +279,29 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: EdgeInsets.symmetric(
-          horizontal: UIConstants.spacingM,
-          vertical: UIConstants.spacingS,
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
         ),
         decoration: BoxDecoration(
-          color: isSelected ? AppTheme.primaryColor : AppTheme.surfaceColor,
-          borderRadius: BorderRadius.circular(UIConstants.radiusM),
+          color: isSelected
+              ? DesignSystem.primaryBlue
+              : (isDark ? DesignSystem.neutral800 : DesignSystem.neutral100),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? AppTheme.primaryColor : AppTheme.borderColor,
+            color: isSelected
+                ? DesignSystem.primaryBlue
+                : (isDark ? DesignSystem.neutral700 : DesignSystem.neutral300),
           ),
         ),
         child: Text(
           label,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: isSelected ? Colors.white : AppTheme.textPrimaryColor,
+                color: isSelected
+                    ? Colors.white
+                    : (isDark
+                        ? DesignSystem.neutral200
+                        : DesignSystem.neutral900),
                 fontWeight: FontWeight.w500,
               ),
         ),
@@ -299,13 +315,13 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+            valueColor: AlwaysStoppedAnimation<Color>(DesignSystem.primaryBlue),
           ),
-          AppSpacing.vertical(UIConstants.spacingM),
+          const SizedBox(height: 16),
           Text(
             AppLocalizations.of(context)!.loadingMessages,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppTheme.textSecondaryColor,
+                  color: DesignSystem.neutral600,
                 ),
           ),
         ],
@@ -320,39 +336,12 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(40),
-            ),
-            child: Icon(
-              Icons.chat_bubble_outline,
-              size: 40,
-              color: AppTheme.primaryColor,
-            ),
-          ),
-          AppSpacing.vertical(UIConstants.spacingL),
-          Text(
-            l10n.noMessages,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-          AppSpacing.vertical(UIConstants.spacingS),
-          Text(
-            l10n.noMessagesDescription,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppTheme.textSecondaryColor,
-                ),
-            textAlign: TextAlign.center,
-          ),
-          AppSpacing.vertical(UIConstants.spacingL),
-          AppButton(
-            text: l10n.startConversation,
-            icon: Icons.add,
-            onPressed: _startNewConversation,
+          GBEmptyState(
+            icon: Icons.chat_bubble_outline,
+            title: l10n.noMessages,
+            message: l10n.noMessagesDescription,
+            actionLabel: l10n.startConversation,
+            onAction: _startNewConversation,
           ),
         ],
       ),
@@ -362,170 +351,187 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
   Widget _buildConversationItem(Conversation conversation) {
     final l10n = AppLocalizations.of(context)!;
 
-    return AppCard(
-      margin: EdgeInsets.only(bottom: UIConstants.spacingS),
-      onTap: () => _openConversation(conversation),
-      child: Row(
-        children: [
-          // Avatar
-          Stack(
+    return Dismissible(
+      key: Key(conversation.id),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: DesignSystem.warning,
+          borderRadius: BorderRadius.circular(DesignSystem.radiusM),
+        ),
+        child: const Icon(
+          Icons.archive_outlined,
+          color: Colors.white,
+          size: 28,
+        ),
+      ),
+      confirmDismiss: (direction) async {
+        return await _showArchiveConfirmation(conversation);
+      },
+      onDismissed: (direction) {
+        _archiveConversation(conversation);
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: WebCard(
+          onTap: () => _openConversation(conversation),
+          child: Row(
             children: [
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                child: Center(
-                  child: Text(
-                    conversation.displayTitle.isNotEmpty
-                        ? conversation.displayTitle[0].toUpperCase()
-                        : 'U',
-                    style: TextStyle(
-                      color: AppTheme.primaryColor,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 18,
-                    ),
+              // Avatar
+              Stack(
+                children: [
+                  GBUserAvatar(
+                    avatarUrl:
+                        null, // TODO: Add avatarUrl to Conversation model
+                    userName: conversation.displayTitle,
+                    size: 50,
                   ),
-                ),
+
+                  // Unread Badge
+                  if (conversation.hasUnreadMessages)
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: Container(
+                        width: 16,
+                        height: 16,
+                        decoration: BoxDecoration(
+                          color: DesignSystem.error,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Text(
+                            conversation.unreadCount > 9
+                                ? '9+'
+                                : conversation.unreadCount.toString(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
 
-              // Unread Badge
-              if (conversation.hasUnreadMessages)
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: Container(
-                    width: 16,
-                    height: 16,
-                    decoration: BoxDecoration(
-                      color: AppTheme.errorColor,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Text(
-                        conversation.unreadCount > 9
-                            ? '9+'
-                            : conversation.unreadCount.toString(),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
+              const SizedBox(width: 16),
 
-          AppSpacing.horizontal(UIConstants.spacingM),
-
-          // Conversation Info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Title and Time
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              // Conversation Info
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Text(
-                        conversation.displayTitle,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                              fontWeight: conversation.hasUnreadMessages
-                                  ? FontWeight.w600
-                                  : FontWeight.w500,
-                              color: conversation.hasUnreadMessages
-                                  ? AppTheme.textPrimaryColor
-                                  : AppTheme.textPrimaryColor,
-                            ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Text(
-                      conversation.timeAgo,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppTheme.textSecondaryColor,
-                          ),
-                    ),
-                  ],
-                ),
-
-                AppSpacing.vertical(UIConstants.spacingXS),
-
-                // Last Message and Status
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        conversation.lastMessageContent ?? l10n.noMessages,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: conversation.hasUnreadMessages
-                                  ? AppTheme.textPrimaryColor
-                                  : AppTheme.textSecondaryColor,
-                              fontWeight: conversation.hasUnreadMessages
-                                  ? FontWeight.w500
-                                  : FontWeight.normal,
-                            ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                    ),
-
-                    // Message Status Icons
-                    if (conversation.lastMessageSenderId != null)
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (conversation.lastMessageSenderId ==
-                              Provider.of<AuthProvider>(context, listen: false)
-                                  .user
-                                  ?.id)
-                            Icon(
-                              Icons.done_all,
-                              size: 16,
-                              color: AppTheme.textSecondaryColor,
-                            ),
-                        ],
-                      ),
-                  ],
-                ),
-
-                // Context Info (Donation/Request)
-                if (conversation.isDonationRelated ||
-                    conversation.isRequestRelated)
-                  Padding(
-                    padding: EdgeInsets.only(top: UIConstants.spacingXS),
-                    child: Row(
+                    // Title and Time
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Icon(
-                          conversation.isDonationRelated
-                              ? Icons.card_giftcard
-                              : Icons.request_page,
-                          size: 12,
-                          color: AppTheme.primaryColor,
+                        Expanded(
+                          child: Text(
+                            conversation.displayTitle,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall
+                                ?.copyWith(
+                                  fontWeight: conversation.hasUnreadMessages
+                                      ? FontWeight.w600
+                                      : FontWeight.w500,
+                                ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                        AppSpacing.horizontal(UIConstants.spacingXS),
                         Text(
-                          conversation.isDonationRelated
-                              ? '${l10n.aboutDonation} #${conversation.donationId}'
-                              : '${l10n.aboutRequest} #${conversation.requestId}',
+                          conversation.timeAgo,
                           style:
                               Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: AppTheme.primaryColor,
-                                    fontSize: 11,
+                                    color: DesignSystem.neutral600,
                                   ),
                         ),
                       ],
                     ),
-                  ),
-              ],
-            ),
+
+                    const SizedBox(height: 4),
+
+                    // Last Message and Status
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            conversation.lastMessageContent ?? l10n.noMessages,
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: conversation.hasUnreadMessages
+                                          ? DesignSystem.neutral900
+                                          : DesignSystem.neutral600,
+                                      fontWeight: conversation.hasUnreadMessages
+                                          ? FontWeight.w500
+                                          : FontWeight.normal,
+                                    ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+
+                        // Message Status Icons
+                        if (conversation.lastMessageSenderId != null)
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (conversation.lastMessageSenderId ==
+                                  Provider.of<AuthProvider>(context,
+                                          listen: false)
+                                      .user
+                                      ?.id)
+                                Icon(
+                                  Icons.done_all,
+                                  size: 16,
+                                  color: DesignSystem.neutral600,
+                                ),
+                            ],
+                          ),
+                      ],
+                    ),
+
+                    // Context Info (Donation/Request)
+                    if (conversation.isDonationRelated ||
+                        conversation.isRequestRelated)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Row(
+                          children: [
+                            Icon(
+                              conversation.isDonationRelated
+                                  ? Icons.card_giftcard
+                                  : Icons.request_page,
+                              size: 12,
+                              color: DesignSystem.primaryBlue,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              conversation.isDonationRelated
+                                  ? '${l10n.aboutDonation} #${conversation.donationId}'
+                                  : '${l10n.aboutRequest} #${conversation.requestId}',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: DesignSystem.primaryBlue,
+                                    fontSize: 11,
+                                  ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -594,14 +600,87 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
     );
   }
 
-  void _startNewConversation() {
-    // TODO: Implement new conversation flow
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(AppLocalizations.of(context)!.newConversationComingSoon),
-        backgroundColor: AppTheme.infoColor,
-      ),
+  Future<void> _startNewConversation() async {
+    final selectedUser = await showDialog<User>(
+      context: context,
+      builder: (context) => const StartConversationDialog(),
     );
+
+    if (selectedUser != null && mounted) {
+      final messageProvider =
+          Provider.of<MessageProvider>(context, listen: false);
+      final success = await messageProvider.startConversation(
+        selectedUser.id,
+        selectedUser.name,
+      );
+
+      if (success && mounted) {
+        // Navigate to chat screen
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatScreenEnhanced(
+              otherUserId: selectedUser.id.toString(),
+              otherUserName: selectedUser.name,
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<bool> _showArchiveConfirmation(Conversation conversation) async {
+    final l10n = AppLocalizations.of(context)!;
+    return await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(DesignSystem.radiusM),
+            ),
+            title: const Text('Archive Conversation'),
+            content:
+                Text('Archive conversation with ${conversation.displayTitle}?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text(l10n.cancel),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                style: TextButton.styleFrom(
+                  foregroundColor: DesignSystem.warning,
+                ),
+                child: const Text('Archive'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+  }
+
+  Future<void> _archiveConversation(Conversation conversation) async {
+    final messageProvider =
+        Provider.of<MessageProvider>(context, listen: false);
+    final success = await messageProvider.archiveConversation(
+      int.parse(conversation.otherParticipantId),
+    );
+
+    if (success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Conversation archived'),
+          backgroundColor: DesignSystem.success,
+          action: SnackBarAction(
+            label: 'Undo',
+            textColor: Colors.white,
+            onPressed: () {
+              messageProvider.unarchiveConversation(
+                  int.parse(conversation.otherParticipantId));
+            },
+          ),
+        ),
+      );
+    }
   }
 
   void _showMessageSettings() {
@@ -609,7 +688,7 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(AppLocalizations.of(context)!.messageSettingsComingSoon),
-        backgroundColor: AppTheme.infoColor,
+        backgroundColor: DesignSystem.info,
       ),
     );
   }
@@ -620,7 +699,7 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
       SnackBar(
         content:
             Text(AppLocalizations.of(context)!.archivedConversationsComingSoon),
-        backgroundColor: AppTheme.infoColor,
+        backgroundColor: DesignSystem.info,
       ),
     );
   }
@@ -630,7 +709,7 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(AppLocalizations.of(context)!.blockedUsersComingSoon),
-        backgroundColor: AppTheme.infoColor,
+        backgroundColor: DesignSystem.info,
       ),
     );
   }

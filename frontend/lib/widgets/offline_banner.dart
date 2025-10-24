@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../core/theme/app_theme.dart';
+import '../core/theme/design_system.dart';
 import '../services/network_status_service.dart';
+import '../services/offline_service.dart';
 
 /// Offline indicator banner that shows when network is disconnected
 class OfflineBanner extends StatelessWidget {
@@ -59,7 +61,7 @@ class OfflineBanner extends StatelessWidget {
   }
 }
 
-/// Animated offline banner with reconnecting state
+/// Enhanced animated offline banner with sync status
 class AnimatedOfflineBanner extends StatelessWidget {
   const AnimatedOfflineBanner({Key? key}) : super(key: key);
 
@@ -67,46 +69,75 @@ class AnimatedOfflineBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<NetworkStatusService>(
       builder: (context, networkStatus, child) {
+        final offlineService = OfflineService();
+        final pendingCount = offlineService.pendingOperationsCount;
+        final isOnline = networkStatus.isOnline;
+
         return AnimatedContainer(
           duration: const Duration(milliseconds: 300),
-          height: networkStatus.isOnline ? 0 : 36,
+          height: isOnline ? 0 : 48,
           child: AnimatedOpacity(
             duration: const Duration(milliseconds: 300),
-            opacity: networkStatus.isOnline ? 0.0 : 1.0,
+            opacity: isOnline ? 0.0 : 1.0,
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(
-                horizontal: AppTheme.spacingM,
-                vertical: AppTheme.spacingS,
+                horizontal: DesignSystem.spaceM,
+                vertical: DesignSystem.spaceS,
               ),
               decoration: BoxDecoration(
-                color: AppTheme.warningColor,
+                gradient: LinearGradient(
+                  colors: [
+                    DesignSystem.warning,
+                    DesignSystem.warning.withOpacity(0.8),
+                  ],
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 4,
+                    color: Colors.black.withOpacity(0.15),
+                    blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
                 ],
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Icon(
-                    Icons.wifi_off,
-                    color: Colors.white,
-                    size: 16,
-                  ),
-                  SizedBox(width: 8),
-                  Text(
-                    'No internet connection',
-                    style: TextStyle(
+              child: SafeArea(
+                top: true,
+                bottom: false,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.wifi_off_rounded,
                       color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
+                      size: 18,
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'No internet connection',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          if (pendingCount > 0)
+                            Text(
+                              '$pendingCount pending operation${pendingCount > 1 ? 's' : ''} will sync when online',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.9),
+                                fontSize: 11,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

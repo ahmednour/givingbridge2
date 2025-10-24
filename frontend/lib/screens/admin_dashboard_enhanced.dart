@@ -4,17 +4,20 @@ import '../core/theme/app_theme.dart';
 import '../core/theme/design_system.dart';
 import '../widgets/common/gb_dashboard_components.dart';
 import '../widgets/common/gb_confetti.dart';
-import '../widgets/common/gb_empty_state.dart';
 import '../widgets/common/gb_search_bar.dart';
 import '../widgets/common/gb_filter_chips.dart';
 import '../widgets/common/gb_line_chart.dart';
 import '../widgets/common/gb_bar_chart.dart';
 import '../widgets/common/gb_pie_chart.dart';
+import '../widgets/common/web_sidebar_nav.dart';
 import '../providers/auth_provider.dart';
+import '../providers/analytics_provider.dart';
 import '../services/api_service.dart';
 import '../models/user.dart';
 import '../models/donation.dart';
 import '../l10n/app_localizations.dart';
+import 'admin_reports_screen.dart';
+import 'activity_log_screen.dart';
 
 class AdminDashboardEnhanced extends StatefulWidget {
   const AdminDashboardEnhanced({Key? key}) : super(key: key);
@@ -23,9 +26,9 @@ class AdminDashboardEnhanced extends StatefulWidget {
   State<AdminDashboardEnhanced> createState() => _AdminDashboardEnhancedState();
 }
 
-class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced> {
+  String _currentRoute = 'overview';
+  bool _isSidebarCollapsed = false;
 
   List<User> _users = [];
   List<User> _filteredUsers = []; // Filtered/searched users
@@ -47,14 +50,7 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
     _loadAllData();
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
   }
 
   Future<void> _loadAllData() async {
@@ -263,69 +259,271 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
-    final isDesktop = size.width > 768;
+    final isDesktop = size.width >= 1024;
+    final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
       backgroundColor: DesignSystem.getBackgroundColor(context),
-      body: Column(
-        children: [
-          // Modern Tab Bar
-          Container(
-            decoration: BoxDecoration(
-              color: DesignSystem.getSurfaceColor(context),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
+      body: isDesktop
+          ? Row(
+              children: [
+                // Sidebar Navigation
+                WebSidebarNav(
+                  currentRoute: _currentRoute,
+                  items: [
+                    WebNavItem(
+                      route: 'overview',
+                      label: l10n.overview,
+                      icon: Icons.dashboard_outlined,
+                      color: DesignSystem.accentAmber,
+                      onTap: () => setState(() => _currentRoute = 'overview'),
+                    ),
+                    WebNavItem(
+                      route: 'users',
+                      label: 'Users',
+                      icon: Icons.people_outline,
+                      color: DesignSystem.primaryBlue,
+                      onTap: () => setState(() => _currentRoute = 'users'),
+                      badge:
+                          _users.isNotEmpty ? _users.length.toString() : null,
+                    ),
+                    WebNavItem(
+                      route: 'donations',
+                      label: 'Donations',
+                      icon: Icons.volunteer_activism,
+                      color: DesignSystem.accentPink,
+                      onTap: () => setState(() => _currentRoute = 'donations'),
+                      badge: _donations.isNotEmpty
+                          ? _donations.length.toString()
+                          : null,
+                    ),
+                    WebNavItem(
+                      route: 'requests',
+                      label: 'Requests',
+                      icon: Icons.inbox_outlined,
+                      color: DesignSystem.accentPurple,
+                      onTap: () => setState(() => _currentRoute = 'requests'),
+                      badge: _requests.isNotEmpty
+                          ? _requests.length.toString()
+                          : null,
+                    ),
+                    WebNavItem(
+                      route: 'analytics',
+                      label: 'Analytics',
+                      icon: Icons.analytics_outlined,
+                      color: DesignSystem.secondaryGreen,
+                      onTap: () => setState(() => _currentRoute = 'analytics'),
+                    ),
+                    WebNavItem(
+                      route: 'reports',
+                      label: 'Reports',
+                      icon: Icons.report_outlined,
+                      color: DesignSystem.warning,
+                      onTap: () => setState(() => _currentRoute = 'reports'),
+                    ),
+                    WebNavItem(
+                      route: 'activity',
+                      label: 'Activity Logs',
+                      icon: Icons.history,
+                      color: DesignSystem.info,
+                      onTap: () => setState(() => _currentRoute = 'activity'),
+                    ),
+                  ],
+                  userSection: _buildUserSection(authProvider),
+                  onLogout: () {
+                    authProvider.logout();
+                    Navigator.pushReplacementNamed(context, '/login');
+                  },
+                  isCollapsed: _isSidebarCollapsed,
+                  onCollapseChanged: (collapsed) {
+                    setState(() => _isSidebarCollapsed = collapsed);
+                  },
+                ),
+                // Main Content
+                Expanded(
+                  child: _buildMainContent(context, theme, isDesktop),
+                ),
+              ],
+            )
+          : Column(
+              children: [
+                Expanded(
+                  child: _buildMainContent(context, theme, isDesktop),
+                ),
+                // Bottom Navigation for Mobile
+                WebBottomNav(
+                  currentRoute: _currentRoute,
+                  items: [
+                    WebNavItem(
+                      route: 'overview',
+                      label: l10n.overview,
+                      icon: Icons.dashboard_outlined,
+                      color: DesignSystem.accentAmber,
+                      onTap: () => setState(() => _currentRoute = 'overview'),
+                    ),
+                    WebNavItem(
+                      route: 'users',
+                      label: 'Users',
+                      icon: Icons.people_outline,
+                      color: DesignSystem.primaryBlue,
+                      onTap: () => setState(() => _currentRoute = 'users'),
+                      badge:
+                          _users.isNotEmpty ? _users.length.toString() : null,
+                    ),
+                    WebNavItem(
+                      route: 'more',
+                      label: 'More',
+                      icon: Icons.menu,
+                      color: DesignSystem.neutral600,
+                      onTap: () => _showMobileMenu(context),
+                    ),
+                  ],
                 ),
               ],
             ),
-            child: TabBar(
-              controller: _tabController,
-              labelColor: AppTheme.warningColor,
-              unselectedLabelColor: AppTheme.textSecondaryColor,
-              indicatorColor: AppTheme.warningColor,
-              indicatorWeight: 3,
-              isScrollable: true,
-              labelStyle: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-              unselectedLabelStyle: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-              tabs: [
-                Tab(text: l10n.overview),
-                Tab(text: l10n.users),
-                Tab(text: l10n.donations),
-                Tab(text: l10n.requests),
-                const Tab(text: 'Analytics'),
-              ],
+    );
+  }
+
+  Widget _buildUserSection(AuthProvider authProvider) {
+    final userName = authProvider.user?.name ?? 'Admin';
+    final userEmail = authProvider.user?.email ?? '';
+
+    return Column(
+      children: [
+        CircleAvatar(
+          radius: _isSidebarCollapsed ? 20 : 28,
+          backgroundColor: DesignSystem.accentAmber.withOpacity(0.1),
+          child: Text(
+            userName.isNotEmpty ? userName[0].toUpperCase() : 'A',
+            style: TextStyle(
+              fontSize: _isSidebarCollapsed ? 18 : 24,
+              fontWeight: FontWeight.bold,
+              color: DesignSystem.accentAmber,
             ),
           ),
-
-          // Tab Content
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildOverviewTab(context, isDesktop),
-                _buildUsersTab(context, isDesktop),
-                _buildDonationsTab(context, isDesktop),
-                _buildRequestsTab(context, isDesktop),
-                _buildAnalyticsTab(context, isDesktop),
-              ],
+        ),
+        if (!_isSidebarCollapsed) ...[
+          const SizedBox(height: DesignSystem.spaceS),
+          Text(
+            userName,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Text(
+            userEmail,
+            style: TextStyle(
+              fontSize: 12,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
+      ],
+    );
+  }
+
+  void _showMobileMenu(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(DesignSystem.spaceL),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Icon(Icons.volunteer_activism,
+                  color: DesignSystem.accentPink),
+              title: Text('Donations'),
+              onTap: () {
+                Navigator.pop(context);
+                setState(() => _currentRoute = 'donations');
+              },
+            ),
+            ListTile(
+              leading:
+                  Icon(Icons.inbox_outlined, color: DesignSystem.accentPurple),
+              title: Text('Requests'),
+              onTap: () {
+                Navigator.pop(context);
+                setState(() => _currentRoute = 'requests');
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.analytics_outlined,
+                  color: DesignSystem.secondaryGreen),
+              title: Text('Analytics'),
+              onTap: () {
+                Navigator.pop(context);
+                setState(() => _currentRoute = 'analytics');
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.report_outlined, color: DesignSystem.warning),
+              title: Text('Reports'),
+              onTap: () {
+                Navigator.pop(context);
+                setState(() => _currentRoute = 'reports');
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.history, color: DesignSystem.info),
+              title: Text('Activity Logs'),
+              onTap: () {
+                Navigator.pop(context);
+                setState(() => _currentRoute = 'activity');
+              },
+            ),
+            const Divider(),
+            ListTile(
+              leading: Icon(Icons.logout, color: DesignSystem.error),
+              title: Text('Logout'),
+              onTap: () {
+                Navigator.pop(context);
+                authProvider.logout();
+                Navigator.pushReplacementNamed(context, '/login');
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildOverviewTab(BuildContext context, bool isDesktop) {
+  Widget _buildMainContent(
+      BuildContext context, ThemeData theme, bool isDesktop) {
+    if (_currentRoute == 'overview') {
+      return _buildOverviewTab(context, theme, isDesktop);
+    } else if (_currentRoute == 'users') {
+      return _buildUsersTab(context, theme, isDesktop);
+    } else if (_currentRoute == 'donations') {
+      return _buildDonationsTab(context, theme, isDesktop);
+    } else if (_currentRoute == 'requests') {
+      return _buildRequestsTab(context, theme, isDesktop);
+    } else if (_currentRoute == 'analytics') {
+      return _buildAnalyticsTab(context, theme, isDesktop);
+    } else if (_currentRoute == 'reports') {
+      return const AdminReportsScreen();
+    } else if (_currentRoute == 'activity') {
+      return const ActivityLogScreen();
+    }
+    return _buildOverviewTab(context, theme, isDesktop);
+  }
+
+  Widget _buildOverviewTab(
+      BuildContext context, ThemeData theme, bool isDesktop) {
     final l10n = AppLocalizations.of(context)!;
     final authProvider = Provider.of<AuthProvider>(context);
     final userName = authProvider.user?.name ?? 'Admin';
@@ -568,7 +766,7 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced>
         GridView.count(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: isDesktop ? 4 : 2,
+          crossAxisCount: isDesktop ? 3 : 2,
           crossAxisSpacing: DesignSystem.spaceL,
           mainAxisSpacing: DesignSystem.spaceL,
           childAspectRatio: 1.1,
@@ -578,33 +776,45 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced>
               description: 'Manage all users',
               icon: Icons.people_outline,
               color: DesignSystem.primaryBlue,
-              onTap: () => _tabController.animateTo(1),
+              onTap: () => setState(() => _currentRoute = 'users'),
             ),
             GBQuickActionCard(
               title: l10n.donations,
               description: 'View all donations',
               icon: Icons.volunteer_activism,
               color: DesignSystem.secondaryGreen,
-              onTap: () => _tabController.animateTo(2),
+              onTap: () => setState(() => _currentRoute = 'donations'),
             ),
             GBQuickActionCard(
               title: l10n.requests,
               description: 'Manage requests',
               icon: Icons.inbox_outlined,
               color: DesignSystem.warning,
-              onTap: () => _tabController.animateTo(3),
+              onTap: () => setState(() => _currentRoute = 'requests'),
             ),
             GBQuickActionCard(
               title: 'Reports',
-              description: 'View analytics',
-              icon: Icons.analytics_outlined,
+              description: 'Manage user reports',
+              icon: Icons.flag_outlined,
               color: DesignSystem.accentPink,
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Reports coming soon')),
-                );
-              },
+              onTap: () => setState(() => _currentRoute = 'reports'),
             ),
+            if (isDesktop) ...[
+              GBQuickActionCard(
+                title: 'Activity',
+                description: 'View activity logs',
+                icon: Icons.history,
+                color: DesignSystem.info,
+                onTap: () => setState(() => _currentRoute = 'activity'),
+              ),
+              GBQuickActionCard(
+                title: 'Analytics',
+                description: 'View statistics',
+                icon: Icons.analytics_outlined,
+                color: DesignSystem.accentPink,
+                onTap: () => setState(() => _currentRoute = 'overview'),
+              ),
+            ],
           ],
         ),
       ],
@@ -660,12 +870,7 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced>
               ),
             ),
             TextButton.icon(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Full activity log coming soon')),
-                );
-              },
+              onPressed: () => setState(() => _currentRoute = 'activity'),
               icon: const Icon(Icons.arrow_forward, size: 16),
               label: Text(l10n.viewAll),
               style: TextButton.styleFrom(
@@ -703,63 +908,11 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced>
     );
   }
 
-  Widget _buildStatCard(
-      String title, String value, IconData icon, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(AppTheme.spacingL),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppTheme.radiusL),
-        border: Border.all(color: AppTheme.borderColor),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(AppTheme.spacingM),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(AppTheme.radiusM),
-            ),
-            child: Icon(icon, color: color, size: 24),
-          ),
-          const SizedBox(height: AppTheme.spacingM),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.w700,
-              color: AppTheme.textPrimaryColor,
-            ),
-          ),
-          const SizedBox(height: AppTheme.spacingXS),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 14,
-              color: AppTheme.textSecondaryColor,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildProgressTracking(
       BuildContext context, AppLocalizations l10n, bool isDesktop) {
     final totalUsers = _users.length;
-    final totalDonations = _donationStats['total'] ?? 0;
     final userGoal = 100; // Platform goal for 100 users
-    final donationGoal = 200; // Platform goal for 200 donations
+// Platform goal for 200 donations
 
     final platformGrowth = totalUsers / userGoal;
     final userSatisfaction = 0.90; // 90% mock satisfaction
@@ -1049,7 +1202,7 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced>
     );
   }
 
-  Widget _buildUsersTab(BuildContext context, bool isDesktop) {
+  Widget _buildUsersTab(BuildContext context, ThemeData theme, bool isDesktop) {
     // Determine which list to display
     final usersToDisplay =
         _userSearchQuery.isEmpty && _selectedUserRoles.isEmpty
@@ -1334,7 +1487,8 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced>
     );
   }
 
-  Widget _buildDonationsTab(BuildContext context, bool isDesktop) {
+  Widget _buildDonationsTab(
+      BuildContext context, ThemeData theme, bool isDesktop) {
     final l10n = AppLocalizations.of(context)!;
 
     // Determine which list to display
@@ -1620,7 +1774,8 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced>
     );
   }
 
-  Widget _buildRequestsTab(BuildContext context, bool isDesktop) {
+  Widget _buildRequestsTab(
+      BuildContext context, ThemeData theme, bool isDesktop) {
     final l10n = AppLocalizations.of(context)!;
     return RefreshIndicator(
       onRefresh: _loadRequests,
@@ -1797,148 +1952,160 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced>
   }
 
   // Analytics Tab
-  Widget _buildAnalyticsTab(BuildContext context, bool isDesktop) {
-    return RefreshIndicator(
-      onRefresh: _loadAllData,
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: isDesktop ? 1400 : double.infinity,
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(
-                  isDesktop ? AppTheme.spacingXL : AppTheme.spacingL),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Analytics Header
-                  Container(
-                    padding: const EdgeInsets.all(AppTheme.spacingXL),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(AppTheme.radiusXL),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF6366F1).withOpacity(0.3),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 60,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius:
-                                BorderRadius.circular(AppTheme.radiusL),
+  Widget _buildAnalyticsTab(
+      BuildContext context, ThemeData theme, bool isDesktop) {
+    return Consumer<AnalyticsProvider>(
+      builder: (context, analyticsProvider, child) {
+        return RefreshIndicator(
+          onRefresh: analyticsProvider.refresh,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: isDesktop ? 1400 : double.infinity,
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(
+                      isDesktop ? AppTheme.spacingXL : AppTheme.spacingL),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Analytics Header
+                      Container(
+                        padding: const EdgeInsets.all(AppTheme.spacingXL),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                           ),
-                          child: const Icon(
-                            Icons.analytics,
-                            color: Colors.white,
-                            size: 30,
-                          ),
+                          borderRadius:
+                              BorderRadius.circular(AppTheme.radiusXL),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF6366F1).withOpacity(0.3),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: AppTheme.spacingL),
-                        const Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Platform Analytics',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              SizedBox(height: AppTheme.spacingXS),
-                              Text(
-                                'Comprehensive insights and trends',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: AppTheme.spacingXL),
-
-                  // Key Metrics Row
-                  _buildAnalyticsMetrics(isDesktop),
-
-                  const SizedBox(height: AppTheme.spacingXL),
-
-                  // Charts Section
-                  const Text(
-                    'Platform Trends',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: AppTheme.textPrimaryColor,
-                    ),
-                  ),
-                  const SizedBox(height: AppTheme.spacingL),
-
-                  // Donation Trends Chart
-                  _buildDonationTrendsChart(),
-
-                  const SizedBox(height: AppTheme.spacingXL),
-
-                  // Category and Status Distribution
-                  isDesktop
-                      ? Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Row(
                           children: [
-                            Expanded(
-                              child: _buildCategoryDistributionChart(),
+                            Container(
+                              width: 60,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                borderRadius:
+                                    BorderRadius.circular(AppTheme.radiusL),
+                              ),
+                              child: const Icon(
+                                Icons.analytics,
+                                color: Colors.white,
+                                size: 30,
+                              ),
                             ),
                             const SizedBox(width: AppTheme.spacingL),
-                            Expanded(
-                              child: _buildStatusDistributionChart(),
+                            const Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Platform Analytics',
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  SizedBox(height: AppTheme.spacingXS),
+                                  Text(
+                                    'Comprehensive insights and trends',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
-                        )
-                      : Column(
-                          children: [
-                            _buildCategoryDistributionChart(),
-                            const SizedBox(height: AppTheme.spacingL),
-                            _buildStatusDistributionChart(),
-                          ],
                         ),
+                      ),
 
-                  const SizedBox(height: AppTheme.spacingXL),
+                      const SizedBox(height: AppTheme.spacingXL),
 
-                  // User Growth Chart
-                  _buildUserGrowthChart(),
-                ],
+                      // Key Metrics Row
+                      _buildAnalyticsMetrics(isDesktop, analyticsProvider),
+
+                      const SizedBox(height: AppTheme.spacingXL),
+
+                      // Charts Section
+                      const Text(
+                        'Platform Trends',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: AppTheme.textPrimaryColor,
+                        ),
+                      ),
+                      const SizedBox(height: AppTheme.spacingL),
+
+                      // Donation Trends Chart
+                      _buildDonationTrendsChart(analyticsProvider),
+
+                      const SizedBox(height: AppTheme.spacingXL),
+
+                      // Category and Status Distribution
+                      isDesktop
+                          ? Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: _buildCategoryDistributionChart(
+                                      analyticsProvider),
+                                ),
+                                const SizedBox(width: AppTheme.spacingL),
+                                Expanded(
+                                  child: _buildStatusDistributionChart(
+                                      analyticsProvider),
+                                ),
+                              ],
+                            )
+                          : Column(
+                              children: [
+                                _buildCategoryDistributionChart(
+                                    analyticsProvider),
+                                const SizedBox(height: AppTheme.spacingL),
+                                _buildStatusDistributionChart(
+                                    analyticsProvider),
+                              ],
+                            ),
+
+                      const SizedBox(height: AppTheme.spacingXL),
+
+                      // User Growth Chart
+                      _buildUserGrowthChart(analyticsProvider),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildAnalyticsMetrics(bool isDesktop) {
-    final totalDonations = _donations.length;
-    final totalRequests = _requests.length;
-    final totalUsers = _users.length;
-    final activeDonations =
-        _donations.where((d) => d.status == 'available').length;
+  Widget _buildAnalyticsMetrics(
+      bool isDesktop, AnalyticsProvider analyticsProvider) {
+    final overview = analyticsProvider.overview;
+
+    final totalDonations = overview?.donations.total ?? 0;
+    final totalRequests = overview?.requests.total ?? 0;
+    final totalUsers = overview?.users.total ?? 0;
+    final activeDonations = overview?.donations.available ?? 0;
 
     final metrics = [
       {
@@ -2063,14 +2230,19 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced>
     );
   }
 
-  Widget _buildDonationTrendsChart() {
-    // Generate sample data for last 7 days
-    final points = List.generate(7, (index) {
+  Widget _buildDonationTrendsChart(AnalyticsProvider analyticsProvider) {
+    // Use real data from analytics provider
+    final points = analyticsProvider.donationTrends.map((trend) {
       return GBChartPoint(
-        x: index.toDouble(),
-        y: (10 + (index * 2) + (index % 3 * 3)).toDouble(),
+        x: DateTime.parse(trend.date).millisecondsSinceEpoch.toDouble(),
+        y: trend.count.toDouble(),
       );
-    });
+    }).toList();
+
+    // Generate xLabels from dates
+    final xLabels = analyticsProvider.donationTrends
+        .map((trend) => _formatDateLabel(trend.date))
+        .toList();
 
     return Container(
       padding: const EdgeInsets.all(AppTheme.spacingL),
@@ -2083,22 +2255,16 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced>
         data: [
           GBLineChartData.donationTrend(points: points),
         ],
-        xLabels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        xLabels: xLabels,
         yAxisTitle: 'Donations',
-        xAxisTitle: 'Day of Week',
+        xAxisTitle: 'Date',
         height: 300,
       ),
     );
   }
 
-  Widget _buildCategoryDistributionChart() {
-    // Calculate category distribution
-    final categoryData = <String, int>{};
-    for (var donation in _donations) {
-      categoryData[donation.category] =
-          (categoryData[donation.category] ?? 0) + 1;
-    }
-
+  Widget _buildCategoryDistributionChart(AnalyticsProvider analyticsProvider) {
+    // Use real data from analytics provider
     final colors = [
       DesignSystem.primaryBlue,
       DesignSystem.secondaryGreen,
@@ -2107,10 +2273,11 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced>
       DesignSystem.warning,
     ];
 
-    final barData = categoryData.entries.toList().asMap().entries.map((entry) {
+    final barData =
+        analyticsProvider.categoryDistribution.asMap().entries.map((entry) {
       return GBBarChartData.category(
-        name: entry.value.key,
-        count: entry.value.value.toDouble(),
+        name: entry.value.category,
+        count: entry.value.count.toDouble(),
         color: colors[entry.key % colors.length],
       );
     }).toList();
@@ -2138,19 +2305,16 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced>
     );
   }
 
-  Widget _buildStatusDistributionChart() {
-    // Calculate status distribution
-    final statusData = <String, int>{};
-    for (var donation in _donations) {
-      statusData[donation.status] = (statusData[donation.status] ?? 0) + 1;
-    }
-
-    final pieData = statusData.entries.map((entry) {
+  Widget _buildStatusDistributionChart(AnalyticsProvider analyticsProvider) {
+    // Use real data from analytics provider
+    final pieData = analyticsProvider.statusDistribution.map((statusDist) {
       return GBPieChartData.status(
-        status: entry.key,
-        count: entry.value.toDouble(),
+        status: statusDist.status,
+        count: statusDist.count.toDouble(),
       );
     }).toList();
+
+    final totalDonations = analyticsProvider.overview?.donations.total ?? 0;
 
     return Container(
       padding: const EdgeInsets.all(AppTheme.spacingL),
@@ -2170,20 +2334,25 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced>
             : pieData,
         title: 'Status Distribution',
         isDonut: true,
-        centerLabel: _donations.length.toString(),
+        centerLabel: totalDonations.toString(),
         size: 220,
       ),
     );
   }
 
-  Widget _buildUserGrowthChart() {
-    // Generate sample user growth data
-    final points = List.generate(7, (index) {
+  Widget _buildUserGrowthChart(AnalyticsProvider analyticsProvider) {
+    // Use real data from analytics provider
+    final points = analyticsProvider.userGrowth.map((growth) {
       return GBChartPoint(
-        x: index.toDouble(),
-        y: (20 + (index * 5) + (index % 2 * 4)).toDouble(),
+        x: DateTime.parse(growth.date).millisecondsSinceEpoch.toDouble(),
+        y: growth.count.toDouble(),
       );
-    });
+    }).toList();
+
+    // Generate xLabels from dates
+    final xLabels = analyticsProvider.userGrowth
+        .map((growth) => _formatDateLabel(growth.date))
+        .toList();
 
     return Container(
       padding: const EdgeInsets.all(AppTheme.spacingL),
@@ -2196,11 +2365,20 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced>
         data: [
           GBLineChartData.userGrowth(points: points),
         ],
-        xLabels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        xLabels: xLabels,
         yAxisTitle: 'Users',
-        xAxisTitle: 'Day of Week',
+        xAxisTitle: 'Date',
         height: 300,
       ),
     );
+  }
+
+  String _formatDateLabel(String dateStr) {
+    try {
+      final date = DateTime.parse(dateStr);
+      return '${date.month}/${date.day}';
+    } catch (e) {
+      return dateStr;
+    }
   }
 }

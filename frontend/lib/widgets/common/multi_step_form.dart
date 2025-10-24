@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme_enhanced.dart';
 import '../../core/utils/rtl_utils.dart';
 import '../../core/constants/ui_constants.dart';
-import '../app_components.dart';
 import '../../l10n/app_localizations.dart';
+import 'gb_button.dart';
 
 class MultiStepForm extends StatefulWidget {
   final List<Widget> steps;
@@ -136,14 +136,14 @@ class _MultiStepFormState extends State<MultiStepForm>
                       ),
                     ),
                     if (index < widget.steps.length - 1)
-                      AppSpacing.horizontal(UIConstants.spacingXS),
+                      SizedBox(width: UIConstants.spacingXS),
                   ],
                 ),
               );
             }),
           ),
 
-          AppSpacing.vertical(UIConstants.spacingS),
+          SizedBox(height: UIConstants.spacingS),
 
           // Step Counter
           Text(
@@ -155,7 +155,7 @@ class _MultiStepFormState extends State<MultiStepForm>
 
           // Step Titles (if provided)
           if (widget.stepTitles.isNotEmpty) ...[
-            AppSpacing.vertical(UIConstants.spacingS),
+            SizedBox(height: UIConstants.spacingS),
             Text(
               widget.stepTitles[_currentStep],
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -179,7 +179,7 @@ class _MultiStepFormState extends State<MultiStepForm>
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity( 0.1),
+            color: Colors.black.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),
@@ -188,40 +188,39 @@ class _MultiStepFormState extends State<MultiStepForm>
       child: Row(
         children: [
           // Previous Button
-          if (_currentStep > 0)
+          if (_currentStep > 0) ...[
             Expanded(
-              child: AppButton(
+              child: GBButton(
                 text: l10n.previous,
-                type: AppButtonType.secondary,
+                variant: GBButtonVariant.secondary,
                 onPressed: _previousStep,
-                icon: RTLUtils.getDirectionalIcon(
-                  context,
-                  Icons.arrow_back,
-                  start: Icons.arrow_back,
-                  end: Icons.arrow_forward,
+                leftIcon: Icon(
+                  RTLUtils.getDirectionalIcon(
+                    context,
+                    Icons.arrow_back,
+                    start: Icons.arrow_back,
+                    end: Icons.arrow_forward,
+                  ),
                 ),
               ),
-            ),
-
-          if (_currentStep > 0) AppSpacing.horizontal(UIConstants.spacingM),
+            )
+          ],
 
           // Cancel Button (if provided)
-          if (widget.onCancel != null && _currentStep == 0)
+          if (widget.onCancel != null && _currentStep == 0) ...[
             Expanded(
-              child: AppButton(
+              child: GBButton(
                 text: widget.cancelText,
-                type: AppButtonType.text,
+                variant: GBButtonVariant.ghost,
                 onPressed: widget.onCancel,
               ),
             ),
-
-          if (widget.onCancel != null && _currentStep == 0)
-            AppSpacing.horizontal(UIConstants.spacingM),
+          ],
 
           // Next/Submit Button
           Expanded(
             flex: _currentStep == 0 && widget.onCancel != null ? 1 : 2,
-            child: AppButton(
+            child: GBButton(
               text: _currentStep == widget.steps.length - 1
                   ? widget.submitText
                   : l10n.next,
@@ -232,14 +231,14 @@ class _MultiStepFormState extends State<MultiStepForm>
                       : _nextStep),
               isLoading:
                   widget.isLoading && _currentStep == widget.steps.length - 1,
-              icon: _currentStep == widget.steps.length - 1
-                  ? widget.submitIcon
+              leftIcon: Icon(_currentStep == widget.steps.length - 1
+                  ? widget.submitIcon ?? Icons.check
                   : RTLUtils.getDirectionalIcon(
                       context,
                       Icons.arrow_forward,
                       start: Icons.arrow_forward,
                       end: Icons.arrow_back,
-                    ),
+                    )),
             ),
           ),
         ],
@@ -370,7 +369,7 @@ class StepNavigationButtons extends StatelessWidget {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity( 0.1),
+            color: Colors.black.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),
@@ -381,40 +380,42 @@ class StepNavigationButtons extends StatelessWidget {
           // Previous Button
           if (currentStep > 0 && onPrevious != null)
             Expanded(
-              child: AppButton(
+              child: GBButton(
                 text: previousText ?? l10n.previous,
-                type: AppButtonType.secondary,
+                variant: GBButtonVariant.secondary,
                 onPressed: onPrevious,
-                icon: previousIcon ??
+                leftIcon: Icon(previousIcon ??
                     RTLUtils.getDirectionalIcon(
                       context,
                       Icons.arrow_back,
                       start: Icons.arrow_back,
                       end: Icons.arrow_forward,
-                    ),
+                    )),
               ),
             ),
 
+          // Spacing
           if (currentStep > 0 && onPrevious != null)
-            AppSpacing.horizontal(UIConstants.spacingM),
+            SizedBox(width: UIConstants.spacingM),
 
           // Cancel Button
           if (onCancel != null && currentStep == 0)
             Expanded(
-              child: AppButton(
+              child: GBButton(
                 text: cancelText ?? l10n.cancel,
-                type: AppButtonType.text,
+                variant: GBButtonVariant.ghost,
                 onPressed: onCancel,
               ),
             ),
 
+          // Spacing
           if (onCancel != null && currentStep == 0)
-            AppSpacing.horizontal(UIConstants.spacingM),
+            SizedBox(width: UIConstants.spacingM),
 
           // Next/Submit Button
           Expanded(
             flex: (currentStep == 0 && onCancel != null) ? 1 : 2,
-            child: AppButton(
+            child: GBButton(
               text: currentStep == totalSteps - 1
                   ? (submitText ?? l10n.submit)
                   : (nextText ?? l10n.next),
@@ -422,15 +423,15 @@ class StepNavigationButtons extends StatelessWidget {
                   ? null
                   : (currentStep == totalSteps - 1 ? onSubmit : onNext),
               isLoading: isLoading && currentStep == totalSteps - 1,
-              icon: currentStep == totalSteps - 1
-                  ? submitIcon
+              leftIcon: Icon(currentStep == totalSteps - 1
+                  ? submitIcon ?? Icons.check
                   : (nextIcon ??
                       RTLUtils.getDirectionalIcon(
                         context,
                         Icons.arrow_forward,
                         start: Icons.arrow_forward,
                         end: Icons.arrow_back,
-                      )),
+                      ))),
             ),
           ),
         ],

@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import '../core/theme/app_theme.dart';
 import '../core/theme/design_system.dart';
+import '../core/theme/web_theme.dart';
 import '../widgets/common/gb_button.dart';
 import '../widgets/common/gb_dashboard_components.dart';
 import '../widgets/common/gb_confetti.dart';
 import '../widgets/common/gb_empty_state.dart';
 import '../widgets/common/gb_search_bar.dart';
 import '../widgets/common/gb_filter_chips.dart';
+import '../widgets/common/web_sidebar_nav.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../models/donation.dart';
 import 'chat_screen_enhanced.dart';
+import 'messages_screen_enhanced.dart';
 import '../l10n/app_localizations.dart';
 
 class ReceiverDashboardEnhanced extends StatefulWidget {
@@ -22,9 +26,9 @@ class ReceiverDashboardEnhanced extends StatefulWidget {
       _ReceiverDashboardEnhancedState();
 }
 
-class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
+  String _currentRoute = 'browse';
+  bool _isSidebarCollapsed = false;
 
   List<Donation> _availableDonations = [];
   List<Donation> _filteredDonations = []; // Filtered/searched results
@@ -53,14 +57,7 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
     _loadData();
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
   }
 
   Future<void> _loadData() async {
@@ -182,111 +179,335 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced>
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final size = MediaQuery.of(context).size;
-    final isDesktop = size.width > 768;
+    final isDesktop = size.width >= 1024;
+    final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
       backgroundColor: DesignSystem.getBackgroundColor(context),
-      body: Column(
-        children: [
-          // Modern Tab Bar
-          Container(
-            decoration: BoxDecoration(
-              color: DesignSystem.getSurfaceColor(context),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
+      body: isDesktop
+          ? Row(
+              children: [
+                // Sidebar Navigation
+                WebSidebarNav(
+                  currentRoute: _currentRoute,
+                  items: [
+                    WebNavItem(
+                      route: 'browse',
+                      label: l10n.browseDonations,
+                      icon: Icons.search,
+                      color: DesignSystem.secondaryGreen,
+                      onTap: () => setState(() => _currentRoute = 'browse'),
+                    ),
+                    WebNavItem(
+                      route: 'requests',
+                      label: l10n.myRequests,
+                      icon: Icons.inbox_outlined,
+                      color: DesignSystem.accentPurple,
+                      onTap: () => setState(() => _currentRoute = 'requests'),
+                      badge: _myRequests.isNotEmpty
+                          ? _myRequests.length.toString()
+                          : null,
+                    ),
+                    WebNavItem(
+                      route: 'overview',
+                      label: l10n.overview,
+                      icon: Icons.dashboard_outlined,
+                      color: DesignSystem.primaryBlue,
+                      onTap: () => setState(() => _currentRoute = 'overview'),
+                    ),
+                  ],
+                  userSection: _buildUserSection(authProvider),
+                  onLogout: () {
+                    authProvider.logout();
+                    Navigator.pushReplacementNamed(context, '/login');
+                  },
+                  isCollapsed: _isSidebarCollapsed,
+                  onCollapseChanged: (collapsed) {
+                    setState(() => _isSidebarCollapsed = collapsed);
+                  },
+                ),
+                // Main Content
+                Expanded(
+                  child: _buildMainContent(context, theme, isDark, isDesktop),
+                ),
+              ],
+            )
+          : Column(
+              children: [
+                Expanded(
+                  child: _buildMainContent(context, theme, isDark, isDesktop),
+                ),
+                // Bottom Navigation for Mobile
+                WebBottomNav(
+                  currentRoute: _currentRoute,
+                  items: [
+                    WebNavItem(
+                      route: 'browse',
+                      label: l10n.browseDonations,
+                      icon: Icons.search,
+                      color: DesignSystem.secondaryGreen,
+                      onTap: () => setState(() => _currentRoute = 'browse'),
+                    ),
+                    WebNavItem(
+                      route: 'requests',
+                      label: l10n.myRequests,
+                      icon: Icons.inbox_outlined,
+                      color: DesignSystem.accentPurple,
+                      onTap: () => setState(() => _currentRoute = 'requests'),
+                      badge: _myRequests.isNotEmpty
+                          ? _myRequests.length.toString()
+                          : null,
+                    ),
+                    WebNavItem(
+                      route: 'more',
+                      label: 'More',
+                      icon: Icons.menu,
+                      color: DesignSystem.neutral600,
+                      onTap: () => _showMobileMenu(context),
+                    ),
+                  ],
                 ),
               ],
             ),
-            child: TabBar(
-              controller: _tabController,
-              labelColor: AppTheme.secondaryColor,
-              unselectedLabelColor: AppTheme.textSecondaryColor,
-              indicatorColor: AppTheme.secondaryColor,
-              indicatorWeight: 3,
-              labelStyle: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-              unselectedLabelStyle: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-              tabs: [
-                Tab(text: l10n.browseDonations),
-                Tab(text: l10n.myRequests),
-              ],
+    );
+  }
+
+  Widget _buildUserSection(AuthProvider authProvider) {
+    final userName = authProvider.user?.name ?? 'Receiver';
+    final userEmail = authProvider.user?.email ?? '';
+
+    return Column(
+      children: [
+        CircleAvatar(
+          radius: _isSidebarCollapsed ? 20 : 28,
+          backgroundColor: DesignSystem.secondaryGreen.withOpacity(0.1),
+          child: Text(
+            userName.isNotEmpty ? userName[0].toUpperCase() : 'R',
+            style: TextStyle(
+              fontSize: _isSidebarCollapsed ? 18 : 24,
+              fontWeight: FontWeight.bold,
+              color: DesignSystem.secondaryGreen,
             ),
           ),
-
-          // Tab Content
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildBrowseTab(context, theme, isDark, isDesktop),
-                _buildRequestsTab(context, theme, isDark, isDesktop),
-              ],
+        ),
+        if (!_isSidebarCollapsed) ...[
+          const SizedBox(height: DesignSystem.spaceS),
+          Text(
+            userName,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Text(
+            userEmail,
+            style: TextStyle(
+              fontSize: 12,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
+      ],
+    );
+  }
+
+  void _showMobileMenu(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(DesignSystem.spaceL),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Icon(Icons.dashboard_outlined,
+                  color: DesignSystem.primaryBlue),
+              title: Text(l10n.overview),
+              onTap: () {
+                Navigator.pop(context);
+                setState(() => _currentRoute = 'overview');
+              },
+            ),
+            const Divider(),
+            ListTile(
+              leading: Icon(Icons.logout, color: DesignSystem.error),
+              title: Text('Logout'),
+              onTap: () {
+                Navigator.pop(context);
+                authProvider.logout();
+                Navigator.pushReplacementNamed(context, '/login');
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMainContent(
+      BuildContext context, ThemeData theme, bool isDark, bool isDesktop) {
+    if (_currentRoute == 'browse') {
+      return _buildBrowseTab(context, theme, isDark, isDesktop);
+    } else if (_currentRoute == 'requests') {
+      return _buildRequestsTab(context, theme, isDark, isDesktop);
+    } else if (_currentRoute == 'overview') {
+      return _buildOverviewContent(context, theme, isDark, isDesktop);
+    }
+    return _buildBrowseTab(context, theme, isDark, isDesktop);
+  }
+
+  Widget _buildOverviewContent(
+      BuildContext context, ThemeData theme, bool isDark, bool isDesktop) {
+    return RefreshIndicator(
+      onRefresh: _loadData,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: WebTheme.section(
+          maxWidth: WebTheme.maxContentWidthLarge,
+          child: Padding(
+            padding: EdgeInsets.all(
+                isDesktop ? DesignSystem.spaceXXXL : DesignSystem.spaceL),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Welcome Section
+                _buildWelcomeSection(context, theme)
+                    .animate()
+                    .fadeIn(duration: 600.ms)
+                    .slideY(begin: -0.2, end: 0),
+
+                const SizedBox(height: DesignSystem.spaceXXL),
+
+                // Stats Cards
+                _buildStatsSection(context, theme, isDesktop)
+                    .animate(delay: 200.ms)
+                    .fadeIn(duration: 600.ms)
+                    .slideY(begin: 0.2, end: 0),
+
+                const SizedBox(height: DesignSystem.spaceXXL),
+
+                // Quick Actions
+                _buildQuickActions(context, theme, isDesktop)
+                    .animate(delay: 400.ms)
+                    .fadeIn(duration: 600.ms)
+                    .slideY(begin: 0.2, end: 0),
+
+                const SizedBox(height: DesignSystem.spaceXXL),
+
+                // Progress Tracking
+                _buildProgressTracking(context, theme, isDesktop)
+                    .animate(delay: 600.ms)
+                    .fadeIn(duration: 600.ms)
+                    .slideY(begin: 0.2, end: 0),
+
+                const SizedBox(height: DesignSystem.spaceXXL),
+
+                // Recent Activity
+                _buildRecentActivity(context, theme, isDesktop)
+                    .animate(delay: 800.ms)
+                    .fadeIn(duration: 600.ms)
+                    .slideY(begin: 0.2, end: 0),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildBrowseTab(
       BuildContext context, ThemeData theme, bool isDark, bool isDesktop) {
+    final donationsToDisplay =
+        _searchQuery.isEmpty && _selectedCategories.isEmpty
+            ? _availableDonations
+            : _filteredDonations;
+
     return RefreshIndicator(
       onRefresh: _loadAvailableDonations,
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: isDesktop ? 1400 : double.infinity,
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(
-                  isDesktop ? AppTheme.spacingXL : AppTheme.spacingL),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Welcome Section
-                  _buildWelcomeSection(context, theme),
+        child: WebTheme.section(
+          maxWidth: WebTheme.maxContentWidthLarge,
+          child: Padding(
+            padding: EdgeInsets.all(
+                isDesktop ? DesignSystem.spaceXXXL : DesignSystem.spaceL),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Page Title
+                Text(
+                  AppLocalizations.of(context)!.browseDonations,
+                  style: DesignSystem.displaySmall(context).copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                )
+                    .animate()
+                    .fadeIn(duration: 600.ms)
+                    .slideX(begin: -0.2, end: 0),
 
-                  const SizedBox(height: AppTheme.spacingXL),
+                const SizedBox(height: DesignSystem.spaceXL),
 
-                  // Stats Cards
-                  _buildStatsSection(context, theme, isDesktop),
+                // Category Filter with animation
+                _buildCategoryFilter(context, theme)
+                    .animate(delay: 200.ms)
+                    .fadeIn(duration: 600.ms)
+                    .slideY(begin: 0.1, end: 0),
 
-                  const SizedBox(height: AppTheme.spacingXL),
+                const SizedBox(height: DesignSystem.spaceL),
 
-                  // Quick Actions
-                  _buildQuickActions(context, theme, isDesktop),
+                // Result count
+                if (_searchQuery.isNotEmpty || _selectedCategories.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: DesignSystem.spaceM),
+                    child: Row(
+                      children: [
+                        Text(
+                          'Found ${donationsToDisplay.length} donation${donationsToDisplay.length == 1 ? '' : 's'}',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: DesignSystem.neutral600,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(width: DesignSystem.spaceS),
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _searchQuery = '';
+                              _selectedCategories = [];
+                            });
+                            _applyFiltersAndSearch();
+                          },
+                          child: Text(
+                            'Clear filters',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: DesignSystem.secondaryGreen,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ).animate(delay: 300.ms).fadeIn(duration: 600.ms),
 
-                  const SizedBox(height: AppTheme.spacingXL),
-
-                  // Recent Activity
-                  _buildRecentActivity(context, theme, isDesktop),
-
-                  const SizedBox(height: AppTheme.spacingXL),
-
-                  // Progress Tracking
-                  _buildProgressTracking(context, theme, isDesktop),
-
-                  const SizedBox(height: AppTheme.spacingXL),
-
-                  // Category Filter
-                  _buildCategoryFilter(context, theme),
-
-                  const SizedBox(height: AppTheme.spacingL),
-
-                  // Available Donations
-                  _buildAvailableDonations(context, theme, isDark, isDesktop),
-                ],
-              ),
+                // Available Donations with staggered animation
+                _buildAvailableDonations(context, theme, isDark, isDesktop)
+                    .animate(delay: 400.ms)
+                    .fadeIn(duration: 600.ms)
+                    .slideY(begin: 0.1, end: 0),
+              ],
             ),
           ),
         ),
@@ -457,14 +678,14 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced>
               description: 'Find items you need',
               icon: Icons.search,
               color: DesignSystem.primaryBlue,
-              onTap: () => _tabController.animateTo(0),
+              onTap: () => setState(() => _currentRoute = 'browse'),
             ),
             GBQuickActionCard(
               title: l10n.myRequests,
               description: 'View request status',
               icon: Icons.inbox_outlined,
               color: DesignSystem.secondaryGreen,
-              onTap: () => _tabController.animateTo(1),
+              onTap: () => setState(() => _currentRoute = 'requests'),
             ),
             GBQuickActionCard(
               title: l10n.message,
@@ -473,8 +694,11 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced>
               color: DesignSystem.accentPink,
               onTap: () {
                 // Navigate to messages
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Messages feature coming soon')),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MessagesScreenEnhanced(),
+                  ),
                 );
               },
             ),
@@ -483,7 +707,7 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced>
               description: 'Filter by category',
               icon: Icons.category,
               color: DesignSystem.accentCyan,
-              onTap: () => _tabController.animateTo(0),
+              onTap: () => setState(() => _currentRoute = 'browse'),
             ),
           ],
         ),
@@ -626,7 +850,6 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced>
 
   Widget _buildProgressTracking(
       BuildContext context, ThemeData theme, bool isDesktop) {
-    final l10n = AppLocalizations.of(context)!;
     final approvedRequests =
         _myRequests.where((r) => r.status == 'approved').length;
     final totalRequests = _myRequests.length;

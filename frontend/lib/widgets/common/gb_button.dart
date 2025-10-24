@@ -200,6 +200,18 @@ class _GBButtonState extends State<GBButton>
 
   @override
   Widget build(BuildContext context) {
+    return MouseRegion(
+      cursor: widget.onPressed != null
+          ? SystemMouseCursors.click
+          : SystemMouseCursors.basic,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        child: _buildButton(context),
+      ),
+    );
+  }
+
+  Widget _buildButton(BuildContext context) {
     return Semantics(
       button: true,
       enabled: _isEnabled,

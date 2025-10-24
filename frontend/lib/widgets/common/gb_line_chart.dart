@@ -85,8 +85,6 @@ class GBLineChart extends StatefulWidget {
 }
 
 class _GBLineChartState extends State<GBLineChart> {
-  int? _touchedIndex;
-
   @override
   Widget build(BuildContext context) {
     if (widget.data.isEmpty || widget.xLabels.isEmpty) {

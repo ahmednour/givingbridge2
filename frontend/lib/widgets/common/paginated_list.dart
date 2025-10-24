@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/theme/app_theme_enhanced.dart';
-import '../../widgets/app_components.dart';
+import 'gb_button.dart';
 
 /// Paginated list widget with lazy loading and performance optimizations
 class PaginatedList<T> extends StatefulWidget {
@@ -176,7 +176,7 @@ class _PaginatedListState<T> extends State<PaginatedList<T>> {
         child: Column(
           children: [
             const CircularProgressIndicator(),
-            AppSpacing.vertical(UIConstants.spacingM),
+            SizedBox(height: UIConstants.spacingM),
             Text(
               'جاري التحميل...',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -196,7 +196,7 @@ class _PaginatedListState<T> extends State<PaginatedList<T>> {
         child: Column(
           children: [
             const CircularProgressIndicator(),
-            AppSpacing.vertical(UIConstants.spacingS),
+            SizedBox(height: UIConstants.spacingS),
             Text(
               'جاري تحميل المزيد...',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -238,7 +238,7 @@ class _PaginatedListState<T> extends State<PaginatedList<T>> {
               size: UIConstants.iconXXL,
               color: AppTheme.textHintColor,
             ),
-            AppSpacing.vertical(UIConstants.spacingL),
+            SizedBox(height: UIConstants.spacingL),
             Text(
               widget.emptyMessage ?? 'لا توجد عناصر للعرض',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -267,7 +267,7 @@ class _PaginatedListState<T> extends State<PaginatedList<T>> {
               size: UIConstants.iconXXL,
               color: AppTheme.errorColor,
             ),
-            AppSpacing.vertical(UIConstants.spacingL),
+            SizedBox(height: UIConstants.spacingL),
             Text(
               widget.errorMessage ?? 'حدث خطأ في التحميل',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -275,10 +275,10 @@ class _PaginatedListState<T> extends State<PaginatedList<T>> {
                   ),
               textAlign: TextAlign.center,
             ),
-            AppSpacing.vertical(UIConstants.spacingL),
-            AppButton(
+            SizedBox(height: UIConstants.spacingL),
+            GBButton(
               text: 'حاول مرة أخرى',
-              type: AppButtonType.primary,
+              variant: GBButtonVariant.primary,
               onPressed: widget.onRetry,
             ),
           ],

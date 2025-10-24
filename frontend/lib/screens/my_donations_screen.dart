@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import '../core/theme/app_theme.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../core/theme/design_system.dart';
 import '../widgets/common/gb_button.dart';
+import '../widgets/common/gb_empty_state.dart';
+import '../widgets/common/web_card.dart';
 import '../services/api_service.dart';
 import '../models/donation.dart';
 import 'create_donation_screen_enhanced.dart';
@@ -49,7 +52,14 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
   void _showErrorSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Row(
+          children: [
+            const Icon(Icons.error_outline, color: Colors.white),
+            const SizedBox(width: DesignSystem.spaceM),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: DesignSystem.error,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -58,7 +68,14 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
   void _showSuccessSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.white),
+            const SizedBox(width: DesignSystem.spaceM),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: DesignSystem.success,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -152,18 +169,18 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: DesignSystem.getBackgroundColor(context),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: DesignSystem.getSurfaceColor(context),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimaryColor),
+          icon: Icon(Icons.arrow_back, color: DesignSystem.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'My Donations',
           style: TextStyle(
-            color: AppTheme.textPrimaryColor,
+            color: DesignSystem.textPrimary,
             fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
@@ -171,367 +188,332 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add, color: AppTheme.primaryColor),
+            icon: const Icon(Icons.add, color: DesignSystem.primaryBlue),
             onPressed: _createDonation,
           ),
         ],
       ),
       body: _isLoading
           ? const Center(
-              child: CircularProgressIndicator(
-                valueColor:
-                    AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
-              ),
+              child: CircularProgressIndicator(),
             )
           : _donations.isEmpty
               ? _buildEmptyState()
               : RefreshIndicator(
                   onRefresh: _loadDonations,
                   child: ListView.builder(
-                    padding: const EdgeInsets.all(AppTheme.spacingM),
+                    padding: const EdgeInsets.all(DesignSystem.spaceL),
                     itemCount: _donations.length,
                     itemBuilder: (context, index) {
                       final donation = _donations[index];
-                      return _buildDonationCard(donation);
+                      return _buildDonationCard(donation)
+                          .animate()
+                          .fadeIn(duration: 300.ms, delay: (index * 50).ms)
+                          .slideY(begin: 0.1, end: 0);
                     },
                   ),
                 ),
       floatingActionButton: FloatingActionButton(
         onPressed: _createDonation,
-        backgroundColor: AppTheme.primaryColor,
+        backgroundColor: DesignSystem.primaryBlue,
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(50),
-            ),
-            child: const Icon(
-              Icons.volunteer_activism,
-              size: 50,
-              color: AppTheme.primaryColor,
-            ),
-          ),
-          const SizedBox(height: AppTheme.spacingM),
-          const Text(
-            'No Donations Yet',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: AppTheme.textPrimaryColor,
-            ),
-          ),
-          const SizedBox(height: AppTheme.spacingM),
-          const Text(
-            'Start making a difference by\ncreating your first donation',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              color: AppTheme.textSecondaryColor,
-            ),
-          ),
-          const SizedBox(height: AppTheme.spacingL),
-          GBPrimaryButton(
-            text: 'Create First Donation',
-            onPressed: _createDonation,
-            size: GBButtonSize.large,
-          ),
-        ],
-      ),
+    return GBEmptyState(
+      icon: Icons.volunteer_activism,
+      title: 'No Donations Yet',
+      message: 'Start making a difference by\ncreating your first donation',
+      actionLabel: 'Create First Donation',
+      onAction: _createDonation,
     );
   }
 
   Widget _buildDonationCard(Donation donation) {
     return Container(
-      margin: const EdgeInsets.only(bottom: AppTheme.spacingM),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppTheme.radiusL),
-        boxShadow: AppTheme.shadowMD,
-        border: donation.isAvailable
-            ? null
-            : Border.all(color: Colors.grey.withOpacity(0.5)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Image (if available)
-          if (donation.imageUrl != null && donation.imageUrl!.isNotEmpty)
-            ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(AppTheme.radiusL),
-                topRight: Radius.circular(AppTheme.radiusL),
-              ),
-              child: Stack(
-                children: [
-                  Image.network(
-                    donation.imageUrl!,
-                    width: double.infinity,
-                    height: 200,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        width: double.infinity,
-                        height: 200,
-                        color: AppTheme.surfaceColor,
-                        child: const Icon(
-                          Icons.image_not_supported,
-                          size: 48,
-                          color: AppTheme.textSecondaryColor,
-                        ),
-                      );
-                    },
-                  ),
-                  if (!donation.isAvailable)
-                    Positioned(
-                      top: AppTheme.spacingM,
-                      right: AppTheme.spacingM,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppTheme.spacingM,
-                          vertical: AppTheme.spacingM,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.grey,
-                          borderRadius: BorderRadius.circular(AppTheme.radiusL),
-                        ),
-                        child: const Text(
-                          'Unavailable',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
+      margin: const EdgeInsets.only(bottom: DesignSystem.spaceL),
+      child: WebCard(
+        padding: EdgeInsets.zero,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image (if available)
+            if (donation.imageUrl != null && donation.imageUrl!.isNotEmpty)
+              ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(DesignSystem.radiusL),
+                  topRight: Radius.circular(DesignSystem.radiusL),
+                ),
+                child: Stack(
+                  children: [
+                    Image.network(
+                      donation.imageUrl!,
+                      width: double.infinity,
+                      height: 200,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: double.infinity,
+                          height: 200,
+                          color: DesignSystem.neutral100,
+                          child: const Icon(
+                            Icons.image_not_supported,
+                            size: 48,
+                            color: DesignSystem.textSecondary,
+                          ),
+                        );
+                      },
+                    ),
+                    if (!donation.isAvailable)
+                      Positioned(
+                        top: DesignSystem.spaceM,
+                        right: DesignSystem.spaceM,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: DesignSystem.spaceM,
+                            vertical: DesignSystem.spaceS,
+                          ),
+                          decoration: BoxDecoration(
+                            color: DesignSystem.neutral600,
+                            borderRadius:
+                                BorderRadius.circular(DesignSystem.radiusL),
+                          ),
+                          child: const Text(
+                            'Unavailable',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                       ),
+                  ],
+                ),
+              ),
+
+            Padding(
+              padding: const EdgeInsets.all(DesignSystem.spaceL),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Status and Category
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: DesignSystem.spaceM,
+                          vertical: DesignSystem.spaceS,
+                        ),
+                        decoration: BoxDecoration(
+                          color: donation.isAvailable
+                              ? DesignSystem.success.withOpacity(0.1)
+                              : DesignSystem.neutral200,
+                          borderRadius:
+                              BorderRadius.circular(DesignSystem.radiusL),
+                        ),
+                        child: Text(
+                          donation.isAvailable ? 'Available' : 'Unavailable',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: donation.isAvailable
+                                ? DesignSystem.success
+                                : DesignSystem.neutral600,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: DesignSystem.spaceM),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: DesignSystem.spaceM,
+                          vertical: DesignSystem.spaceS,
+                        ),
+                        decoration: BoxDecoration(
+                          color: DesignSystem.primaryBlue.withOpacity(0.1),
+                          borderRadius:
+                              BorderRadius.circular(DesignSystem.radiusL),
+                        ),
+                        child: Text(
+                          donation.categoryDisplayName,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: DesignSystem.primaryBlue,
+                          ),
+                        ),
+                      ),
+                      const Spacer(),
+                      // More options menu
+                      PopupMenuButton<String>(
+                        onSelected: (value) {
+                          switch (value) {
+                            case 'edit':
+                              _editDonation(donation);
+                              break;
+                            case 'toggle':
+                              _toggleAvailability(donation);
+                              break;
+                            case 'delete':
+                              _deleteDonation(donation);
+                              break;
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          PopupMenuItem(
+                            value: 'edit',
+                            child: Row(
+                              children: [
+                                const Icon(Icons.edit, size: 16),
+                                const SizedBox(width: 8),
+                                Text(AppLocalizations.of(context)!.edit),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 'toggle',
+                            child: Row(
+                              children: [
+                                Icon(
+                                  donation.isAvailable
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  size: 16,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(donation.isAvailable
+                                    ? 'Mark Unavailable'
+                                    : 'Mark Available'),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 'delete',
+                            child: Row(
+                              children: [
+                                const Icon(Icons.delete,
+                                    size: 16, color: DesignSystem.error),
+                                const SizedBox(width: 8),
+                                Text(AppLocalizations.of(context)!.deleteAction,
+                                    style: const TextStyle(
+                                        color: DesignSystem.error)),
+                              ],
+                            ),
+                          ),
+                        ],
+                        child: const Icon(
+                          Icons.more_vert,
+                          color: DesignSystem.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: DesignSystem.spaceM),
+
+                  // Title
+                  Text(
+                    donation.title,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: donation.isAvailable
+                          ? DesignSystem.textPrimary
+                          : DesignSystem.textSecondary,
                     ),
+                  ),
+
+                  const SizedBox(height: DesignSystem.spaceM),
+
+                  // Description
+                  Text(
+                    donation.description,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: DesignSystem.textSecondary,
+                      height: 1.4,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+
+                  const SizedBox(height: DesignSystem.spaceM),
+
+                  // Location and Condition
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.location_on_outlined,
+                        size: 16,
+                        color: DesignSystem.textSecondary,
+                      ),
+                      const SizedBox(width: DesignSystem.spaceS),
+                      Expanded(
+                        child: Text(
+                          donation.location,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: DesignSystem.textSecondary,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: DesignSystem.spaceM),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: DesignSystem.spaceM,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _getConditionColor(donation.condition)
+                              .withOpacity(0.1),
+                          borderRadius:
+                              BorderRadius.circular(DesignSystem.radiusL),
+                        ),
+                        child: Text(
+                          donation.conditionDisplayName,
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
+                            color: _getConditionColor(donation.condition),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: DesignSystem.spaceL),
+
+                  // Quick Actions
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GBOutlineButton(
+                          text: 'Edit',
+                          onPressed: () => _editDonation(donation),
+                          size: GBButtonSize.small,
+                        ),
+                      ),
+                      const SizedBox(width: DesignSystem.spaceM),
+                      Expanded(
+                        child: GBButton(
+                          text: donation.isAvailable ? 'Hide' : 'Show',
+                          onPressed: () => _toggleAvailability(donation),
+                          variant: donation.isAvailable
+                              ? GBButtonVariant.secondary
+                              : GBButtonVariant.primary,
+                          size: GBButtonSize.small,
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
-
-          Padding(
-            padding: const EdgeInsets.all(AppTheme.spacingL),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Status and Category
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppTheme.spacingM,
-                        vertical: AppTheme.spacingM,
-                      ),
-                      decoration: BoxDecoration(
-                        color: donation.isAvailable
-                            ? Colors.green.withOpacity(0.1)
-                            : Colors.grey.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(AppTheme.radiusL),
-                      ),
-                      child: Text(
-                        donation.isAvailable ? 'Available' : 'Unavailable',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color:
-                              donation.isAvailable ? Colors.green : Colors.grey,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: AppTheme.spacingM),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppTheme.spacingM,
-                        vertical: AppTheme.spacingM,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppTheme.primaryColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(AppTheme.radiusL),
-                      ),
-                      child: Text(
-                        donation.categoryDisplayName,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: AppTheme.primaryColor,
-                        ),
-                      ),
-                    ),
-                    const Spacer(),
-                    // More options menu
-                    PopupMenuButton<String>(
-                      onSelected: (value) {
-                        switch (value) {
-                          case 'edit':
-                            _editDonation(donation);
-                            break;
-                          case 'toggle':
-                            _toggleAvailability(donation);
-                            break;
-                          case 'delete':
-                            _deleteDonation(donation);
-                            break;
-                        }
-                      },
-                      itemBuilder: (context) => [
-                        PopupMenuItem(
-                          value: 'edit',
-                          child: Row(
-                            children: [
-                              Icon(Icons.edit, size: 16),
-                              SizedBox(width: 8),
-                              Text(AppLocalizations.of(context)!.edit),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'toggle',
-                          child: Row(
-                            children: [
-                              Icon(
-                                donation.isAvailable
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                                size: 16,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(donation.isAvailable
-                                  ? 'Mark Unavailable'
-                                  : 'Mark Available'),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'delete',
-                          child: Row(
-                            children: [
-                              Icon(Icons.delete, size: 16, color: Colors.red),
-                              SizedBox(width: 8),
-                              Text(AppLocalizations.of(context)!.deleteAction,
-                                  style: TextStyle(color: Colors.red)),
-                            ],
-                          ),
-                        ),
-                      ],
-                      child: const Icon(
-                        Icons.more_vert,
-                        color: AppTheme.textSecondaryColor,
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: AppTheme.spacingM),
-
-                // Title
-                Text(
-                  donation.title,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: donation.isAvailable
-                        ? AppTheme.textPrimaryColor
-                        : AppTheme.textSecondaryColor,
-                  ),
-                ),
-
-                const SizedBox(height: AppTheme.spacingM),
-
-                // Description
-                Text(
-                  donation.description,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppTheme.textSecondaryColor,
-                    height: 1.4,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-
-                const SizedBox(height: AppTheme.spacingM),
-
-                // Location and Condition
-                Row(
-                  children: [
-                    Icon(
-                      Icons.location_on_outlined,
-                      size: 16,
-                      color: AppTheme.textSecondaryColor,
-                    ),
-                    const SizedBox(width: AppTheme.spacingM),
-                    Expanded(
-                      child: Text(
-                        donation.location,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppTheme.textSecondaryColor,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(width: AppTheme.spacingM),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppTheme.spacingM,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _getConditionColor(donation.condition)
-                            .withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(AppTheme.radiusL),
-                      ),
-                      child: Text(
-                        donation.conditionDisplayName,
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w500,
-                          color: _getConditionColor(donation.condition),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: AppTheme.spacingM),
-
-                // Quick Actions
-                Row(
-                  children: [
-                    Expanded(
-                      child: GBOutlineButton(
-                        text: 'Edit',
-                        onPressed: () => _editDonation(donation),
-                        size: GBButtonSize.small,
-                      ),
-                    ),
-                    const SizedBox(width: AppTheme.spacingM),
-                    Expanded(
-                      child: GBButton(
-                        text: donation.isAvailable ? 'Hide' : 'Show',
-                        onPressed: () => _toggleAvailability(donation),
-                        variant: donation.isAvailable
-                            ? GBButtonVariant.secondary
-                            : GBButtonVariant.primary,
-                        size: GBButtonSize.small,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -545,9 +527,9 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
       case 'good':
         return Colors.orange;
       case 'fair':
-        return Colors.red;
+        return DesignSystem.error;
       default:
-        return AppTheme.textSecondaryColor;
+        return DesignSystem.textSecondary;
     }
   }
 }

@@ -11,7 +11,8 @@ void main() {
 
   setUpAll(() {
     // Mock path_provider for tests that use google_fonts
-    TestWidgetsFlutterBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+    TestWidgetsFlutterBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
       const MethodChannel('plugins.flutter.io/path_provider'),
       (MethodCall methodCall) async {
         if (methodCall.method == 'getApplicationSupportDirectory') {
@@ -44,7 +45,7 @@ void main() {
       expect(semantics, isNotNull);
 
       // Verify semantic information is available
-      expect(semantics!.hasFlag(SemanticsFlag.hasEnabledState), isTrue);
+      expect(semantics.hasFlag(SemanticsFlag.hasEnabledState), isTrue);
       expect(semantics.hasFlag(SemanticsFlag.isButton), isTrue);
     });
 
@@ -106,7 +107,7 @@ void main() {
       // Test touch target sizes
       final buttons = find.byType(ElevatedButton);
       for (int i = 0; i < buttons.evaluate().length; i++) {
-        final button = tester.widget<ElevatedButton>(buttons.at(i));
+        tester.widget<ElevatedButton>(buttons.at(i));
         final renderBox = tester.renderObject<RenderBox>(buttons.at(i));
 
         // Verify touch targets are at least 44x44 points
@@ -161,7 +162,7 @@ void main() {
       // Test alternative text for images
       final images = find.byType(Image);
       for (int i = 0; i < images.evaluate().length; i++) {
-        final image = tester.widget<Image>(images.at(i));
+        tester.widget<Image>(images.at(i));
         final semantics = tester.getSemantics(images.at(i));
 
         // Verify images have semantic information
@@ -235,7 +236,7 @@ void main() {
       // Test list accessibility
       final lists = find.byType(ListView);
       for (int i = 0; i < lists.evaluate().length; i++) {
-        final list = tester.widget<ListView>(lists.at(i));
+        tester.widget<ListView>(lists.at(i));
         final semantics = tester.getSemantics(lists.at(i));
 
         // Verify lists have proper semantic information
@@ -250,12 +251,12 @@ void main() {
       // Test button accessibility
       final buttons = find.byType(ElevatedButton);
       for (int i = 0; i < buttons.evaluate().length; i++) {
-        final button = tester.widget<ElevatedButton>(buttons.at(i));
+        tester.widget<ElevatedButton>(buttons.at(i));
         final semantics = tester.getSemantics(buttons.at(i));
 
         // Verify buttons have proper semantic information
         expect(semantics, isNotNull);
-        expect(semantics!.hasFlag(SemanticsFlag.isButton), isTrue);
+        expect(semantics.hasFlag(SemanticsFlag.isButton), isTrue);
       }
     });
 
@@ -267,7 +268,7 @@ void main() {
       // This would test any confirmation dialogs or modals
       final dialogs = find.byType(AlertDialog);
       for (int i = 0; i < dialogs.evaluate().length; i++) {
-        final dialog = tester.widget<AlertDialog>(dialogs.at(i));
+        tester.widget<AlertDialog>(dialogs.at(i));
         final semantics = tester.getSemantics(dialogs.at(i));
 
         // Verify dialogs have proper semantic information
@@ -317,11 +318,9 @@ void main() {
       expect(semantics, isNotNull);
 
       // Verify key accessibility features are present (if semantics are available)
-      if (semantics != null) {
-        // Check for basic accessibility features - this may not always be true in tests
-        // so we'll make it more lenient
-        expect(semantics.hasFlag(SemanticsFlag.hasEnabledState), isA<bool>());
-      }
+      // Check for basic accessibility features - this may not always be true in tests
+      // so we'll make it more lenient
+      expect(semantics.hasFlag(SemanticsFlag.hasEnabledState), isA<bool>());
     });
   });
 }

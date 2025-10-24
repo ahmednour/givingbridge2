@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import '../core/theme/app_theme.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../core/theme/design_system.dart';
+import '../widgets/common/gb_empty_state.dart';
+import '../widgets/common/web_card.dart';
 import '../l10n/app_localizations.dart';
 import '../services/api_service.dart';
 import '../models/donation.dart';
@@ -66,18 +69,18 @@ class _DonorImpactScreenState extends State<DonorImpactScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
+    Theme.of(context);
     final size = MediaQuery.of(context).size;
     final isDesktop = size.width > 768;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.myImpact),
-        backgroundColor: AppTheme.primaryColor,
+        backgroundColor: DesignSystem.primaryBlue,
         foregroundColor: Colors.white,
         elevation: 0,
       ),
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: DesignSystem.getBackgroundColor(context),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _totalDonations == 0
@@ -93,15 +96,18 @@ class _DonorImpactScreenState extends State<DonorImpactScreen> {
                         style: TextStyle(
                           fontSize: isDesktop ? 32 : 24,
                           fontWeight: FontWeight.bold,
-                          color: AppTheme.textPrimaryColor,
+                          color: DesignSystem.textPrimary,
                         ),
-                      ),
+                      )
+                          .animate()
+                          .fadeIn(duration: 400.ms)
+                          .slideY(begin: -0.1, end: 0),
                       const SizedBox(height: 8),
                       Text(
                         l10n.allTime,
                         style: const TextStyle(
                           fontSize: 16,
-                          color: AppTheme.textSecondaryColor,
+                          color: DesignSystem.textSecondary,
                         ),
                       ),
                       const SizedBox(height: 32),
@@ -125,38 +131,10 @@ class _DonorImpactScreenState extends State<DonorImpactScreen> {
   }
 
   Widget _buildEmptyState(AppLocalizations l10n) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.analytics_outlined,
-              size: 120,
-              color: AppTheme.textSecondaryColor.withOpacity(0.3),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              l10n.noActivityYet,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimaryColor,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              l10n.startDonating,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 16,
-                color: AppTheme.textSecondaryColor,
-              ),
-            ),
-          ],
-        ),
-      ),
+    return GBEmptyState(
+      icon: Icons.analytics_outlined,
+      title: l10n.noActivityYet,
+      message: l10n.startDonating,
     );
   }
 
@@ -166,13 +144,13 @@ class _DonorImpactScreenState extends State<DonorImpactScreen> {
         'title': l10n.totalDonationsMade,
         'value': _totalDonations.toString(),
         'icon': Icons.volunteer_activism,
-        'color': AppTheme.primaryColor,
+        'color': DesignSystem.primaryBlue,
       },
       {
         'title': l10n.activeDonations,
         'value': _activeDonations.toString(),
         'icon': Icons.local_shipping,
-        'color': AppTheme.successColor,
+        'color': DesignSystem.success,
       },
       {
         'title': l10n.completedDonations,
@@ -184,21 +162,26 @@ class _DonorImpactScreenState extends State<DonorImpactScreen> {
         'title': l10n.totalRequests,
         'value': _totalRequests.toString(),
         'icon': Icons.people,
-        'color': AppTheme.warningColor,
+        'color': DesignSystem.warning,
       },
     ];
 
     if (isDesktop) {
       return Row(
-        children: stats.map((stat) {
+        children: stats.asMap().entries.map((entry) {
+          final index = entry.key;
+          final stat = entry.value;
           return Expanded(
             child: Padding(
               padding: const EdgeInsets.only(right: 16.0),
-              child: _buildStatCard(stat),
+              child: _buildStatCard(stat, index),
             ),
           );
         }).toList(),
-      );
+      )
+          .animate()
+          .fadeIn(duration: 400.ms, delay: 100.ms)
+          .slideY(begin: 0.1, end: 0);
     }
 
     return GridView.count(
@@ -208,24 +191,20 @@ class _DonorImpactScreenState extends State<DonorImpactScreen> {
       crossAxisSpacing: 16,
       mainAxisSpacing: 16,
       childAspectRatio: 1.3,
-      children: stats.map((stat) => _buildStatCard(stat)).toList(),
+      children: stats.asMap().entries.map((entry) {
+        final index = entry.key;
+        final stat = entry.value;
+        return _buildStatCard(stat, index)
+            .animate(delay: (index * 100).ms)
+            .fadeIn(duration: 300.ms)
+            .scale(begin: const Offset(0.8, 0.8), end: const Offset(1, 1));
+      }).toList(),
     );
   }
 
-  Widget _buildStatCard(Map<String, dynamic> stat) {
-    return Container(
+  Widget _buildStatCard(Map<String, dynamic> stat, int index) {
+    return WebCard(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -245,10 +224,10 @@ class _DonorImpactScreenState extends State<DonorImpactScreen> {
           const SizedBox(height: 16),
           Text(
             stat['value'] as String,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
-              color: AppTheme.textPrimaryColor,
+              color: DesignSystem.textPrimary,
             ),
           ),
           const SizedBox(height: 4),
@@ -256,7 +235,7 @@ class _DonorImpactScreenState extends State<DonorImpactScreen> {
             stat['title'] as String,
             style: const TextStyle(
               fontSize: 14,
-              color: AppTheme.textSecondaryColor,
+              color: DesignSystem.textSecondary,
             ),
           ),
         ],
@@ -268,27 +247,16 @@ class _DonorImpactScreenState extends State<DonorImpactScreen> {
     if (_categoryBreakdown.isEmpty) return const SizedBox.shrink();
 
     final colors = [
-      AppTheme.primaryColor,
-      AppTheme.successColor,
-      AppTheme.warningColor,
+      DesignSystem.primaryBlue,
+      DesignSystem.success,
+      DesignSystem.warning,
       const Color(0xFF8B5CF6),
       const Color(0xFFEC4899),
       const Color(0xFF06B6D4),
     ];
 
-    return Container(
+    return WebCard(
       padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -297,7 +265,7 @@ class _DonorImpactScreenState extends State<DonorImpactScreen> {
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: AppTheme.textPrimaryColor,
+              color: DesignSystem.textPrimary,
             ),
           ),
           const SizedBox(height: 24),
@@ -331,7 +299,7 @@ class _DonorImpactScreenState extends State<DonorImpactScreen> {
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: AppTheme.textPrimaryColor,
+                              color: DesignSystem.textPrimary,
                             ),
                           ),
                         ],
@@ -341,7 +309,7 @@ class _DonorImpactScreenState extends State<DonorImpactScreen> {
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: AppTheme.textSecondaryColor,
+                          color: DesignSystem.textSecondary,
                         ),
                       ),
                     ],
@@ -351,7 +319,7 @@ class _DonorImpactScreenState extends State<DonorImpactScreen> {
                     borderRadius: BorderRadius.circular(4),
                     child: LinearProgressIndicator(
                       value: entry.value / _totalDonations,
-                      backgroundColor: Colors.grey[200],
+                      backgroundColor: DesignSystem.neutral200,
                       valueColor: AlwaysStoppedAnimation<Color>(color),
                       minHeight: 8,
                     ),
@@ -362,7 +330,10 @@ class _DonorImpactScreenState extends State<DonorImpactScreen> {
           }),
         ],
       ),
-    );
+    )
+        .animate(delay: 200.ms)
+        .fadeIn(duration: 400.ms)
+        .slideY(begin: 0.1, end: 0);
   }
 
   Widget _buildRecentActivity(AppLocalizations l10n, bool isDesktop) {
@@ -370,19 +341,8 @@ class _DonorImpactScreenState extends State<DonorImpactScreen> {
 
     if (recentDonations.isEmpty) return const SizedBox.shrink();
 
-    return Container(
+    return WebCard(
       padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -391,11 +351,13 @@ class _DonorImpactScreenState extends State<DonorImpactScreen> {
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: AppTheme.textPrimaryColor,
+              color: DesignSystem.textPrimary,
             ),
           ),
           const SizedBox(height: 24),
-          ...recentDonations.map((donation) {
+          ...recentDonations.asMap().entries.map((entry) {
+            final index = entry.key;
+            final donation = entry.value;
             return Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: Row(
@@ -404,12 +366,12 @@ class _DonorImpactScreenState extends State<DonorImpactScreen> {
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      color: AppTheme.primaryColor.withOpacity(0.1),
+                      color: DesignSystem.primaryBlue.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
                       _getCategoryIcon(donation.category),
-                      color: AppTheme.primaryColor,
+                      color: DesignSystem.primaryBlue,
                       size: 24,
                     ),
                   ),
@@ -423,7 +385,7 @@ class _DonorImpactScreenState extends State<DonorImpactScreen> {
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: AppTheme.textPrimaryColor,
+                            color: DesignSystem.textPrimary,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -433,7 +395,7 @@ class _DonorImpactScreenState extends State<DonorImpactScreen> {
                           donation.category.toUpperCase(),
                           style: const TextStyle(
                             fontSize: 12,
-                            color: AppTheme.textSecondaryColor,
+                            color: DesignSystem.textSecondary,
                           ),
                         ),
                       ],
@@ -446,8 +408,8 @@ class _DonorImpactScreenState extends State<DonorImpactScreen> {
                     ),
                     decoration: BoxDecoration(
                       color: donation.isAvailable
-                          ? AppTheme.successColor.withOpacity(0.1)
-                          : Colors.grey[200],
+                          ? DesignSystem.success.withOpacity(0.1)
+                          : DesignSystem.neutral200,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -456,18 +418,24 @@ class _DonorImpactScreenState extends State<DonorImpactScreen> {
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: donation.isAvailable
-                            ? AppTheme.successColor
-                            : AppTheme.textSecondaryColor,
+                            ? DesignSystem.success
+                            : DesignSystem.textSecondary,
                       ),
                     ),
                   ),
                 ],
-              ),
+              )
+                  .animate(delay: (index * 100).ms)
+                  .fadeIn(duration: 300.ms)
+                  .slideX(begin: 0.1, end: 0),
             );
           }).toList(),
         ],
       ),
-    );
+    )
+        .animate(delay: 300.ms)
+        .fadeIn(duration: 400.ms)
+        .slideY(begin: 0.1, end: 0);
   }
 
   IconData _getCategoryIcon(String category) {

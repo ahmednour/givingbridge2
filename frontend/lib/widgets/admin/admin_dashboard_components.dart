@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/theme/app_theme_enhanced.dart';
 import '../../core/utils/rtl_utils.dart';
-import '../../widgets/app_components.dart';
 import '../../l10n/app_localizations.dart';
+import '../common/web_card.dart';
 
 /// Admin dashboard statistics card widget
 class AdminStatsCard extends StatelessWidget {
@@ -26,7 +26,7 @@ class AdminStatsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isRTL = RTLUtils.isRTL(context);
 
-    return AppCard(
+    return WebCard(
       onTap: onTap,
       child: Column(
         crossAxisAlignment:
@@ -39,7 +39,7 @@ class AdminStatsCard extends StatelessWidget {
                 width: UIConstants.iconL,
                 height: UIConstants.iconL,
                 decoration: BoxDecoration(
-                  color: color.withOpacity( 0.1),
+                  color: color.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(UIConstants.radiusM),
                 ),
                 child: Icon(
@@ -55,7 +55,7 @@ class AdminStatsCard extends StatelessWidget {
               ),
             ],
           ),
-          AppSpacing.vertical(UIConstants.spacingM),
+          SizedBox(height: UIConstants.spacingM),
           Text(
             value,
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -63,7 +63,7 @@ class AdminStatsCard extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
           ),
-          AppSpacing.vertical(UIConstants.spacingS),
+          SizedBox(height: UIConstants.spacingS),
           Text(
             title,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -120,7 +120,7 @@ class AdminQuickActions extends StatelessWidget {
       },
     ];
 
-    return AppCard(
+    return WebCard(
       child: Column(
         crossAxisAlignment:
             isRTL ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -131,7 +131,7 @@ class AdminQuickActions extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
           ),
-          AppSpacing.vertical(UIConstants.spacingL),
+          SizedBox(height: UIConstants.spacingL),
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -150,10 +150,10 @@ class AdminQuickActions extends StatelessWidget {
                 child: Container(
                   padding: EdgeInsets.all(UIConstants.spacingM),
                   decoration: BoxDecoration(
-                    color: (action['color'] as Color).withOpacity( 0.05),
+                    color: (action['color'] as Color).withOpacity(0.05),
                     borderRadius: BorderRadius.circular(UIConstants.radiusM),
                     border: Border.all(
-                      color: (action['color'] as Color).withOpacity( 0.2),
+                      color: (action['color'] as Color).withOpacity(0.2),
                     ),
                   ),
                   child: Row(
@@ -163,7 +163,7 @@ class AdminQuickActions extends StatelessWidget {
                         color: action['color'] as Color,
                         size: UIConstants.iconM,
                       ),
-                      AppSpacing.horizontal(UIConstants.spacingS),
+                      SizedBox(width: UIConstants.spacingS),
                       Expanded(
                         child: Text(
                           action['title'] as String,
@@ -231,7 +231,7 @@ class AdminRecentActivity extends StatelessWidget {
       },
     ];
 
-    return AppCard(
+    return WebCard(
       child: Column(
         crossAxisAlignment:
             isRTL ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -253,7 +253,7 @@ class AdminRecentActivity extends StatelessWidget {
               ),
             ],
           ),
-          AppSpacing.vertical(UIConstants.spacingL),
+          SizedBox(height: UIConstants.spacingL),
           ...activities.map((activity) {
             return Container(
               margin: EdgeInsets.only(bottom: UIConstants.spacingM),
@@ -268,8 +268,7 @@ class AdminRecentActivity extends StatelessWidget {
                     width: UIConstants.iconM,
                     height: UIConstants.iconM,
                     decoration: BoxDecoration(
-                      color:
-                          (activity['color'] as Color).withOpacity( 0.1),
+                      color: (activity['color'] as Color).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(UIConstants.radiusS),
                     ),
                     child: Icon(
@@ -278,7 +277,7 @@ class AdminRecentActivity extends StatelessWidget {
                       size: UIConstants.iconS,
                     ),
                   ),
-                  AppSpacing.horizontal(UIConstants.spacingM),
+                  SizedBox(width: UIConstants.spacingM),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: isRTL
@@ -292,7 +291,7 @@ class AdminRecentActivity extends StatelessWidget {
                                     fontWeight: FontWeight.w500,
                                   ),
                         ),
-                        AppSpacing.vertical(UIConstants.spacingXS),
+                        SizedBox(height: UIConstants.spacingXS),
                         Row(
                           children: [
                             Text(
@@ -304,7 +303,7 @@ class AdminRecentActivity extends StatelessWidget {
                                     color: AppTheme.textSecondaryColor,
                                   ),
                             ),
-                            AppSpacing.horizontal(UIConstants.spacingS),
+                            SizedBox(width: UIConstants.spacingS),
                             Text(
                               '•',
                               style: Theme.of(context)
@@ -314,7 +313,7 @@ class AdminRecentActivity extends StatelessWidget {
                                     color: AppTheme.textHintColor,
                                   ),
                             ),
-                            AppSpacing.horizontal(UIConstants.spacingS),
+                            SizedBox(width: UIConstants.spacingS),
                             Text(
                               activity['time'] as String,
                               style: Theme.of(context)
@@ -396,11 +395,11 @@ class AdminDashboardOverview extends StatelessWidget {
             ),
           ],
         ),
-        AppSpacing.vertical(UIConstants.spacingL),
+        SizedBox(height: UIConstants.spacingL),
 
         // Quick Actions
         const AdminQuickActions(),
-        AppSpacing.vertical(UIConstants.spacingL),
+        SizedBox(height: UIConstants.spacingL),
 
         // Recent Activity
         const AdminRecentActivity(),

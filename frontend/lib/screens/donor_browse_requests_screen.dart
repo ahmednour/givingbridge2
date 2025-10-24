@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import '../core/theme/app_theme.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../core/theme/design_system.dart';
+import '../widgets/common/gb_filter_chips.dart';
+import '../widgets/common/gb_empty_state.dart';
+import '../widgets/common/web_card.dart';
 import '../l10n/app_localizations.dart';
 import '../services/api_service.dart';
 import 'chat_screen_enhanced.dart';
@@ -38,8 +42,17 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.failedToLoadRequests),
-            backgroundColor: AppTheme.errorColor,
+            content: Row(
+              children: [
+                const Icon(Icons.error_outline, color: Colors.white),
+                const SizedBox(width: DesignSystem.spaceM),
+                Expanded(
+                  child:
+                      Text(AppLocalizations.of(context)!.failedToLoadRequests),
+                ),
+              ],
+            ),
+            backgroundColor: DesignSystem.error,
           ),
         );
       }
@@ -50,13 +63,13 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
     }
   }
 
-  List<Map<String, dynamic>> _getFilters(AppLocalizations l10n) {
+  List<GBFilterOption<String>> _getFilters(AppLocalizations l10n) {
     return [
-      {'value': 'all', 'label': l10n.all},
-      {'value': 'pending', 'label': l10n.pending},
-      {'value': 'approved', 'label': l10n.approved},
-      {'value': 'declined', 'label': l10n.declined},
-      {'value': 'completed', 'label': l10n.completed},
+      GBFilterOption(value: 'all', label: l10n.all),
+      GBFilterOption(value: 'pending', label: l10n.pending),
+      GBFilterOption(value: 'approved', label: l10n.approved),
+      GBFilterOption(value: 'declined', label: l10n.declined),
+      GBFilterOption(value: 'completed', label: l10n.completed),
     ];
   }
 
@@ -72,8 +85,16 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(AppLocalizations.of(context)!.requestApproved),
-              backgroundColor: AppTheme.successColor,
+              content: Row(
+                children: [
+                  const Icon(Icons.check_circle_outline, color: Colors.white),
+                  const SizedBox(width: DesignSystem.spaceM),
+                  Expanded(
+                    child: Text(AppLocalizations.of(context)!.requestApproved),
+                  ),
+                ],
+              ),
+              backgroundColor: DesignSystem.success,
             ),
           );
           _loadRequests();
@@ -83,8 +104,17 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.failedToUpdateRequest),
-            backgroundColor: AppTheme.errorColor,
+            content: Row(
+              children: [
+                const Icon(Icons.error_outline, color: Colors.white),
+                const SizedBox(width: DesignSystem.spaceM),
+                Expanded(
+                  child:
+                      Text(AppLocalizations.of(context)!.failedToUpdateRequest),
+                ),
+              ],
+            ),
+            backgroundColor: DesignSystem.error,
           ),
         );
       }
@@ -98,8 +128,16 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(AppLocalizations.of(context)!.requestDeclined),
-              backgroundColor: AppTheme.errorColor,
+              content: Row(
+                children: [
+                  const Icon(Icons.check_circle_outline, color: Colors.white),
+                  const SizedBox(width: DesignSystem.spaceM),
+                  Expanded(
+                    child: Text(AppLocalizations.of(context)!.requestDeclined),
+                  ),
+                ],
+              ),
+              backgroundColor: DesignSystem.error,
             ),
           );
           _loadRequests();
@@ -109,8 +147,17 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.failedToUpdateRequest),
-            backgroundColor: AppTheme.errorColor,
+            content: Row(
+              children: [
+                const Icon(Icons.error_outline, color: Colors.white),
+                const SizedBox(width: DesignSystem.spaceM),
+                Expanded(
+                  child:
+                      Text(AppLocalizations.of(context)!.failedToUpdateRequest),
+                ),
+              ],
+            ),
+            backgroundColor: DesignSystem.error,
           ),
         );
       }
@@ -126,50 +173,27 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.incomingRequests),
-        backgroundColor: AppTheme.primaryColor,
+        backgroundColor: DesignSystem.primaryBlue,
         foregroundColor: Colors.white,
         elevation: 0,
       ),
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: DesignSystem.getBackgroundColor(context),
       body: Column(
         children: [
           // Filter Bar
           Container(
             padding: const EdgeInsets.all(16),
-            color: Colors.white,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: _getFilters(l10n).map((filter) {
-                  final isSelected = _selectedFilter == filter['value'];
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: FilterChip(
-                      label: Text(filter['label'] as String),
-                      selected: isSelected,
-                      onSelected: (selected) {
-                        setState(() {
-                          _selectedFilter = filter['value'] as String;
-                        });
-                      },
-                      backgroundColor: Colors.white,
-                      selectedColor: AppTheme.primaryColor.withOpacity(0.1),
-                      labelStyle: TextStyle(
-                        color: isSelected
-                            ? AppTheme.primaryColor
-                            : AppTheme.textSecondaryColor,
-                        fontWeight:
-                            isSelected ? FontWeight.w600 : FontWeight.normal,
-                      ),
-                      side: BorderSide(
-                        color: isSelected
-                            ? AppTheme.primaryColor
-                            : Colors.grey[300]!,
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
+            color: DesignSystem.getSurfaceColor(context),
+            child: GBFilterChips<String>(
+              options: _getFilters(l10n),
+              selectedValues: [_selectedFilter],
+              onChanged: (selected) {
+                setState(() {
+                  _selectedFilter = selected.first;
+                });
+              },
+              multiSelect: false,
+              scrollable: true,
             ),
           ),
 
@@ -189,7 +213,10 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
                               _filteredRequests[index],
                               l10n,
                               isDesktop,
-                            );
+                            )
+                                .animate(delay: (index * 50).ms)
+                                .fadeIn(duration: 300.ms)
+                                .slideY(begin: 0.1, end: 0);
                           },
                         ),
                       ),
@@ -200,38 +227,10 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
   }
 
   Widget _buildEmptyState(AppLocalizations l10n) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.inbox_outlined,
-              size: 120,
-              color: AppTheme.textSecondaryColor.withOpacity(0.3),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              l10n.noIncomingRequests,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimaryColor,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              l10n.whenReceiversRequest,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 16,
-                color: AppTheme.textSecondaryColor,
-              ),
-            ),
-          ],
-        ),
-      ),
+    return GBEmptyState(
+      icon: Icons.inbox_outlined,
+      title: l10n.noIncomingRequests,
+      message: l10n.whenReceiversRequest,
     );
   }
 
@@ -240,14 +239,9 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
     AppLocalizations l10n,
     bool isDesktop,
   ) {
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
+      child: WebCard(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -264,7 +258,7 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: AppTheme.textPrimaryColor,
+                          color: DesignSystem.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -272,7 +266,7 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
                         'Donation #${request.donationId}',
                         style: const TextStyle(
                           fontSize: 14,
-                          color: AppTheme.textSecondaryColor,
+                          color: DesignSystem.textSecondary,
                         ),
                       ),
                     ],
@@ -289,14 +283,14 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.grey[100],
+                  color: DesignSystem.neutral50,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   request.message!,
                   style: const TextStyle(
                     fontSize: 14,
-                    color: AppTheme.textPrimaryColor,
+                    color: DesignSystem.textPrimary,
                   ),
                 ),
               ),
@@ -306,17 +300,17 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
             // Date
             Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.calendar_today,
                   size: 16,
-                  color: AppTheme.textSecondaryColor,
+                  color: DesignSystem.textSecondary,
                 ),
                 const SizedBox(width: 8),
                 Text(
                   '${l10n.requestedOn} ${request.createdAt}',
                   style: const TextStyle(
                     fontSize: 12,
-                    color: AppTheme.textSecondaryColor,
+                    color: DesignSystem.textSecondary,
                   ),
                 ),
               ],
@@ -335,8 +329,8 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
                       icon: const Icon(Icons.close, size: 20),
                       label: Text(l10n.declineRequest),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: AppTheme.errorColor,
-                        side: BorderSide(color: AppTheme.errorColor),
+                        foregroundColor: DesignSystem.error,
+                        side: const BorderSide(color: DesignSystem.error),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                     ),
@@ -348,7 +342,7 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
                       icon: const Icon(Icons.check, size: 20),
                       label: Text(l10n.approveRequest),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.successColor,
+                        backgroundColor: DesignSystem.success,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
@@ -380,7 +374,7 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
                   icon: const Icon(Icons.chat, size: 20),
                   label: Text(l10n.contactRequester),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryColor,
+                    backgroundColor: DesignSystem.primaryBlue,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
@@ -399,15 +393,15 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
 
     switch (status) {
       case 'pending':
-        color = AppTheme.warningColor;
+        color = DesignSystem.warning;
         label = l10n.pending;
         break;
       case 'approved':
-        color = AppTheme.successColor;
+        color = DesignSystem.success;
         label = l10n.approved;
         break;
       case 'declined':
-        color = AppTheme.errorColor;
+        color = DesignSystem.error;
         label = l10n.declined;
         break;
       case 'completed':

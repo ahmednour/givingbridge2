@@ -4,6 +4,7 @@ const { Op } = require("sequelize");
 const router = express.Router();
 const Message = require("../models/Message");
 const User = require("../models/User");
+const MessageController = require("../controllers/messageController");
 
 // Import authentication middleware from auth routes
 const { authenticateToken } = require("./auth");
@@ -324,5 +325,57 @@ router.get("/admin/stats", authenticateToken, async (req, res) => {
     });
   }
 });
+
+// Archive a conversation
+router.put(
+  "/conversation/:userId/archive",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const otherUserId = parseInt(req.params.userId);
+      const affectedCount = await MessageController.archiveConversation(
+        req.user.userId,
+        otherUserId
+      );
+
+      res.json({
+        message: "Conversation archived successfully",
+        affectedCount,
+      });
+    } catch (error) {
+      console.error("Archive conversation error:", error);
+      res.status(500).json({
+        message: "Failed to archive conversation",
+        error: error.message,
+      });
+    }
+  }
+);
+
+// Unarchive a conversation
+router.put(
+  "/conversation/:userId/unarchive",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const otherUserId = parseInt(req.params.userId);
+      const affectedCount = await MessageController.unarchiveConversation(
+        req.user.userId,
+        otherUserId
+      );
+
+      res.json({
+        message: "Conversation unarchived successfully",
+        affectedCount,
+      });
+    } catch (error) {
+      console.error("Unarchive conversation error:", error);
+      res.status(500).json({
+        message: "Failed to unarchive conversation",
+        error: error.message,
+      });
+    }
+  }
+);
 
 module.exports = router;

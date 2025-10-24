@@ -1,18 +1,16 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import '../core/theme/app_theme_enhanced.dart';
+import '../core/theme/design_system.dart';
 import '../core/utils/rtl_utils.dart';
-import '../core/constants/ui_constants.dart';
 import '../core/constants/donation_constants.dart';
 import '../widgets/common/gb_button.dart';
 import '../widgets/common/gb_multiple_image_upload.dart';
-import '../widgets/app_components.dart';
+import '../widgets/common/web_card.dart';
+import '../widgets/common/gb_text_field.dart';
 import '../providers/donation_provider.dart';
 import '../models/donation.dart';
 import '../l10n/app_localizations.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
 class CreateDonationScreenEnhanced extends StatefulWidget {
   final Donation? donation;
@@ -217,16 +215,16 @@ class _CreateDonationScreenEnhancedState
         content: Row(
           children: [
             const Icon(Icons.check_circle, color: Colors.white),
-            AppSpacing.horizontal(UIConstants.spacingS),
+            const SizedBox(width: 12),
             Expanded(child: Text(message)),
           ],
         ),
-        backgroundColor: AppTheme.successColor,
+        backgroundColor: DesignSystem.success,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(UIConstants.radiusM),
+          borderRadius: BorderRadius.circular(12),
         ),
-        margin: EdgeInsets.all(UIConstants.spacingM),
+        margin: const EdgeInsets.all(16),
       ),
     );
   }
@@ -237,16 +235,16 @@ class _CreateDonationScreenEnhancedState
         content: Row(
           children: [
             const Icon(Icons.error_outline, color: Colors.white),
-            AppSpacing.horizontal(UIConstants.spacingS),
+            const SizedBox(width: 12),
             Expanded(child: Text(message)),
           ],
         ),
-        backgroundColor: AppTheme.errorColor,
+        backgroundColor: DesignSystem.error,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(UIConstants.radiusM),
+          borderRadius: BorderRadius.circular(12),
         ),
-        margin: EdgeInsets.all(UIConstants.spacingM),
+        margin: const EdgeInsets.all(16),
       ),
     );
   }
@@ -269,24 +267,26 @@ class _CreateDonationScreenEnhancedState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: DesignSystem.getBackgroundColor(context),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: DesignSystem.getSurfaceColor(context),
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             RTLUtils.getDirectionalIcon(context, Icons.arrow_back,
                 start: Icons.arrow_back, end: Icons.arrow_forward),
-            color: AppTheme.textPrimaryColor,
+            color: isDark ? DesignSystem.neutral200 : DesignSystem.neutral900,
           ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           widget.donation != null ? l10n.editDonation : l10n.createDonation,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: AppTheme.textPrimaryColor,
+                color:
+                    isDark ? DesignSystem.neutral200 : DesignSystem.neutral900,
                 fontWeight: FontWeight.w600,
               ),
         ),
@@ -297,7 +297,7 @@ class _CreateDonationScreenEnhancedState
               onPressed: _previousStep,
               child: Text(
                 l10n.previous,
-                style: TextStyle(color: AppTheme.primaryColor),
+                style: TextStyle(color: DesignSystem.primaryBlue),
               ),
             ),
         ],
@@ -333,8 +333,9 @@ class _CreateDonationScreenEnhancedState
   }
 
   Widget _buildProgressIndicator() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      padding: EdgeInsets.all(UIConstants.spacingM),
+      padding: const EdgeInsets.all(16),
       child: Column(
         children: [
           Row(
@@ -350,23 +351,25 @@ class _CreateDonationScreenEnhancedState
                         height: 4,
                         decoration: BoxDecoration(
                           color: isActive
-                              ? AppTheme.primaryColor
-                              : AppTheme.borderColor,
+                              ? DesignSystem.primaryBlue
+                              : (isDark
+                                  ? DesignSystem.neutral700
+                                  : DesignSystem.neutral300),
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
                     ),
-                    if (index < 3) AppSpacing.horizontal(UIConstants.spacingXS),
+                    if (index < 3) const SizedBox(width: 8),
                   ],
                 ),
               );
             }),
           ),
-          AppSpacing.vertical(UIConstants.spacingS),
+          const SizedBox(height: 12),
           Text(
             '${_currentStep + 1} of 4',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppTheme.textSecondaryColor,
+                  color: DesignSystem.neutral600,
                 ),
           ),
         ],
@@ -378,30 +381,30 @@ class _CreateDonationScreenEnhancedState
     final l10n = AppLocalizations.of(context)!;
 
     return SingleChildScrollView(
-      padding: EdgeInsets.all(UIConstants.spacingL),
+      padding: const EdgeInsets.all(24),
       child: Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
-            AppCard(
+            WebCard(
               child: Row(
                 children: [
                   Container(
                     width: 60,
                     height: 60,
                     decoration: BoxDecoration(
-                      color: AppTheme.primaryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(UIConstants.radiusM),
+                      color: DesignSystem.primaryBlue.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
                       Icons.info_outline,
-                      color: AppTheme.primaryColor,
+                      color: DesignSystem.primaryBlue,
                       size: 28,
                     ),
                   ),
-                  AppSpacing.horizontal(UIConstants.spacingM),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -413,12 +416,12 @@ class _CreateDonationScreenEnhancedState
                                     fontWeight: FontWeight.w600,
                                   ),
                         ),
-                        AppSpacing.vertical(UIConstants.spacingXS),
+                        const SizedBox(width: 8),
                         Text(
                           l10n.basicInfoDescription,
                           style:
                               Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: AppTheme.textSecondaryColor,
+                                    color: DesignSystem.neutral600,
                                   ),
                         ),
                       ],
@@ -428,19 +431,18 @@ class _CreateDonationScreenEnhancedState
               ),
             ),
 
-            AppSpacing.vertical(UIConstants.spacingL),
+            const SizedBox(height: 24),
 
             // Form Fields
-            AppCard(
+            WebCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Title
-                  AppTextField(
+                  GBTextField(
                     label: l10n.donationTitle,
                     hint: l10n.donationTitleHint,
                     controller: _titleController,
-                    isRequired: true,
                     validator: (value) {
                       if (value?.isEmpty == true) {
                         return l10n.requiredField;
@@ -452,15 +454,14 @@ class _CreateDonationScreenEnhancedState
                     },
                   ),
 
-                  AppSpacing.vertical(UIConstants.spacingM),
+                  const SizedBox(height: 16),
 
                   // Description
-                  AppTextField(
+                  GBTextField(
                     label: l10n.donationDescription,
                     hint: l10n.donationDescriptionHint,
                     controller: _descriptionController,
                     maxLines: 4,
-                    isRequired: true,
                     validator: (value) {
                       if (value?.isEmpty == true) {
                         return l10n.requiredField;
@@ -472,15 +473,14 @@ class _CreateDonationScreenEnhancedState
                     },
                   ),
 
-                  AppSpacing.vertical(UIConstants.spacingM),
+                  const SizedBox(height: 16),
 
                   // Location
-                  AppTextField(
+                  GBTextField(
                     label: l10n.donationLocation,
                     hint: l10n.donationLocationHint,
                     controller: _locationController,
                     prefixIcon: Icon(Icons.location_on_outlined),
-                    isRequired: true,
                     validator: (value) {
                       if (value?.isEmpty == true) {
                         return l10n.requiredField;
@@ -492,10 +492,10 @@ class _CreateDonationScreenEnhancedState
                     },
                   ),
 
-                  AppSpacing.vertical(UIConstants.spacingM),
+                  const SizedBox(height: 16),
 
                   // Quantity
-                  AppTextField(
+                  GBTextField(
                     label: l10n.quantity,
                     hint: l10n.quantityHint,
                     controller: _quantityController,
@@ -512,10 +512,10 @@ class _CreateDonationScreenEnhancedState
                     },
                   ),
 
-                  AppSpacing.vertical(UIConstants.spacingM),
+                  const SizedBox(height: 16),
 
                   // Notes
-                  AppTextField(
+                  GBTextField(
                     label: l10n.notes,
                     hint: l10n.notesHint,
                     controller: _notesController,
@@ -532,30 +532,31 @@ class _CreateDonationScreenEnhancedState
 
   Widget _buildCategoryStep() {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return SingleChildScrollView(
-      padding: EdgeInsets.all(UIConstants.spacingL),
+      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header
-          AppCard(
+          WebCard(
             child: Row(
               children: [
                 Container(
                   width: 60,
                   height: 60,
                   decoration: BoxDecoration(
-                    color: AppTheme.secondaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(UIConstants.radiusM),
+                    color: DesignSystem.primaryBlue.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     Icons.category_outlined,
-                    color: AppTheme.secondaryColor,
+                    color: DesignSystem.primaryBlue,
                     size: 28,
                   ),
                 ),
-                AppSpacing.horizontal(UIConstants.spacingM),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -567,11 +568,11 @@ class _CreateDonationScreenEnhancedState
                                   fontWeight: FontWeight.w600,
                                 ),
                       ),
-                      AppSpacing.vertical(UIConstants.spacingXS),
+                      const SizedBox(height: 8),
                       Text(
                         l10n.categoryDescription,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: AppTheme.textSecondaryColor,
+                              color: DesignSystem.neutral600,
                             ),
                       ),
                     ],
@@ -581,10 +582,10 @@ class _CreateDonationScreenEnhancedState
             ),
           ),
 
-          AppSpacing.vertical(UIConstants.spacingL),
+          const SizedBox(height: 24),
 
           // Category Selection
-          AppCard(
+          WebCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -594,10 +595,10 @@ class _CreateDonationScreenEnhancedState
                         fontWeight: FontWeight.w600,
                       ),
                 ),
-                AppSpacing.vertical(UIConstants.spacingM),
+                const SizedBox(height: 16),
                 Wrap(
-                  spacing: UIConstants.spacingS,
-                  runSpacing: UIConstants.spacingS,
+                  spacing: 12,
+                  runSpacing: 12,
                   children: DonationCategory.values.map((category) {
                     final isSelected = _selectedCategory == category.value;
                     return GestureDetector(
@@ -608,20 +609,23 @@ class _CreateDonationScreenEnhancedState
                       },
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: UIConstants.spacingM,
-                          vertical: UIConstants.spacingS,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
                         ),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? AppTheme.primaryColor
-                              : AppTheme.surfaceColor,
-                          borderRadius:
-                              BorderRadius.circular(UIConstants.radiusM),
+                              ? DesignSystem.primaryBlue
+                              : (isDark
+                                  ? DesignSystem.neutral800
+                                  : DesignSystem.neutral100),
+                          borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: isSelected
-                                ? AppTheme.primaryColor
-                                : AppTheme.borderColor,
+                                ? DesignSystem.primaryBlue
+                                : (isDark
+                                    ? DesignSystem.neutral700
+                                    : DesignSystem.neutral300),
                           ),
                         ),
                         child: Row(
@@ -632,9 +636,9 @@ class _CreateDonationScreenEnhancedState
                               size: 18,
                               color: isSelected
                                   ? Colors.white
-                                  : AppTheme.textSecondaryColor,
+                                  : DesignSystem.neutral600,
                             ),
-                            AppSpacing.horizontal(UIConstants.spacingXS),
+                            const SizedBox(width: 8),
                             Text(
                               category.getDisplayName(false),
                               style: Theme.of(context)
@@ -643,7 +647,9 @@ class _CreateDonationScreenEnhancedState
                                   ?.copyWith(
                                     color: isSelected
                                         ? Colors.white
-                                        : AppTheme.textPrimaryColor,
+                                        : (isDark
+                                            ? DesignSystem.neutral200
+                                            : DesignSystem.neutral900),
                                     fontWeight: FontWeight.w500,
                                   ),
                             ),
@@ -657,10 +663,10 @@ class _CreateDonationScreenEnhancedState
             ),
           ),
 
-          AppSpacing.vertical(UIConstants.spacingL),
+          const SizedBox(height: 24),
 
           // Condition Selection
-          AppCard(
+          WebCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -670,7 +676,7 @@ class _CreateDonationScreenEnhancedState
                         fontWeight: FontWeight.w600,
                       ),
                 ),
-                AppSpacing.vertical(UIConstants.spacingM),
+                const SizedBox(height: 16),
                 Row(
                   children: DonationCondition.values.map((condition) {
                     final isSelected = _selectedCondition == condition.value;
@@ -683,24 +689,27 @@ class _CreateDonationScreenEnhancedState
                         },
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
-                          margin: EdgeInsets.only(
-                            right: UIConstants.spacingXS,
+                          margin: const EdgeInsets.only(
+                            right: 8,
                           ),
-                          padding: EdgeInsets.symmetric(
-                            vertical: UIConstants.spacingS,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 12,
                           ),
                           decoration: BoxDecoration(
                             color: isSelected
                                 ? Color(DonationConstants
                                     .conditionColors[condition.value]!)
-                                : AppTheme.surfaceColor,
-                            borderRadius:
-                                BorderRadius.circular(UIConstants.radiusM),
+                                : (isDark
+                                    ? DesignSystem.neutral800
+                                    : DesignSystem.neutral100),
+                            borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: isSelected
                                   ? Color(DonationConstants
                                       .conditionColors[condition.value]!)
-                                  : AppTheme.borderColor,
+                                  : (isDark
+                                      ? DesignSystem.neutral700
+                                      : DesignSystem.neutral300),
                             ),
                           ),
                           child: Text(
@@ -710,7 +719,9 @@ class _CreateDonationScreenEnhancedState
                                 Theme.of(context).textTheme.bodySmall?.copyWith(
                                       color: isSelected
                                           ? Colors.white
-                                          : AppTheme.textPrimaryColor,
+                                          : (isDark
+                                              ? DesignSystem.neutral200
+                                              : DesignSystem.neutral900),
                                       fontWeight: FontWeight.w500,
                                     ),
                           ),
@@ -731,7 +742,7 @@ class _CreateDonationScreenEnhancedState
     final l10n = AppLocalizations.of(context)!;
 
     return SingleChildScrollView(
-      padding: EdgeInsets.all(UIConstants.spacingL),
+      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -757,28 +768,28 @@ class _CreateDonationScreenEnhancedState
     final l10n = AppLocalizations.of(context)!;
 
     return SingleChildScrollView(
-      padding: EdgeInsets.all(UIConstants.spacingL),
+      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header
-          AppCard(
+          WebCard(
             child: Row(
               children: [
                 Container(
                   width: 60,
                   height: 60,
                   decoration: BoxDecoration(
-                    color: AppTheme.successColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(UIConstants.radiusM),
+                    color: DesignSystem.success.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     Icons.check_circle_outline,
-                    color: AppTheme.successColor,
+                    color: DesignSystem.success,
                     size: 28,
                   ),
                 ),
-                AppSpacing.horizontal(UIConstants.spacingM),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -790,11 +801,11 @@ class _CreateDonationScreenEnhancedState
                                   fontWeight: FontWeight.w600,
                                 ),
                       ),
-                      AppSpacing.vertical(UIConstants.spacingXS),
+                      const SizedBox(height: 8),
                       Text(
                         l10n.reviewDescription,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: AppTheme.textSecondaryColor,
+                              color: DesignSystem.neutral600,
                             ),
                       ),
                     ],
@@ -804,10 +815,10 @@ class _CreateDonationScreenEnhancedState
             ),
           ),
 
-          AppSpacing.vertical(UIConstants.spacingL),
+          const SizedBox(height: 24),
 
           // Review Content
-          AppCard(
+          WebCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -826,7 +837,7 @@ class _CreateDonationScreenEnhancedState
                   ],
                 ),
 
-                AppSpacing.vertical(UIConstants.spacingL),
+                const SizedBox(height: 24),
 
                 // Category and Condition
                 _buildReviewSection(
@@ -846,7 +857,7 @@ class _CreateDonationScreenEnhancedState
                 ),
 
                 if (_selectedImages.isNotEmpty) ...[
-                  AppSpacing.vertical(UIConstants.spacingL),
+                  const SizedBox(height: 24),
 
                   // Images
                   _buildReviewSection(
@@ -875,10 +886,10 @@ class _CreateDonationScreenEnhancedState
           title,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: AppTheme.primaryColor,
+                color: DesignSystem.primaryBlue,
               ),
         ),
-        AppSpacing.vertical(UIConstants.spacingM),
+        const SizedBox(height: 16),
         ...children,
       ],
     );
@@ -886,7 +897,7 @@ class _CreateDonationScreenEnhancedState
 
   Widget _buildReviewItem(String label, String value) {
     return Padding(
-      padding: EdgeInsets.only(bottom: UIConstants.spacingS),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -895,11 +906,11 @@ class _CreateDonationScreenEnhancedState
             child: Text(
               label,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.textSecondaryColor,
+                    color: DesignSystem.neutral600,
                   ),
             ),
           ),
-          AppSpacing.horizontal(UIConstants.spacingM),
+          const SizedBox(width: 16),
           Expanded(
             child: Text(
               value,
@@ -917,9 +928,9 @@ class _CreateDonationScreenEnhancedState
     final l10n = AppLocalizations.of(context)!;
 
     return Container(
-      padding: EdgeInsets.all(UIConstants.spacingL),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: DesignSystem.getSurfaceColor(context),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -932,20 +943,22 @@ class _CreateDonationScreenEnhancedState
         children: [
           if (_currentStep > 0)
             Expanded(
-              child: GBSecondaryButton(
+              child: GBButton(
                 text: l10n.previous,
+                variant: GBButtonVariant.secondary,
                 onPressed: _previousStep,
               ),
             ),
-          if (_currentStep > 0) AppSpacing.horizontal(UIConstants.spacingM),
+          if (_currentStep > 0) const SizedBox(width: 16),
           Expanded(
             flex: _currentStep == 0 ? 1 : 1,
-            child: GBPrimaryButton(
+            child: GBButton(
               text: _currentStep == 3
                   ? (widget.donation != null
                       ? l10n.updateDonation
                       : l10n.createDonation)
                   : l10n.next,
+              variant: GBButtonVariant.primary,
               onPressed: _isLoading
                   ? null
                   : (_currentStep == 3 ? _submitDonation : _nextStep),

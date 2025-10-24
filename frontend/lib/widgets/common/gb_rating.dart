@@ -156,7 +156,6 @@ class _GBRatingState extends State<GBRating> {
   }
 
   Widget _buildStar(int index, Color filledColor, Color emptyColor) {
-    final starValue = index + 1.0;
     final fillPercentage = (_currentRating - index).clamp(0.0, 1.0);
 
     if (fillPercentage == 0.0) {

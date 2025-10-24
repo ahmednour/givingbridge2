@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import '../services/api_service.dart';
 import '../models/user.dart';
+import '../services/firebase_notification_service.dart';
 
 enum AuthState { loading, authenticated, unauthenticated, error }
 
@@ -52,6 +53,7 @@ class AuthProvider extends ChangeNotifier {
       if (response.success && response.data != null) {
         _user = response.data!.user;
         _setState(AuthState.authenticated);
+        await _setupNotifications();
         return true;
       } else {
         _setError(response.error ?? 'Login failed');
@@ -61,6 +63,29 @@ class AuthProvider extends ChangeNotifier {
       _setError('Login error: ${e.toString()}');
       return false;
     }
+  }
+
+  Future<void> _setupNotifications() async {
+    final fcmService = FirebaseNotificationService();
+    final token = fcmService.fcmToken;
+
+    if (token != null) {
+      // Send token to backend
+      try {
+        await ApiService.updateFCMToken(token);
+
+        // Subscribe to topics
+        await fcmService.subscribeToRoleTopics(
+            _user!.role, _user!.id.toString());
+      } catch (e) {
+        debugPrint('Error setting up notifications: $e');
+      }
+    }
+
+    // Listen for token refresh
+    fcmService.tokenStream.listen((newToken) async {
+      await ApiService.updateFCMToken(newToken);
+    });
   }
 
   // Register
@@ -87,6 +112,7 @@ class AuthProvider extends ChangeNotifier {
       if (response.success && response.data != null) {
         _user = response.data!.user;
         _setState(AuthState.authenticated);
+        await _setupNotifications();
         return true;
       } else {
         _setError(response.error ?? 'Registration failed');

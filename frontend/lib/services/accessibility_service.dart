@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import '../../core/constants/ui_constants.dart';
-import '../../widgets/app_components.dart';
+import '../widgets/app_components.dart';
 
 /// Accessibility service for ARIA labels, keyboard navigation, and screen reader support
 class AccessibilityService {
@@ -62,11 +62,15 @@ class AccessibilityService {
     bool isRequired = false,
     bool excludeSemantics = false,
   }) {
+    // Add "required" to label if field is required
+    final semanticLabel =
+        isRequired && label != null ? '$label, required field' : label;
+    final semanticHint = hint ?? (isRequired ? 'This field is required' : null);
+
     return Semantics(
-      label: label,
-      hint: hint,
+      label: semanticLabel,
+      hint: semanticHint,
       textField: true,
-      isRequired: isRequired,
       excludeSemantics: excludeSemantics,
       child: child,
     );

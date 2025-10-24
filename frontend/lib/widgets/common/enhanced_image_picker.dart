@@ -3,7 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../../core/theme/app_theme_enhanced.dart';
 import '../../core/constants/ui_constants.dart';
-import '../app_components.dart';
+import '../../widgets/common/gb_button.dart';
 import '../../services/image_upload_service.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -145,7 +145,7 @@ class _EnhancedImagePickerState extends State<EnhancedImagePicker> {
         content: Row(
           children: [
             const Icon(Icons.error_outline, color: Colors.white),
-            AppSpacing.horizontal(UIConstants.spacingS),
+            SizedBox(width: UIConstants.spacingS),
             Expanded(child: Text(message)),
           ],
         ),
@@ -186,7 +186,7 @@ class _EnhancedImagePickerState extends State<EnhancedImagePicker> {
           ],
         ),
 
-        AppSpacing.vertical(UIConstants.spacingM),
+        SizedBox(height: UIConstants.spacingM),
 
         // Image Grid
         GridView.builder(
@@ -212,7 +212,7 @@ class _EnhancedImagePickerState extends State<EnhancedImagePicker> {
 
         // Error Message
         if (widget.errorMessage != null) ...[
-          AppSpacing.vertical(UIConstants.spacingS),
+          SizedBox(height: UIConstants.spacingS),
           Text(
             widget.errorMessage!,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -223,27 +223,27 @@ class _EnhancedImagePickerState extends State<EnhancedImagePicker> {
 
         // Upload Options (if no images selected)
         if (widget.selectedImages.isEmpty) ...[
-          AppSpacing.vertical(UIConstants.spacingM),
+          SizedBox(height: UIConstants.spacingM),
           Row(
             children: [
               if (widget.allowGallery)
                 Expanded(
-                  child: AppButton(
+                  child: GBButton(
                     text: l10n.selectFromGallery,
-                    icon: Icons.photo_library_outlined,
-                    type: AppButtonType.secondary,
+                    leftIcon: Icon(Icons.photo_library_outlined),
+                    variant: GBButtonVariant.secondary,
                     onPressed: _isProcessing ? null : _pickImages,
                     isLoading: _isProcessing,
                   ),
                 ),
               if (widget.allowGallery && widget.allowCamera)
-                AppSpacing.horizontal(UIConstants.spacingM),
+                SizedBox(width: UIConstants.spacingM),
               if (widget.allowCamera)
                 Expanded(
-                  child: AppButton(
+                  child: GBButton(
                     text: l10n.takePhoto,
-                    icon: Icons.camera_alt_outlined,
-                    type: AppButtonType.secondary,
+                    leftIcon: Icon(Icons.camera_alt_outlined),
+                    variant: GBButtonVariant.secondary,
                     onPressed: _isProcessing ? null : _takePhoto,
                     isLoading: _isProcessing,
                   ),
@@ -278,7 +278,7 @@ class _EnhancedImagePickerState extends State<EnhancedImagePicker> {
               size: 32,
               color: AppTheme.textSecondaryColor,
             ),
-            AppSpacing.vertical(UIConstants.spacingXS),
+            SizedBox(height: UIConstants.spacingXS),
             Text(
               l10n.addImage,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -316,7 +316,7 @@ class _EnhancedImagePickerState extends State<EnhancedImagePicker> {
             child: Container(
               padding: EdgeInsets.all(UIConstants.spacingXS),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity( 0.6),
+                color: Colors.black.withOpacity(0.6),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -344,7 +344,7 @@ class _EnhancedImagePickerState extends State<EnhancedImagePicker> {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity( 0.6),
+                      color: Colors.black.withOpacity(0.6),
                       borderRadius: BorderRadius.circular(UIConstants.radiusS),
                     ),
                     child: Text(
@@ -389,7 +389,7 @@ class _EnhancedImagePickerState extends State<EnhancedImagePicker> {
               ),
             ),
 
-            AppSpacing.vertical(UIConstants.spacingL),
+            SizedBox(height: UIConstants.spacingL),
 
             Text(
               l10n.selectImageSource,
@@ -398,16 +398,16 @@ class _EnhancedImagePickerState extends State<EnhancedImagePicker> {
                   ),
             ),
 
-            AppSpacing.vertical(UIConstants.spacingL),
+            SizedBox(height: UIConstants.spacingL),
 
             Row(
               children: [
                 if (widget.allowGallery)
                   Expanded(
-                    child: AppButton(
+                    child: GBButton(
                       text: l10n.selectFromGallery,
-                      icon: Icons.photo_library_outlined,
-                      type: AppButtonType.secondary,
+                      leftIcon: Icon(Icons.photo_library_outlined),
+                      variant: GBButtonVariant.secondary,
                       onPressed: () {
                         Navigator.pop(context);
                         _pickImages();
@@ -415,13 +415,13 @@ class _EnhancedImagePickerState extends State<EnhancedImagePicker> {
                     ),
                   ),
                 if (widget.allowGallery && widget.allowCamera)
-                  AppSpacing.horizontal(UIConstants.spacingM),
+                  SizedBox(width: UIConstants.spacingM),
                 if (widget.allowCamera)
                   Expanded(
-                    child: AppButton(
+                    child: GBButton(
                       text: l10n.takePhoto,
-                      icon: Icons.camera_alt_outlined,
-                      type: AppButtonType.secondary,
+                      leftIcon: Icon(Icons.camera_alt_outlined),
+                      variant: GBButtonVariant.secondary,
                       onPressed: () {
                         Navigator.pop(context);
                         _takePhoto();
@@ -431,7 +431,7 @@ class _EnhancedImagePickerState extends State<EnhancedImagePicker> {
               ],
             ),
 
-            AppSpacing.vertical(UIConstants.spacingL),
+            SizedBox(height: UIConstants.spacingL),
           ],
         ),
       ),
@@ -499,21 +499,21 @@ class ImagePreviewDialog extends StatelessWidget {
                   children: [
                     if (onEdit != null)
                       Expanded(
-                        child: AppButton(
+                        child: GBButton(
                           text: l10n.edit,
-                          icon: Icons.edit_outlined,
-                          type: AppButtonType.secondary,
+                          leftIcon: Icon(Icons.edit_outlined),
+                          variant: GBButtonVariant.secondary,
                           onPressed: onEdit,
                         ),
                       ),
                     if (onEdit != null && onDelete != null)
-                      AppSpacing.horizontal(UIConstants.spacingM),
+                      SizedBox(width: UIConstants.spacingM),
                     if (onDelete != null)
                       Expanded(
-                        child: AppButton(
+                        child: GBButton(
                           text: l10n.delete,
-                          icon: Icons.delete_outlined,
-                          type: AppButtonType.secondary,
+                          leftIcon: Icon(Icons.delete_outlined),
+                          variant: GBButtonVariant.secondary,
                           onPressed: onDelete,
                         ),
                       ),

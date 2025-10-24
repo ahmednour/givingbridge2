@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import '../core/theme/app_theme.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../core/theme/design_system.dart';
 import '../widgets/common/gb_button.dart';
+import '../widgets/common/gb_filter_chips.dart';
+import '../widgets/common/gb_empty_state.dart';
+import '../widgets/common/web_card.dart';
 import '../services/api_service.dart';
 import 'chat_screen_enhanced.dart';
 import '../l10n/app_localizations.dart';
@@ -17,14 +21,18 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
   bool _isLoading = true;
   String _selectedFilter = 'all';
 
-  List<Map<String, dynamic>> _getFilters(BuildContext context) {
+  List<GBFilterOption<String>> _getFilters(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return [
-      {'value': 'all', 'label': l10n.all, 'icon': Icons.all_inbox},
-      {'value': 'pending', 'label': l10n.pending, 'icon': Icons.pending},
-      {'value': 'approved', 'label': l10n.approved, 'icon': Icons.check_circle},
-      {'value': 'declined', 'label': l10n.declined, 'icon': Icons.cancel},
-      {'value': 'completed', 'label': l10n.completed, 'icon': Icons.done_all},
+      GBFilterOption(value: 'all', label: l10n.all, icon: Icons.all_inbox),
+      GBFilterOption(
+          value: 'pending', label: l10n.pending, icon: Icons.pending),
+      GBFilterOption(
+          value: 'approved', label: l10n.approved, icon: Icons.check_circle),
+      GBFilterOption(
+          value: 'declined', label: l10n.declined, icon: Icons.cancel),
+      GBFilterOption(
+          value: 'completed', label: l10n.completed, icon: Icons.done_all),
     ];
   }
 
@@ -69,7 +77,14 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
   void _showErrorSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Row(
+          children: [
+            const Icon(Icons.error_outline, color: Colors.white),
+            const SizedBox(width: DesignSystem.spaceM),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: DesignSystem.error,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -78,7 +93,14 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
   void _showSuccessSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle_outline, color: Colors.white),
+            const SizedBox(width: DesignSystem.spaceM),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: DesignSystem.success,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -153,18 +175,18 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
     final filteredRequests = _filteredRequests;
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: DesignSystem.getBackgroundColor(context),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: DesignSystem.getSurfaceColor(context),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimaryColor),
+          icon: Icon(Icons.arrow_back, color: DesignSystem.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           'Incoming Requests',
           style: TextStyle(
-            color: AppTheme.textPrimaryColor,
+            color: DesignSystem.textPrimary,
             fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
@@ -173,55 +195,20 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
       ),
       body: Column(
         children: [
-          // Filter Tabs
+          // Filter Chips
           Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(AppTheme.spacingM),
-            child: SizedBox(
-              height: 50,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: _getFilters(context).length,
-                itemBuilder: (context, index) {
-                  final filter = _getFilters(context)[index];
-                  final isSelected = _selectedFilter == filter['value'];
-
-                  return Container(
-                    margin: const EdgeInsets.only(right: AppTheme.spacingS),
-                    child: FilterChip(
-                      selected: isSelected,
-                      label: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            filter['icon'],
-                            size: 16,
-                            color: isSelected
-                                ? Colors.white
-                                : AppTheme.textSecondaryColor,
-                          ),
-                          const SizedBox(width: AppTheme.spacingXS),
-                          Text(filter['label']),
-                        ],
-                      ),
-                      onSelected: (_) {
-                        setState(() {
-                          _selectedFilter = filter['value'];
-                        });
-                      },
-                      backgroundColor: AppTheme.surfaceColor,
-                      selectedColor: AppTheme.primaryColor,
-                      checkmarkColor: Colors.white,
-                      labelStyle: TextStyle(
-                        color: isSelected
-                            ? Colors.white
-                            : AppTheme.textPrimaryColor,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  );
-                },
-              ),
+            color: DesignSystem.getSurfaceColor(context),
+            padding: const EdgeInsets.all(DesignSystem.spaceM),
+            child: GBFilterChips<String>(
+              options: _getFilters(context),
+              selectedValues: [_selectedFilter],
+              onChanged: (selected) {
+                setState(() {
+                  _selectedFilter = selected.first;
+                });
+              },
+              multiSelect: false,
+              scrollable: true,
             ),
           ),
 
@@ -230,8 +217,8 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
             child: _isLoading
                 ? const Center(
                     child: CircularProgressIndicator(
-                      valueColor:
-                          AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                          DesignSystem.primaryBlue),
                     ),
                   )
                 : filteredRequests.isEmpty
@@ -239,11 +226,14 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
                     : RefreshIndicator(
                         onRefresh: _loadRequests,
                         child: ListView.builder(
-                          padding: const EdgeInsets.all(AppTheme.spacingM),
+                          padding: const EdgeInsets.all(DesignSystem.spaceM),
                           itemCount: filteredRequests.length,
                           itemBuilder: (context, index) {
                             final request = filteredRequests[index];
-                            return _buildRequestCard(request);
+                            return _buildRequestCard(request)
+                                .animate(delay: (index * 50).ms)
+                                .fadeIn(duration: 300.ms)
+                                .slideY(begin: 0.1, end: 0);
                           },
                         ),
                       ),
@@ -254,58 +244,22 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(40),
-            ),
-            child: const Icon(
-              Icons.inbox,
-              size: 40,
-              color: AppTheme.primaryColor,
-            ),
-          ),
-          const SizedBox(height: AppTheme.spacingM),
-          Text(
-            _selectedFilter == 'all'
-                ? 'No requests yet'
-                : 'No ${_selectedFilter} requests',
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: AppTheme.textPrimaryColor,
-            ),
-          ),
-          const SizedBox(height: AppTheme.spacingXS),
-          Text(
-            _selectedFilter == 'all'
-                ? 'When people request your donations, they\'ll appear here'
-                : 'Try adjusting your filter',
-            style: AppTheme.bodyMedium.copyWith(
-              color: AppTheme.textSecondaryColor,
-            ),
-          ),
-        ],
-      ),
+    return GBEmptyState(
+      icon: Icons.inbox,
+      title: _selectedFilter == 'all'
+          ? 'No requests yet'
+          : 'No ${_selectedFilter} requests',
+      message: _selectedFilter == 'all'
+          ? 'When people request your donations,\nthey\'ll appear here'
+          : 'Try adjusting your filter',
     );
   }
 
   Widget _buildRequestCard(DonationRequest request) {
     return Container(
-      margin: const EdgeInsets.only(bottom: AppTheme.spacingM),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppTheme.radiusL),
-        boxShadow: AppTheme.shadowMD,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacingM),
+      margin: const EdgeInsets.only(bottom: DesignSystem.spaceM),
+      child: WebCard(
+        padding: const EdgeInsets.all(DesignSystem.spaceM),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -314,12 +268,12 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: AppTheme.spacingS,
-                    vertical: AppTheme.spacingXS,
+                    horizontal: DesignSystem.spaceS,
+                    vertical: DesignSystem.spaceXS,
                   ),
                   decoration: BoxDecoration(
                     color: request.statusColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(AppTheme.radiusS),
+                    borderRadius: BorderRadius.circular(DesignSystem.radiusS),
                   ),
                   child: Text(
                     request.statusDisplayName,
@@ -333,52 +287,58 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
                 const Spacer(),
                 Text(
                   _formatDate(request.createdAt),
-                  style: AppTheme.bodySmall.copyWith(
-                    color: AppTheme.textSecondaryColor,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: DesignSystem.textSecondary,
                   ),
                 ),
               ],
             ),
 
-            const SizedBox(height: AppTheme.spacingS),
+            const SizedBox(height: DesignSystem.spaceS),
 
             // Receiver Info
             Row(
               children: [
                 CircleAvatar(
                   radius: 20,
-                  backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+                  backgroundColor: DesignSystem.primaryBlue.withOpacity(0.1),
                   child: Text(
                     request.receiverName.isNotEmpty
                         ? request.receiverName[0].toUpperCase()
                         : 'R',
                     style: const TextStyle(
-                      color: AppTheme.primaryColor,
+                      color: DesignSystem.primaryBlue,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
-                const SizedBox(width: AppTheme.spacingS),
+                const SizedBox(width: DesignSystem.spaceS),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         request.receiverName,
-                        style: AppTheme.headingSmall.copyWith(fontSize: 16),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                       Text(
                         request.receiverEmail,
-                        style: AppTheme.bodySmall.copyWith(
-                          color: AppTheme.textSecondaryColor,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: DesignSystem.textSecondary,
                         ),
                       ),
                       if (request.receiverPhone != null &&
                           request.receiverPhone!.isNotEmpty)
                         Text(
                           request.receiverPhone!,
-                          style: AppTheme.bodySmall.copyWith(
-                            color: AppTheme.textSecondaryColor,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: DesignSystem.textSecondary,
                           ),
                         ),
                     ],
@@ -387,21 +347,21 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
               ],
             ),
 
-            const SizedBox(height: AppTheme.spacingS),
+            const SizedBox(height: DesignSystem.spaceS),
 
             // Donation Info
             Container(
-              padding: const EdgeInsets.all(AppTheme.spacingS),
+              padding: const EdgeInsets.all(DesignSystem.spaceS),
               decoration: BoxDecoration(
-                color: AppTheme.surfaceColor,
-                borderRadius: BorderRadius.circular(AppTheme.radiusS),
+                color: DesignSystem.neutral50,
+                borderRadius: BorderRadius.circular(DesignSystem.radiusS),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Donation ID: ${request.donationId}',
-                    style: AppTheme.bodyMedium.copyWith(
+                    style: const TextStyle(
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -410,58 +370,64 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
             ),
 
             if (request.message != null && request.message!.isNotEmpty) ...[
-              const SizedBox(height: AppTheme.spacingS),
+              const SizedBox(height: DesignSystem.spaceS),
               Text(
                 'Receiver\'s message:',
-                style: AppTheme.bodySmall.copyWith(
-                  color: AppTheme.textSecondaryColor,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: DesignSystem.textSecondary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              const SizedBox(height: AppTheme.spacingXS),
+              const SizedBox(height: DesignSystem.spaceXS),
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(AppTheme.spacingS),
+                padding: const EdgeInsets.all(DesignSystem.spaceS),
                 decoration: BoxDecoration(
                   color: Colors.blue.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(AppTheme.radiusS),
+                  borderRadius: BorderRadius.circular(DesignSystem.radiusS),
                   border: Border.all(
                     color: Colors.blue.withOpacity(0.2),
                   ),
                 ),
                 child: Text(
                   request.message!,
-                  style: AppTheme.bodyMedium,
+                  style: const TextStyle(
+                    fontSize: 14,
+                  ),
                 ),
               ),
             ],
 
             if (request.responseMessage != null &&
                 request.responseMessage!.isNotEmpty) ...[
-              const SizedBox(height: AppTheme.spacingS),
+              const SizedBox(height: DesignSystem.spaceS),
               Text(
                 'Your response:',
-                style: AppTheme.bodySmall.copyWith(
-                  color: AppTheme.textSecondaryColor,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: DesignSystem.textSecondary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              const SizedBox(height: AppTheme.spacingXS),
+              const SizedBox(height: DesignSystem.spaceXS),
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(AppTheme.spacingS),
+                padding: const EdgeInsets.all(DesignSystem.spaceS),
                 decoration: BoxDecoration(
-                  color: AppTheme.surfaceColor,
-                  borderRadius: BorderRadius.circular(AppTheme.radiusS),
+                  color: DesignSystem.neutral50,
+                  borderRadius: BorderRadius.circular(DesignSystem.radiusS),
                 ),
                 child: Text(
                   request.responseMessage!,
-                  style: AppTheme.bodyMedium,
+                  style: const TextStyle(
+                    fontSize: 14,
+                  ),
                 ),
               ),
             ],
 
-            const SizedBox(height: AppTheme.spacingM),
+            const SizedBox(height: DesignSystem.spaceM),
 
             // Action Buttons
             if (request.isPending) ...[
@@ -475,7 +441,7 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
                       leftIcon: const Icon(Icons.message_outlined, size: 16),
                     ),
                   ),
-                  const SizedBox(width: AppTheme.spacingS),
+                  const SizedBox(width: DesignSystem.spaceS),
                   Expanded(
                     child: GBOutlineButton(
                       text: 'Decline',
@@ -483,7 +449,7 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
                       size: GBButtonSize.small,
                     ),
                   ),
-                  const SizedBox(width: AppTheme.spacingS),
+                  const SizedBox(width: DesignSystem.spaceS),
                   Expanded(
                     child: GBPrimaryButton(
                       text: 'Approve',
@@ -501,11 +467,12 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
                     color: Colors.green,
                     size: 20,
                   ),
-                  const SizedBox(width: AppTheme.spacingXS),
+                  const SizedBox(width: DesignSystem.spaceXS),
                   Expanded(
                     child: Text(
                       'Approved - Waiting for receiver to confirm receipt',
-                      style: AppTheme.bodySmall.copyWith(
+                      style: TextStyle(
+                        fontSize: 12,
                         color: Colors.green,
                         fontWeight: FontWeight.w500,
                       ),
@@ -527,10 +494,11 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
                     color: Colors.blue,
                     size: 20,
                   ),
-                  const SizedBox(width: AppTheme.spacingXS),
+                  const SizedBox(width: DesignSystem.spaceXS),
                   Text(
                     'Completed - Donation successfully received!',
-                    style: AppTheme.bodySmall.copyWith(
+                    style: TextStyle(
+                      fontSize: 12,
                       color: Colors.blue,
                       fontWeight: FontWeight.w500,
                     ),

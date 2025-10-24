@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import '../core/theme/app_theme.dart';
 import '../core/theme/design_system.dart';
+import '../core/theme/web_theme.dart';
 import '../widgets/common/gb_button.dart';
 import '../widgets/common/gb_dashboard_components.dart';
 import '../widgets/common/gb_confetti.dart';
 import '../widgets/common/gb_empty_state.dart';
 import '../widgets/common/gb_search_bar.dart';
 import '../widgets/common/gb_filter_chips.dart';
+import '../widgets/common/web_sidebar_nav.dart';
+import '../widgets/common/web_button.dart';
+import '../widgets/common/gb_skeleton_widgets.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../models/donation.dart';
 import 'create_donation_screen_enhanced.dart';
 import 'donor_browse_requests_screen.dart';
 import 'donor_impact_screen.dart';
+import 'messages_screen_enhanced.dart';
 import '../l10n/app_localizations.dart';
 
 class DonorDashboardEnhanced extends StatefulWidget {
@@ -23,9 +29,9 @@ class DonorDashboardEnhanced extends StatefulWidget {
   State<DonorDashboardEnhanced> createState() => _DonorDashboardEnhancedState();
 }
 
-class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
+  String _currentRoute = 'overview';
+  bool _isSidebarCollapsed = false;
 
   List<Donation> _donations = [];
   List<Donation> _filteredDonations = []; // Filtered/searched donations
@@ -38,14 +44,7 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
     _loadUserDonations();
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
   }
 
   Future<void> _loadUserDonations() async {
@@ -174,112 +173,301 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced>
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final size = MediaQuery.of(context).size;
-    final isDesktop = size.width > 768;
+    final isDesktop = size.width >= 1024;
+    final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
       backgroundColor: DesignSystem.getBackgroundColor(context),
-      body: Column(
-        children: [
-          // Modern Tab Bar
-          Container(
-            decoration: BoxDecoration(
-              color: DesignSystem.getSurfaceColor(context),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
+      body: isDesktop
+          ? Row(
+              children: [
+                // Sidebar Navigation
+                WebSidebarNav(
+                  currentRoute: _currentRoute,
+                  items: [
+                    WebNavItem(
+                      route: 'overview',
+                      label: l10n.overview,
+                      icon: Icons.dashboard_outlined,
+                      color: DesignSystem.primaryBlue,
+                      onTap: () => setState(() => _currentRoute = 'overview'),
+                    ),
+                    WebNavItem(
+                      route: 'donations',
+                      label: l10n.myDonations,
+                      icon: Icons.volunteer_activism,
+                      color: DesignSystem.accentPink,
+                      onTap: () => setState(() => _currentRoute = 'donations'),
+                      badge: _donations.isNotEmpty
+                          ? _donations.length.toString()
+                          : null,
+                    ),
+                    WebNavItem(
+                      route: 'requests',
+                      label: l10n.browseRequests,
+                      icon: Icons.list_alt_outlined,
+                      color: DesignSystem.accentPurple,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const DonorBrowseRequestsScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    WebNavItem(
+                      route: 'impact',
+                      label: l10n.viewImpact,
+                      icon: Icons.analytics_outlined,
+                      color: DesignSystem.accentAmber,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const DonorImpactScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                  userSection: _buildUserSection(authProvider),
+                  onLogout: () {
+                    authProvider.logout();
+                    Navigator.pushReplacementNamed(context, '/login');
+                  },
+                  isCollapsed: _isSidebarCollapsed,
+                  onCollapseChanged: (collapsed) {
+                    setState(() => _isSidebarCollapsed = collapsed);
+                  },
+                ),
+                // Main Content
+                Expanded(
+                  child: _buildMainContent(context, theme, isDark, isDesktop),
+                ),
+              ],
+            )
+          : Column(
+              children: [
+                Expanded(
+                  child: _buildMainContent(context, theme, isDark, isDesktop),
+                ),
+                // Bottom Navigation for Mobile
+                WebBottomNav(
+                  currentRoute: _currentRoute,
+                  items: [
+                    WebNavItem(
+                      route: 'overview',
+                      label: l10n.overview,
+                      icon: Icons.dashboard_outlined,
+                      color: DesignSystem.primaryBlue,
+                      onTap: () => setState(() => _currentRoute = 'overview'),
+                    ),
+                    WebNavItem(
+                      route: 'donations',
+                      label: l10n.myDonations,
+                      icon: Icons.volunteer_activism,
+                      color: DesignSystem.accentPink,
+                      onTap: () => setState(() => _currentRoute = 'donations'),
+                      badge: _donations.isNotEmpty
+                          ? _donations.length.toString()
+                          : null,
+                    ),
+                    WebNavItem(
+                      route: 'more',
+                      label: 'More',
+                      icon: Icons.menu,
+                      color: DesignSystem.neutral600,
+                      onTap: () => _showMobileMenu(context),
+                    ),
+                  ],
                 ),
               ],
             ),
-            child: TabBar(
-              controller: _tabController,
-              labelColor: AppTheme.primaryColor,
-              unselectedLabelColor: AppTheme.textSecondaryColor,
-              indicatorColor: AppTheme.primaryColor,
-              indicatorWeight: 3,
-              labelStyle: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-              unselectedLabelStyle: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-              tabs: [
-                Tab(text: l10n.overview),
-                Tab(text: l10n.myDonations),
-              ],
-            ),
-          ),
-
-          // Tab Content
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildOverviewTab(context, theme, isDark, isDesktop),
-                _buildDonationsTab(context, theme, isDark, isDesktop),
-              ],
-            ),
-          ),
-        ],
-      ),
-      floatingActionButton: isDesktop
-          ? null
-          : FloatingActionButton.extended(
+      floatingActionButton: !isDesktop && _currentRoute == 'donations'
+          ? FloatingActionButton.extended(
               onPressed: () => _navigateToCreateDonation(),
-              backgroundColor: AppTheme.primaryColor,
+              backgroundColor: DesignSystem.primaryBlue,
               foregroundColor: Colors.white,
               elevation: 4,
               icon: const Icon(Icons.add),
               label: Text(l10n.createDonation,
                   style: const TextStyle(fontWeight: FontWeight.w600)),
-            ),
+            )
+          : null,
     );
+  }
+
+  Widget _buildUserSection(AuthProvider authProvider) {
+    final userName = authProvider.user?.name ?? 'Donor';
+    final userEmail = authProvider.user?.email ?? '';
+
+    return Column(
+      children: [
+        CircleAvatar(
+          radius: _isSidebarCollapsed ? 20 : 28,
+          backgroundColor: DesignSystem.primaryBlue.withOpacity(0.1),
+          child: Text(
+            userName.isNotEmpty ? userName[0].toUpperCase() : 'D',
+            style: TextStyle(
+              fontSize: _isSidebarCollapsed ? 18 : 24,
+              fontWeight: FontWeight.bold,
+              color: DesignSystem.primaryBlue,
+            ),
+          ),
+        ),
+        if (!_isSidebarCollapsed) ...[
+          const SizedBox(height: DesignSystem.spaceS),
+          Text(
+            userName,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Text(
+            userEmail,
+            style: TextStyle(
+              fontSize: 12,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ],
+    );
+  }
+
+  void _showMobileMenu(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(DesignSystem.spaceL),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Icon(Icons.list_alt_outlined,
+                  color: DesignSystem.accentPurple),
+              title: Text(l10n.browseRequests),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const DonorBrowseRequestsScreen(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.analytics_outlined,
+                  color: DesignSystem.accentAmber),
+              title: Text(l10n.viewImpact),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const DonorImpactScreen(),
+                  ),
+                );
+              },
+            ),
+            const Divider(),
+            ListTile(
+              leading: Icon(Icons.logout, color: DesignSystem.error),
+              title: Text('Logout'),
+              onTap: () {
+                Navigator.pop(context);
+                authProvider.logout();
+                Navigator.pushReplacementNamed(context, '/login');
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMainContent(
+      BuildContext context, ThemeData theme, bool isDark, bool isDesktop) {
+    if (_currentRoute == 'overview') {
+      return _buildOverviewTab(context, theme, isDark, isDesktop);
+    } else if (_currentRoute == 'donations') {
+      return _buildDonationsTab(context, theme, isDark, isDesktop);
+    }
+    return _buildOverviewTab(context, theme, isDark, isDesktop);
   }
 
   Widget _buildOverviewTab(
       BuildContext context, ThemeData theme, bool isDark, bool isDesktop) {
+    // Show skeleton on initial load
+    if (_isLoading && _donations.isEmpty) {
+      return const GBDashboardSkeleton();
+    }
+
     return RefreshIndicator(
       onRefresh: _loadUserDonations,
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: isDesktop ? 1400 : double.infinity,
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(
-                  isDesktop ? AppTheme.spacingXL : AppTheme.spacingL),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Welcome Section
-                  _buildWelcomeSection(context, theme),
+        child: WebTheme.section(
+          maxWidth: WebTheme.maxContentWidthLarge,
+          child: Padding(
+            padding: EdgeInsets.all(
+                isDesktop ? DesignSystem.spaceXXXL : DesignSystem.spaceL),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Welcome Section with animation
+                _buildWelcomeSection(context, theme)
+                    .animate()
+                    .fadeIn(duration: 600.ms)
+                    .slideY(begin: -0.2, end: 0),
 
-                  const SizedBox(height: AppTheme.spacingXL),
+                const SizedBox(height: DesignSystem.spaceXXL),
 
-                  // Stats Cards
-                  _buildStatsSection(context, theme, isDesktop),
+                // Stats Cards with staggered animation
+                _buildStatsSection(context, theme, isDesktop)
+                    .animate(delay: 200.ms)
+                    .fadeIn(duration: 600.ms)
+                    .slideY(begin: 0.2, end: 0),
 
-                  const SizedBox(height: AppTheme.spacingXL),
+                const SizedBox(height: DesignSystem.spaceXXL),
 
-                  // Recent Activity
-                  _buildRecentActivity(context, theme, isDark),
+                // Quick Actions with animation
+                _buildQuickActions(context, theme, isDesktop)
+                    .animate(delay: 400.ms)
+                    .fadeIn(duration: 600.ms)
+                    .slideY(begin: 0.2, end: 0),
 
-                  const SizedBox(height: AppTheme.spacingXL),
+                const SizedBox(height: DesignSystem.spaceXXL),
 
-                  // Progress Tracking
-                  _buildProgressTracking(context, theme, isDesktop),
+                // Progress Tracking with animation
+                _buildProgressTracking(context, theme, isDesktop)
+                    .animate(delay: 600.ms)
+                    .fadeIn(duration: 600.ms)
+                    .slideY(begin: 0.2, end: 0),
 
-                  const SizedBox(height: AppTheme.spacingXL),
+                const SizedBox(height: DesignSystem.spaceXXL),
 
-                  // Quick Actions
-                  _buildQuickActions(context, theme, isDesktop),
-                ],
-              ),
+                // Recent Activity with animation
+                _buildRecentActivity(context, theme, isDark)
+                    .animate(delay: 800.ms)
+                    .fadeIn(duration: 600.ms)
+                    .slideY(begin: 0.2, end: 0),
+              ],
             ),
           ),
         ),
@@ -587,6 +775,12 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced>
               color: DesignSystem.accentPink,
               onTap: () {
                 // Navigate to messages
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MessagesScreenEnhanced(),
+                  ),
+                );
               },
             ),
           ],
@@ -597,7 +791,6 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced>
 
   Widget _buildProgressTracking(
       BuildContext context, ThemeData theme, bool isDesktop) {
-    final l10n = AppLocalizations.of(context)!;
     final totalDonations = _donations.length;
     final monthlyGoal = 10;
     final impactScore = totalDonations * 10;
@@ -676,142 +869,150 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced>
       onRefresh: _loadUserDonations,
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: isDesktop ? 1400 : double.infinity,
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(
-                  isDesktop ? AppTheme.spacingXL : AppTheme.spacingL),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        l10n.myDonations,
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w700,
-                          color: AppTheme.textPrimaryColor,
-                        ),
-                      ),
-                      GBPrimaryButton(
-                        text: l10n.newButton,
-                        size: isDesktop
-                            ? GBButtonSize.medium
-                            : GBButtonSize.small,
-                        leftIcon: const Icon(Icons.add, size: 18),
-                        onPressed: () => _navigateToCreateDonation(),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: AppTheme.spacingL),
-
-                  // Search and Filter Section
-                  if (_donations.isNotEmpty && !_isLoading) ...[
-                    GBSearchBar<Donation>(
-                      hint:
-                          'Search donations by title, description, or category...',
-                      onSearch: (query) => _onSearchChanged(query),
-                      onChanged: (query) => _onSearchChanged(query),
-                    ),
-                    const SizedBox(height: AppTheme.spacingL),
-                    GBFilterChips<String>(
-                      label: 'Status',
-                      options: [
-                        GBFilterOption<String>(
-                          value: 'available',
-                          label: 'Available',
-                          icon: Icons.check_circle_outline,
-                          color: DesignSystem.success,
-                        ),
-                        GBFilterOption<String>(
-                          value: 'pending',
-                          label: 'Pending',
-                          icon: Icons.pending_outlined,
-                          color: DesignSystem.warning,
-                        ),
-                        GBFilterOption<String>(
-                          value: 'completed',
-                          label: 'Completed',
-                          icon: Icons.done_all,
-                          color: DesignSystem.primaryBlue,
-                        ),
-                      ],
-                      selectedValues: _selectedStatuses,
-                      onChanged: _onStatusFilterChanged,
-                      multiSelect: true,
-                      scrollable: true,
-                    ),
-                    const SizedBox(height: AppTheme.spacingL),
-
-                    // Result count
-                    if (_searchQuery.isNotEmpty || _selectedStatuses.isNotEmpty)
-                      Padding(
-                        padding:
-                            const EdgeInsets.only(bottom: AppTheme.spacingM),
-                        child: Row(
-                          children: [
-                            Text(
-                              'Found ${donationsToDisplay.length} donation${donationsToDisplay.length == 1 ? '' : 's'}',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: DesignSystem.neutral600,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(width: AppTheme.spacingS),
-                            if (_searchQuery.isNotEmpty ||
-                                _selectedStatuses.isNotEmpty)
-                              TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _searchQuery = '';
-                                    _selectedStatuses = [];
-                                  });
-                                  _applyFiltersAndSearch();
-                                },
-                                child: Text(
-                                  'Clear filters',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: DesignSystem.primaryBlue,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                  ],
-
-                  if (_isLoading)
-                    Column(
-                      children: List.generate(
-                        3,
-                        (index) => const Padding(
-                          padding: EdgeInsets.only(bottom: AppTheme.spacingL),
-                          child: GBSkeletonCard(),
-                        ),
+        child: WebTheme.section(
+          maxWidth: WebTheme.maxContentWidthLarge,
+          child: Padding(
+            padding: EdgeInsets.all(
+                isDesktop ? DesignSystem.spaceXXXL : DesignSystem.spaceL),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      l10n.myDonations,
+                      style: DesignSystem.displaySmall(context).copyWith(
+                        fontWeight: FontWeight.w700,
                       ),
                     )
-                  else if (_donations.isEmpty)
-                    _buildEmptyState()
-                  else if (donationsToDisplay.isEmpty)
-                    _buildNoResultsState()
-                  else
-                    ...donationsToDisplay.map(
-                      (donation) => Padding(
-                        padding:
-                            const EdgeInsets.only(bottom: AppTheme.spacingL),
-                        child: _buildDonationCard(donation),
+                        .animate()
+                        .fadeIn(duration: 600.ms)
+                        .slideX(begin: -0.2, end: 0),
+                    if (isDesktop)
+                      WebButton(
+                        text: l10n.createDonation,
+                        icon: Icons.add,
+                        onPressed: () => _navigateToCreateDonation(),
+                      ).animate(delay: 100.ms).fadeIn(duration: 600.ms).scale(
+                          begin: const Offset(0.8, 0.8),
+                          end: const Offset(1, 1)),
+                  ],
+                ),
+                const SizedBox(height: DesignSystem.spaceXL),
+
+                // Search and Filter Section with animations
+                if (_donations.isNotEmpty && !_isLoading) ...[
+                  GBSearchBar<Donation>(
+                    hint:
+                        'Search donations by title, description, or category...',
+                    onSearch: (query) => _onSearchChanged(query),
+                    onChanged: (query) => _onSearchChanged(query),
+                  )
+                      .animate(delay: 200.ms)
+                      .fadeIn(duration: 600.ms)
+                      .slideY(begin: 0.1, end: 0),
+                  const SizedBox(height: DesignSystem.spaceL),
+                  GBFilterChips<String>(
+                    label: 'Status',
+                    options: [
+                      GBFilterOption<String>(
+                        value: 'available',
+                        label: 'Available',
+                        icon: Icons.check_circle_outline,
+                        color: DesignSystem.success,
+                      ),
+                      GBFilterOption<String>(
+                        value: 'pending',
+                        label: 'Pending',
+                        icon: Icons.pending_outlined,
+                        color: DesignSystem.warning,
+                      ),
+                      GBFilterOption<String>(
+                        value: 'completed',
+                        label: 'Completed',
+                        icon: Icons.done_all,
+                        color: DesignSystem.primaryBlue,
+                      ),
+                    ],
+                    selectedValues: _selectedStatuses,
+                    onChanged: _onStatusFilterChanged,
+                    multiSelect: true,
+                    scrollable: true,
+                  )
+                      .animate(delay: 300.ms)
+                      .fadeIn(duration: 600.ms)
+                      .slideY(begin: 0.1, end: 0),
+                  const SizedBox(height: DesignSystem.spaceL),
+
+                  // Result count
+                  if (_searchQuery.isNotEmpty || _selectedStatuses.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: AppTheme.spacingM),
+                      child: Row(
+                        children: [
+                          Text(
+                            'Found ${donationsToDisplay.length} donation${donationsToDisplay.length == 1 ? '' : 's'}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: DesignSystem.neutral600,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(width: AppTheme.spacingS),
+                          if (_searchQuery.isNotEmpty ||
+                              _selectedStatuses.isNotEmpty)
+                            TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  _searchQuery = '';
+                                  _selectedStatuses = [];
+                                });
+                                _applyFiltersAndSearch();
+                              },
+                              child: Text(
+                                'Clear filters',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: DesignSystem.primaryBlue,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                 ],
-              ),
+
+                // Donation cards with staggered animations
+                if (_isLoading)
+                  Column(
+                    children: List.generate(
+                      3,
+                      (index) => const Padding(
+                        padding: EdgeInsets.only(bottom: AppTheme.spacingL),
+                        child: GBSkeletonCard(),
+                      ),
+                    ),
+                  )
+                else if (_donations.isEmpty)
+                  _buildEmptyState()
+                else if (donationsToDisplay.isEmpty)
+                  _buildNoResultsState()
+                else
+                  ...donationsToDisplay.asMap().entries.map(
+                        (entry) => Padding(
+                          padding: const EdgeInsets.only(
+                              bottom: DesignSystem.spaceL),
+                          child: _buildDonationCard(entry.value)
+                              .animate(
+                                  delay: Duration(
+                                      milliseconds: 400 + (entry.key * 100)))
+                              .fadeIn(duration: 600.ms)
+                              .slideY(begin: 0.1, end: 0),
+                        ),
+                      ),
+              ],
             ),
           ),
         ),

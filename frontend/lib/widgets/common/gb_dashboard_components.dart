@@ -55,7 +55,7 @@ class _GBStatCardState extends State<GBStatCard>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    Theme.of(context);
 
     return MouseRegion(
       onEnter: (_) {

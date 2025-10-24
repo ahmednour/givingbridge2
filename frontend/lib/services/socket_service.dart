@@ -2,6 +2,7 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:flutter/foundation.dart';
 import 'api_service.dart';
 import '../models/chat_message.dart' as models;
+import 'backend_notification_service.dart';
 import '../core/constants/api_constants.dart';
 
 class SocketService {
@@ -22,6 +23,10 @@ class SocketService {
   Function(String)? onUserOnline;
   Function(String)? onUserOffline;
   Function(String)? onError;
+
+  // Notification callbacks
+  Function(BackendNotification)? onNewNotification;
+  Function(int)? onUnreadNotificationCount;
 
   bool get isConnected => _isConnected;
   String? get currentUserId => _currentUserId;
@@ -167,6 +172,29 @@ class SocketService {
         onError!(data['message'] ?? 'Unknown error');
       }
     });
+
+    // Notification events
+    _socket!.on('new_notification', (data) {
+      debugPrint('🔔 New notification received');
+      try {
+        final notification = BackendNotification.fromJson(data);
+        if (onNewNotification != null) onNewNotification!(notification);
+      } catch (e) {
+        debugPrint('Error parsing new notification: $e');
+      }
+    });
+
+    _socket!.on('unread_notification_count', (data) {
+      debugPrint('📊 Unread notification count: ${data['count']}');
+      try {
+        final count = data['count'] ?? 0;
+        if (onUnreadNotificationCount != null) {
+          onUnreadNotificationCount!(count);
+        }
+      } catch (e) {
+        debugPrint('Error parsing unread notification count: $e');
+      }
+    });
   }
 
   /// Send a message
@@ -251,6 +279,27 @@ class SocketService {
       _socket = null;
       _isConnected = false;
     }
+  }
+
+  /// Mark a notification as read
+  void markNotificationAsRead(int notificationId) {
+    if (!_isConnected || _socket == null) return;
+    debugPrint('Marking notification $notificationId as read');
+    _socket!.emit('mark_notification_read', {'notificationId': notificationId});
+  }
+
+  /// Mark all notifications as read
+  void markAllNotificationsRead() {
+    if (!_isConnected || _socket == null) return;
+    debugPrint('Marking all notifications as read');
+    _socket!.emit('mark_all_notifications_read');
+  }
+
+  /// Request unread notification count
+  void getUnreadNotificationCount() {
+    if (!_isConnected || _socket == null) return;
+    debugPrint('Requesting unread notification count');
+    _socket!.emit('get_unread_notification_count');
   }
 
   /// Clear all callbacks
