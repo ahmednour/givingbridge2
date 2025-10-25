@@ -482,7 +482,6 @@ class _NotificationSettingsScreenState
           color: DesignSystem.textSecondary,
         ),
       ),
-      activeThumbColor: DesignSystem.primaryBlue,
       contentPadding: EdgeInsets.symmetric(
         horizontal: isMaster ? 16 : 24,
         vertical: 4,

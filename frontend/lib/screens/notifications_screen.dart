@@ -440,7 +440,6 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 ),
               );
             },
-            activeThumbColor: DesignSystem.primaryBlue,
           ),
         ],
       ),

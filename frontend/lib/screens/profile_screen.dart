@@ -418,7 +418,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 trailing: Switch(
                   value: themeProvider.isDarkMode,
                   onChanged: (value) => themeProvider.toggleTheme(),
-                  activeThumbColor: DesignSystem.primaryBlue,
                 ),
               );
             },

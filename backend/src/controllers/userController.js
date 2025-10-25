@@ -464,7 +464,7 @@ class UserController {
    */
   static async getBlockedUsers(user) {
     const blockedUsers = await BlockedUser.findAll({
-      where: { blockerId: user.id },
+      where: { blockerId: user.userId },
       order: [["createdAt", "DESC"]],
     });
 
@@ -498,7 +498,7 @@ class UserController {
   static async isUserBlocked(userId, user) {
     const blockedUser = await BlockedUser.findOne({
       where: {
-        blockerId: user.id,
+        blockerId: user.userId,
         blockedId: userId,
       },
     });

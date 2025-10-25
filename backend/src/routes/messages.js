@@ -19,6 +19,18 @@ router.get("/conversations", authenticateToken, async (req, res) => {
       where: {
         [Op.or]: [{ senderId: userId }, { receiverId: userId }],
       },
+      include: [
+        {
+          model: User,
+          as: "sender",
+          attributes: ["id", "name", "email", "avatarUrl"],
+        },
+        {
+          model: User,
+          as: "receiver",
+          attributes: ["id", "name", "email", "avatarUrl"],
+        },
+      ],
       order: [["createdAt", "DESC"]],
     });
 
@@ -28,8 +40,8 @@ router.get("/conversations", authenticateToken, async (req, res) => {
     for (const message of messages) {
       const otherUserId =
         message.senderId === userId ? message.receiverId : message.senderId;
-      const otherUserName =
-        message.senderId === userId ? message.receiverName : message.senderName;
+      const otherUser =
+        message.senderId === userId ? message.receiver : message.sender;
 
       if (!conversationsMap.has(otherUserId)) {
         const unreadCount = await Message.count({
@@ -42,7 +54,8 @@ router.get("/conversations", authenticateToken, async (req, res) => {
 
         conversationsMap.set(otherUserId, {
           userId: otherUserId,
-          userName: otherUserName,
+          userName: otherUser.name,
+          userAvatar: otherUser.avatarUrl,
           lastMessage: message,
           unreadCount,
           donationId: message.donationId,
@@ -179,9 +192,7 @@ router.post(
 
       const message = await Message.create({
         senderId: sender.id,
-        senderName: sender.name,
         receiverId: receiver.id,
-        receiverName: receiver.name,
         donationId: donationId ? parseInt(donationId) : null,
         requestId: requestId ? parseInt(requestId) : null,
         content: content.trim(),
@@ -234,6 +245,39 @@ router.put("/:id/read", authenticateToken, async (req, res) => {
     });
   }
 });
+
+// Mark all messages in a conversation as read
+router.put(
+  "/conversation/:userId/read",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const otherUserId = parseInt(req.params.userId);
+
+      const [updatedCount] = await Message.update(
+        { isRead: true },
+        {
+          where: {
+            senderId: otherUserId,
+            receiverId: req.user.userId,
+            isRead: false,
+          },
+        }
+      );
+
+      res.json({
+        message: "Messages marked as read",
+        updatedCount,
+      });
+    } catch (error) {
+      console.error("Mark conversation as read error:", error);
+      res.status(500).json({
+        message: "Failed to mark messages as read",
+        error: error.message,
+      });
+    }
+  }
+);
 
 // Get unread message count for the authenticated user
 router.get("/unread-count", authenticateToken, async (req, res) => {

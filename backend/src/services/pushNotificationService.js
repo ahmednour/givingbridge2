@@ -25,7 +25,7 @@ class PushNotificationService {
       // Check if service account file exists
       const serviceAccountPath = path.join(
         __dirname,
-        "../../config/firebase-service-account.json"
+        "../config/firebase-service-account.json"
       );
 
       // Try to load service account
@@ -37,7 +37,7 @@ class PushNotificationService {
           "⚠️  Firebase service account file not found. Push notifications will be disabled."
         );
         console.warn(
-          "   Please add firebase-service-account.json to backend/config/"
+          "   Please add firebase-service-account.json to backend/src/config/"
         );
         return;
       }

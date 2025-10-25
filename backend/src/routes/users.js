@@ -416,6 +416,23 @@ router.get("/reports/my", authenticateToken, async (req, res) => {
   }
 });
 
+// Get blocked users
+router.get("/blocked", authenticateToken, async (req, res) => {
+  try {
+    const blockedUsers = await UserController.getBlockedUsers(req.user);
+    res.json({
+      blockedUsers,
+      total: blockedUsers.length,
+    });
+  } catch (error) {
+    console.error("Get blocked users error:", error);
+    res.status(500).json({
+      message: "Failed to fetch blocked users",
+      error: error.message,
+    });
+  }
+});
+
 // Get all reports (admin only)
 router.get("/reports/all", authenticateToken, async (req, res) => {
   try {

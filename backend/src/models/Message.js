@@ -17,10 +17,6 @@ const Message = sequelize.define(
         key: "id",
       },
     },
-    senderName: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
     receiverId: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -28,10 +24,6 @@ const Message = sequelize.define(
         model: "users",
         key: "id",
       },
-    },
-    receiverName: {
-      type: DataTypes.STRING,
-      allowNull: false,
     },
     donationId: {
       type: DataTypes.INTEGER,
@@ -106,5 +98,18 @@ const Message = sequelize.define(
     ],
   }
 );
+
+// Define associations
+const User = require("./User");
+
+Message.belongsTo(User, {
+  foreignKey: "senderId",
+  as: "sender",
+});
+
+Message.belongsTo(User, {
+  foreignKey: "receiverId",
+  as: "receiver",
+});
 
 module.exports = Message;
