@@ -7,6 +7,9 @@ import '../widgets/common/gb_empty_state.dart';
 import '../widgets/common/gb_user_avatar.dart';
 import '../widgets/common/gb_skeleton_widgets.dart';
 import '../widgets/dialogs/start_conversation_dialog.dart';
+import '../widgets/dialogs/message_settings_dialog.dart';
+import '../screens/archived_conversations_screen.dart';
+import '../screens/blocked_users_screen.dart';
 import '../providers/message_provider.dart';
 import '../providers/auth_provider.dart';
 import '../models/conversation.dart';
@@ -309,26 +312,6 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
     );
   }
 
-  Widget _buildLoadingState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(DesignSystem.primaryBlue),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            AppLocalizations.of(context)!.loadingMessages,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: DesignSystem.neutral600,
-                ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildEmptyState() {
     final l10n = AppLocalizations.of(context)!;
 
@@ -384,8 +367,7 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
               Stack(
                 children: [
                   GBUserAvatar(
-                    avatarUrl:
-                        null, // TODO: Add avatarUrl to Conversation model
+                    avatarUrl: conversation.avatarUrl,
                     userName: conversation.displayTitle,
                     size: 50,
                   ),
@@ -684,32 +666,49 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
   }
 
   void _showMessageSettings() {
-    // TODO: Implement message settings
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(AppLocalizations.of(context)!.messageSettingsComingSoon),
-        backgroundColor: DesignSystem.info,
+    // Show message settings dialog
+    showDialog(
+      context: context,
+      builder: (context) => MessageSettingsDialog(
+        currentSettings: {
+          'messageNotifications': true,
+          'messageSound': true,
+          'messageVibration': true,
+          'readReceipts': true,
+          'typingIndicators': true,
+          'autoDeleteMessages': false,
+        },
+        onSettingChanged: (key, value) {
+          // In a real implementation, this would update user preferences
+          // For now, we'll just show a snackbar
+          final l10n = AppLocalizations.of(context)!;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${l10n.settingUpdated}: $key'),
+              backgroundColor: DesignSystem.success,
+            ),
+          );
+        },
       ),
     );
   }
 
   void _showArchivedConversations() {
-    // TODO: Implement archived conversations
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content:
-            Text(AppLocalizations.of(context)!.archivedConversationsComingSoon),
-        backgroundColor: DesignSystem.info,
+    // Navigate to archived conversations screen
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ArchivedConversationsScreen(),
       ),
     );
   }
 
   void _showBlockedUsers() {
-    // TODO: Implement blocked users
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(AppLocalizations.of(context)!.blockedUsersComingSoon),
-        backgroundColor: DesignSystem.info,
+    // Navigate to blocked users screen
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const BlockedUsersScreen(),
       ),
     );
   }

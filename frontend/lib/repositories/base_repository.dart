@@ -83,8 +83,35 @@ abstract class BaseRepository {
       http.Response response, T Function(Map<String, dynamic>) fromJson) {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       final data = jsonDecode(response.body);
-      final items =
-          (data['donations'] as List).map((json) => fromJson(json)).toList();
+      // Handle different response formats
+      List<dynamic> itemsList;
+      if (data['donations'] != null) {
+        // For donations
+        itemsList = data['donations'] as List;
+      } else if (data['messages'] != null) {
+        // For messages
+        itemsList = data['messages'] as List;
+      } else if (data['requests'] != null) {
+        // For requests
+        itemsList = data['requests'] as List;
+      } else if (data['users'] != null) {
+        // For users
+        itemsList = data['users'] as List;
+      } else if (data['notifications'] != null) {
+        // For notifications
+        itemsList = data['notifications'] as List;
+      } else if (data['conversations'] != null) {
+        // For conversations
+        itemsList = data['conversations'] as List;
+      } else if (data is List) {
+        // If data itself is a list
+        itemsList = data;
+      } else {
+        // Default to empty list
+        itemsList = [];
+      }
+
+      final items = itemsList.map((json) => fromJson(json)).toList();
       return ApiResponse.success(items);
     } else {
       final error = jsonDecode(response.body);

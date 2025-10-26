@@ -12,6 +12,7 @@ class Conversation {
   final bool isActive;
   final String? donationId;
   final String? requestId;
+  final String? avatarUrl;
   final String createdAt;
   final String updatedAt;
 
@@ -29,6 +30,7 @@ class Conversation {
     this.isActive = true,
     this.donationId,
     this.requestId,
+    this.avatarUrl,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -53,6 +55,7 @@ class Conversation {
       isActive: json['isActive'] ?? json['is_active'] ?? true,
       donationId: json['donationId'] ?? json['donation_id'],
       requestId: json['requestId'] ?? json['request_id'],
+      avatarUrl: json['avatarUrl'] ?? json['user_avatar_url'],
       createdAt: json['createdAt'] ?? json['created_at'],
       updatedAt: json['updatedAt'] ?? json['updated_at'],
     );
@@ -73,6 +76,7 @@ class Conversation {
       'isActive': isActive,
       'donationId': donationId,
       'requestId': requestId,
+      'avatarUrl': avatarUrl,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
     };
@@ -92,6 +96,7 @@ class Conversation {
     bool? isActive,
     String? donationId,
     String? requestId,
+    String? avatarUrl,
     String? createdAt,
     String? updatedAt,
   }) {
@@ -110,6 +115,7 @@ class Conversation {
       isActive: isActive ?? this.isActive,
       donationId: donationId ?? this.donationId,
       requestId: requestId ?? this.requestId,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

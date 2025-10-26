@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import '../services/api_service.dart';
 import '../models/user.dart';
 import '../services/firebase_notification_service.dart';
+import '../services/socket_service.dart';
 
 enum AuthState { loading, authenticated, unauthenticated, error }
 

@@ -23,15 +23,43 @@ const sequelize = new Sequelize({
   dialectOptions: {
     charset: "utf8mb4",
   },
+  retry: {
+    max: 5,
+    match: [
+      /ETIMEDOUT/,
+      /EHOSTUNREACH/,
+      /ECONNRESET/,
+      /ECONNREFUSED/,
+      /ETIMEDOUT/,
+      /ESOCKETTIMEDOUT/,
+      /EPIPE/,
+    ],
+  },
 });
 
-// Test the connection
-async function testConnection() {
-  try {
-    await sequelize.authenticate();
-    console.log("✅ Database connection has been established successfully.");
-  } catch (error) {
-    console.error("❌ Unable to connect to the database:", error);
+// Test the connection with retry logic
+async function testConnection(maxRetries = 5, retryDelay = 5000) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      await sequelize.authenticate();
+      console.log("✅ Database connection has been established successfully.");
+      return true;
+    } catch (error) {
+      console.error(
+        `❌ Database connection attempt ${attempt} failed:`,
+        error.message
+      );
+      if (attempt < maxRetries) {
+        console.log(`⏳ Retrying in ${retryDelay / 1000} seconds...`);
+        await new Promise((resolve) => setTimeout(resolve, retryDelay));
+      } else {
+        console.error(
+          "❌ Unable to connect to the database after all retries:",
+          error
+        );
+        return false;
+      }
+    }
   }
 }
 

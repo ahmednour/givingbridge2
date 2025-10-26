@@ -9,121 +9,73 @@ const NotificationPreference = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    userId: {
+    user_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      unique: true,
-      field: "user_id",
       references: {
         model: "users",
         key: "id",
       },
     },
-    // Email Notifications
-    emailEnabled: {
+    email_notifications: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      field: "email_enabled",
     },
-    emailNewMessage: {
+    push_notifications: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      field: "email_new_message",
     },
-    emailDonationRequest: {
+    sms_notifications: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: true,
-      field: "email_donation_request",
+      defaultValue: false,
     },
-    emailRequestUpdate: {
+    in_app_notifications: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      field: "email_request_update",
     },
-    emailDonationUpdate: {
+    donation_requests: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      field: "email_donation_update",
     },
-    // Push Notifications
-    pushEnabled: {
+    donation_approvals: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      field: "push_enabled",
     },
-    pushNewMessage: {
+    new_donations: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      field: "push_new_message",
     },
-    pushDonationRequest: {
+    messages: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      field: "push_donation_request",
     },
-    pushRequestUpdate: {
+    reminders: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      field: "push_request_update",
     },
-    pushDonationUpdate: {
+    system_updates: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      field: "push_donation_update",
     },
-    // In-App Notifications
-    inAppEnabled: {
+    weekly_summary: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: true,
-      field: "in_app_enabled",
+      defaultValue: false,
     },
-    inAppNewMessage: {
+    daily_digest: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: true,
-      field: "in_app_new_message",
-    },
-    inAppDonationRequest: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true,
-      field: "in_app_donation_request",
-    },
-    inAppRequestUpdate: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true,
-      field: "in_app_request_update",
-    },
-    inAppDonationUpdate: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true,
-      field: "in_app_donation_update",
-    },
-    // Additional Settings
-    soundEnabled: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true,
-      field: "sound_enabled",
-    },
-    vibrationEnabled: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true,
-      field: "vibration_enabled",
+      defaultValue: false,
     },
   },
   {
@@ -140,7 +92,7 @@ const NotificationPreference = sequelize.define(
   }
 );
 
-// Association with User model
+// Define associations in a separate function to avoid circular dependencies
 NotificationPreference.associate = (models) => {
   NotificationPreference.belongsTo(models.User, {
     foreignKey: "user_id",

@@ -17,6 +17,10 @@ const Message = sequelize.define(
         key: "id",
       },
     },
+    senderName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     receiverId: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -24,6 +28,10 @@ const Message = sequelize.define(
         model: "users",
         key: "id",
       },
+    },
+    receiverName: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     donationId: {
       type: DataTypes.INTEGER,
@@ -49,20 +57,36 @@ const Message = sequelize.define(
         len: [1, 5000],
       },
     },
+    messageType: {
+      type: DataTypes.ENUM("text", "image", "file"),
+      allowNull: false,
+      defaultValue: "text",
+    },
     isRead: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
     },
-    archivedBySender: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
+    attachmentUrl: {
+      type: DataTypes.STRING(500),
+      allowNull: true,
+      validate: {
+        len: [0, 500],
+      },
     },
-    archivedByReceiver: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
+    attachmentName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      validate: {
+        len: [0, 255],
+      },
+    },
+    attachmentType: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      validate: {
+        len: [0, 50],
+      },
     },
   },
   {
@@ -87,29 +111,21 @@ const Message = sequelize.define(
         fields: ["isRead"],
       },
       {
-        fields: ["archivedBySender"],
-      },
-      {
-        fields: ["archivedByReceiver"],
-      },
-      {
         fields: ["createdAt"],
       },
     ],
   }
 );
 
-// Define associations
-const User = require("./User");
-
-Message.belongsTo(User, {
-  foreignKey: "senderId",
-  as: "sender",
-});
-
-Message.belongsTo(User, {
-  foreignKey: "receiverId",
-  as: "receiver",
-});
+// Define associations in a separate function to avoid circular dependencies
+Message.associate = (models) => {
+  Message.belongsTo(models.User, { foreignKey: "senderId", as: "sender" });
+  Message.belongsTo(models.User, { foreignKey: "receiverId", as: "receiver" });
+  Message.belongsTo(models.Donation, {
+    foreignKey: "donationId",
+    as: "donation",
+  });
+  Message.belongsTo(models.Request, { foreignKey: "requestId", as: "request" });
+};
 
 module.exports = Message;

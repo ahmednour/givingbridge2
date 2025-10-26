@@ -440,10 +440,10 @@ abstract class AppLocalizations {
   /// **'Provide basic information about your donation'**
   String get basicInfoDescription;
 
-  /// No description provided for @donationTitle.
+  /// Donation Title
   ///
   /// In en, this message translates to:
-  /// **'Donation'**
+  /// **'Donation Title'**
   String get donationTitle;
 
   /// No description provided for @donationTitleHint.
@@ -818,6 +818,108 @@ abstract class AppLocalizations {
   /// **'Blocked Users - Coming Soon'**
   String get blockedUsersComingSoon;
 
+  /// Notifications
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @privacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy'**
+  String get privacy;
+
+  /// No description provided for @messageHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Message History'**
+  String get messageHistory;
+
+  /// No description provided for @sound.
+  ///
+  /// In en, this message translates to:
+  /// **'Sound'**
+  String get sound;
+
+  /// No description provided for @playSoundForMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'Play sound for messages'**
+  String get playSoundForMessages;
+
+  /// No description provided for @vibration.
+  ///
+  /// In en, this message translates to:
+  /// **'Vibration'**
+  String get vibration;
+
+  /// No description provided for @vibrateForMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'Vibrate for messages'**
+  String get vibrateForMessages;
+
+  /// No description provided for @readReceipts.
+  ///
+  /// In en, this message translates to:
+  /// **'Read Receipts'**
+  String get readReceipts;
+
+  /// No description provided for @showReadReceipts.
+  ///
+  /// In en, this message translates to:
+  /// **'Show when messages are read'**
+  String get showReadReceipts;
+
+  /// No description provided for @typingIndicators.
+  ///
+  /// In en, this message translates to:
+  /// **'Typing Indicators'**
+  String get typingIndicators;
+
+  /// No description provided for @showTypingIndicators.
+  ///
+  /// In en, this message translates to:
+  /// **'Show when others are typing'**
+  String get showTypingIndicators;
+
+  /// No description provided for @autoDeleteMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-delete Messages'**
+  String get autoDeleteMessages;
+
+  /// No description provided for @automaticallyDeleteOldMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically delete old messages'**
+  String get automaticallyDeleteOldMessages;
+
+  /// No description provided for @settingUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Setting updated'**
+  String get settingUpdated;
+
+  /// No description provided for @noArchivedConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'No archived conversations'**
+  String get noArchivedConversations;
+
+  /// No description provided for @noArchivedConversationsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Your archived conversations will appear here'**
+  String get noArchivedConversationsDescription;
+
+  /// No description provided for @unarchive.
+  ///
+  /// In en, this message translates to:
+  /// **'Unarchive'**
+  String get unarchive;
+
   /// No description provided for @next.
   ///
   /// In en, this message translates to:
@@ -953,7 +1055,7 @@ abstract class AppLocalizations {
   /// No description provided for @startDonating.
   ///
   /// In en, this message translates to:
-  /// **'Start donating to see your impact!'**
+  /// **'Start Donating'**
   String get startDonating;
 
   /// No description provided for @learnMore.
@@ -1217,7 +1319,7 @@ abstract class AppLocalizations {
   /// No description provided for @languageSettingsComingSoon.
   ///
   /// In en, this message translates to:
-  /// **'Language settings coming soon!'**
+  /// **'Language settings coming soon! '**
   String get languageSettingsComingSoon;
 
   /// No description provided for @helpSupportComingSoon.
@@ -1229,7 +1331,7 @@ abstract class AppLocalizations {
   /// No description provided for @selectLanguage.
   ///
   /// In en, this message translates to:
-  /// **'Select Language / اختر اللغة'**
+  /// **'Select Language'**
   String get selectLanguage;
 
   /// No description provided for @overview.
@@ -1541,7 +1643,7 @@ abstract class AppLocalizations {
   /// Request from someone
   ///
   /// In en, this message translates to:
-  /// **'Request from'**
+  /// **'Request from {name}'**
   String requestFrom(String name);
 
   /// No description provided for @noRequestsFound.
@@ -1567,18 +1669,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Requested'**
   String get requestedAt;
-
-  /// No description provided for @notifications.
-  ///
-  /// In en, this message translates to:
-  /// **'Notifications'**
-  String get notifications;
-
-  /// No description provided for @markAllRead.
-  ///
-  /// In en, this message translates to:
-  /// **'Mark all read'**
-  String get markAllRead;
 
   /// Number of unread notifications
   ///
@@ -1622,211 +1712,211 @@ abstract class AppLocalizations {
   /// **'{days}d ago'**
   String daysAgo(int days);
 
-  /// No description provided for @markAsRead.
+  /// Mark as read
   ///
   /// In en, this message translates to:
   /// **'Mark as read'**
   String get markAsRead;
 
-  /// No description provided for @notificationSettings.
+  /// Notification Settings
   ///
   /// In en, this message translates to:
   /// **'Notification Settings'**
   String get notificationSettings;
 
-  /// No description provided for @pushNotifications.
+  /// Push Notifications
   ///
   /// In en, this message translates to:
   /// **'Push Notifications'**
   String get pushNotifications;
 
-  /// No description provided for @donationRequests.
+  /// Donation Requests
   ///
   /// In en, this message translates to:
   /// **'Donation Requests'**
   String get donationRequests;
 
-  /// No description provided for @notifyDonationRequests.
+  /// Notify when someone requests your donations
   ///
   /// In en, this message translates to:
   /// **'Get notified when someone requests your donations'**
   String get notifyDonationRequests;
 
-  /// No description provided for @newDonations.
+  /// New Donations
   ///
   /// In en, this message translates to:
   /// **'New Donations'**
   String get newDonations;
 
-  /// No description provided for @notifyNewDonations.
+  /// Notify about new donations in your area
   ///
   /// In en, this message translates to:
   /// **'Get notified about new donations in your area'**
   String get notifyNewDonations;
 
-  /// No description provided for @statusUpdates.
+  /// Status Updates
   ///
   /// In en, this message translates to:
   /// **'Status Updates'**
   String get statusUpdates;
 
-  /// No description provided for @notifyStatusUpdates.
+  /// Notify about donation status changes
   ///
   /// In en, this message translates to:
   /// **'Get notified about donation status changes'**
   String get notifyStatusUpdates;
 
-  /// No description provided for @reminders.
+  /// Reminders
   ///
   /// In en, this message translates to:
   /// **'Reminders'**
   String get reminders;
 
-  /// No description provided for @notifyReminders.
+  /// Remind about pickup times and deadlines
   ///
   /// In en, this message translates to:
   /// **'Get reminded about pickup times and deadlines'**
   String get notifyReminders;
 
-  /// No description provided for @emailNotifications.
+  /// Email Notifications
   ///
   /// In en, this message translates to:
   /// **'Email Notifications'**
   String get emailNotifications;
 
-  /// No description provided for @weeklySummary.
+  /// Weekly Summary
   ///
   /// In en, this message translates to:
   /// **'Weekly Summary'**
   String get weeklySummary;
 
-  /// No description provided for @receiveWeeklySummary.
+  /// Receive a weekly summary of your activity
   ///
   /// In en, this message translates to:
   /// **'Receive a weekly summary of your activity'**
   String get receiveWeeklySummary;
 
-  /// No description provided for @importantUpdates.
+  /// Important Updates
   ///
   /// In en, this message translates to:
   /// **'Important Updates'**
   String get importantUpdates;
 
-  /// No description provided for @receiveImportantUpdates.
+  /// Receive important platform updates
   ///
   /// In en, this message translates to:
   /// **'Receive important platform updates'**
   String get receiveImportantUpdates;
 
-  /// No description provided for @marketingEmails.
+  /// Marketing Emails
   ///
   /// In en, this message translates to:
   /// **'Marketing Emails'**
   String get marketingEmails;
 
-  /// No description provided for @receiveMarketingEmails.
+  /// Receive tips and feature announcements
   ///
   /// In en, this message translates to:
   /// **'Receive tips and feature announcements'**
   String get receiveMarketingEmails;
 
-  /// No description provided for @clearAllNotifications.
+  /// Clear All Notifications
   ///
   /// In en, this message translates to:
   /// **'Clear All Notifications'**
   String get clearAllNotifications;
 
-  /// No description provided for @enabled.
+  /// Enabled
   ///
   /// In en, this message translates to:
   /// **'Enabled'**
   String get enabled;
 
-  /// No description provided for @disabled.
+  /// Disabled
   ///
   /// In en, this message translates to:
   /// **'Disabled'**
   String get disabled;
 
-  /// No description provided for @allNotificationsRead.
+  /// All notifications marked as read
   ///
   /// In en, this message translates to:
   /// **'All notifications marked as read'**
   String get allNotificationsRead;
 
-  /// No description provided for @notificationDeleted.
+  /// Notification deleted
   ///
   /// In en, this message translates to:
   /// **'Notification deleted'**
   String get notificationDeleted;
 
-  /// No description provided for @clearAllConfirm.
+  /// Are you sure you want to clear all notifications? This action cannot be undone.
   ///
   /// In en, this message translates to:
   /// **'Are you sure you want to clear all notifications? This action cannot be undone.'**
   String get clearAllConfirm;
 
-  /// No description provided for @allNotificationsCleared.
+  /// All notifications cleared
   ///
   /// In en, this message translates to:
   /// **'All notifications cleared'**
   String get allNotificationsCleared;
 
-  /// No description provided for @notificationsRefreshed.
+  /// Notifications refreshed
   ///
   /// In en, this message translates to:
   /// **'Notifications refreshed'**
   String get notificationsRefreshed;
 
-  /// No description provided for @newDonationRequest.
+  /// New donation request
   ///
   /// In en, this message translates to:
   /// **'New donation request'**
   String get newDonationRequest;
 
-  /// No description provided for @donationApproved.
+  /// Donation approved!
   ///
   /// In en, this message translates to:
   /// **'Donation approved!'**
   String get donationApproved;
 
-  /// No description provided for @pickupReminder.
+  /// Pickup reminder
   ///
   /// In en, this message translates to:
   /// **'Pickup reminder'**
   String get pickupReminder;
 
-  /// No description provided for @donationCompleted.
+  /// Donation completed
   ///
   /// In en, this message translates to:
   /// **'Donation completed'**
   String get donationCompleted;
 
-  /// No description provided for @newDonationAvailable.
+  /// New donation available
   ///
   /// In en, this message translates to:
   /// **'New donation available'**
   String get newDonationAvailable;
 
-  /// No description provided for @clearAll.
+  /// Clear All
   ///
   /// In en, this message translates to:
   /// **'Clear All'**
   String get clearAll;
 
-  /// No description provided for @cancelRequest.
+  /// Cancel Request
   ///
   /// In en, this message translates to:
   /// **'Cancel Request'**
   String get cancelRequest;
 
-  /// No description provided for @cancelRequestConfirm.
+  /// Are you sure you want to cancel this request?
   ///
   /// In en, this message translates to:
   /// **'Are you sure you want to cancel this request?'**
   String get cancelRequestConfirm;
 
-  /// No description provided for @yesCancelRequest.
+  /// Yes, Cancel
   ///
   /// In en, this message translates to:
   /// **'Yes, Cancel'**
@@ -1838,539 +1928,527 @@ abstract class AppLocalizations {
   /// **'Mark as Completed'**
   String get markAsCompleted;
 
-  /// No description provided for @haveReceivedDonation.
+  /// Have you received this donation?
   ///
   /// In en, this message translates to:
   /// **'Have you received this donation?'**
   String get haveReceivedDonation;
 
-  /// No description provided for @notYet.
+  /// Not Yet
   ///
   /// In en, this message translates to:
   /// **'Not Yet'**
   String get notYet;
 
-  /// No description provided for @requestCancelled.
+  /// Request cancelled successfully
   ///
   /// In en, this message translates to:
   /// **'Request cancelled successfully'**
   String get requestCancelled;
 
-  /// No description provided for @requestMarkedCompleted.
+  /// Request marked as completed
   ///
   /// In en, this message translates to:
   /// **'Request marked as completed'**
   String get requestMarkedCompleted;
 
-  /// No description provided for @failedToCancelRequest.
+  /// Failed to cancel request
   ///
   /// In en, this message translates to:
   /// **'Failed to cancel request'**
   String get failedToCancelRequest;
 
-  /// No description provided for @failedToCompleteRequest.
+  /// Failed to complete request
   ///
   /// In en, this message translates to:
   /// **'Failed to complete request'**
   String get failedToCompleteRequest;
 
-  /// No description provided for @profileUpdatedSuccess.
+  /// Profile updated successfully!
   ///
   /// In en, this message translates to:
   /// **'Profile updated successfully!'**
   String get profileUpdatedSuccess;
 
-  /// No description provided for @failedToUpdateProfile.
+  /// Failed to update profile
   ///
   /// In en, this message translates to:
   /// **'Failed to update profile'**
   String get failedToUpdateProfile;
 
-  /// No description provided for @logoutConfirm.
+  /// Are you sure you want to logout?
   ///
   /// In en, this message translates to:
   /// **'Are you sure you want to logout?'**
   String get logoutConfirm;
 
-  /// No description provided for @english.
+  /// English
   ///
   /// In en, this message translates to:
   /// **'English'**
   String get english;
 
-  /// No description provided for @arabic.
+  /// Arabic
   ///
   /// In en, this message translates to:
   /// **'العربية'**
   String get arabic;
 
-  /// No description provided for @deleteAction.
+  /// Delete
   ///
   /// In en, this message translates to:
   /// **'Delete'**
   String get deleteAction;
 
-  /// No description provided for @blockUser.
+  /// Block User
   ///
   /// In en, this message translates to:
   /// **'Block User'**
   String get blockUser;
 
-  /// No description provided for @reportUser.
+  /// Report User
   ///
   /// In en, this message translates to:
   /// **'Report User'**
   String get reportUser;
 
-  /// No description provided for @ok.
+  /// OK
   ///
   /// In en, this message translates to:
   /// **'OK'**
   String get ok;
 
-  /// No description provided for @noRouteDefined.
+  /// No route defined for
   ///
   /// In en, this message translates to:
   /// **'No route defined for'**
   String get noRouteDefined;
 
-  /// No description provided for @securePlatform.
+  /// Secure Platform
   ///
   /// In en, this message translates to:
   /// **'Secure Platform'**
   String get securePlatform;
 
-  /// No description provided for @securePlatformDesc.
+  /// End-to-end encryption and secure payment processing for your peace of mind.
   ///
   /// In en, this message translates to:
   /// **'End-to-end encryption and secure payment processing for your peace of mind.'**
   String get securePlatformDesc;
 
-  /// No description provided for @support247.
+  /// 24/7 Support
   ///
   /// In en, this message translates to:
   /// **'24/7 Support'**
   String get support247;
 
-  /// No description provided for @support247Desc.
+  /// Our dedicated support team is always ready to help you make a difference.
   ///
   /// In en, this message translates to:
   /// **'Our dedicated support team is always ready to help you make a difference.'**
   String get support247Desc;
 
-  /// No description provided for @simpleSteps.
+  /// Simple steps to make a difference
   ///
   /// In en, this message translates to:
   /// **'Simple steps to make a difference'**
   String get simpleSteps;
 
-  /// No description provided for @whatCommunitySays.
+  /// What Our Community Says
   ///
   /// In en, this message translates to:
   /// **'What Our Community Says'**
   String get whatCommunitySays;
 
-  /// No description provided for @realStories.
+  /// Real stories from donors and receivers who make a difference every day
   ///
   /// In en, this message translates to:
   /// **'Real stories from donors and receivers who make a difference every day'**
   String get realStories;
 
-  /// No description provided for @testimonial1Text.
+  /// Testimonial 1
   ///
   /// In en, this message translates to:
   /// **'After losing my business due to the pandemic, I found myself needing help. Within 2 days, a donor provided groceries for my family. Now that I\'m back on my feet, I donate regularly to pay it forward. This platform saved us.'**
   String get testimonial1Text;
 
-  /// No description provided for @testimonial2Text.
+  /// Testimonial 2
   ///
   /// In en, this message translates to:
   /// **'I coordinate donations for my neighborhood. GivingBridge streamlined everything - from posting requests to tracking deliveries. We\'ve helped 23 families this year alone. The impact is real and measurable.'**
   String get testimonial2Text;
 
-  /// No description provided for @testimonial3Text.
+  /// Testimonial 3
   ///
   /// In en, this message translates to:
   /// **'As a single mother working two jobs, affording school supplies was tough. Through GivingBridge, my kids got books, a laptop, and clothes. The donors were respectful and kind. This platform is a blessing.'**
   String get testimonial3Text;
 
-  /// No description provided for @enterYourName.
+  /// Enter your name
   ///
   /// In en, this message translates to:
   /// **'Enter your name'**
   String get enterYourName;
 
-  /// No description provided for @enterYourEmail.
+  /// Enter your email
   ///
   /// In en, this message translates to:
   /// **'Enter your email'**
   String get enterYourEmail;
 
-  /// No description provided for @enterYourPassword.
+  /// Enter your password
   ///
   /// In en, this message translates to:
   /// **'Enter your password'**
   String get enterYourPassword;
 
-  /// No description provided for @enterYourPhone.
+  /// Enter your phone number
   ///
   /// In en, this message translates to:
   /// **'Enter your phone number'**
   String get enterYourPhone;
 
-  /// No description provided for @enterYourLocation.
+  /// Enter your location
   ///
   /// In en, this message translates to:
   /// **'Enter your location'**
   String get enterYourLocation;
 
-  /// No description provided for @optional.
+  /// Optional
   ///
   /// In en, this message translates to:
   /// **'(Optional)'**
   String get optional;
 
-  /// No description provided for @pleaseEnterYourName.
+  /// Please enter your name
   ///
   /// In en, this message translates to:
   /// **'Please enter your name'**
   String get pleaseEnterYourName;
 
-  /// No description provided for @pleaseFillRequiredFields.
+  /// Please fill in all required fields correctly
   ///
   /// In en, this message translates to:
   /// **'Please fill in all required fields correctly'**
   String get pleaseFillRequiredFields;
 
-  /// No description provided for @requestsForMyDonations.
+  /// Requests for my donations
   ///
   /// In en, this message translates to:
   /// **'Requests for my donations'**
   String get requestsForMyDonations;
 
-  /// No description provided for @noIncomingRequests.
+  /// No incoming requests yet
   ///
   /// In en, this message translates to:
   /// **'No incoming requests yet'**
   String get noIncomingRequests;
 
-  /// No description provided for @whenReceiversRequest.
+  /// When receivers request your donations, they will appear here
   ///
   /// In en, this message translates to:
   /// **'When receivers request your donations, they will appear here'**
   String get whenReceiversRequest;
 
-  /// No description provided for @requestedOn.
+  /// Requested on
   ///
   /// In en, this message translates to:
   /// **'Requested on'**
   String get requestedOn;
 
-  /// No description provided for @myImpact.
+  /// My Impact
   ///
   /// In en, this message translates to:
   /// **'My Impact'**
   String get myImpact;
 
-  /// No description provided for @contributionStatistics.
+  /// Contribution Statistics
   ///
   /// In en, this message translates to:
   /// **'Contribution Statistics'**
   String get contributionStatistics;
 
-  /// No description provided for @totalDonationsMade.
+  /// Total Donations Made
   ///
   /// In en, this message translates to:
   /// **'Total Donations Made'**
   String get totalDonationsMade;
 
-  /// No description provided for @activeDonations.
+  /// Active Donations
   ///
   /// In en, this message translates to:
   /// **'Active Donations'**
   String get activeDonations;
 
-  /// No description provided for @completedDonations.
+  /// Completed Donations
   ///
   /// In en, this message translates to:
   /// **'Completed Donations'**
   String get completedDonations;
 
-  /// No description provided for @peopleHelped.
+  /// People Helped
   ///
   /// In en, this message translates to:
   /// **'People Helped'**
   String get peopleHelped;
 
-  /// No description provided for @approvedRequests.
-  ///
-  /// In en, this message translates to:
-  /// **'Approved Requests'**
-  String get approvedRequests;
-
-  /// No description provided for @pendingRequests.
+  /// Pending Requests
   ///
   /// In en, this message translates to:
   /// **'Pending Requests'**
   String get pendingRequests;
 
-  /// No description provided for @impactOverTime.
+  /// Impact Over Time
   ///
   /// In en, this message translates to:
   /// **'Impact Over Time'**
   String get impactOverTime;
 
-  /// No description provided for @thisMonth.
+  /// This Month
   ///
   /// In en, this message translates to:
   /// **'This Month'**
   String get thisMonth;
 
-  /// No description provided for @thisYear.
+  /// This Year
   ///
   /// In en, this message translates to:
   /// **'This Year'**
   String get thisYear;
 
-  /// No description provided for @allTime.
+  /// All Time
   ///
   /// In en, this message translates to:
   /// **'All Time'**
   String get allTime;
 
-  /// No description provided for @categoryBreakdown.
+  /// Category Breakdown
   ///
   /// In en, this message translates to:
   /// **'Category Breakdown'**
   String get categoryBreakdown;
 
-  /// No description provided for @recentActivity.
+  /// Recent Activity
   ///
   /// In en, this message translates to:
   /// **'Recent Activity'**
   String get recentActivity;
 
-  /// No description provided for @viewDetails.
+  /// View Details
   ///
   /// In en, this message translates to:
   /// **'View Details'**
   String get viewDetails;
 
-  /// No description provided for @noActivityYet.
+  /// No activity yet
   ///
   /// In en, this message translates to:
   /// **'No activity yet'**
   String get noActivityYet;
 
-  /// No description provided for @requestDetails.
+  /// Request Details
   ///
   /// In en, this message translates to:
   /// **'Request Details'**
   String get requestDetails;
 
-  /// No description provided for @requester.
+  /// Requester
   ///
   /// In en, this message translates to:
   /// **'Requester'**
   String get requester;
 
-  /// No description provided for @contactRequester.
+  /// Contact Requester
   ///
   /// In en, this message translates to:
   /// **'Contact Requester'**
   String get contactRequester;
 
-  /// No description provided for @statistics.
+  /// Statistics
   ///
   /// In en, this message translates to:
   /// **'Statistics'**
   String get statistics;
 
-  /// No description provided for @requestApproved.
+  /// Request approved successfully
   ///
   /// In en, this message translates to:
   /// **'Request approved successfully'**
   String get requestApproved;
 
-  /// No description provided for @requestDeclined.
+  /// Request declined
   ///
   /// In en, this message translates to:
   /// **'Request declined'**
   String get requestDeclined;
 
-  /// No description provided for @communities.
+  /// Communities
   ///
   /// In en, this message translates to:
   /// **'Communities'**
   String get communities;
 
-  /// No description provided for @activeDonors.
+  /// Active Donors
   ///
   /// In en, this message translates to:
   /// **'Active Donors'**
   String get activeDonors;
 
-  /// No description provided for @donationsToday.
+  /// donations today
   ///
   /// In en, this message translates to:
   /// **'donations today'**
   String get donationsToday;
 
-  /// No description provided for @peopleHelpedCount.
+  /// people helped
   ///
   /// In en, this message translates to:
   /// **'people helped'**
   String get peopleHelpedCount;
 
-  /// No description provided for @secure100.
+  /// Secure 100%
   ///
   /// In en, this message translates to:
   /// **'Secure 100%'**
   String get secure100;
 
-  /// No description provided for @popularBadge.
+  /// 🔥 Popular
   ///
   /// In en, this message translates to:
   /// **'🔥 Popular'**
   String get popularBadge;
 
-  /// No description provided for @trendingUp.
+  /// +18%
   ///
   /// In en, this message translates to:
   /// **'+18%'**
   String get trendingUp;
 
-  /// No description provided for @newCommunities.
+  /// +3 new
   ///
   /// In en, this message translates to:
   /// **'+3 new'**
   String get newCommunities;
 
-  /// No description provided for @trendingUp24.
+  /// +24%
   ///
   /// In en, this message translates to:
   /// **'+24%'**
   String get trendingUp24;
 
-  /// No description provided for @trustedBadge.
+  /// Trusted
   ///
   /// In en, this message translates to:
   /// **'Trusted'**
   String get trustedBadge;
 
-  /// No description provided for @aiPoweredBadge.
+  /// ✨ AI Powered
   ///
   /// In en, this message translates to:
   /// **'✨ AI Powered'**
   String get aiPoweredBadge;
 
-  /// No description provided for @verifiedBadge.
+  /// ✓ Verified
   ///
   /// In en, this message translates to:
   /// **'✓ Verified'**
   String get verifiedBadge;
 
-  /// No description provided for @realtimeBadge.
+  /// 📊 Real-time
   ///
   /// In en, this message translates to:
   /// **'📊 Real-time'**
   String get realtimeBadge;
 
-  /// No description provided for @secureBadge.
+  /// 🔒 Secure
   ///
   /// In en, this message translates to:
   /// **'🔒 Secure'**
   String get secureBadge;
 
-  /// No description provided for @supportBadge.
+  /// 🆘 24/7 Support
   ///
   /// In en, this message translates to:
   /// **'🆘 24/7 Support'**
   String get supportBadge;
 
-  /// No description provided for @newBadge.
+  /// 🆕 New
   ///
   /// In en, this message translates to:
   /// **'🆕 New'**
   String get newBadge;
 
-  /// No description provided for @receiveDonationNotifications.
+  /// Receive notifications about donations
   ///
   /// In en, this message translates to:
   /// **'Receive notifications about donations'**
   String get receiveDonationNotifications;
 
-  /// No description provided for @receiveEmailUpdates.
-  ///
-  /// In en, this message translates to:
-  /// **'Receive email updates about your activity'**
-  String get receiveEmailUpdates;
-
-  /// No description provided for @notifyOnNewRequests.
-  ///
-  /// In en, this message translates to:
-  /// **'Notify when someone requests your donations'**
-  String get notifyOnNewRequests;
-
-  /// No description provided for @donationApprovals.
+  /// Donation Approvals
   ///
   /// In en, this message translates to:
   /// **'Donation Approvals'**
   String get donationApprovals;
 
-  /// No description provided for @notifyOnApprovals.
+  /// Notify when your donation requests are approved
   ///
   /// In en, this message translates to:
   /// **'Notify when your donation requests are approved'**
   String get notifyOnApprovals;
 
-  /// No description provided for @notifyOnNewMessages.
+  /// Notify when you receive new messages
   ///
   /// In en, this message translates to:
   /// **'Notify when you receive new messages'**
   String get notifyOnNewMessages;
 
-  /// No description provided for @systemUpdates.
+  /// System Updates
   ///
   /// In en, this message translates to:
   /// **'System Updates'**
   String get systemUpdates;
 
-  /// No description provided for @notifyOnSystemUpdates.
+  /// Notify about app updates and maintenance
   ///
   /// In en, this message translates to:
   /// **'Notify about app updates and maintenance'**
   String get notifyOnSystemUpdates;
 
-  /// No description provided for @manageYourNotifications.
+  /// Manage your notification preferences
   ///
   /// In en, this message translates to:
   /// **'Manage your notification preferences'**
   String get manageYourNotifications;
 
-  /// No description provided for @allNotifications.
+  /// All Notifications
   ///
   /// In en, this message translates to:
   /// **'All Notifications'**
   String get allNotifications;
 
-  /// No description provided for @turnOnAllNotifications.
+  /// Turn on all notifications
   ///
   /// In en, this message translates to:
   /// **'Turn on all notifications'**
   String get turnOnAllNotifications;
 
-  /// No description provided for @language.
+  /// Language
   ///
   /// In en, this message translates to:
   /// **'Language'**
   String get language;
 
-  /// No description provided for @changeAppLanguage.
+  /// Change app language
   ///
   /// In en, this message translates to:
   /// **'Change app language'**
   String get changeAppLanguage;
+
+  /// Failed to update setting
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update setting'**
+  String get failedToUpdateSetting;
 }
 
 class _AppLocalizationsDelegate

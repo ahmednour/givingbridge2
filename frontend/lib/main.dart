@@ -21,6 +21,7 @@ import 'services/error_handler.dart';
 import 'services/offline_service.dart';
 import 'services/network_status_service.dart';
 import 'services/firebase_notification_service.dart';
+import 'services/socket_service.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/landing_screen.dart';
 import 'widgets/offline_banner.dart';
@@ -125,6 +126,8 @@ class AuthWrapper extends StatefulWidget {
 }
 
 class _AuthWrapperState extends State<AuthWrapper> {
+  bool _socketInitialized = false;
+
   @override
   void initState() {
     super.initState();
@@ -143,6 +146,13 @@ class _AuthWrapperState extends State<AuthWrapper> {
           return const LoadingScreen();
         }
 
+        // Initialize socket service and set authenticated user ID when user is authenticated
+        if (authProvider.isAuthenticated && !_socketInitialized) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _initializeServices(context, authProvider);
+          });
+        }
+
         // Show appropriate screen based on auth state with offline banner
         return Column(
           children: [
@@ -156,6 +166,34 @@ class _AuthWrapperState extends State<AuthWrapper> {
         );
       },
     );
+  }
+
+  Future<void> _initializeServices(
+      BuildContext context, AuthProvider authProvider) async {
+    try {
+      // Set authenticated user ID in message provider
+      final messageProvider =
+          Provider.of<MessageProvider>(context, listen: false);
+      if (authProvider.user?.id != null) {
+        messageProvider
+            .setAuthenticatedUserId(authProvider.user!.id.toString());
+      }
+
+      // Initialize socket service
+      final socketService = SocketService();
+      await socketService.connect();
+
+      // Initialize backend notification provider
+      final backendNotificationProvider =
+          Provider.of<BackendNotificationProvider>(context, listen: false);
+      await backendNotificationProvider.initialize();
+
+      setState(() {
+        _socketInitialized = true;
+      });
+    } catch (e) {
+      debugPrint('Error initializing services: $e');
+    }
   }
 }
 

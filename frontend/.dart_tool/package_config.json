@@ -464,6 +464,12 @@
       "languageVersion": "3.3"
     },
     {
+      "name": "intl_utils",
+      "rootUri": "file:///C:/Users/DELL/AppData/Local/Pub/Cache/hosted/pub.dev/intl_utils-2.8.12",
+      "packageUri": "lib/",
+      "languageVersion": "3.7"
+    },
+    {
       "name": "io",
       "rootUri": "file:///C:/Users/DELL/AppData/Local/Pub/Cache/hosted/pub.dev/io-1.0.5",
       "packageUri": "lib/",

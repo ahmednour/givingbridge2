@@ -154,6 +154,23 @@ router.post(
       .optional()
       .isInt({ min: 1 })
       .withMessage("Valid request ID required if provided"),
+    body("messageType")
+      .optional()
+      .isIn(["text", "image", "file"])
+      .withMessage("Message type must be text, image, or file"),
+    body("attachmentUrl")
+      .optional()
+      .isURL()
+      .withMessage("Valid attachment URL required if provided"),
+    body("attachmentName")
+      .optional()
+      .trim()
+      .isLength({ max: 255 })
+      .withMessage("Attachment name must be at most 255 characters"),
+    body("attachmentSize")
+      .optional()
+      .isInt({ min: 0 })
+      .withMessage("Valid attachment size required if provided"),
   ],
   async (req, res) => {
     try {
@@ -166,7 +183,16 @@ router.post(
         });
       }
 
-      const { receiverId, content, donationId, requestId } = req.body;
+      const {
+        receiverId,
+        content,
+        donationId,
+        requestId,
+        messageType,
+        attachmentUrl,
+        attachmentName,
+        attachmentSize,
+      } = req.body;
 
       const sender = await User.findByPk(req.user.userId);
       const receiver = await User.findByPk(parseInt(receiverId));
@@ -196,6 +222,10 @@ router.post(
         donationId: donationId ? parseInt(donationId) : null,
         requestId: requestId ? parseInt(requestId) : null,
         content: content.trim(),
+        messageType: messageType || "text",
+        attachmentUrl: attachmentUrl || null,
+        attachmentName: attachmentName || null,
+        attachmentSize: attachmentSize || null,
       });
 
       res.status(201).json({
@@ -365,6 +395,86 @@ router.get("/admin/stats", authenticateToken, async (req, res) => {
     console.error("Get message stats error:", error);
     res.status(500).json({
       message: "Failed to retrieve message statistics",
+      error: error.message,
+    });
+  }
+});
+
+// Get archived conversations for the authenticated user
+router.get("/conversations/archived", authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    // Get all archived messages where user is sender or receiver
+    const messages = await Message.findAll({
+      where: {
+        [Op.or]: [
+          {
+            senderId: userId,
+            archivedBySender: true,
+          },
+          {
+            receiverId: userId,
+            archivedByReceiver: true,
+          },
+        ],
+      },
+      include: [
+        {
+          model: User,
+          as: "sender",
+          attributes: ["id", "name", "email", "avatarUrl"],
+        },
+        {
+          model: User,
+          as: "receiver",
+          attributes: ["id", "name", "email", "avatarUrl"],
+        },
+      ],
+      order: [["createdAt", "DESC"]],
+    });
+
+    // Group messages by conversation partner
+    const conversationsMap = new Map();
+
+    for (const message of messages) {
+      const otherUserId =
+        message.senderId === userId ? message.receiverId : message.senderId;
+      const otherUser =
+        message.senderId === userId ? message.receiver : message.sender;
+
+      if (!conversationsMap.has(otherUserId)) {
+        const unreadCount = await Message.count({
+          where: {
+            senderId: otherUserId,
+            receiverId: userId,
+            isRead: false,
+          },
+        });
+
+        conversationsMap.set(otherUserId, {
+          userId: otherUserId,
+          userName: otherUser.name,
+          userAvatar: otherUser.avatarUrl,
+          lastMessage: message,
+          unreadCount,
+          donationId: message.donationId,
+          requestId: message.requestId,
+        });
+      }
+    }
+
+    const conversations = Array.from(conversationsMap.values());
+
+    res.json({
+      message: "Archived conversations retrieved successfully",
+      conversations,
+      total: conversations.length,
+    });
+  } catch (error) {
+    console.error("Get archived conversations error:", error);
+    res.status(500).json({
+      message: "Failed to retrieve archived conversations",
       error: error.message,
     });
   }

@@ -66,42 +66,55 @@ class AuthController {
   }
 
   /**
-   * Login user
+   * Login user with email and password
    * @param {string} email - User email
    * @param {string} password - User password
    * @returns {Promise<Object>} Login result with user and token
    */
   static async login(email, password) {
-    // Find user by email
-    const user = await User.findOne({ where: { email } });
-    if (!user) {
-      throw new AuthenticationError("Invalid email or password");
+    try {
+      // Find user by email
+      const user = await User.findOne({ where: { email } });
+      if (!user) {
+        throw new AuthenticationError("Invalid email or password");
+      }
+
+      // Check password
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!isPasswordValid) {
+        throw new AuthenticationError("Invalid email or password");
+      }
+
+      // Generate JWT token
+      const token = jwt.sign(
+        {
+          userId: user.id,
+          email: user.email,
+          role: user.role,
+        },
+        JWT_SECRET,
+        { expiresIn: JWT_SETTINGS.EXPIRES_IN }
+      );
+
+      // Remove password from response
+      const { password: _, ...userResponse } = user.toJSON();
+
+      return {
+        user: userResponse,
+        token,
+      };
+    } catch (error) {
+      // Handle database connection errors specifically
+      if (
+        error.name === "SequelizeConnectionRefusedError" ||
+        error.name === "SequelizeDatabaseError"
+      ) {
+        throw new Error(
+          "Service temporarily unavailable. Please try again later."
+        );
+      }
+      throw error;
     }
-
-    // Check password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      throw new AuthenticationError("Invalid email or password");
-    }
-
-    // Generate JWT token
-    const token = jwt.sign(
-      {
-        userId: user.id,
-        email: user.email,
-        role: user.role,
-      },
-      JWT_SECRET,
-      { expiresIn: JWT_SETTINGS.EXPIRES_IN }
-    );
-
-    // Remove password from response
-    const { password: _, ...userResponse } = user.toJSON();
-
-    return {
-      user: userResponse,
-      token,
-    };
   }
 
   /**

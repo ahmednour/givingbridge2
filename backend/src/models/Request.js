@@ -72,8 +72,8 @@ const Request = sequelize.define(
   {
     tableName: "requests",
     timestamps: true,
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
+    createdAt: "createdAt",
+    updatedAt: "updatedAt",
     indexes: [
       {
         fields: ["donationId"],
@@ -102,5 +102,15 @@ const Request = sequelize.define(
     },
   }
 );
+
+// Define associations in a separate function to avoid circular dependencies
+Request.associate = (models) => {
+  Request.belongsTo(models.User, { foreignKey: "receiverId", as: "receiver" });
+  Request.belongsTo(models.User, { foreignKey: "donorId", as: "requestDonor" });
+  Request.belongsTo(models.Donation, {
+    foreignKey: "donationId",
+    as: "donation",
+  });
+};
 
 module.exports = Request;

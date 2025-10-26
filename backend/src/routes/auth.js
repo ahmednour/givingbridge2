@@ -92,6 +92,21 @@ router.post(
       });
     } catch (error) {
       console.error("Login error:", error);
+
+      // Handle specific database errors
+      if (error.message.includes("Service temporarily unavailable")) {
+        return res.status(HTTP_STATUS.SERVICE_UNAVAILABLE).json({
+          message: error.message,
+        });
+      }
+
+      // Handle authentication errors
+      if (error.name === "AuthenticationError") {
+        return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+          message: error.message,
+        });
+      }
+
       res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         message: "Login failed",
         error: error.message,

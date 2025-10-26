@@ -7,6 +7,7 @@ import '../widgets/common/gb_notification_card.dart';
 import '../widgets/common/web_card.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/backend_notification_provider.dart';
+import '../providers/notification_preference_provider.dart';
 import '../services/backend_notification_service.dart';
 
 class NotificationsScreen extends StatefulWidget {
@@ -20,6 +21,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late BackendNotificationProvider _notificationProvider;
+  late NotificationPreferenceProvider _preferenceProvider;
 
   @override
   void initState() {
@@ -27,7 +29,10 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     _tabController = TabController(length: 3, vsync: this);
     _notificationProvider =
         Provider.of<BackendNotificationProvider>(context, listen: false);
+    _preferenceProvider =
+        Provider.of<NotificationPreferenceProvider>(context, listen: false);
     _notificationProvider.initialize();
+    _preferenceProvider.loadPreferences();
   }
 
   @override
@@ -159,7 +164,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
           // Mark all as read
           if (_getUnreadCount() > 0)
             GBButton(
-              text: l10n.markAllRead,
+              text: l10n.markAllAsRead,
               size: GBButtonSize.small,
               variant: GBButtonVariant.ghost,
               onPressed: _markAllAsRead,
@@ -315,6 +320,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 _buildSettingToggle(
                   l10n.donationRequests,
                   l10n.notifyDonationRequests,
+                  'pushDonationRequest',
                   true,
                   theme,
                   isDark,
@@ -322,6 +328,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 _buildSettingToggle(
                   l10n.newDonations,
                   l10n.notifyNewDonations,
+                  'pushNewMessage',
                   true,
                   theme,
                   isDark,
@@ -329,6 +336,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 _buildSettingToggle(
                   l10n.statusUpdates,
                   l10n.notifyStatusUpdates,
+                  'pushRequestUpdate',
                   true,
                   theme,
                   isDark,
@@ -336,6 +344,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 _buildSettingToggle(
                   l10n.reminders,
                   l10n.notifyReminders,
+                  'pushDonationUpdate',
                   false,
                   theme,
                   isDark,
@@ -361,6 +370,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 _buildSettingToggle(
                   l10n.weeklySummary,
                   l10n.receiveWeeklySummary,
+                  'emailDonationRequest',
                   true,
                   theme,
                   isDark,
@@ -368,6 +378,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 _buildSettingToggle(
                   l10n.importantUpdates,
                   l10n.receiveImportantUpdates,
+                  'emailRequestUpdate',
                   true,
                   theme,
                   isDark,
@@ -375,6 +386,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 _buildSettingToggle(
                   l10n.marketingEmails,
                   l10n.receiveMarketingEmails,
+                  'emailDonationUpdate',
                   false,
                   theme,
                   isDark,
@@ -401,6 +413,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   Widget _buildSettingToggle(
     String title,
     String subtitle,
+    String preferenceKey,
     bool value,
     ThemeData theme,
     bool isDark,
@@ -430,15 +443,28 @@ class _NotificationsScreenState extends State<NotificationsScreen>
           ),
           Switch(
             value: value,
-            onChanged: (newValue) {
-              // TODO: Implement setting toggle
-              final l10n = AppLocalizations.of(context)!;
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content:
-                      Text('${newValue ? l10n.enabled : l10n.disabled} $title'),
-                ),
-              );
+            onChanged: (newValue) async {
+              // Update the preference
+              final success = await _preferenceProvider.updatePreference(
+                  preferenceKey, newValue);
+
+              if (success && mounted) {
+                final l10n = AppLocalizations.of(context)!;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                        '${newValue ? l10n.enabled : l10n.disabled} $title'),
+                  ),
+                );
+              } else if (!success && mounted) {
+                final l10n = AppLocalizations.of(context)!;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(l10n.failedToUpdateSetting),
+                    backgroundColor: DesignSystem.error,
+                  ),
+                );
+              }
             },
           ),
         ],

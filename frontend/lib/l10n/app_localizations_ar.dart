@@ -135,7 +135,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get pending => 'قيد الانتظار';
 
   @override
-  String get approved => 'موافق عليها';
+  String get approved => 'مقبول';
 
   @override
   String get declined => 'مرفوض';
@@ -180,7 +180,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get basicInfoDescription => 'قدم معلومات أساسية عن تبرعك';
 
   @override
-  String get donationTitle => 'التبرع';
+  String get donationTitle => 'عنوان التبرع';
 
   @override
   String get donationTitleHint => 'أدخل عنواناً وصفياً لتبرعك';
@@ -369,6 +369,58 @@ class AppLocalizationsAr extends AppLocalizations {
   String get blockedUsersComingSoon => 'المستخدمون المحظورون - قريباً';
 
   @override
+  String get notifications => 'الإشعارات';
+
+  @override
+  String get privacy => 'الخصوصية';
+
+  @override
+  String get messageHistory => 'سجل الرسائل';
+
+  @override
+  String get sound => 'الصوت';
+
+  @override
+  String get playSoundForMessages => 'تشغيل الصوت للرسائل';
+
+  @override
+  String get vibration => 'الاهتزاز';
+
+  @override
+  String get vibrateForMessages => 'الاهتزاز للرسائل';
+
+  @override
+  String get readReceipts => 'إشعارات القراءة';
+
+  @override
+  String get showReadReceipts => 'عرض وقت قراءة الرسائل';
+
+  @override
+  String get typingIndicators => 'مؤشرات الكتابة';
+
+  @override
+  String get showTypingIndicators => 'عرض وقت كتابة الآخرين';
+
+  @override
+  String get autoDeleteMessages => 'حذف تلقائي للرسائل';
+
+  @override
+  String get automaticallyDeleteOldMessages => 'حذف الرسائل القديمة تلقائياً';
+
+  @override
+  String get settingUpdated => 'تم تحديث الإعداد';
+
+  @override
+  String get noArchivedConversations => 'لا توجد محادثات مؤرشفة';
+
+  @override
+  String get noArchivedConversationsDescription =>
+      'ستظهر محادثاتك المؤرشفة هنا';
+
+  @override
+  String get unarchive => 'إلغاء الأرشفة';
+
+  @override
   String get next => 'التالي';
 
   @override
@@ -450,7 +502,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'جسر العطاء يربط المتبرعين السخيين بالمحتاجين، مما يخلق مجتمعاً حيث يتدفق اللطف بحرية وكل تبرع يُحدث فرقاً حقيقياً.';
 
   @override
-  String get startDonating => 'ابدأ بالتبرع لترى تأثيرك!';
+  String get startDonating => 'ابدأ التبرع';
 
   @override
   String get learnMore => 'اعرف المزيد';
@@ -598,7 +650,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get helpSupportComingSoon => 'المساعدة والدعم قريباً!';
 
   @override
-  String get selectLanguage => 'Select Language / اختر اللغة';
+  String get selectLanguage => 'اختر اللغة';
 
   @override
   String get overview => 'نظرة عامة';
@@ -761,7 +813,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String requestFrom(String name) {
-    return 'طلب من';
+    return 'طلب من $name';
   }
 
   @override
@@ -775,12 +827,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get requestedAt => 'تم الطلب';
-
-  @override
-  String get notifications => 'الإشعارات';
-
-  @override
-  String get markAllRead => 'وضع علامة مقروء على الكل';
 
   @override
   String unreadNotifications(int count) {
@@ -1063,9 +1109,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get peopleHelped => 'الأشخاص الذين تمت مساعدتهم';
 
   @override
-  String get approvedRequests => 'الطلبات المقبولة';
-
-  @override
   String get pendingRequests => 'الطلبات المعلقة';
 
   @override
@@ -1162,12 +1205,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get receiveDonationNotifications => 'تلقي إشعارات حول التبرعات';
 
   @override
-  String get receiveEmailUpdates => 'تلقي تحديثات البريد الإلكتروني حول نشاطك';
-
-  @override
-  String get notifyOnNewRequests => 'الإشعار عند طلب تبرعاتك';
-
-  @override
   String get donationApprovals => 'موافقات التبرع';
 
   @override
@@ -1196,4 +1233,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get changeAppLanguage => 'تغيير لغة التطبيق';
+
+  @override
+  String get failedToUpdateSetting => 'فشل تحديث الإعداد';
 }

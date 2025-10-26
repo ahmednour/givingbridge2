@@ -59,8 +59,36 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
     try {
       final response = await ApiService.getMyRequests();
       if (response.success && response.data != null) {
+        // Check if each request has been rated
+        final updatedRequests = <DonationRequest>[];
+        for (final request in response.data!) {
+          // Check if request has been rated
+          await _ratingProvider.loadRequestRating(request.id);
+          final isRated = _ratingProvider.getRequestRating(request.id) != null;
+
+          updatedRequests.add(
+            DonationRequest(
+              id: request.id,
+              donationId: request.donationId,
+              donorId: request.donorId,
+              donorName: request.donorName,
+              receiverId: request.receiverId,
+              receiverName: request.receiverName,
+              receiverEmail: request.receiverEmail,
+              receiverPhone: request.receiverPhone,
+              message: request.message,
+              status: request.status,
+              responseMessage: request.responseMessage,
+              createdAt: request.createdAt,
+              updatedAt: request.updatedAt,
+              respondedAt: request.respondedAt,
+              isRated: isRated,
+            ),
+          );
+        }
+
         setState(() {
-          _requests = response.data!;
+          _requests = updatedRequests;
         });
       } else {
         final l10n = AppLocalizations.of(context)!;
@@ -223,8 +251,30 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
 
     if (result == true && mounted) {
       _showSuccessSnackbar('Thank you for your feedback!');
-      // TODO: Update request to mark as rated
-      _loadRequests();
+      // Update the request to mark as rated
+      setState(() {
+        _requests = _requests
+            .map((r) => r.id == request.id
+                ? DonationRequest(
+                    id: r.id,
+                    donationId: r.donationId,
+                    donorId: r.donorId,
+                    donorName: r.donorName,
+                    receiverId: r.receiverId,
+                    receiverName: r.receiverName,
+                    receiverEmail: r.receiverEmail,
+                    receiverPhone: r.receiverPhone,
+                    message: r.message,
+                    status: r.status,
+                    responseMessage: r.responseMessage,
+                    createdAt: r.createdAt,
+                    updatedAt: r.updatedAt,
+                    respondedAt: r.respondedAt,
+                    isRated: true,
+                  )
+                : r)
+            .toList();
+      });
     }
   }
 
@@ -511,16 +561,27 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
                     ),
                   ),
                 ] else if (request.isCompleted) ...[
-                  Expanded(
-                    child: GBButton(
-                      text: 'Rate Donor',
-                      leftIcon:
-                          const Icon(Icons.star, size: 18, color: Colors.white),
-                      onPressed: () => _rateDonor(request),
-                      variant: GBButtonVariant.primary,
-                      size: GBButtonSize.small,
+                  if (request.isRated) ...[
+                    Expanded(
+                      child: GBButton(
+                        text: 'Rated',
+                        onPressed: null,
+                        variant: GBButtonVariant.outline,
+                        size: GBButtonSize.small,
+                      ),
                     ),
-                  ),
+                  ] else ...[
+                    Expanded(
+                      child: GBButton(
+                        text: 'Rate Donor',
+                        leftIcon: const Icon(Icons.star,
+                            size: 18, color: Colors.white),
+                        onPressed: () => _rateDonor(request),
+                        variant: GBButtonVariant.primary,
+                        size: GBButtonSize.small,
+                      ),
+                    ),
+                  ],
                 ] else ...[
                   const Expanded(
                     child: SizedBox(), // Empty space for alignment

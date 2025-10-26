@@ -181,7 +181,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Provide basic information about your donation';
 
   @override
-  String get donationTitle => 'Donation';
+  String get donationTitle => 'Donation Title';
 
   @override
   String get donationTitleHint => 'Enter a descriptive title for your donation';
@@ -376,6 +376,59 @@ class AppLocalizationsEn extends AppLocalizations {
   String get blockedUsersComingSoon => 'Blocked Users - Coming Soon';
 
   @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get privacy => 'Privacy';
+
+  @override
+  String get messageHistory => 'Message History';
+
+  @override
+  String get sound => 'Sound';
+
+  @override
+  String get playSoundForMessages => 'Play sound for messages';
+
+  @override
+  String get vibration => 'Vibration';
+
+  @override
+  String get vibrateForMessages => 'Vibrate for messages';
+
+  @override
+  String get readReceipts => 'Read Receipts';
+
+  @override
+  String get showReadReceipts => 'Show when messages are read';
+
+  @override
+  String get typingIndicators => 'Typing Indicators';
+
+  @override
+  String get showTypingIndicators => 'Show when others are typing';
+
+  @override
+  String get autoDeleteMessages => 'Auto-delete Messages';
+
+  @override
+  String get automaticallyDeleteOldMessages =>
+      'Automatically delete old messages';
+
+  @override
+  String get settingUpdated => 'Setting updated';
+
+  @override
+  String get noArchivedConversations => 'No archived conversations';
+
+  @override
+  String get noArchivedConversationsDescription =>
+      'Your archived conversations will appear here';
+
+  @override
+  String get unarchive => 'Unarchive';
+
+  @override
   String get next => 'Next';
 
   @override
@@ -457,7 +510,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Giving Bridge connects generous donors with those in need, creating a community where kindness flows freely and every donation makes a real difference.';
 
   @override
-  String get startDonating => 'Start donating to see your impact!';
+  String get startDonating => 'Start Donating';
 
   @override
   String get learnMore => 'Learn More';
@@ -604,13 +657,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Notification settings coming soon!';
 
   @override
-  String get languageSettingsComingSoon => 'Language settings coming soon!';
+  String get languageSettingsComingSoon => 'Language settings coming soon! ';
 
   @override
   String get helpSupportComingSoon => 'Help & Support coming soon!';
 
   @override
-  String get selectLanguage => 'Select Language / اختر اللغة';
+  String get selectLanguage => 'Select Language';
 
   @override
   String get overview => 'Overview';
@@ -776,7 +829,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String requestFrom(String name) {
-    return 'Request from';
+    return 'Request from $name';
   }
 
   @override
@@ -791,12 +844,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get requestedAt => 'Requested';
-
-  @override
-  String get notifications => 'Notifications';
-
-  @override
-  String get markAllRead => 'Mark all read';
 
   @override
   String unreadNotifications(int count) {
@@ -1082,9 +1129,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get peopleHelped => 'People Helped';
 
   @override
-  String get approvedRequests => 'Approved Requests';
-
-  @override
   String get pendingRequests => 'Pending Requests';
 
   @override
@@ -1182,13 +1226,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Receive notifications about donations';
 
   @override
-  String get receiveEmailUpdates => 'Receive email updates about your activity';
-
-  @override
-  String get notifyOnNewRequests =>
-      'Notify when someone requests your donations';
-
-  @override
   String get donationApprovals => 'Donation Approvals';
 
   @override
@@ -1219,4 +1256,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get changeAppLanguage => 'Change app language';
+
+  @override
+  String get failedToUpdateSetting => 'Failed to update setting';
 }

@@ -928,10 +928,14 @@ class MockMessageRepository extends _i1.Mock implements _i9.MessageRepository {
 
   @override
   _i6.Future<_i2.ApiResponse<dynamic>> sendMessage({
-    required String? receiverId,
-    required String? content,
+    required String receiverId,
+    required String content,
     String? donationId,
     String? requestId,
+    String? messageType,
+    String? attachmentUrl,
+    String? attachmentName,
+    int? attachmentSize,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -942,6 +946,10 @@ class MockMessageRepository extends _i1.Mock implements _i9.MessageRepository {
             #content: content,
             #donationId: donationId,
             #requestId: requestId,
+            #messageType: messageType,
+            #attachmentUrl: attachmentUrl,
+            #attachmentName: attachmentName,
+            #attachmentSize: attachmentSize,
           },
         ),
         returnValue: _i6.Future<_i2.ApiResponse<dynamic>>.value(
@@ -955,6 +963,10 @@ class MockMessageRepository extends _i1.Mock implements _i9.MessageRepository {
               #content: content,
               #donationId: donationId,
               #requestId: requestId,
+              #messageType: messageType,
+              #attachmentUrl: attachmentUrl,
+              #attachmentName: attachmentName,
+              #attachmentSize: attachmentSize,
             },
           ),
         )),

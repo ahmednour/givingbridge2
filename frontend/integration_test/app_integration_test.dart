@@ -9,7 +9,7 @@ import 'package:giving_bridge_frontend/providers/donation_provider.dart';
 import 'package:giving_bridge_frontend/providers/message_provider.dart';
 import 'package:giving_bridge_frontend/services/offline_service.dart';
 import 'package:giving_bridge_frontend/services/network_status_service.dart';
-import 'package:giving_bridge_frontend/widgets/common/error_handling_widget.dart';
+import 'package:giving_bridge_frontend/services/error_handler.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();

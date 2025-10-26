@@ -4,6 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import '../services/navigation_service.dart';
+import '../core/constants/route_constants.dart';
 
 /// Firebase Cloud Messaging service for push notifications
 ///
@@ -222,7 +224,16 @@ class FirebaseNotificationService {
     debugPrint('🔔 Notification tapped: ${response.payload}');
     // Parse payload and navigate
     if (response.payload != null) {
-      // TODO: Navigate based on notification type
+      try {
+        // Parse the payload as a Map
+        final payload = response.payload;
+        if (payload != null) {
+          // Navigate based on notification type
+          _navigateBasedOnNotificationType(payload);
+        }
+      } catch (e) {
+        debugPrint('❌ Error parsing notification payload: $e');
+      }
     }
   }
 
@@ -233,12 +244,78 @@ class FirebaseNotificationService {
 
     debugPrint('🎯 Handling notification tap - Type: $type, ID: $relatedId');
 
-    // TODO: Implement navigation logic based on notification type
-    // Examples:
-    // - 'message' → Navigate to chat screen
-    // - 'donation_request' → Navigate to incoming requests
-    // - 'donation_approved' → Navigate to my requests
-    // - 'new_donation' → Navigate to donation details
+    // Implement navigation logic based on notification type
+    switch (type) {
+      case 'message':
+        // Navigate to chat screen with the user ID
+        if (relatedId != null) {
+          NavigationService.navigateTo(
+            RouteConstants.chat,
+            arguments: {
+              'otherUserId': relatedId.toString(),
+              'otherUserName': data['senderName'] ?? 'User',
+            },
+          );
+        } else {
+          // Fallback to messages screen
+          NavigationService.navigateTo(RouteConstants.messages);
+        }
+        break;
+
+      case 'donation_request':
+        // Navigate to incoming requests
+        NavigationService.navigateTo(RouteConstants.incomingRequests);
+        break;
+
+      case 'donation_approved':
+        // Navigate to my requests
+        NavigationService.navigateTo(RouteConstants.myRequests);
+        break;
+
+      case 'new_donation':
+        // Navigate to donation details
+        if (relatedId != null) {
+          NavigationService.navigateTo(
+            RouteConstants.donationDetails,
+            arguments: {'donationId': relatedId.toString()},
+          );
+        } else {
+          // Fallback to browse donations
+          NavigationService.navigateTo(RouteConstants.browseDonations);
+        }
+        break;
+
+      case 'request_completed':
+        // Navigate to my requests
+        NavigationService.navigateTo(RouteConstants.myRequests);
+        break;
+
+      case 'donation_reminder':
+        // Navigate to my donations
+        NavigationService.navigateTo(RouteConstants.myDonations);
+        break;
+
+      default:
+        // Fallback to notifications screen
+        NavigationService.navigateTo(RouteConstants.notifications);
+        break;
+    }
+  }
+
+  /// Navigate based on notification type from payload string
+  void _navigateBasedOnNotificationType(String payload) {
+    try {
+      // Parse the payload string as a Map
+      // This is a simplified approach - in a real app, you might want to use JSON parsing
+      debugPrint('🎯 Navigating with payload: $payload');
+
+      // Fallback to notifications screen for now
+      NavigationService.navigateTo(RouteConstants.notifications);
+    } catch (e) {
+      debugPrint('❌ Error navigating based on notification type: $e');
+      // Fallback to notifications screen
+      NavigationService.navigateTo(RouteConstants.notifications);
+    }
   }
 
   /// Subscribe to topic

@@ -970,6 +970,28 @@ class ApiService {
     }
   }
 
+  // Get archived conversations
+  static Future<ApiResponse<List<dynamic>>> getArchivedConversations() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/messages/conversations/archived'),
+        headers: await _getHeaders(includeAuth: true),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return ApiResponse.success(
+            List<Map<String, dynamic>>.from(data['conversations']));
+      } else {
+        final error = jsonDecode(response.body);
+        return ApiResponse.error(
+            error['message'] ?? 'Failed to load archived conversations');
+      }
+    } catch (e) {
+      return ApiResponse.error('Network error: ${e.toString()}');
+    }
+  }
+
   // ========== USER SAFETY METHODS (BLOCK/REPORT) ==========
 
   // Block a user
@@ -1225,6 +1247,45 @@ class ApiService {
     }
   }
 
+  // ========== IMAGE UPLOAD METHODS ==========
+
+  // Upload image
+  static Future<ApiResponse<Map<String, dynamic>>> uploadImage(
+      File imageFile) async {
+    try {
+      final token = await getToken();
+      if (token == null) {
+        return ApiResponse.error('Not authenticated');
+      }
+
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse('$baseUrl/upload/image'),
+      );
+
+      request.headers['Authorization'] = 'Bearer $token';
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'image',
+          imageFile.path,
+        ),
+      );
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return ApiResponse.success(data['data']);
+      } else {
+        final error = jsonDecode(response.body);
+        return ApiResponse.error(error['message'] ?? 'Failed to upload image');
+      }
+    } catch (e) {
+      return ApiResponse.error('Network error: ${e.toString()}');
+    }
+  }
+
   // Delete user avatar
   static Future<ApiResponse<User>> deleteAvatar() async {
     try {
@@ -1403,6 +1464,29 @@ class ApiService {
       return ApiResponse.error('Network error: ${e.toString()}');
     }
   }
+
+  // Get rating by request ID
+  static Future<ApiResponse<dynamic>> getRatingByRequest(int requestId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/ratings/request/$requestId'),
+        headers: await _getHeaders(includeAuth: true),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return ApiResponse.success(data['rating']);
+      } else if (response.statusCode == 404) {
+        // No rating found
+        return ApiResponse.error('Rating not found');
+      } else {
+        final error = jsonDecode(response.body);
+        return ApiResponse.error(error['message'] ?? 'Failed to get rating');
+      }
+    } catch (e) {
+      return ApiResponse.error('Network error: ${e.toString()}');
+    }
+  }
 }
 
 // Data models
@@ -1454,6 +1538,7 @@ class DonationRequest {
   final String createdAt;
   final String updatedAt;
   final String? respondedAt;
+  final bool isRated;
 
   DonationRequest({
     required this.id,
@@ -1470,6 +1555,7 @@ class DonationRequest {
     required this.createdAt,
     required this.updatedAt,
     this.respondedAt,
+    this.isRated = false,
   });
 
   factory DonationRequest.fromJson(Map<String, dynamic> json) {
@@ -1488,6 +1574,7 @@ class DonationRequest {
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
       respondedAt: json['respondedAt'],
+      isRated: json['isRated'] ?? false,
     );
   }
 
@@ -1507,6 +1594,7 @@ class DonationRequest {
       'createdAt': createdAt,
       'updatedAt': updatedAt,
       'respondedAt': respondedAt,
+      'isRated': isRated,
     };
   }
 

@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
+import 'dart:io';
 import '../repositories/message_repository.dart';
 import '../core/constants/api_constants.dart';
 import '../services/api_service.dart' hide ChatMessage;
+import '../models/chat_message.dart' as models;
 import '../models/chat_message.dart';
 
 /// Provider for managing message state and operations
@@ -16,7 +18,8 @@ class MessageProvider extends ChangeNotifier {
   bool _isLoadingMessages = false;
   bool _isLoadingConversations = false;
   String? _error;
-  String? _currentUserId;
+  String? _currentUserId; // Conversation partner ID
+  String? _authenticatedUserId; // Current authenticated user ID
   int _currentPage = 1;
   bool _hasMoreMessages = true;
   Set<int> _blockedUserIds = {}; // Track blocked users
@@ -30,8 +33,14 @@ class MessageProvider extends ChangeNotifier {
   bool get isLoadingConversations => _isLoadingConversations;
   String? get error => _error;
   String? get currentUserId => _currentUserId;
+  String? get authenticatedUserId => _authenticatedUserId;
   int get currentPage => _currentPage;
   bool get hasMoreMessages => _hasMoreMessages;
+
+  /// Set the authenticated user ID
+  void setAuthenticatedUserId(String userId) {
+    _authenticatedUserId = userId;
+  }
 
   /// Load all conversations
   Future<void> loadConversations() async {
@@ -62,7 +71,7 @@ class MessageProvider extends ChangeNotifier {
   }
 
   /// Load messages for a conversation
-  Future<void> loadMessages(String userId, {bool refresh = false}) async {
+  Future<void> loadMessages(String otherUserId, {bool refresh = false}) async {
     if (refresh) {
       _currentPage = 1;
       _hasMoreMessages = true;
@@ -71,13 +80,13 @@ class MessageProvider extends ChangeNotifier {
 
     if (!_hasMoreMessages) return;
 
-    _currentUserId = userId;
+    _currentUserId = otherUserId; // Store the conversation partner ID
     _setLoadingMessages(true);
     _clearError();
 
     try {
       final response = await _repository.getMessages(
-        userId: userId,
+        userId: otherUserId,
         page: _currentPage,
         limit: APIConstants.defaultLimit,
       );
@@ -115,6 +124,10 @@ class MessageProvider extends ChangeNotifier {
     required String content,
     String? donationId,
     String? requestId,
+    String? messageType,
+    String? attachmentUrl,
+    String? attachmentName,
+    int? attachmentSize,
   }) async {
     _setLoading(true);
     _clearError();
@@ -125,6 +138,10 @@ class MessageProvider extends ChangeNotifier {
         content: content,
         donationId: donationId,
         requestId: requestId,
+        messageType: messageType,
+        attachmentUrl: attachmentUrl,
+        attachmentName: attachmentName,
+        attachmentSize: attachmentSize,
       );
 
       if (response.success && response.data != null) {
@@ -274,11 +291,18 @@ class MessageProvider extends ChangeNotifier {
 
   /// Get messages by user ID
   List<dynamic> getMessagesByUserId(String userId) {
-    return _messages
-        .where((m) =>
-            m['senderId'].toString() == userId ||
-            m['receiverId'].toString() == userId)
-        .toList();
+    // Filter messages between current authenticated user and the specified user
+    return _messages.where((m) {
+      final senderId =
+          m is ChatMessage ? m.senderId.toString() : m['senderId'].toString();
+      final receiverId = m is ChatMessage
+          ? m.receiverId.toString()
+          : m['receiverId'].toString();
+
+      // Messages between current authenticated user and the specified user
+      return (senderId == userId && receiverId == _authenticatedUserId) ||
+          (senderId == _authenticatedUserId && receiverId == userId);
+    }).toList();
   }
 
   /// Get unread messages count for a specific user
@@ -300,18 +324,49 @@ class MessageProvider extends ChangeNotifier {
 
   /// Add new message (for real-time updates)
   void addNewMessage(dynamic message) {
-    // Avoid duplicates
-    final exists = _messages.any((m) =>
-        m['id'] == message.id || (m is ChatMessage && m.id == message.id));
+    // Get message ID
+    final messageId = message is ChatMessage ? message.id : message['id'];
 
-    if (!exists) {
-      _messages.add(message);
+    // Check if this is replacing an optimistic message (negative ID indicates optimistic)
+    if (messageId is int && messageId > 0) {
+      // This is a confirmed message, check if we have an optimistic version
+      final optimisticIndex = _messages.indexWhere((m) {
+        final existingMessageId = m is ChatMessage ? m.id : m['id'];
+        // Look for optimistic messages (negative IDs or temporary IDs)
+        return existingMessageId is int && existingMessageId < 0;
+      });
 
-      // Update or create conversation in list
-      _updateConversationWithNewMessage(message);
+      if (optimisticIndex != -1) {
+        // Replace optimistic message with confirmed one
+        _messages[optimisticIndex] = message;
+      } else {
+        // Check for exact duplicate
+        final exists = _messages.any((m) {
+          final existingMessageId = m is ChatMessage ? m.id : m['id'];
+          return existingMessageId == messageId;
+        });
 
-      notifyListeners();
+        if (!exists) {
+          _messages.add(message);
+        }
+      }
+    } else {
+      // This is either an optimistic message or a message without a proper ID
+      // Check for exact duplicate
+      final exists = _messages.any((m) {
+        final existingMessageId = m is ChatMessage ? m.id : m['id'];
+        return existingMessageId == messageId;
+      });
+
+      if (!exists) {
+        _messages.add(message);
+      }
     }
+
+    // Update or create conversation in list
+    _updateConversationWithNewMessage(message);
+
+    notifyListeners();
   }
 
   /// Update conversation list with new message
@@ -478,6 +533,23 @@ class MessageProvider extends ChangeNotifier {
     }
   }
 
+  /// Load archived conversations
+  Future<List<dynamic>> loadArchivedConversations() async {
+    try {
+      final response = await ApiService.getArchivedConversations();
+
+      if (response.success && response.data != null) {
+        return response.data!;
+      } else {
+        _setError(response.error ?? 'Failed to load archived conversations');
+        return [];
+      }
+    } catch (e) {
+      _setError('Error loading archived conversations: ${e.toString()}');
+      return [];
+    }
+  }
+
   /// Start a new conversation with a user
   Future<bool> startConversation(int userId, String userName) async {
     // Check if conversation already exists
@@ -529,5 +601,19 @@ class MessageProvider extends ChangeNotifier {
 
   void _clearError() {
     _error = null;
+  }
+
+  /// Upload image
+  Future<ApiResponse<Map<String, dynamic>>?> uploadImage(File imageFile) async {
+    try {
+      _setLoading(true);
+      final response = await ApiService.uploadImage(imageFile);
+      _setLoading(false);
+      return response;
+    } catch (e) {
+      _setError('Network error: ${e.toString()}');
+      _setLoading(false);
+      return null;
+    }
   }
 }

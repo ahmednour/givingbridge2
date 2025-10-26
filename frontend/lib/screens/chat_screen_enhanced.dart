@@ -100,6 +100,12 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
   void _initializeChat() {
     final messageProvider =
         Provider.of<MessageProvider>(context, listen: false);
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    // Set authenticated user ID
+    if (authProvider.user?.id != null) {
+      messageProvider.setAuthenticatedUserId(authProvider.user!.id.toString());
+    }
 
     // Load messages for this conversation
     messageProvider.loadMessages(widget.conversationId ?? widget.otherUserId);
@@ -128,6 +134,12 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
           });
         }
       }
+    };
+
+    // Listen for message sent confirmation (to replace optimistic message)
+    SocketService().onMessageSent = (message) {
+      // The message provider will handle duplicates, so we can just add the confirmed message
+      messageProvider.addNewMessage(message);
     };
 
     // Listen for typing indicators
@@ -204,9 +216,9 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
         Provider.of<MessageProvider>(context, listen: false);
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-    // Create optimistic message
+    // Create optimistic message with negative ID to distinguish it from real messages
     final optimisticMessage = ChatMessage(
-      id: DateTime.now().millisecondsSinceEpoch, // Temporary ID
+      id: -DateTime.now().millisecondsSinceEpoch, // Negative temporary ID
       senderId: authProvider.user?.id ?? 0,
       senderName: authProvider.user?.name ?? 'You',
       receiverId: int.parse(widget.otherUserId),
@@ -922,28 +934,80 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
         return;
       }
 
-      // Create message with image
+      // Upload image to server
       final messageProvider =
           Provider.of<MessageProvider>(context, listen: false);
-      Provider.of<AuthProvider>(context, listen: false);
 
-      // For now, we'll send the image as a text message with file path
-      // In a real implementation, you would upload the image to a server first
-      // TODO: In future, integrate the ChatMessage object with the actual message sending
+      final uploadResponse = await messageProvider.uploadImage(imageFileObj);
 
-      // Send message via MessageProvider (current implementation)
-      await messageProvider.sendMessage(
-        receiverId: widget.otherUserId,
-        content: '📷 Image: ${imageFile.name}',
-        donationId: widget.donationId,
-        requestId: widget.requestId,
+      if (uploadResponse == null || !uploadResponse.success) {
+        _showErrorSnackbar(
+            'Failed to upload image: ${uploadResponse?.error ?? "Unknown error"}');
+        return;
+      }
+
+      // Get the uploaded image URL and other info
+      final imageUrl = uploadResponse.data?['url'] as String?;
+      final fileName = uploadResponse.data?['originalName'] as String?;
+      final fileSize = uploadResponse.data?['size'] as int?;
+
+      if (imageUrl == null) {
+        _showErrorSnackbar('Failed to get uploaded image URL');
+        return;
+      }
+
+      // Create a ChatMessage object for the image
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final imageMessage = ChatMessage(
+        id: DateTime.now().millisecondsSinceEpoch, // Temporary ID
+        senderId: authProvider.user?.id ?? 0,
+        senderName: authProvider.user?.name ?? 'You',
+        receiverId: int.parse(widget.otherUserId),
+        receiverName: widget.otherUserName,
+        donationId:
+            widget.donationId != null ? int.parse(widget.donationId!) : null,
+        requestId:
+            widget.requestId != null ? int.parse(widget.requestId!) : null,
+        content: '📷 Image',
+        isRead: false,
+        createdAt: DateTime.now().toIso8601String(),
+        updatedAt: DateTime.now().toIso8601String(),
+        messageType: 'image',
+        attachmentUrl: imageUrl,
+        attachmentName: fileName,
+        attachmentSize: fileSize,
       );
 
-      // TODO: In future, integrate the ChatMessage object with the actual message sending
-      // This will allow proper image handling and display
+      // Add optimistic message
+      messageProvider.addNewMessage(imageMessage);
+
+      // Send message with image attachment
+      final success = await messageProvider.sendMessage(
+        receiverId: widget.otherUserId,
+        content: '📷 Image',
+        donationId: widget.donationId,
+        requestId: widget.requestId,
+        messageType: 'image',
+        attachmentUrl: imageUrl,
+        attachmentName: fileName,
+        attachmentSize: fileSize,
+      );
+
+      if (!success) {
+        _showErrorSnackbar('Failed to send image message');
+        return;
+      }
 
       // Clear loading
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Image sent successfully'),
+          backgroundColor: DesignSystem.success,
+        ),
+      );
     } catch (e) {
       _showErrorSnackbar('Failed to send image: ${e.toString()}');
     }
@@ -951,6 +1015,10 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
 
   Widget _buildImageMessage(ChatMessage message, bool isFromCurrentUser) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isRemoteImage = message.attachmentUrl != null &&
+        (message.attachmentUrl!.startsWith('http://') ||
+            message.attachmentUrl!.startsWith('https://'));
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -975,21 +1043,37 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: Image.file(
-                File(message.attachmentUrl!),
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    height: 100,
-                    color: DesignSystem.neutral300,
-                    child: const Icon(
-                      Icons.broken_image,
-                      color: Colors.grey,
-                      size: 40,
+              child: isRemoteImage
+                  ? Image.network(
+                      message.attachmentUrl!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          height: 100,
+                          color: DesignSystem.neutral300,
+                          child: const Icon(
+                            Icons.broken_image,
+                            color: Colors.grey,
+                            size: 40,
+                          ),
+                        );
+                      },
+                    )
+                  : Image.file(
+                      File(message.attachmentUrl!),
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          height: 100,
+                          color: DesignSystem.neutral300,
+                          child: const Icon(
+                            Icons.broken_image,
+                            color: Colors.grey,
+                            size: 40,
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
           ),
         ),
@@ -1011,6 +1095,9 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
   }
 
   void _showImagePreview(String imagePath) {
+    final isRemoteImage =
+        imagePath.startsWith('http://') || imagePath.startsWith('https://');
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -1021,22 +1108,39 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
               // Full screen image
               Center(
                 child: InteractiveViewer(
-                  child: Image.file(
-                    File(imagePath),
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        width: 300,
-                        height: 300,
-                        color: Colors.grey[300],
-                        child: const Icon(
-                          Icons.broken_image,
-                          color: Colors.grey,
-                          size: 60,
+                  child: isRemoteImage
+                      ? Image.network(
+                          imagePath,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              width: 300,
+                              height: 300,
+                              color: Colors.grey[300],
+                              child: const Icon(
+                                Icons.broken_image,
+                                color: Colors.grey,
+                                size: 60,
+                              ),
+                            );
+                          },
+                        )
+                      : Image.file(
+                          File(imagePath),
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              width: 300,
+                              height: 300,
+                              color: Colors.grey[300],
+                              child: const Icon(
+                                Icons.broken_image,
+                                color: Colors.grey,
+                                size: 60,
+                              ),
+                            );
+                          },
                         ),
-                      );
-                    },
-                  ),
                 ),
               ),
 

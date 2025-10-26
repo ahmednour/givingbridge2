@@ -16,6 +16,18 @@ class MessageController {
         [Op.or]: [{ senderId: userId }, { receiverId: userId }],
       },
       order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: User,
+          as: "sender",
+          attributes: ["id", "name", "avatarUrl"],
+        },
+        {
+          model: User,
+          as: "receiver",
+          attributes: ["id", "name", "avatarUrl"],
+        },
+      ],
     });
 
     // Group messages by conversation partner
@@ -26,6 +38,12 @@ class MessageController {
         message.senderId === userId ? message.receiverId : message.senderId;
       const otherUserName =
         message.senderId === userId ? message.receiverName : message.senderName;
+
+      // Get avatar URL for the other user
+      const otherUserAvatarUrl =
+        message.senderId === userId
+          ? message.receiver.avatarUrl
+          : message.sender.avatarUrl;
 
       if (!conversationsMap.has(otherUserId)) {
         const unreadCount = await Message.count({
@@ -39,6 +57,7 @@ class MessageController {
         conversationsMap.set(otherUserId, {
           userId: otherUserId,
           userName: otherUserName,
+          userAvatarUrl: otherUserAvatarUrl,
           lastMessage: message,
           unreadCount,
           donationId: message.donationId,
@@ -104,7 +123,16 @@ class MessageController {
    * @returns {Promise<Object>} Created message
    */
   static async sendMessage(messageData, senderId) {
-    const { receiverId, content, donationId, requestId } = messageData;
+    const {
+      receiverId,
+      content,
+      donationId,
+      requestId,
+      messageType,
+      attachmentUrl,
+      attachmentName,
+      attachmentSize,
+    } = messageData;
 
     const sender = await User.findByPk(senderId);
     const receiver = await User.findByPk(parseInt(receiverId));
@@ -130,6 +158,10 @@ class MessageController {
       donationId: donationId ? parseInt(donationId) : null,
       requestId: requestId ? parseInt(requestId) : null,
       content: content.trim(),
+      messageType: messageType || "text",
+      attachmentUrl: attachmentUrl || null,
+      attachmentName: attachmentName || null,
+      attachmentSize: attachmentSize || null,
     });
   }
 
@@ -329,5 +361,79 @@ class MessageController {
     );
 
     return senderCount + receiverCount;
+  }
+
+  /**
+   * Get archived conversations for a user
+   * @param {number} userId - User ID
+   * @returns {Promise<Array>} List of archived conversations
+   */
+  static async getArchivedConversations(userId) {
+    // Get all archived messages where user is sender or receiver
+    const messages = await Message.findAll({
+      where: {
+        [Op.or]: [
+          {
+            senderId: userId,
+            archivedBySender: true,
+          },
+          {
+            receiverId: userId,
+            archivedByReceiver: true,
+          },
+        ],
+      },
+      include: [
+        {
+          model: User,
+          as: "sender",
+          attributes: ["id", "name", "avatarUrl"],
+        },
+        {
+          model: User,
+          as: "receiver",
+          attributes: ["id", "name", "avatarUrl"],
+        },
+      ],
+      order: [["createdAt", "DESC"]],
+    });
+
+    // Group messages by conversation partner
+    const conversationsMap = new Map();
+
+    for (const message of messages) {
+      const otherUserId =
+        message.senderId === userId ? message.receiverId : message.senderId;
+      const otherUserName =
+        message.senderId === userId ? message.receiverName : message.senderName;
+
+      // Get avatar URL for the other user
+      const otherUserAvatarUrl =
+        message.senderId === userId
+          ? message.receiver.avatarUrl
+          : message.sender.avatarUrl;
+
+      if (!conversationsMap.has(otherUserId)) {
+        const unreadCount = await Message.count({
+          where: {
+            senderId: otherUserId,
+            receiverId: userId,
+            isRead: false,
+          },
+        });
+
+        conversationsMap.set(otherUserId, {
+          userId: otherUserId,
+          userName: otherUserName,
+          userAvatarUrl: otherUserAvatarUrl,
+          lastMessage: message,
+          unreadCount,
+          donationId: message.donationId,
+          requestId: message.requestId,
+        });
+      }
+    }
+
+    return Array.from(conversationsMap.values());
   }
 }

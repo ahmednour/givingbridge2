@@ -9,41 +9,72 @@ class MigrationRunner {
   }
 
   async init() {
-    // Create migrations table if it doesn't exist
-    await this.sequelize.query(`
-      CREATE TABLE IF NOT EXISTS \`SequelizeMeta\` (
-        \`name\` VARCHAR(255) NOT NULL PRIMARY KEY
-      );
-    `);
+    try {
+      // Create migrations table if it doesn't exist
+      await this.sequelize.query(`
+        CREATE TABLE IF NOT EXISTS \`SequelizeMeta\` (
+          \`name\` VARCHAR(255) NOT NULL PRIMARY KEY
+        );
+      `);
+      return true;
+    } catch (error) {
+      console.error("❌ Failed to initialize migrations table:", error.message);
+      return false;
+    }
   }
 
   async getExecutedMigrations() {
-    const [results] = await this.sequelize.query(
-      "SELECT name FROM `SequelizeMeta` ORDER BY name"
-    );
-    return results.map((row) => row.name);
+    try {
+      const [results] = await this.sequelize.query(
+        "SELECT name FROM `SequelizeMeta` ORDER BY name"
+      );
+      return results.map((row) => row.name);
+    } catch (error) {
+      console.error("❌ Failed to get executed migrations:", error.message);
+      return [];
+    }
   }
 
   async markMigrationAsExecuted(name) {
-    await this.sequelize.query(
-      "INSERT INTO `SequelizeMeta` (name) VALUES (?)",
-      { replacements: [name] }
-    );
+    try {
+      await this.sequelize.query(
+        "INSERT INTO `SequelizeMeta` (name) VALUES (?)",
+        { replacements: [name] }
+      );
+      return true;
+    } catch (error) {
+      console.error(
+        `❌ Failed to mark migration ${name} as executed:`,
+        error.message
+      );
+      return false;
+    }
   }
 
   async getPendingMigrations() {
-    const migrationFiles = fs
-      .readdirSync(this.migrationsPath)
-      .filter((file) => file.endsWith(".js"))
-      .sort();
+    try {
+      const migrationFiles = fs
+        .readdirSync(this.migrationsPath)
+        .filter((file) => file.endsWith(".js"))
+        .sort();
 
-    const executedMigrations = await this.getExecutedMigrations();
+      const executedMigrations = await this.getExecutedMigrations();
 
-    return migrationFiles.filter((file) => !executedMigrations.includes(file));
+      return migrationFiles.filter(
+        (file) => !executedMigrations.includes(file)
+      );
+    } catch (error) {
+      console.error("❌ Failed to get pending migrations:", error.message);
+      return [];
+    }
   }
 
   async runMigrations() {
-    await this.init();
+    const isInitialized = await this.init();
+    if (!isInitialized) {
+      console.log("🟡 Skipping migrations due to initialization failure");
+      return;
+    }
 
     const pendingMigrations = await this.getPendingMigrations();
 
@@ -57,23 +88,37 @@ class MigrationRunner {
     for (const migrationFile of pendingMigrations) {
       console.log(`📦 Running migration: ${migrationFile}`);
 
-      const migration = require(path.join(this.migrationsPath, migrationFile));
-
       try {
+        const migration = require(path.join(
+          this.migrationsPath,
+          migrationFile
+        ));
         await migration.up(this.sequelize.getQueryInterface(), Sequelize);
-        await this.markMigrationAsExecuted(migrationFile);
-        console.log(`✅ Migration ${migrationFile} completed`);
+        const marked = await this.markMigrationAsExecuted(migrationFile);
+
+        if (marked) {
+          console.log(`✅ Migration ${migrationFile} completed`);
+        } else {
+          console.log(
+            `⚠️ Migration ${migrationFile} completed but failed to mark as executed`
+          );
+        }
       } catch (error) {
-        console.error(`❌ Migration ${migrationFile} failed:`, error);
-        throw error;
+        console.error(`❌ Migration ${migrationFile} failed:`, error.message);
+        // Continue with other migrations instead of stopping everything
+        continue;
       }
     }
 
-    console.log("✅ All migrations completed successfully");
+    console.log("✅ Migration process completed");
   }
 
   async rollbackLastMigration() {
-    await this.init();
+    const isInitialized = await this.init();
+    if (!isInitialized) {
+      console.log("🟡 Skipping rollback due to initialization failure");
+      return;
+    }
 
     const executedMigrations = await this.getExecutedMigrations();
 
@@ -85,16 +130,18 @@ class MigrationRunner {
     const lastMigration = executedMigrations[executedMigrations.length - 1];
     console.log(`🔄 Rolling back migration: ${lastMigration}`);
 
-    const migration = require(path.join(this.migrationsPath, lastMigration));
-
     try {
+      const migration = require(path.join(this.migrationsPath, lastMigration));
       await migration.down(this.sequelize.getQueryInterface(), Sequelize);
+
+      // Remove from executed migrations
       await this.sequelize.query("DELETE FROM `SequelizeMeta` WHERE name = ?", {
         replacements: [lastMigration],
       });
+
       console.log(`✅ Migration ${lastMigration} rolled back`);
     } catch (error) {
-      console.error(`❌ Rollback of ${lastMigration} failed:`, error);
+      console.error(`❌ Rollback of ${lastMigration} failed:`, error.message);
       throw error;
     }
   }

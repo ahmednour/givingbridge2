@@ -8,15 +8,7 @@ const { sequelize, testConnection } = require("./config/db");
 const MigrationRunner = require("./utils/migrationRunner");
 const { errorHandler, notFound } = require("./utils/errorHandler");
 const config = require("./config");
-const User = require("./models/User");
-const Donation = require("./models/Donation");
-const Request = require("./models/Request");
-const Message = require("./models/Message");
-const Notification = require("./models/Notification");
-const Rating = require("./models/Rating");
-const BlockedUser = require("./models/BlockedUser");
-const UserReport = require("./models/UserReport");
-const ActivityLog = require("./models/ActivityLog");
+const models = require("./models");
 const pushNotificationService = require("./services/pushNotificationService");
 require("dotenv").config();
 
@@ -53,7 +45,14 @@ app.use("/uploads", express.static("uploads"));
 // Database initialization using Migrations
 async function initDatabase() {
   try {
-    await testConnection();
+    const isConnected = await testConnection();
+
+    if (!isConnected) {
+      console.log(
+        "🟡 Database connection failed, continuing without database..."
+      );
+      return false;
+    }
 
     // Run database migrations
     const migrationRunner = new MigrationRunner(sequelize);
@@ -62,20 +61,22 @@ async function initDatabase() {
 
     // Auto-seed demo users if database is empty
     await seedDemoUsers();
+
+    return true;
   } catch (error) {
     console.error("❌ Database initialization failed:", error.message);
     console.log("🟡 Continuing without database...");
+    return false;
   }
 }
 
 // Auto-seed demo users if they don't exist
 async function seedDemoUsers() {
   try {
-    const User = require("./models/User");
     const bcrypt = require("bcryptjs");
 
     // Check if users exist
-    const userCount = await User.count();
+    const userCount = await models.User.count();
 
     if (userCount === 0) {
       console.log("🌱 No users found, seeding demo users...");
@@ -107,7 +108,7 @@ async function seedDemoUsers() {
         },
       ];
 
-      await User.bulkCreate(demoUsers);
+      await models.User.bulkCreate(demoUsers);
       console.log("✅ Demo users seeded successfully");
     } else {
       console.log(`✅ Found ${userCount} existing users, skipping seed`);

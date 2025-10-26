@@ -77,4 +77,17 @@ const User = sequelize.define(
   }
 );
 
+// Define associations in a separate function to avoid circular dependencies
+User.associate = (models) => {
+  User.hasMany(models.Donation, { foreignKey: "donorId", as: "donations" });
+  User.hasMany(models.Request, {
+    foreignKey: "receiverId",
+    as: "receivedRequests",
+  });
+  User.hasMany(models.Request, {
+    foreignKey: "donorId",
+    as: "donatedRequests",
+  });
+};
+
 module.exports = User;

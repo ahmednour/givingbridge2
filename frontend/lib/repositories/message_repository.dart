@@ -46,6 +46,10 @@ class MessageRepository extends BaseRepository {
     required String content,
     String? donationId,
     String? requestId,
+    String? messageType,
+    String? attachmentUrl,
+    String? attachmentName,
+    int? attachmentSize,
   }) async {
     try {
       final response = await post(
@@ -55,6 +59,10 @@ class MessageRepository extends BaseRepository {
           'content': content,
           if (donationId != null) 'donationId': int.parse(donationId),
           if (requestId != null) 'requestId': int.parse(requestId),
+          if (messageType != null) 'messageType': messageType,
+          if (attachmentUrl != null) 'attachmentUrl': attachmentUrl,
+          if (attachmentName != null) 'attachmentName': attachmentName,
+          if (attachmentSize != null) 'attachmentSize': attachmentSize,
         },
         includeAuth: true,
       );
