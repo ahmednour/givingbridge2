@@ -5,140 +5,155 @@ const router = express.Router();
 const Message = require("../models/Message");
 const User = require("../models/User");
 const MessageController = require("../controllers/messageController");
+const {
+  generalLimiter,
+  heavyOperationLimiter,
+} = require("../middleware/rateLimiting");
 
 // Import authentication middleware from auth routes
 const { authenticateToken } = require("./auth");
 
 // Get all conversations for the authenticated user
-router.get("/conversations", authenticateToken, async (req, res) => {
-  try {
-    const userId = req.user.userId;
+router.get(
+  "/conversations",
+  authenticateToken,
+  generalLimiter,
+  async (req, res) => {
+    try {
+      const userId = req.user.userId;
 
-    // Get all messages where user is sender or receiver
-    const messages = await Message.findAll({
-      where: {
-        [Op.or]: [{ senderId: userId }, { receiverId: userId }],
-      },
-      include: [
-        {
-          model: User,
-          as: "sender",
-          attributes: ["id", "name", "email", "avatarUrl"],
+      // Get all messages where user is sender or receiver
+      const messages = await Message.findAll({
+        where: {
+          [Op.or]: [{ senderId: userId }, { receiverId: userId }],
         },
-        {
-          model: User,
-          as: "receiver",
-          attributes: ["id", "name", "email", "avatarUrl"],
-        },
-      ],
-      order: [["createdAt", "DESC"]],
-    });
-
-    // Group messages by conversation partner
-    const conversationsMap = new Map();
-
-    for (const message of messages) {
-      const otherUserId =
-        message.senderId === userId ? message.receiverId : message.senderId;
-      const otherUser =
-        message.senderId === userId ? message.receiver : message.sender;
-
-      if (!conversationsMap.has(otherUserId)) {
-        const unreadCount = await Message.count({
-          where: {
-            senderId: otherUserId,
-            receiverId: userId,
-            isRead: false,
-          },
-        });
-
-        conversationsMap.set(otherUserId, {
-          userId: otherUserId,
-          userName: otherUser.name,
-          userAvatar: otherUser.avatarUrl,
-          lastMessage: message,
-          unreadCount,
-          donationId: message.donationId,
-          requestId: message.requestId,
-        });
-      }
-    }
-
-    const conversations = Array.from(conversationsMap.values());
-
-    res.json({
-      message: "Conversations retrieved successfully",
-      conversations,
-      total: conversations.length,
-    });
-  } catch (error) {
-    console.error("Get conversations error:", error);
-    res.status(500).json({
-      message: "Failed to retrieve conversations",
-      error: error.message,
-    });
-  }
-});
-
-// Get messages for a specific conversation
-router.get("/conversation/:userId", authenticateToken, async (req, res) => {
-  try {
-    const { userId: otherUserId } = req.params;
-    const { page = 1, limit = 50 } = req.query;
-
-    const offset = (page - 1) * parseInt(limit);
-
-    const { count, rows: messages } = await Message.findAndCountAll({
-      where: {
-        [Op.or]: [
+        include: [
           {
-            senderId: req.user.userId,
-            receiverId: parseInt(otherUserId),
+            model: User,
+            as: "sender",
+            attributes: ["id", "name", "email", "avatarUrl"],
           },
           {
-            senderId: parseInt(otherUserId),
-            receiverId: req.user.userId,
+            model: User,
+            as: "receiver",
+            attributes: ["id", "name", "email", "avatarUrl"],
           },
         ],
-      },
-      order: [["createdAt", "ASC"]],
-      limit: parseInt(limit),
-      offset: offset,
-    });
+        order: [["createdAt", "DESC"]],
+      });
 
-    // Mark messages from other user as read
-    await Message.update(
-      { isRead: true },
-      {
-        where: {
-          senderId: parseInt(otherUserId),
-          receiverId: req.user.userId,
-          isRead: false,
-        },
+      // Group messages by conversation partner
+      const conversationsMap = new Map();
+
+      for (const message of messages) {
+        const otherUserId =
+          message.senderId === userId ? message.receiverId : message.senderId;
+        const otherUser =
+          message.senderId === userId ? message.receiver : message.sender;
+
+        if (!conversationsMap.has(otherUserId)) {
+          const unreadCount = await Message.count({
+            where: {
+              senderId: otherUserId,
+              receiverId: userId,
+              isRead: false,
+            },
+          });
+
+          conversationsMap.set(otherUserId, {
+            userId: otherUserId,
+            userName: otherUser.name,
+            userAvatar: otherUser.avatarUrl,
+            lastMessage: message,
+            unreadCount,
+            donationId: message.donationId,
+            requestId: message.requestId,
+          });
+        }
       }
-    );
 
-    res.json({
-      message: "Messages retrieved successfully",
-      messages,
-      total: count,
-      page: parseInt(page),
-      totalPages: Math.ceil(count / parseInt(limit)),
-    });
-  } catch (error) {
-    console.error("Get conversation messages error:", error);
-    res.status(500).json({
-      message: "Failed to retrieve messages",
-      error: error.message,
-    });
+      const conversations = Array.from(conversationsMap.values());
+
+      res.json({
+        message: "Conversations retrieved successfully",
+        conversations,
+        total: conversations.length,
+      });
+    } catch (error) {
+      console.error("Get conversations error:", error);
+      res.status(500).json({
+        message: "Failed to retrieve conversations",
+        error: error.message,
+      });
+    }
   }
-});
+);
+
+// Get messages for a specific conversation
+router.get(
+  "/conversation/:userId",
+  authenticateToken,
+  generalLimiter,
+  async (req, res) => {
+    try {
+      const { userId: otherUserId } = req.params;
+      const { page = 1, limit = 50 } = req.query;
+
+      const offset = (page - 1) * parseInt(limit);
+
+      const { count, rows: messages } = await Message.findAndCountAll({
+        where: {
+          [Op.or]: [
+            {
+              senderId: req.user.userId,
+              receiverId: parseInt(otherUserId),
+            },
+            {
+              senderId: parseInt(otherUserId),
+              receiverId: req.user.userId,
+            },
+          ],
+        },
+        order: [["createdAt", "ASC"]],
+        limit: parseInt(limit),
+        offset: offset,
+      });
+
+      // Mark messages from other user as read
+      await Message.update(
+        { isRead: true },
+        {
+          where: {
+            senderId: parseInt(otherUserId),
+            receiverId: req.user.userId,
+            isRead: false,
+          },
+        }
+      );
+
+      res.json({
+        message: "Messages retrieved successfully",
+        messages,
+        total: count,
+        page: parseInt(page),
+        totalPages: Math.ceil(count / parseInt(limit)),
+      });
+    } catch (error) {
+      console.error("Get conversation messages error:", error);
+      res.status(500).json({
+        message: "Failed to retrieve messages",
+        error: error.message,
+      });
+    }
+  }
+);
 
 // Send a new message
 router.post(
   "/",
   [
     authenticateToken,
+    generalLimiter, // Apply general rate limiting
     body("receiverId")
       .isInt({ min: 1 })
       .withMessage("Valid receiver ID is required"),
@@ -243,7 +258,7 @@ router.post(
 );
 
 // Mark a message as read
-router.put("/:id/read", authenticateToken, async (req, res) => {
+router.put("/:id/read", authenticateToken, generalLimiter, async (req, res) => {
   try {
     const { id } = req.params;
     const message = await Message.findByPk(id);
@@ -280,6 +295,7 @@ router.put("/:id/read", authenticateToken, async (req, res) => {
 router.put(
   "/conversation/:userId/read",
   authenticateToken,
+  generalLimiter, // Apply general rate limiting
   async (req, res) => {
     try {
       const otherUserId = parseInt(req.params.userId);
@@ -310,30 +326,35 @@ router.put(
 );
 
 // Get unread message count for the authenticated user
-router.get("/unread-count", authenticateToken, async (req, res) => {
-  try {
-    const unreadCount = await Message.count({
-      where: {
-        receiverId: req.user.userId,
-        isRead: false,
-      },
-    });
+router.get(
+  "/unread-count",
+  authenticateToken,
+  generalLimiter,
+  async (req, res) => {
+    try {
+      const unreadCount = await Message.count({
+        where: {
+          receiverId: req.user.userId,
+          isRead: false,
+        },
+      });
 
-    res.json({
-      message: "Unread count retrieved successfully",
-      unreadCount,
-    });
-  } catch (error) {
-    console.error("Get unread count error:", error);
-    res.status(500).json({
-      message: "Failed to retrieve unread count",
-      error: error.message,
-    });
+      res.json({
+        message: "Unread count retrieved successfully",
+        unreadCount,
+      });
+    } catch (error) {
+      console.error("Get unread count error:", error);
+      res.status(500).json({
+        message: "Failed to retrieve unread count",
+        error: error.message,
+      });
+    }
   }
-});
+);
 
 // Delete a message (only sender can delete)
-router.delete("/:id", authenticateToken, async (req, res) => {
+router.delete("/:id", authenticateToken, generalLimiter, async (req, res) => {
   try {
     const { id } = req.params;
     const message = await Message.findByPk(id);
@@ -368,122 +389,133 @@ router.delete("/:id", authenticateToken, async (req, res) => {
 });
 
 // Get message statistics (for admin dashboard)
-router.get("/admin/stats", authenticateToken, async (req, res) => {
-  try {
-    // Check if user is admin
-    const user = await User.findByPk(req.user.userId);
+router.get(
+  "/admin/stats",
+  authenticateToken,
+  heavyOperationLimiter,
+  async (req, res) => {
+    try {
+      // Check if user is admin
+      const user = await User.findByPk(req.user.userId);
 
-    if (user.role !== "admin") {
-      return res.status(403).json({
-        message: "Admin access required",
-      });
-    }
-
-    const total = await Message.count();
-    const unread = await Message.count({ where: { isRead: false } });
-
-    const stats = {
-      total,
-      unread,
-    };
-
-    res.json({
-      message: "Message statistics retrieved successfully",
-      stats,
-    });
-  } catch (error) {
-    console.error("Get message stats error:", error);
-    res.status(500).json({
-      message: "Failed to retrieve message statistics",
-      error: error.message,
-    });
-  }
-});
-
-// Get archived conversations for the authenticated user
-router.get("/conversations/archived", authenticateToken, async (req, res) => {
-  try {
-    const userId = req.user.userId;
-
-    // Get all archived messages where user is sender or receiver
-    const messages = await Message.findAll({
-      where: {
-        [Op.or]: [
-          {
-            senderId: userId,
-            archivedBySender: true,
-          },
-          {
-            receiverId: userId,
-            archivedByReceiver: true,
-          },
-        ],
-      },
-      include: [
-        {
-          model: User,
-          as: "sender",
-          attributes: ["id", "name", "email", "avatarUrl"],
-        },
-        {
-          model: User,
-          as: "receiver",
-          attributes: ["id", "name", "email", "avatarUrl"],
-        },
-      ],
-      order: [["createdAt", "DESC"]],
-    });
-
-    // Group messages by conversation partner
-    const conversationsMap = new Map();
-
-    for (const message of messages) {
-      const otherUserId =
-        message.senderId === userId ? message.receiverId : message.senderId;
-      const otherUser =
-        message.senderId === userId ? message.receiver : message.sender;
-
-      if (!conversationsMap.has(otherUserId)) {
-        const unreadCount = await Message.count({
-          where: {
-            senderId: otherUserId,
-            receiverId: userId,
-            isRead: false,
-          },
-        });
-
-        conversationsMap.set(otherUserId, {
-          userId: otherUserId,
-          userName: otherUser.name,
-          userAvatar: otherUser.avatarUrl,
-          lastMessage: message,
-          unreadCount,
-          donationId: message.donationId,
-          requestId: message.requestId,
+      if (user.role !== "admin") {
+        return res.status(403).json({
+          message: "Admin access required",
         });
       }
+
+      const total = await Message.count();
+      const unread = await Message.count({ where: { isRead: false } });
+
+      const stats = {
+        total,
+        unread,
+      };
+
+      res.json({
+        message: "Message statistics retrieved successfully",
+        stats,
+      });
+    } catch (error) {
+      console.error("Get message stats error:", error);
+      res.status(500).json({
+        message: "Failed to retrieve message statistics",
+        error: error.message,
+      });
     }
-
-    const conversations = Array.from(conversationsMap.values());
-
-    res.json({
-      message: "Archived conversations retrieved successfully",
-      conversations,
-      total: conversations.length,
-    });
-  } catch (error) {
-    console.error("Get archived conversations error:", error);
-    res.status(500).json({
-      message: "Failed to retrieve archived conversations",
-      error: error.message,
-    });
   }
-});
+);
+
+// Get archived conversations for the authenticated user
+router.get(
+  "/conversations/archived",
+  authenticateToken,
+  generalLimiter,
+  async (req, res) => {
+    try {
+      const userId = req.user.userId;
+
+      // Get all archived messages where user is sender or receiver
+      const messages = await Message.findAll({
+        where: {
+          [Op.or]: [
+            {
+              senderId: userId,
+              archivedBySender: true,
+            },
+            {
+              receiverId: userId,
+              archivedByReceiver: true,
+            },
+          ],
+        },
+        include: [
+          {
+            model: User,
+            as: "sender",
+            attributes: ["id", "name", "email", "avatarUrl"],
+          },
+          {
+            model: User,
+            as: "receiver",
+            attributes: ["id", "name", "email", "avatarUrl"],
+          },
+        ],
+        order: [["createdAt", "DESC"]],
+      });
+
+      // Group messages by conversation partner
+      const conversationsMap = new Map();
+
+      for (const message of messages) {
+        const otherUserId =
+          message.senderId === userId ? message.receiverId : message.senderId;
+        const otherUser =
+          message.senderId === userId ? message.receiver : message.sender;
+
+        if (!conversationsMap.has(otherUserId)) {
+          const unreadCount = await Message.count({
+            where: {
+              senderId: otherUserId,
+              receiverId: userId,
+              isRead: false,
+            },
+          });
+
+          conversationsMap.set(otherUserId, {
+            userId: otherUserId,
+            userName: otherUser.name,
+            userAvatar: otherUser.avatarUrl,
+            lastMessage: message,
+            unreadCount,
+            donationId: message.donationId,
+            requestId: message.requestId,
+          });
+        }
+      }
+
+      const conversations = Array.from(conversationsMap.values());
+
+      res.json({
+        message: "Archived conversations retrieved successfully",
+        conversations,
+        total: conversations.length,
+      });
+    } catch (error) {
+      console.error("Get archived conversations error:", error);
+      res.status(500).json({
+        message: "Failed to retrieve archived conversations",
+        error: error.message,
+      });
+    }
+  }
+);
 
 // Archive a conversation
 router.put(
   "/conversation/:userId/archive",
   authenticateToken,
+  generalLimiter, // Apply general rate limiting
   async (req, res) => {
     try {
       const otherUserId = parseInt(req.params.userId);
@@ -510,6 +542,7 @@ router.put(
 router.put(
   "/conversation/:userId/unarchive",
   authenticateToken,
+  generalLimiter, // Apply general rate limiting
   async (req, res) => {
     try {
       const otherUserId = parseInt(req.params.userId);

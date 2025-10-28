@@ -18,6 +18,7 @@ import '../models/donation.dart';
 import '../l10n/app_localizations.dart';
 import 'admin_reports_screen.dart';
 import 'activity_log_screen.dart';
+import 'analytics_dashboard_enhanced.dart';
 
 class AdminDashboardEnhanced extends StatefulWidget {
   const AdminDashboardEnhanced({Key? key}) : super(key: key);
@@ -1951,151 +1952,10 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced> {
     }
   }
 
-  // Analytics Tab
+  // Analytics Tab - Enhanced Version
   Widget _buildAnalyticsTab(
       BuildContext context, ThemeData theme, bool isDesktop) {
-    return Consumer<AnalyticsProvider>(
-      builder: (context, analyticsProvider, child) {
-        return RefreshIndicator(
-          onRefresh: analyticsProvider.refresh,
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxWidth: isDesktop ? 1400 : double.infinity,
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(
-                      isDesktop ? AppTheme.spacingXL : AppTheme.spacingL),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Analytics Header
-                      Container(
-                        padding: const EdgeInsets.all(AppTheme.spacingXL),
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius:
-                              BorderRadius.circular(AppTheme.radiusXL),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF6366F1).withOpacity(0.3),
-                              blurRadius: 20,
-                              offset: const Offset(0, 10),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 60,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
-                                borderRadius:
-                                    BorderRadius.circular(AppTheme.radiusL),
-                              ),
-                              child: const Icon(
-                                Icons.analytics,
-                                color: Colors.white,
-                                size: 30,
-                              ),
-                            ),
-                            const SizedBox(width: AppTheme.spacingL),
-                            const Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Platform Analytics',
-                                    style: TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  SizedBox(height: AppTheme.spacingXS),
-                                  Text(
-                                    'Comprehensive insights and trends',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: AppTheme.spacingXL),
-
-                      // Key Metrics Row
-                      _buildAnalyticsMetrics(isDesktop, analyticsProvider),
-
-                      const SizedBox(height: AppTheme.spacingXL),
-
-                      // Charts Section
-                      const Text(
-                        'Platform Trends',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                          color: AppTheme.textPrimaryColor,
-                        ),
-                      ),
-                      const SizedBox(height: AppTheme.spacingL),
-
-                      // Donation Trends Chart
-                      _buildDonationTrendsChart(analyticsProvider),
-
-                      const SizedBox(height: AppTheme.spacingXL),
-
-                      // Category and Status Distribution
-                      isDesktop
-                          ? Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: _buildCategoryDistributionChart(
-                                      analyticsProvider),
-                                ),
-                                const SizedBox(width: AppTheme.spacingL),
-                                Expanded(
-                                  child: _buildStatusDistributionChart(
-                                      analyticsProvider),
-                                ),
-                              ],
-                            )
-                          : Column(
-                              children: [
-                                _buildCategoryDistributionChart(
-                                    analyticsProvider),
-                                const SizedBox(height: AppTheme.spacingL),
-                                _buildStatusDistributionChart(
-                                    analyticsProvider),
-                              ],
-                            ),
-
-                      const SizedBox(height: AppTheme.spacingXL),
-
-                      // User Growth Chart
-                      _buildUserGrowthChart(analyticsProvider),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
+    return const AnalyticsDashboardEnhanced();
   }
 
   Widget _buildAnalyticsMetrics(

@@ -3,11 +3,13 @@ const router = express.Router();
 const NotificationController = require("../controllers/notificationController");
 const { authenticateToken } = require("./auth");
 const { asyncHandler } = require("../middleware");
+const { generalLimiter } = require("../middleware/rateLimiting");
 
 // Get all notifications for authenticated user
 router.get(
   "/",
   authenticateToken,
+  generalLimiter, // Apply general rate limiting
   asyncHandler(async (req, res) => {
     const { page, limit, unreadOnly } = req.query;
 
@@ -32,6 +34,7 @@ router.get(
 router.get(
   "/unread-count",
   authenticateToken,
+  generalLimiter, // Apply general rate limiting
   asyncHandler(async (req, res) => {
     const count = await NotificationController.getUnreadCount(req.user.userId);
 
@@ -46,6 +49,7 @@ router.get(
 router.put(
   "/:id/read",
   authenticateToken,
+  generalLimiter, // Apply general rate limiting
   asyncHandler(async (req, res) => {
     const notification = await NotificationController.markAsRead(
       req.params.id,
@@ -64,6 +68,7 @@ router.put(
 router.put(
   "/read-all",
   authenticateToken,
+  generalLimiter, // Apply general rate limiting
   asyncHandler(async (req, res) => {
     await NotificationController.markAllAsRead(req.user.userId);
 
@@ -78,6 +83,7 @@ router.put(
 router.delete(
   "/:id",
   authenticateToken,
+  generalLimiter, // Apply general rate limiting
   asyncHandler(async (req, res) => {
     await NotificationController.deleteNotification(
       req.params.id,
@@ -95,6 +101,7 @@ router.delete(
 router.delete(
   "/",
   authenticateToken,
+  generalLimiter, // Apply general rate limiting
   asyncHandler(async (req, res) => {
     await NotificationController.deleteAllNotifications(req.user.userId);
 

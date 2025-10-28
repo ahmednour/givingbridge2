@@ -1,836 +1,441 @@
-# GivingBridge Backend API - Complete Documentation
+# GivingBridge API Documentation
 
-## 🚀 Overview
+## Overview
 
-GivingBridge Backend API is a production-ready Node.js/Express RESTful API that powers the GivingBridge donation platform. It provides comprehensive endpoints for authentication, user management, donations, requests, messaging, notifications, ratings, and analytics.
+The GivingBridge API provides a comprehensive set of endpoints for managing donations, requests, users, and all platform functionality. This RESTful API follows modern standards and best practices.
 
-## 📋 Table of Contents
+## Base URL
 
-- [Technology Stack](#technology-stack)
-- [Getting Started](#getting-started)
-- [API Endpoints](#api-endpoints)
-- [Authentication](#authentication)
-- [WebSocket Events](#websocket-events)
-- [Database Models](#database-models)
-- [Testing Guide](#testing-guide)
+- **Development**: `http://localhost:3000/api`
+- **Production**: `https://api.givingbridge.com/api`
 
----
+## Interactive Documentation
 
-## 🛠️ Technology Stack
+Visit the interactive Swagger documentation at:
+- **Development**: [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
+- **Production**: [https://api.givingbridge.com/api-docs](https://api.givingbridge.com/api-docs)
 
-- **Runtime**: Node.js 16+
-- **Framework**: Express.js 4.18
-- **Database**: MySQL with Sequelize ORM
-- **Authentication**: JWT (JSON Web Tokens)
-- **Real-time**: Socket.IO
-- **Validation**: Express-validator
-- **Security**: Helmet, CORS, Rate Limiting
+## API Versioning
 
----
+The GivingBridge API uses versioning to ensure backward compatibility and smooth transitions between API versions.
 
-## 🏁 Getting Started
+### Version Information
+- **Current Version**: v1
+- **Supported Versions**: v1
+- **Default Version**: v1 (when no version is specified)
 
-### Prerequisites
+### Version Specification Methods
 
-```bash
-# Install dependencies
-npm install
+1. **URL Path** (Recommended)
+   ```
+   GET /api/v1/users
+   ```
 
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your database credentials
-```
+2. **Accept Header**
+   ```
+   Accept: application/vnd.givingbridge.v1+json
+   ```
 
-### Environment Variables
+3. **Custom Header**
+   ```
+   X-API-Version: v1
+   ```
 
-```env
-# Server
-NODE_ENV=development
-PORT=3000
+4. **Query Parameter**
+   ```
+   GET /api/users?version=v1
+   ```
 
-# Database
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=your_password
-DB_NAME=givingbridge
-DB_PORT=3306
+### Version Headers
 
-# JWT
-JWT_SECRET=your_secret_key_here
-JWT_EXPIRES_IN=7d
+All responses include version information in headers:
+- `X-API-Version`: The version used for this request
+- `X-API-Current-Version`: The latest available version
+- `X-API-Supported-Versions`: All supported versions
 
-# File Upload
-MAX_FILE_SIZE=10
-```
+## Authentication
 
-### Running the Server
+The API uses JWT (JSON Web Token) based authentication.
 
-```bash
-# Development mode
-npm run dev
+### Getting a Token
 
-# Production mode
-npm start
+```http
+POST /api/auth/login
+Content-Type: application/json
 
-# Run migrations manually
-npm run migrate
-```
-
----
-
-## 🔐 Authentication
-
-All protected endpoints require a JWT token in the Authorization header:
-
-```
-Authorization: Bearer <your_jwt_token>
-```
-
-### Role-Based Access Control
-
-- **Public**: Anyone (no authentication)
-- **User**: Any authenticated user
-- **Donor**: Users with donor role
-- **Receiver**: Users with receiver role
-- **Admin**: Users with admin role
-
----
-
-## 📚 API Endpoints
-
-### Base URL
-
-```
-http://localhost:3000/api
-```
-
----
-
-## 1️⃣ Authentication Endpoints
-
-### Register User
-
-**POST** `/auth/register`
-
-**Body:**
-
-```json
 {
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "password123",
-  "role": "donor",
-  "phone": "+1234567890",
-  "location": "New York, NY"
+  "email": "user@example.com",
+  "password": "your_password"
 }
 ```
 
-**Response:**
+### Using the Token
+
+Include the token in the Authorization header:
+
+```http
+Authorization: Bearer YOUR_JWT_TOKEN
+```
+
+### Token Expiration
+
+Tokens expire after 7 days by default. You'll receive a `401 Unauthorized` response when the token expires.
+
+## Rate Limiting
+
+The API implements rate limiting to ensure fair usage and prevent abuse.
+
+### Rate Limit Headers
+
+All responses include rate limit information:
+- `X-RateLimit-Limit`: Maximum requests allowed in the time window
+- `X-RateLimit-Remaining`: Remaining requests in the current window
+- `X-RateLimit-Reset`: Unix timestamp when the rate limit resets
+
+### Rate Limits by Endpoint Type
+
+| Endpoint Type | Limit | Window |
+|---------------|-------|--------|
+| General API | 100 requests | 15 minutes |
+| Authentication | 5 attempts | 15 minutes |
+| File Upload | 10 uploads | 1 minute |
+| Password Reset | 3 requests | 1 hour |
+| Email Verification | 5 requests | 1 hour |
+| Search | 30 requests | 1 minute |
+
+### Rate Limit Exceeded
+
+When rate limits are exceeded, you'll receive a `429 Too Many Requests` response:
+
+```json
+{
+  "success": false,
+  "message": "Rate limit exceeded",
+  "errorType": "RATE_LIMIT_EXCEEDED",
+  "retryAfter": 60,
+  "timestamp": "2024-01-01T12:00:00.000Z"
+}
+```
+
+## Response Format
+
+All API responses follow a consistent format:
+
+### Success Response
 
 ```json
 {
   "success": true,
-  "message": "User registered successfully",
-  "user": {
-    "id": 1,
-    "name": "John Doe",
-    "email": "john@example.com",
-    "role": "donor"
-  },
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
-
-### Login
-
-**POST** `/auth/login`
-
-**Body:**
-
-```json
-{
-  "email": "john@example.com",
-  "password": "password123"
-}
-```
-
-### Get Current User
-
-**GET** `/auth/me`
-
-**Headers:** `Authorization: Bearer <token>`
-
----
-
-## 2️⃣ User Endpoints
-
-### Get All Users (Admin Only)
-
-**GET** `/users?page=1&limit=10&role=donor&search=john`
-
-### Get User by ID
-
-**GET** `/users/:id`
-
-### Update User
-
-**PUT** `/users/:id`
-
-**Body:**
-
-```json
-{
-  "name": "John Updated",
-  "phone": "+1234567891",
-  "location": "Los Angeles, CA",
-  "avatarUrl": "https://example.com/avatar.jpg"
-}
-```
-
-### Delete User (Admin Only)
-
-**DELETE** `/users/:id`
-
----
-
-## 3️⃣ Donation Endpoints
-
-### Get All Donations
-
-**GET** `/donations?page=1&limit=20&category=clothing&status=available&search=shirt`
-
-**Query Parameters:**
-
-- `page`: Page number (default: 1)
-- `limit`: Items per page (default: 20)
-- `category`: Filter by category (clothing, food, furniture, electronics, books, toys, other)
-- `status`: Filter by status (available, pending, completed, cancelled)
-- `search`: Search in title and description
-
-### Get Donation by ID
-
-**GET** `/donations/:id`
-
-### Create Donation (Donor Only)
-
-**POST** `/donations`
-
-**Body:**
-
-```json
-{
-  "title": "Men's Winter Jacket",
-  "description": "Warm jacket, size L, like new",
-  "category": "clothing",
-  "condition": "like_new",
-  "quantity": 1,
-  "location": "New York, NY",
-  "imageUrls": ["https://example.com/image1.jpg"]
-}
-```
-
-### Update Donation
-
-**PUT** `/donations/:id`
-
-### Delete Donation
-
-**DELETE** `/donations/:id`
-
-### Get My Donations (Donor)
-
-**GET** `/donations/donor/my-donations`
-
-### Get Donation Statistics (Admin)
-
-**GET** `/donations/admin/stats`
-
----
-
-## 4️⃣ Request Endpoints
-
-### Get All Requests
-
-**GET** `/requests?page=1&limit=20&status=pending&donationId=1`
-
-### Get Request by ID
-
-**GET** `/requests/:id`
-
-### Create Request (Receiver Only)
-
-**POST** `/requests`
-
-**Body:**
-
-```json
-{
-  "donationId": 1,
-  "message": "I really need this for my family. Thank you!"
-}
-```
-
-### Update Request Status
-
-**PUT** `/requests/:id/status`
-
-**Body:**
-
-```json
-{
-  "status": "approved",
-  "responseMessage": "Approved! Please contact me to arrange pickup."
-}
-```
-
-**Status Values:**
-
-- `pending`: Initial status
-- `approved`: Donor approved the request
-- `declined`: Donor declined the request
-- `completed`: Donation completed
-- `cancelled`: Receiver cancelled the request
-
-### Delete Request
-
-**DELETE** `/requests/:id`
-
-### Get My Requests (Receiver)
-
-**GET** `/requests/receiver/my-requests`
-
-### Get Incoming Requests (Donor)
-
-**GET** `/requests/donor/incoming-requests`
-
-### Get Request Statistics (Admin)
-
-**GET** `/requests/admin/stats`
-
----
-
-## 5️⃣ Message Endpoints
-
-### Get All Conversations
-
-**GET** `/messages/conversations`
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "conversations": [
-    {
-      "userId": 2,
-      "userName": "Jane Smith",
-      "lastMessage": {...},
-      "unreadCount": 3,
-      "donationId": 1,
-      "requestId": 5
-    }
-  ]
-}
-```
-
-### Get Conversation Messages
-
-**GET** `/messages/conversation/:userId?page=1&limit=50`
-
-### Send Message
-
-**POST** `/messages`
-
-**Body:**
-
-```json
-{
-  "receiverId": 2,
-  "content": "Hi! Is this item still available?",
-  "donationId": 1,
-  "requestId": 5
-}
-```
-
-### Mark Message as Read
-
-**PUT** `/messages/:id/read`
-
-### Get Unread Count
-
-**GET** `/messages/unread-count`
-
-### Delete Message
-
-**DELETE** `/messages/:id`
-
----
-
-## 6️⃣ Notification Endpoints
-
-### Get All Notifications
-
-**GET** `/notifications?page=1&limit=20&unreadOnly=true`
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "notifications": [
-    {
-      "id": 1,
-      "userId": 1,
-      "type": "donation_request",
-      "title": "New Donation Request",
-      "message": "Jane Smith requested your donation: Winter Jacket",
-      "isRead": false,
-      "relatedId": 5,
-      "relatedType": "request",
-      "metadata": {},
-      "createdAt": "2025-10-20T10:00:00.000Z"
-    }
-  ],
-  "pagination": {
-    "total": 10,
-    "page": 1,
-    "limit": 20,
-    "totalPages": 1,
-    "hasMore": false
-  }
-}
-```
-
-### Get Unread Count
-
-**GET** `/notifications/unread-count`
-
-### Mark Notification as Read
-
-**PUT** `/notifications/:id/read`
-
-### Mark All as Read
-
-**PUT** `/notifications/read-all`
-
-### Delete Notification
-
-**DELETE** `/notifications/:id`
-
-### Delete All Notifications
-
-**DELETE** `/notifications`
-
----
-
-## 7️⃣ Rating Endpoints
-
-### Create Rating
-
-**POST** `/ratings`
-
-**Body:**
-
-```json
-{
-  "requestId": 5,
-  "rating": 5,
-  "feedback": "Great donor! Very helpful and responsive."
-}
-```
-
-**Note:** Only the donor or receiver involved in a completed request can submit a rating.
-
-### Get Rating by Request
-
-**GET** `/ratings/request/:requestId`
-
-### Get Donor Ratings
-
-**GET** `/ratings/donor/:donorId`
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "ratings": [...],
-  "average": 4.8,
-  "count": 15
-}
-```
-
-### Get Receiver Ratings
-
-**GET** `/ratings/receiver/:receiverId`
-
-### Update Rating
-
-**PUT** `/ratings/request/:requestId`
-
-**Body:**
-
-```json
-{
-  "rating": 4,
-  "feedback": "Updated feedback"
-}
-```
-
-### Delete Rating
-
-**DELETE** `/ratings/request/:requestId`
-
----
-
-## 8️⃣ Analytics Endpoints (Admin Only)
-
-### Get Overview Statistics
-
-**GET** `/analytics/overview`
-
-**Response:**
-
-```json
-{
-  "success": true,
+  "message": "Operation completed successfully",
   "data": {
-    "users": {
-      "total": 150,
-      "donors": 80,
-      "receivers": 65,
-      "admins": 5
-    },
-    "donations": {
-      "total": 200,
-      "available": 50,
-      "completed": 120
-    },
-    "requests": {
-      "total": 300,
-      "pending": 30,
-      "approved": 50,
-      "completed": 180,
-      "declined": 40
-    }
-  }
+    // Response data here
+  },
+  "timestamp": "2024-01-01T12:00:00.000Z",
+  "version": "v1"
 }
 ```
 
-### Get Donation Trends
-
-**GET** `/analytics/donations/trends?days=30`
-
-### Get User Growth
-
-**GET** `/analytics/users/growth?days=30`
-
-### Get Category Distribution
-
-**GET** `/analytics/donations/categories`
-
-### Get Status Distribution
-
-**GET** `/analytics/donations/status`
-
-### Get Top Donors
-
-**GET** `/analytics/donors/top?limit=10`
-
-### Get Recent Activity
-
-**GET** `/analytics/activity/recent?limit=20`
-
-### Get Platform Statistics
-
-**GET** `/analytics/platform/stats`
-
----
-
-## 🔌 WebSocket Events
-
-Connect to Socket.IO with JWT authentication:
-
-```javascript
-const socket = io("http://localhost:3000", {
-  auth: {
-    token: "your_jwt_token",
-  },
-});
-```
-
-### Client → Server Events
-
-#### Send Message
-
-```javascript
-socket.emit("send_message", {
-  receiverId: 2,
-  content: "Hello!",
-  donationId: 1, // optional
-  requestId: 5, // optional
-});
-```
-
-#### Typing Indicators
-
-```javascript
-socket.emit("typing", { receiverId: 2 });
-socket.emit("stop_typing", { receiverId: 2 });
-```
-
-#### Mark Message as Read
-
-```javascript
-socket.emit("mark_as_read", { messageId: 123 });
-socket.emit("mark_conversation_read", { otherUserId: 2 });
-```
-
-#### Notifications
-
-```javascript
-socket.emit("mark_notification_read", { notificationId: 456 });
-socket.emit("mark_all_notifications_read");
-socket.emit("get_unread_notification_count");
-```
-
-#### Get Unread Counts
-
-```javascript
-socket.emit("get_unread_count");
-socket.emit("get_unread_notification_count");
-```
-
-### Server → Client Events
-
-#### Connection Status
-
-```javascript
-socket.on("user_online", (data) => {
-  console.log(`User ${data.userId} is online`);
-});
-
-socket.on("user_offline", (data) => {
-  console.log(`User ${data.userId} is offline`);
-});
-```
-
-#### Messages
-
-```javascript
-socket.on("message_sent", (data) => {
-  // Confirmation of sent message
-});
-
-socket.on("new_message", (message) => {
-  // New message received
-  console.log(message);
-});
-
-socket.on("message_read", (data) => {
-  // Someone read your message
-});
-
-socket.on("conversation_read", (data) => {
-  // Someone read your conversation
-});
-
-socket.on("user_typing", (data) => {
-  console.log(`User ${data.userId} is typing: ${data.typing}`);
-});
-```
-
-#### Notifications
-
-```javascript
-socket.on("new_notification", (notification) => {
-  console.log("New notification:", notification);
-});
-
-socket.on("unread_notification_count", (data) => {
-  console.log(`Unread notifications: ${data.count}`);
-});
-```
-
-#### Unread Counts
-
-```javascript
-socket.on("unread_count", (data) => {
-  console.log(`Unread messages: ${data.count}`);
-});
-```
-
----
-
-## 💾 Database Models
-
-### User
-
-- **Fields**: id, name, email, password, role, phone, location, avatarUrl
-- **Roles**: donor, receiver, admin
-
-### Donation
-
-- **Fields**: id, donorId, title, description, category, condition, quantity, location, imageUrls, isAvailable, status
-- **Categories**: clothing, food, furniture, electronics, books, toys, other
-- **Conditions**: new, like_new, good, fair
-
-### Request
-
-- **Fields**: id, donationId, donorId, receiverId, donorName, receiverName, receiverEmail, receiverPhone, message, status, responseMessage, respondedAt
-- **Statuses**: pending, approved, declined, completed, cancelled
-
-### Message
-
-- **Fields**: id, senderId, senderName, receiverId, receiverName, donationId, requestId, content, isRead
-
-### Notification
-
-- **Fields**: id, userId, type, title, message, isRead, relatedId, relatedType, metadata
-- **Types**: donation_request, donation_approved, new_donation, message, reminder, system, celebration
-
-### Rating
-
-- **Fields**: id, requestId, donorId, receiverId, ratedBy, rating, feedback
-- **Rating Range**: 1-5 stars
-
----
-
-## 🧪 Testing Guide
-
-### Using cURL
-
-#### Register
-
-```bash
-curl -X POST http://localhost:3000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Test User",
-    "email": "test@example.com",
-    "password": "test123",
-    "role": "donor",
-    "phone": "+1234567890",
-    "location": "New York, NY"
-  }'
-```
-
-#### Login
-
-```bash
-curl -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "test@example.com",
-    "password": "test123"
-  }'
-```
-
-#### Get Donations (with auth)
-
-```bash
-curl -X GET http://localhost:3000/api/donations \
-  -H "Authorization: Bearer YOUR_TOKEN_HERE"
-```
-
-### Using Postman
-
-1. Import the API collection (create from this documentation)
-2. Set environment variable `{{baseUrl}}` = `http://localhost:3000/api`
-3. Set environment variable `{{token}}` after login
-4. Use `{{token}}` in Authorization header: `Bearer {{token}}`
-
-### Testing WebSocket
-
-```javascript
-const io = require("socket.io-client");
-
-const socket = io("http://localhost:3000", {
-  auth: { token: "YOUR_TOKEN_HERE" },
-});
-
-socket.on("connect", () => {
-  console.log("Connected!");
-
-  // Send a message
-  socket.emit("send_message", {
-    receiverId: 2,
-    content: "Test message",
-  });
-});
-
-socket.on("new_message", (message) => {
-  console.log("Received:", message);
-});
-```
-
----
-
-## 🔒 Security Features
-
-- **Helmet**: HTTP headers security
-- **CORS**: Cross-Origin Resource Sharing
-- **Rate Limiting**: 100 requests per 15 minutes per IP
-- **JWT**: Token-based authentication with expiration
-- **Password Hashing**: bcrypt with salt rounds
-- **Input Validation**: express-validator
-- **SQL Injection Protection**: Sequelize ORM parameterized queries
-
----
-
-## 📊 Error Handling
-
-All endpoints follow consistent error response format:
+### Error Response
 
 ```json
 {
   "success": false,
   "message": "Error description",
-  "error": "Detailed error message",
+  "errorId": "ERR_1234567890_abc123",
+  "timestamp": "2024-01-01T12:00:00.000Z",
+  "version": "v1",
   "errors": [
-    {
-      "field": "email",
-      "message": "Email is required"
-    }
+    // Detailed error information (for validation errors)
   ]
 }
 ```
 
-**HTTP Status Codes:**
+### Paginated Response
 
-- `200`: Success
-- `201`: Created
-- `400`: Bad Request
-- `401`: Unauthorized
-- `403`: Forbidden
-- `404`: Not Found
-- `409`: Conflict
-- `500`: Internal Server Error
+```json
+{
+  "success": true,
+  "message": "Data retrieved successfully",
+  "data": [
+    // Array of items
+  ],
+  "meta": {
+    "pagination": {
+      "page": 1,
+      "limit": 20,
+      "total": 100,
+      "totalPages": 5
+    }
+  },
+  "timestamp": "2024-01-01T12:00:00.000Z",
+  "version": "v1"
+}
+```
+
+## Error Codes
+
+| HTTP Status | Error Type | Description |
+|-------------|------------|-------------|
+| 400 | VALIDATION_ERROR | Request validation failed |
+| 401 | UNAUTHORIZED | Authentication required or invalid |
+| 403 | FORBIDDEN | Access denied |
+| 404 | NOT_FOUND | Resource not found |
+| 409 | CONFLICT | Resource conflict (e.g., duplicate email) |
+| 429 | RATE_LIMIT_EXCEEDED | Rate limit exceeded |
+| 500 | INTERNAL_ERROR | Server error |
+
+## Pagination
+
+List endpoints support pagination using query parameters:
+
+- `page`: Page number (default: 1)
+- `limit`: Items per page (default: 20, max: 100)
+- `sort`: Sort field and direction (e.g., `createdAt:desc`)
+
+Example:
+```
+GET /api/donations?page=2&limit=10&sort=createdAt:desc
+```
+
+## Filtering and Search
+
+Many endpoints support filtering and search:
+
+- `search`: Full-text search across relevant fields
+- Field-specific filters (varies by endpoint)
+
+Example:
+```
+GET /api/donations?category=clothing&location=New York&search=winter
+```
+
+## File Uploads
+
+File upload endpoints accept multipart/form-data:
+
+```http
+POST /api/upload
+Content-Type: multipart/form-data
+
+file: [binary data]
+```
+
+### File Restrictions
+- Maximum file size: 10MB
+- Allowed types: Images (jpg, png, gif), Documents (pdf)
+- Files are scanned for security
+
+## Webhooks
+
+The API supports webhooks for real-time notifications:
+
+- Donation created/updated
+- Request created/updated
+- User verification status changed
+- Message received
+
+Contact support to configure webhooks for your integration.
+
+## API Endpoints
+
+### Authentication
+- `POST /api/auth/login` - User login
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/logout` - User logout
+- `GET /api/auth/me` - Get current user profile
+- `POST /api/auth/forgot-password` - Request password reset
+- `POST /api/auth/reset-password` - Reset password
+
+### Users
+- `GET /api/users` - List users
+- `GET /api/users/:id` - Get user by ID
+- `PUT /api/users/:id` - Update user
+- `DELETE /api/users/:id` - Delete user
+- `POST /api/users/:id/verify` - Verify user
+
+### Donations
+- `GET /api/donations` - List donations
+- `POST /api/donations` - Create donation
+- `GET /api/donations/:id` - Get donation by ID
+- `PUT /api/donations/:id` - Update donation
+- `DELETE /api/donations/:id` - Delete donation
+
+### Requests
+- `GET /api/requests` - List requests
+- `POST /api/requests` - Create request
+- `GET /api/requests/:id` - Get request by ID
+- `PUT /api/requests/:id` - Update request
+- `DELETE /api/requests/:id` - Delete request
+
+### Messages
+- `GET /api/messages` - List messages
+- `POST /api/messages` - Send message
+- `GET /api/messages/:id` - Get message by ID
+- `PUT /api/messages/:id/read` - Mark as read
+
+### Search
+- `GET /api/search/donations` - Search donations
+- `GET /api/search/requests` - Search requests
+- `GET /api/search/users` - Search users
+- `GET /api/search/suggestions` - Get search suggestions
+
+### Analytics
+- `GET /api/analytics/overview` - Platform overview
+- `GET /api/analytics/donations` - Donation analytics
+- `GET /api/analytics/requests` - Request analytics
+- `GET /api/analytics/users` - User analytics
+
+## SDKs and Libraries
+
+### JavaScript/Node.js
+```bash
+npm install givingbridge-api-client
+```
+
+### Python
+```bash
+pip install givingbridge-api-client
+```
+
+### PHP
+```bash
+composer require givingbridge/api-client
+```
+
+## Code Examples
+
+### JavaScript (Node.js)
+
+```javascript
+const GivingBridge = require('givingbridge-api-client');
+
+const client = new GivingBridge({
+  baseURL: 'https://api.givingbridge.com',
+  apiKey: 'your-api-key'
+});
+
+// Get donations
+const donations = await client.donations.list({
+  category: 'clothing',
+  limit: 10
+});
+
+// Create a donation
+const newDonation = await client.donations.create({
+  title: 'Winter Clothes',
+  description: 'Warm winter clothing for homeless',
+  category: 'clothing',
+  location: 'New York, NY'
+});
+```
+
+### Python
+
+```python
+from givingbridge import GivingBridgeClient
+
+client = GivingBridgeClient(
+    base_url='https://api.givingbridge.com',
+    api_key='your-api-key'
+)
+
+# Get donations
+donations = client.donations.list(
+    category='clothing',
+    limit=10
+)
+
+# Create a donation
+new_donation = client.donations.create({
+    'title': 'Winter Clothes',
+    'description': 'Warm winter clothing for homeless',
+    'category': 'clothing',
+    'location': 'New York, NY'
+})
+```
+
+### cURL
+
+```bash
+# Login
+curl -X POST https://api.givingbridge.com/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"user@example.com","password":"password"}'
+
+# Get donations (with token)
+curl -X GET https://api.givingbridge.com/api/donations \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -H "Content-Type: application/json"
+
+# Create donation
+curl -X POST https://api.givingbridge.com/api/donations \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Winter Clothes",
+    "description": "Warm winter clothing for homeless",
+    "category": "clothing",
+    "location": "New York, NY"
+  }'
+```
+
+## Testing
+
+### Postman Collection
+
+Import our Postman collection for easy API testing:
+- [Download Postman Collection](./postman/GivingBridge-API.postman_collection.json)
+- [Download Environment Variables](./postman/GivingBridge-Environment.postman_environment.json)
+
+### Test Environment
+
+Use our test environment for development:
+- **Base URL**: `https://test-api.givingbridge.com`
+- **Test Users**: Available in the Postman collection
+- **Test Data**: Reset daily at midnight UTC
+
+## Support
+
+### Documentation
+- [Interactive API Docs](http://localhost:3000/api-docs)
+- [Developer Guide](./DEVELOPMENT_SETUP.md)
+- [Contributing Guidelines](../CONTRIBUTING.md)
+
+### Community
+- [GitHub Issues](https://github.com/givingbridge/api/issues)
+- [Developer Discord](https://discord.gg/givingbridge-dev)
+- [Stack Overflow](https://stackoverflow.com/questions/tagged/givingbridge)
+
+### Contact
+- **Email**: api-support@givingbridge.com
+- **Response Time**: 24-48 hours
+- **Emergency**: For critical issues affecting production
+
+## Changelog
+
+### v1.0.0 (Current)
+- Initial API release
+- Full CRUD operations for all resources
+- JWT authentication
+- Rate limiting
+- File upload support
+- Search functionality
+- Analytics endpoints
+
+## Roadmap
+
+### v1.1.0 (Planned)
+- GraphQL endpoint
+- Real-time subscriptions
+- Advanced filtering
+- Bulk operations
+- Enhanced analytics
+
+### v2.0.0 (Future)
+- Breaking changes will be announced 6 months in advance
+- Migration guide will be provided
+- v1 will be supported for 12 months after v2 release
 
 ---
 
-## 🚀 Deployment
-
-### Production Checklist
-
-- [ ] Set `NODE_ENV=production`
-- [ ] Use strong `JWT_SECRET`
-- [ ] Configure production database
-- [ ] Enable SSL/HTTPS
-- [ ] Set up reverse proxy (nginx)
-- [ ] Configure firewall
-- [ ] Set up monitoring
-- [ ] Enable logging
-- [ ] Run migrations
-- [ ] Seed initial admin user
-
----
-
-## 📞 Support
-
-For issues or questions, please contact the development team.
-
----
-
-**Version**: 1.0.0  
-**Last Updated**: October 20, 2025
+For the most up-to-date information, always refer to the [interactive documentation](http://localhost:3000/api-docs).

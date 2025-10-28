@@ -150,7 +150,7 @@ class DesignSystem {
 
   static List<BoxShadow> get elevation1 => [
         BoxShadow(
-          color: Colors.black.withOpacity(0.05),
+          color: Colors.black.withValues(alpha: 0.05),
           blurRadius: 2,
           offset: const Offset(0, 1),
         ),
@@ -158,7 +158,7 @@ class DesignSystem {
 
   static List<BoxShadow> get elevation2 => [
         BoxShadow(
-          color: Colors.black.withOpacity(0.1),
+          color: Colors.black.withValues(alpha: 0.1),
           blurRadius: 6,
           spreadRadius: -2,
           offset: const Offset(0, 4),
@@ -167,7 +167,7 @@ class DesignSystem {
 
   static List<BoxShadow> get elevation3 => [
         BoxShadow(
-          color: Colors.black.withOpacity(0.15),
+          color: Colors.black.withValues(alpha: 0.15),
           blurRadius: 10,
           spreadRadius: -3,
           offset: const Offset(0, 8),
@@ -176,7 +176,7 @@ class DesignSystem {
 
   static List<BoxShadow> get elevation4 => [
         BoxShadow(
-          color: Colors.black.withOpacity(0.2),
+          color: Colors.black.withValues(alpha: 0.2),
           blurRadius: 20,
           spreadRadius: -4,
           offset: const Offset(0, 12),
@@ -186,7 +186,7 @@ class DesignSystem {
   /// Colored shadows for emphasis
   static List<BoxShadow> coloredShadow(Color color, {double opacity = 0.3}) => [
         BoxShadow(
-          color: color.withOpacity(opacity),
+          color: color.withValues(alpha: opacity),
           blurRadius: 20,
           offset: const Offset(0, 10),
         ),

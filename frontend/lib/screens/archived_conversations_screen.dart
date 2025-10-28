@@ -172,8 +172,6 @@ class _ArchivedConversationsScreenState
   }
 
   Widget _buildConversationItem(dynamic conversation) {
-    final l10n = AppLocalizations.of(context)!;
-
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: WebCard(

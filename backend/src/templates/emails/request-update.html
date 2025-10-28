@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Request Update Posted</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        border-bottom: 2px solid #4caf50;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+      }
+      .header h1 {
+        color: #4caf50;
+        margin: 0;
+      }
+      .content {
+        margin-bottom: 30px;
+      }
+      .update-details {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 5px;
+        margin: 20px 0;
+      }
+      .button {
+        display: inline-block;
+        background-color: #4caf50;
+        color: white;
+        padding: 12px 24px;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        margin: 20px 0;
+      }
+      .footer {
+        text-align: center;
+        font-size: 12px;
+        color: #777;
+        border-top: 1px solid #eee;
+        padding-top: 20px;
+        margin-top: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>GivingBridge</h1>
+        <p>Making a Difference, One Donation at a Time</p>
+      </div>
+
+      <div class="content">
+        <h2>Request Update Posted!</h2>
+        <p>Hello {{donorName}},</p>
+        <p>{{receiverName}} has posted an update on your funded request:</p>
+
+        <div class="update-details">
+          <h3>{{updateTitle}}</h3>
+          {{#if updateDescription}}
+          <p>{{updateDescription}}</p>
+          {{/if}}
+          <p><strong>Original Donation:</strong> {{donationTitle}}</p>
+          <p><strong>Posted on:</strong> {{updateDate}}</p>
+        </div>
+
+        <p>
+          You can view this update and all other request details by logging into
+          your GivingBridge account.
+        </p>
+
+        <a href="{{dashboardUrl}}" class="button">View Request Updates</a>
+
+        <p>
+          Thank you for your generous donation and for being part of our
+          community!
+        </p>
+      </div>
+
+      <div class="footer">
+        <p>
+          This is an automated message from GivingBridge. Please do not reply to
+          this email.
+        </p>
+        <p>&copy; 2023 GivingBridge. All rights reserved.</p>
+        <p>
+          If you have any questions, please contact us at
+          support@givingbridge.org
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

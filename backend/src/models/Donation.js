@@ -71,6 +71,22 @@ const Donation = sequelize.define(
       allowNull: false,
       defaultValue: "available",
     },
+    // Social proof fields
+    shareCount: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    commentCount: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    viewCount: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
   },
   {
     tableName: "donations",
@@ -100,6 +116,14 @@ Donation.associate = (models) => {
   Donation.hasMany(models.Request, {
     foreignKey: "donationId",
     as: "requests",
+  });
+  Donation.hasMany(models.Comment, {
+    foreignKey: "donationId",
+    as: "comments",
+  });
+  Donation.hasMany(models.Share, {
+    foreignKey: "donationId",
+    as: "shares",
   });
 };
 

@@ -4,10 +4,14 @@ const { authenticateToken } = require("./auth");
 const User = require("../models/User");
 const UserController = require("../controllers/userController");
 const upload = require("../middleware/upload");
+const {
+  generalLimiter,
+  heavyOperationLimiter,
+} = require("../middleware/rateLimiting");
 const router = express.Router();
 
 // Get all users (admin only)
-router.get("/", authenticateToken, async (req, res) => {
+router.get("/", authenticateToken, heavyOperationLimiter, async (req, res) => {
   try {
     // Check if user is admin
     if (req.user.role !== "admin") {
@@ -35,34 +39,39 @@ router.get("/", authenticateToken, async (req, res) => {
 });
 
 // Search users for starting conversations
-router.get("/search/conversation", authenticateToken, async (req, res) => {
-  try {
-    const { query, limit = 10 } = req.query;
+router.get(
+  "/search/conversation",
+  authenticateToken,
+  generalLimiter,
+  async (req, res) => {
+    try {
+      const { query, limit = 10 } = req.query;
 
-    // Search for users to start conversations with
-    const users = await UserController.searchUsers({
-      query,
-      limit: parseInt(limit),
-    });
+      // Search for users to start conversations with
+      const users = await UserController.searchUsers({
+        query,
+        limit: parseInt(limit),
+      });
 
-    // Filter out current user and blocked users
-    const filteredUsers = users.filter((user) => user.id !== req.user.userId);
+      // Filter out current user and blocked users
+      const filteredUsers = users.filter((user) => user.id !== req.user.userId);
 
-    res.json({
-      users: filteredUsers,
-      total: filteredUsers.length,
-    });
-  } catch (error) {
-    console.error("Search users error:", error);
-    res.status(500).json({
-      message: "Failed to search users",
-      error: error.message,
-    });
+      res.json({
+        users: filteredUsers,
+        total: filteredUsers.length,
+      });
+    } catch (error) {
+      console.error("Search users error:", error);
+      res.status(500).json({
+        message: "Failed to search users",
+        error: error.message,
+      });
+    }
   }
-});
+);
 
 // Get user by ID
-router.get("/:id", authenticateToken, async (req, res) => {
+router.get("/:id", authenticateToken, generalLimiter, async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
 
@@ -100,6 +109,7 @@ router.put(
   "/:id",
   [
     authenticateToken,
+    generalLimiter, // Apply general rate limiting
     body("name")
       .optional()
       .trim()
@@ -192,7 +202,7 @@ router.put(
 );
 
 // Delete user (admin only)
-router.delete("/:id", authenticateToken, async (req, res) => {
+router.delete("/:id", authenticateToken, generalLimiter, async (req, res) => {
   try {
     // Check if user is admin
     if (req.user.role !== "admin") {
@@ -232,7 +242,7 @@ router.delete("/:id", authenticateToken, async (req, res) => {
 });
 
 // Get user's requests
-router.get("/:id/requests", authenticateToken, (req, res) => {
+router.get("/:id/requests", authenticateToken, generalLimiter, (req, res) => {
   try {
     const userId = parseInt(req.params.id);
 
@@ -267,6 +277,7 @@ router.post(
   "/:id/block",
   [
     authenticateToken,
+    generalLimiter, // Apply general rate limiting
     body("reason")
       .optional()
       .trim()
@@ -300,57 +311,73 @@ router.post(
 );
 
 // Unblock a user
-router.delete("/:id/block", authenticateToken, async (req, res) => {
-  try {
-    const userId = parseInt(req.params.id);
-    const result = await UserController.unblockUser(userId, req.user);
-    res.json(result);
-  } catch (error) {
-    console.error("Unblock user error:", error);
-    const status = error.statusCode || 500;
-    res.status(status).json({
-      message: error.message || "Failed to unblock user",
-    });
+router.delete(
+  "/:id/block",
+  authenticateToken,
+  generalLimiter,
+  async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const result = await UserController.unblockUser(userId, req.user);
+      res.json(result);
+    } catch (error) {
+      console.error("Unblock user error:", error);
+      const status = error.statusCode || 500;
+      res.status(status).json({
+        message: error.message || "Failed to unblock user",
+      });
+    }
   }
-});
+);
 
 // Get blocked users list
-router.get("/blocked/list", authenticateToken, async (req, res) => {
-  try {
-    const blockedUsers = await UserController.getBlockedUsers(req.user);
-    res.json({
-      blockedUsers,
-      total: blockedUsers.length,
-    });
-  } catch (error) {
-    console.error("Get blocked users error:", error);
-    res.status(500).json({
-      message: "Failed to fetch blocked users",
-      error: error.message,
-    });
+router.get(
+  "/blocked/list",
+  authenticateToken,
+  generalLimiter,
+  async (req, res) => {
+    try {
+      const blockedUsers = await UserController.getBlockedUsers(req.user);
+      res.json({
+        blockedUsers,
+        total: blockedUsers.length,
+      });
+    } catch (error) {
+      console.error("Get blocked users error:", error);
+      res.status(500).json({
+        message: "Failed to fetch blocked users",
+        error: error.message,
+      });
+    }
   }
-});
+);
 
 // Check if user is blocked
-router.get("/:id/blocked", authenticateToken, async (req, res) => {
-  try {
-    const userId = parseInt(req.params.id);
-    const isBlocked = await UserController.isUserBlocked(userId, req.user);
-    res.json({ isBlocked });
-  } catch (error) {
-    console.error("Check blocked status error:", error);
-    res.status(500).json({
-      message: "Failed to check blocked status",
-      error: error.message,
-    });
+router.get(
+  "/:id/blocked",
+  authenticateToken,
+  generalLimiter,
+  async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const isBlocked = await UserController.isUserBlocked(userId, req.user);
+      res.json({ isBlocked });
+    } catch (error) {
+      console.error("Check blocked status error:", error);
+      res.status(500).json({
+        message: "Failed to check blocked status",
+        error: error.message,
+      });
+    }
   }
-});
+);
 
 // Report a user
 router.post(
   "/:id/report",
   [
     authenticateToken,
+    generalLimiter, // Apply general rate limiting
     body("reason")
       .notEmpty()
       .withMessage("Reason is required")
@@ -400,24 +427,29 @@ router.post(
 );
 
 // Get user's submitted reports
-router.get("/reports/my", authenticateToken, async (req, res) => {
-  try {
-    const reports = await UserController.getUserReports(req.user);
-    res.json({
-      reports,
-      total: reports.length,
-    });
-  } catch (error) {
-    console.error("Get user reports error:", error);
-    res.status(500).json({
-      message: "Failed to fetch reports",
-      error: error.message,
-    });
+router.get(
+  "/reports/my",
+  authenticateToken,
+  generalLimiter,
+  async (req, res) => {
+    try {
+      const reports = await UserController.getUserReports(req.user);
+      res.json({
+        reports,
+        total: reports.length,
+      });
+    } catch (error) {
+      console.error("Get user reports error:", error);
+      res.status(500).json({
+        message: "Failed to fetch reports",
+        error: error.message,
+      });
+    }
   }
-});
+);
 
 // Get blocked users
-router.get("/blocked", authenticateToken, async (req, res) => {
+router.get("/blocked", authenticateToken, generalLimiter, async (req, res) => {
   try {
     const blockedUsers = await UserController.getBlockedUsers(req.user);
     res.json({
@@ -434,31 +466,41 @@ router.get("/blocked", authenticateToken, async (req, res) => {
 });
 
 // Get all reports (admin only)
-router.get("/reports/all", authenticateToken, async (req, res) => {
-  try {
-    if (req.user.role !== "admin") {
-      return res.status(403).json({
-        message: "Access denied. Admin role required.",
+router.get(
+  "/reports/all",
+  authenticateToken,
+  heavyOperationLimiter,
+  async (req, res) => {
+    try {
+      if (req.user.role !== "admin") {
+        return res.status(403).json({
+          message: "Access denied. Admin role required.",
+        });
+      }
+
+      const { status, page, limit } = req.query;
+      const result = await UserController.getAllReports({
+        status,
+        page,
+        limit,
+      });
+      res.json(result);
+    } catch (error) {
+      console.error("Get all reports error:", error);
+      res.status(500).json({
+        message: "Failed to fetch reports",
+        error: error.message,
       });
     }
-
-    const { status, page, limit } = req.query;
-    const result = await UserController.getAllReports({ status, page, limit });
-    res.json(result);
-  } catch (error) {
-    console.error("Get all reports error:", error);
-    res.status(500).json({
-      message: "Failed to fetch reports",
-      error: error.message,
-    });
   }
-});
+);
 
 // Update report status (admin only)
 router.patch(
   "/reports/:reportId",
   [
     authenticateToken,
+    generalLimiter, // Apply general rate limiting
     body("status")
       .optional()
       .isIn(["pending", "reviewed", "resolved", "dismissed"])
@@ -508,7 +550,10 @@ router.patch(
 // Upload user avatar
 router.post(
   "/avatar",
-  authenticateToken,
+  [
+    authenticateToken,
+    generalLimiter, // Apply general rate limiting
+  ],
   upload.single("avatar"),
   async (req, res) => {
     try {
@@ -525,17 +570,22 @@ router.post(
 );
 
 // Delete user avatar
-router.delete("/avatar", authenticateToken, async (req, res) => {
-  try {
-    const result = await UserController.deleteAvatar(req.user);
-    res.json(result);
-  } catch (error) {
-    console.error("Delete avatar error:", error);
-    const status = error.statusCode || 500;
-    res.status(status).json({
-      message: error.message || "Failed to delete avatar",
-    });
+router.delete(
+  "/avatar",
+  authenticateToken,
+  generalLimiter,
+  async (req, res) => {
+    try {
+      const result = await UserController.deleteAvatar(req.user);
+      res.json(result);
+    } catch (error) {
+      console.error("Delete avatar error:", error);
+      const status = error.statusCode || 500;
+      res.status(status).json({
+        message: error.message || "Failed to delete avatar",
+      });
+    }
   }
-});
+);
 
 module.exports = router;

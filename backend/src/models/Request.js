@@ -68,6 +68,29 @@ const Request = sequelize.define(
       type: DataTypes.DATE,
       allowNull: true,
     },
+    // Attachment fields for request images
+    attachmentUrl: {
+      type: DataTypes.STRING(500),
+      allowNull: true,
+    },
+    attachmentName: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    attachmentSize: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    // Verification fields
+    isVerified: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    verificationNotes: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
   },
   {
     tableName: "requests",
@@ -110,6 +133,14 @@ Request.associate = (models) => {
   Request.belongsTo(models.Donation, {
     foreignKey: "donationId",
     as: "donation",
+  });
+  Request.hasMany(models.RequestVerificationDocument, {
+    foreignKey: "requestId",
+    as: "verificationDocuments",
+  });
+  Request.hasMany(models.RequestUpdate, {
+    foreignKey: "requestId",
+    as: "updates",
   });
 };
 

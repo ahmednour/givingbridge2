@@ -223,6 +223,9 @@ class CacheKeys {
   static const String searchHistory = 'search_history';
   static const String favoriteDonations = 'favorite_donations';
   static const String recentSearches = 'recent_searches';
+  static const String savedFilters = 'saved_filters';
+  static const String activeFilters = 'active_filters';
+  static const String filterPresets = 'filter_presets';
 }
 
 /// Cache expiry durations
@@ -237,4 +240,7 @@ class CacheExpiry {
   static const Duration searchHistory = Duration(days: 30);
   static const Duration favoriteDonations = Duration(hours: 12);
   static const Duration recentSearches = Duration(days: 7);
+  static const Duration savedFilters = Duration(days: 365);
+  static const Duration activeFilters = Duration(days: 7);
+  static const Duration filterPresets = Duration(days: 365);
 }

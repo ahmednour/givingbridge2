@@ -4,13 +4,8 @@ describe("Model Associations", () => {
   // Load models once before all tests
   beforeAll(() => {
     models = require("../models");
-
-    // Call associate functions only once
-    Object.values(models).forEach((model) => {
-      if (model.associate) {
-        model.associate(models);
-      }
-    });
+    // Models are already associated in the models/index.js file
+    // No need to call associate functions again
   });
 
   it("should have proper associations between models", () => {

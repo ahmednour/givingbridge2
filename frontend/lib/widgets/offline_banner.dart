@@ -29,7 +29,7 @@ class OfflineBanner extends StatelessWidget {
               color: AppTheme.warningColor,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -89,12 +89,12 @@ class AnimatedOfflineBanner extends StatelessWidget {
                 gradient: LinearGradient(
                   colors: [
                     DesignSystem.warning,
-                    DesignSystem.warning.withOpacity(0.8),
+                    DesignSystem.warning.withValues(alpha: 0.8),
                   ],
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.15),
+                    color: Colors.black.withValues(alpha: 0.15),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -129,7 +129,7 @@ class AnimatedOfflineBanner extends StatelessWidget {
                             Text(
                               '$pendingCount pending operation${pendingCount > 1 ? 's' : ''} will sync when online',
                               style: TextStyle(
-                                color: Colors.white.withOpacity(0.9),
+                                color: Colors.white.withValues(alpha: 0.9),
                                 fontSize: 11,
                               ),
                             ),

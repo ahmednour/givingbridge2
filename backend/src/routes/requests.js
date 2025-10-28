@@ -6,53 +6,61 @@ const Request = require("../models/Request");
 const Donation = require("../models/Donation");
 const User = require("../models/User");
 const { sequelize } = require("../config/db");
+const {
+  generalLimiter,
+  heavyOperationLimiter,
+} = require("../middleware/rateLimiting");
 
 // Import authentication middleware from auth routes
 const { authenticateToken } = require("./auth");
 
+// Import upload middleware
+const requestImageUpload = require("../middleware/requestImageUpload");
+
 // Get all requests with optional filters and pagination
-router.get("/", authenticateToken, async (req, res) => {
+router.get("/", authenticateToken, generalLimiter, async (req, res) => {
   try {
-    const { donationId, status, page, limit } = req.query;
+    const {
+      donationId,
+      status,
+      category,
+      location,
+      startDate,
+      endDate,
+      page,
+      limit,
+    } = req.query;
     const user = await User.findByPk(req.user.userId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const where = {};
-    if (donationId) where.donationId = donationId;
-    if (status) where.status = status;
+    const filters = {};
+    if (donationId) filters.donationId = donationId;
+    if (status) filters.status = status;
+    if (category) filters.category = category;
+    if (location) filters.location = location;
+    if (startDate) filters.startDate = startDate;
+    if (endDate) filters.endDate = endDate;
 
-    // Filter based on user role
-    if (user.role === "donor") {
-      where.donorId = user.id;
-    } else if (user.role === "receiver") {
-      where.receiverId = user.id;
-    }
-    // Admin can see all requests (no additional filter)
+    const pagination = {
+      page: page || 1,
+      limit: limit || 20,
+    };
 
-    const pageNum = parseInt(page) || 1;
-    const limitNum = parseInt(limit) || 20;
-    const offset = (pageNum - 1) * limitNum;
-
-    const { rows, count } = await Request.findAndCountAll({
-      where,
-      order: [["createdAt", "DESC"]],
-      limit: limitNum,
-      offset: offset,
-    });
+    // Import RequestController dynamically to avoid circular dependency issues
+    const RequestController = require("../controllers/requestController");
+    const result = await RequestController.getAllRequests(
+      filters,
+      user,
+      pagination
+    );
 
     res.json({
       message: "Requests retrieved successfully",
-      requests: rows,
-      pagination: {
-        total: count,
-        page: pageNum,
-        limit: limitNum,
-        totalPages: Math.ceil(count / limitNum),
-        hasMore: offset + rows.length < count,
-      },
+      requests: result.requests,
+      pagination: result.pagination,
     });
   } catch (error) {
     console.error("Get requests error:", error);
@@ -64,7 +72,7 @@ router.get("/", authenticateToken, async (req, res) => {
 });
 
 // Get request by ID
-router.get("/:id", authenticateToken, async (req, res) => {
+router.get("/:id", authenticateToken, generalLimiter, async (req, res) => {
   try {
     const { id } = req.params;
     const request = await Request.findByPk(id);
@@ -102,54 +110,65 @@ router.get("/:id", authenticateToken, async (req, res) => {
 });
 
 // Get my requests as receiver
-router.get("/receiver/my-requests", authenticateToken, async (req, res) => {
-  try {
-    const requests = await Request.findAll({
-      where: { receiverId: req.user.userId },
-      order: [["createdAt", "DESC"]],
-    });
+router.get(
+  "/receiver/my-requests",
+  authenticateToken,
+  generalLimiter,
+  async (req, res) => {
+    try {
+      const requests = await Request.findAll({
+        where: { receiverId: req.user.userId },
+        order: [["createdAt", "DESC"]],
+      });
 
-    res.json({
-      message: "Your requests retrieved successfully",
-      requests,
-      total: requests.length,
-    });
-  } catch (error) {
-    console.error("Get my requests error:", error);
-    res.status(500).json({
-      message: "Failed to retrieve your requests",
-      error: error.message,
-    });
+      res.json({
+        message: "Your requests retrieved successfully",
+        requests,
+        total: requests.length,
+      });
+    } catch (error) {
+      console.error("Get my requests error:", error);
+      res.status(500).json({
+        message: "Failed to retrieve your requests",
+        error: error.message,
+      });
+    }
   }
-});
+);
 
 // Get requests for my donations (as donor)
-router.get("/donor/incoming-requests", authenticateToken, async (req, res) => {
-  try {
-    const requests = await Request.findAll({
-      where: { donorId: req.user.userId },
-      order: [["createdAt", "DESC"]],
-    });
+router.get(
+  "/donor/incoming-requests",
+  authenticateToken,
+  generalLimiter,
+  async (req, res) => {
+    try {
+      const requests = await Request.findAll({
+        where: { donorId: req.user.userId },
+        order: [["createdAt", "DESC"]],
+      });
 
-    res.json({
-      message: "Incoming requests retrieved successfully",
-      requests,
-      total: requests.length,
-    });
-  } catch (error) {
-    console.error("Get incoming requests error:", error);
-    res.status(500).json({
-      message: "Failed to retrieve incoming requests",
-      error: error.message,
-    });
+      res.json({
+        message: "Incoming requests retrieved successfully",
+        requests,
+        total: requests.length,
+      });
+    } catch (error) {
+      console.error("Get incoming requests error:", error);
+      res.status(500).json({
+        message: "Failed to retrieve incoming requests",
+        error: error.message,
+      });
+    }
   }
-});
+);
 
 // Create new request (receiver requests a donation)
 router.post(
   "/",
   [
     authenticateToken,
+    generalLimiter, // Apply general rate limiting
     body("donationId")
       .isInt({ min: 1 })
       .withMessage("Valid donation ID is required"),
@@ -159,6 +178,7 @@ router.post(
       .isLength({ max: 500 })
       .withMessage("Message must be less than 500 characters"),
   ],
+  requestImageUpload.single("attachment"),
   async (req, res) => {
     const transaction = await sequelize.transaction();
 
@@ -243,20 +263,27 @@ router.post(
         });
       }
 
-      const request = await Request.create(
-        {
-          donationId: parseInt(donationId),
-          donorId: donor.id,
-          donorName: donor.name,
-          receiverId: receiver.id,
-          receiverName: receiver.name,
-          receiverEmail: receiver.email,
-          receiverPhone: receiver.phone || null,
-          message: message || null,
-          status: "pending",
-        },
-        { transaction }
-      );
+      // Prepare request data
+      const requestData = {
+        donationId: parseInt(donationId),
+        donorId: donor.id,
+        donorName: donor.name,
+        receiverId: receiver.id,
+        receiverName: receiver.name,
+        receiverEmail: receiver.email,
+        receiverPhone: receiver.phone || null,
+        message: message || null,
+        status: "pending",
+      };
+
+      // Add attachment data if provided
+      if (req.file) {
+        requestData.attachmentUrl = `/uploads/request-images/${req.file.filename}`;
+        requestData.attachmentName = req.file.originalname;
+        requestData.attachmentSize = req.file.size;
+      }
+
+      const request = await Request.create(requestData, { transaction });
 
       await transaction.commit();
 
@@ -267,6 +294,23 @@ router.post(
     } catch (error) {
       await transaction.rollback();
       console.error("Create request error:", error);
+
+      // Delete uploaded file if request creation failed
+      if (req.file) {
+        try {
+          const fs = require("fs").promises;
+          const path = require("path");
+          const filePath = path.join(
+            __dirname,
+            "../../uploads/request-images",
+            req.file.filename
+          );
+          await fs.unlink(filePath);
+        } catch (fileError) {
+          console.warn("Could not delete uploaded file:", fileError.message);
+        }
+      }
+
       res.status(500).json({
         message: "Failed to create request",
         error: error.message,
@@ -280,6 +324,7 @@ router.put(
   "/:id/status",
   [
     authenticateToken,
+    generalLimiter, // Apply general rate limiting
     body("status")
       .isIn(["approved", "declined", "completed", "cancelled"])
       .withMessage("Invalid status"),
@@ -411,7 +456,7 @@ router.put(
 );
 
 // Delete request (only by receiver or admin)
-router.delete("/:id", authenticateToken, async (req, res) => {
+router.delete("/:id", authenticateToken, generalLimiter, async (req, res) => {
   try {
     const { id } = req.params;
     const request = await Request.findByPk(id);
@@ -453,44 +498,164 @@ router.delete("/:id", authenticateToken, async (req, res) => {
 });
 
 // Get request statistics (for admin dashboard)
-router.get("/admin/stats", authenticateToken, async (req, res) => {
-  try {
-    // Check if user is admin
-    const user = await User.findByPk(req.user.userId);
+router.get(
+  "/admin/stats",
+  authenticateToken,
+  heavyOperationLimiter,
+  async (req, res) => {
+    try {
+      // Check if user is admin
+      const user = await User.findByPk(req.user.userId);
 
-    if (user.role !== "admin") {
-      return res.status(403).json({
-        message: "Admin access required",
+      if (user.role !== "admin") {
+        return res.status(403).json({
+          message: "Admin access required",
+        });
+      }
+
+      const total = await Request.count();
+      const pending = await Request.count({ where: { status: "pending" } });
+      const approved = await Request.count({ where: { status: "approved" } });
+      const declined = await Request.count({ where: { status: "declined" } });
+      const completed = await Request.count({ where: { status: "completed" } });
+      const cancelled = await Request.count({ where: { status: "cancelled" } });
+
+      const stats = {
+        total,
+        pending,
+        approved,
+        declined,
+        completed,
+        cancelled,
+      };
+
+      res.json({
+        message: "Request statistics retrieved successfully",
+        stats,
+      });
+    } catch (error) {
+      console.error("Get request stats error:", error);
+      res.status(500).json({
+        message: "Failed to retrieve request statistics",
+        error: error.message,
       });
     }
-
-    const total = await Request.count();
-    const pending = await Request.count({ where: { status: "pending" } });
-    const approved = await Request.count({ where: { status: "approved" } });
-    const declined = await Request.count({ where: { status: "declined" } });
-    const completed = await Request.count({ where: { status: "completed" } });
-    const cancelled = await Request.count({ where: { status: "cancelled" } });
-
-    const stats = {
-      total,
-      pending,
-      approved,
-      declined,
-      completed,
-      cancelled,
-    };
-
-    res.json({
-      message: "Request statistics retrieved successfully",
-      stats,
-    });
-  } catch (error) {
-    console.error("Get request stats error:", error);
-    res.status(500).json({
-      message: "Failed to retrieve request statistics",
-      error: error.message,
-    });
   }
-});
+);
+
+// Upload/update request attachment
+router.post(
+  "/:id/attachment",
+  [
+    authenticateToken,
+    generalLimiter, // Apply general rate limiting
+  ],
+  requestImageUpload.single("attachment"),
+  async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          message: "No file uploaded",
+        });
+      }
+
+      const { id } = req.params;
+      const user = await User.findByPk(req.user.userId);
+
+      if (!user) {
+        // Delete uploaded file if user not found
+        try {
+          const fs = require("fs").promises;
+          const path = require("path");
+          const filePath = path.join(
+            __dirname,
+            "../../uploads/request-images",
+            req.file.filename
+          );
+          await fs.unlink(filePath);
+        } catch (fileError) {
+          console.warn("Could not delete uploaded file:", fileError.message);
+        }
+
+        return res.status(404).json({
+          message: "User not found",
+        });
+      }
+
+      // Import RequestController dynamically to avoid circular dependency issues
+      const RequestController = require("../controllers/requestController");
+      const request = await RequestController.updateRequestAttachment(
+        id,
+        user,
+        req.file
+      );
+
+      res.json({
+        message: "Attachment uploaded successfully",
+        request,
+      });
+    } catch (error) {
+      console.error("Upload attachment error:", error);
+
+      // Delete uploaded file if operation failed
+      if (req.file) {
+        try {
+          const fs = require("fs").promises;
+          const path = require("path");
+          const filePath = path.join(
+            __dirname,
+            "../../uploads/request-images",
+            req.file.filename
+          );
+          await fs.unlink(filePath);
+        } catch (fileError) {
+          console.warn("Could not delete uploaded file:", fileError.message);
+        }
+      }
+
+      const status = error.statusCode || 500;
+      res.status(status).json({
+        success: false,
+        message: error.message || "Failed to upload attachment",
+      });
+    }
+  }
+);
+
+// Delete request attachment
+router.delete(
+  "/:id/attachment",
+  authenticateToken,
+  generalLimiter,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const user = await User.findByPk(req.user.userId);
+
+      if (!user) {
+        return res.status(404).json({
+          message: "User not found",
+        });
+      }
+
+      // Import RequestController dynamically to avoid circular dependency issues
+      const RequestController = require("../controllers/requestController");
+      const request = await RequestController.deleteRequestAttachment(id, user);
+
+      res.json({
+        message: "Attachment deleted successfully",
+        request,
+      });
+    } catch (error) {
+      console.error("Delete attachment error:", error);
+      const status = error.statusCode || 500;
+      res.status(status).json({
+        success: false,
+        message: error.message || "Failed to delete attachment",
+      });
+    }
+  }
+);
 
 module.exports = router;

@@ -48,7 +48,7 @@ class GBStatusBadge extends StatelessWidget {
   }) {
     return GBStatusBadge(
       label: 'Pending',
-      backgroundColor: DesignSystem.warning.withOpacity(0.1),
+      backgroundColor: DesignSystem.warning.withValues(alpha: 0.1),
       textColor: DesignSystem.warning,
       icon: Icons.schedule,
       size: size,
@@ -63,7 +63,7 @@ class GBStatusBadge extends StatelessWidget {
   }) {
     return GBStatusBadge(
       label: 'Approved',
-      backgroundColor: DesignSystem.primaryBlue.withOpacity(0.1),
+      backgroundColor: DesignSystem.primaryBlue.withValues(alpha: 0.1),
       textColor: DesignSystem.primaryBlue,
       icon: Icons.check_circle,
       size: size,
@@ -78,7 +78,7 @@ class GBStatusBadge extends StatelessWidget {
   }) {
     return GBStatusBadge(
       label: 'Declined',
-      backgroundColor: DesignSystem.error.withOpacity(0.1),
+      backgroundColor: DesignSystem.error.withValues(alpha: 0.1),
       textColor: DesignSystem.error,
       icon: Icons.cancel,
       size: size,
@@ -93,7 +93,7 @@ class GBStatusBadge extends StatelessWidget {
   }) {
     return GBStatusBadge(
       label: 'In Progress',
-      backgroundColor: DesignSystem.info.withOpacity(0.1),
+      backgroundColor: DesignSystem.info.withValues(alpha: 0.1),
       textColor: DesignSystem.info,
       icon: Icons.sync,
       size: size,
@@ -108,7 +108,7 @@ class GBStatusBadge extends StatelessWidget {
   }) {
     return GBStatusBadge(
       label: 'Completed',
-      backgroundColor: DesignSystem.success.withOpacity(0.1),
+      backgroundColor: DesignSystem.success.withValues(alpha: 0.1),
       textColor: DesignSystem.success,
       icon: Icons.check_circle_outline,
       size: size,
@@ -123,7 +123,7 @@ class GBStatusBadge extends StatelessWidget {
   }) {
     return GBStatusBadge(
       label: 'Cancelled',
-      backgroundColor: DesignSystem.neutral300.withOpacity(0.1),
+      backgroundColor: DesignSystem.neutral300.withValues(alpha: 0.1),
       textColor: DesignSystem.neutral600,
       icon: Icons.block,
       size: size,
@@ -138,7 +138,7 @@ class GBStatusBadge extends StatelessWidget {
   }) {
     return GBStatusBadge(
       label: 'Active',
-      backgroundColor: DesignSystem.success.withOpacity(0.1),
+      backgroundColor: DesignSystem.success.withValues(alpha: 0.1),
       textColor: DesignSystem.success,
       icon: Icons.circle,
       size: size,
@@ -153,7 +153,7 @@ class GBStatusBadge extends StatelessWidget {
   }) {
     return GBStatusBadge(
       label: 'Inactive',
-      backgroundColor: DesignSystem.neutral300.withOpacity(0.1),
+      backgroundColor: DesignSystem.neutral300.withValues(alpha: 0.1),
       textColor: DesignSystem.neutral600,
       icon: Icons.circle_outlined,
       size: size,
@@ -168,7 +168,7 @@ class GBStatusBadge extends StatelessWidget {
   }) {
     return GBStatusBadge(
       label: 'Draft',
-      backgroundColor: DesignSystem.neutral300.withOpacity(0.1),
+      backgroundColor: DesignSystem.neutral300.withValues(alpha: 0.1),
       textColor: DesignSystem.neutral600,
       icon: Icons.edit,
       size: size,
@@ -183,7 +183,7 @@ class GBStatusBadge extends StatelessWidget {
   }) {
     return GBStatusBadge(
       label: 'Urgent',
-      backgroundColor: DesignSystem.error.withOpacity(0.1),
+      backgroundColor: DesignSystem.error.withValues(alpha: 0.1),
       textColor: DesignSystem.error,
       icon: Icons.priority_high,
       size: size,
@@ -198,7 +198,7 @@ class GBStatusBadge extends StatelessWidget {
   }) {
     return GBStatusBadge(
       label: 'New',
-      backgroundColor: DesignSystem.primaryBlue.withOpacity(0.1),
+      backgroundColor: DesignSystem.primaryBlue.withValues(alpha: 0.1),
       textColor: DesignSystem.primaryBlue,
       icon: Icons.fiber_new,
       size: size,

@@ -1,475 +1,233 @@
 # GivingBridge Backend API
 
-A production-ready Node.js/Express RESTful API for the GivingBridge donation platform with real-time messaging, notifications, and comprehensive analytics.
+## Overview
 
-## 🚀 Quick Start
+The GivingBridge Backend API provides a comprehensive platform for charitable giving and receiving. It includes user management, donation listing, request processing, messaging, notifications, and administrative features.
 
-### Prerequisites
+## Features
 
-- Node.js 16+ and npm
-- MySQL 8.0+
-- Git
+- User authentication (registration, login, password reset)
+- Email verification system
+- Donation management (create, update, delete, browse)
+- Request system (request donations, approve/decline requests)
+- Request image attachment support
+- Advanced search and filtering for donations and requests
+- Comprehensive analytics dashboard for admin users
+- Donation history and receipt generation for tax purposes
+- Detailed transaction history with export functionality
+- Request milestones/updates for funded requests
+- Social features (comments, sharing, social proof)
+- Verification system (identity verification, document upload)
+- **Rate limiting to prevent API abuse**
+- Real-time messaging with Socket.IO
+- Comprehensive notification system:
+  - Email notifications (registration, password reset, request approvals, donation confirmations)
+  - Push notifications (via Firebase Cloud Messaging)
+  - In-app notifications
+  - Notification preferences management
+- Rating and review system
+- Admin dashboard with analytics
+- Activity logging
 
-### Installation
-
-```bash
-# Clone the repository
-cd backend
-
-# Install dependencies
-npm install
-
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your configuration
-```
-
-### Environment Configuration
-
-Create a `.env` file in the backend directory:
-
-```env
-# Server
-NODE_ENV=development
-PORT=3000
-
-# Database
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=your_password
-DB_NAME=givingbridge
-DB_PORT=3306
-
-# JWT
-JWT_SECRET=your_super_secret_key_change_in_production
-JWT_EXPIRES_IN=7d
-
-# File Upload
-MAX_FILE_SIZE=10
-```
-
-### Database Setup
-
-```bash
-# Create database
-mysql -u root -p
-CREATE DATABASE givingbridge;
-EXIT;
-
-# Run migrations (automatic on server start)
-npm run dev
-```
-
-### Running the Server
-
-```bash
-# Development mode with auto-reload
-npm run dev
-
-# Production mode
-npm start
-
-# Run tests
-npm test
-```
-
-The server will start on `http://localhost:3000`
-
-## 📚 Documentation
-
-- **[Complete API Documentation](API_DOCUMENTATION.md)** - Detailed endpoint reference
-- **[Phase 4 Plan](../docs/PHASE_4_PLAN.md)** - Feature roadmap and architecture
-
-## 🧪 Testing the API
-
-### Automated Test Script
-
-```bash
-# Ensure server is running first
-npm run dev
-
-# In another terminal, run tests
-node test-api.js
-```
-
-### Manual Testing with cURL
-
-```bash
-# Health check
-curl http://localhost:3000/health
-
-# Register a user
-curl -X POST http://localhost:3000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "John Doe",
-    "email": "john@example.com",
-    "password": "password123",
-    "role": "donor",
-    "phone": "+1234567890",
-    "location": "New York, NY"
-  }'
-
-# Login
-curl -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "john@example.com",
-    "password": "password123"
-  }'
-```
-
-## 🏗️ Project Structure
-
-```
-backend/
-├── src/
-│   ├── config/           # Database and app configuration
-│   ├── controllers/      # Business logic layer
-│   │   ├── authController.js
-│   │   ├── userController.js
-│   │   ├── donationController.js
-│   │   ├── requestController.js
-│   │   ├── messageController.js
-│   │   ├── notificationController.js
-│   │   ├── ratingController.js
-│   │   └── analyticsController.js
-│   ├── models/           # Sequelize ORM models
-│   │   ├── User.js
-│   │   ├── Donation.js
-│   │   ├── Request.js
-│   │   ├── Message.js
-│   │   ├── Notification.js
-│   │   └── Rating.js
-│   ├── routes/           # API route definitions
-│   │   ├── auth.js
-│   │   ├── users.js
-│   │   ├── donations.js
-│   │   ├── requests.js
-│   │   ├── messages.js
-│   │   ├── notifications.js
-│   │   ├── ratings.js
-│   │   └── analytics.js
-│   ├── middleware/       # Custom middleware
-│   │   └── index.js      # Auth, validation, etc.
-│   ├── migrations/       # Database migrations
-│   │   ├── 001_create_users_table.js
-│   │   ├── 002_create_donations_table.js
-│   │   ├── 003_create_requests_table.js
-│   │   ├── 004_create_messages_table.js
-│   │   ├── 005_add_request_response_fields.js
-│   │   ├── 006_create_notifications_table.js
-│   │   └── 007_create_ratings_table.js
-│   ├── utils/            # Utility functions
-│   │   ├── errorHandler.js
-│   │   └── migrationRunner.js
-│   ├── constants/        # Application constants
-│   │   └── index.js
-│   ├── socket.js         # Socket.IO configuration
-│   └── server.js         # Express app entry point
-├── test-api.js           # API test script
-├── .env.example          # Environment variables template
-├── package.json
-└── README.md
-```
-
-## 🔑 Key Features
-
-### Authentication & Authorization
-
-- JWT-based authentication
-- Role-based access control (Admin, Donor, Receiver)
-- Password hashing with bcrypt
-- Token expiration and refresh
-
-### Core Functionality
-
-- **User Management**: Registration, login, profile management
-- **Donations**: CRUD operations, filtering, search
-- **Requests**: Request donations, approve/decline, track status
-- **Messaging**: Real-time chat between users
-- **Notifications**: System notifications with WebSocket support
-- **Ratings**: 5-star rating system with feedback
-- **Analytics**: Comprehensive admin dashboard statistics
-
-### Real-time Features
-
-- Socket.IO integration for live updates
-- Real-time messaging
-- Instant notification delivery
-- Online/offline user status
-- Typing indicators
-
-### Security
-
-- Helmet for HTTP headers security
-- CORS configuration
-- Rate limiting (100 requests/15min per IP)
-- Input validation with express-validator
-- SQL injection protection via Sequelize ORM
-
-## 📊 API Endpoints Overview
+## API Endpoints
 
 ### Authentication
 
 - `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - User login
-- `GET /api/auth/me` - Get current user
+- `POST /api/auth/login` - Login user
+- `POST /api/auth/logout` - Logout user
+- `GET /api/auth/me` - Get current user profile
+- `POST /api/auth/fcm-token` - Update FCM token for push notifications
+- `POST /api/auth/verify-email` - Verify email address
+- `POST /api/auth/resend-verification` - Resend verification email
+- `POST /api/auth/forgot-password` - Request password reset
+- `POST /api/auth/reset-password` - Reset password
 
 ### Users
 
-- `GET /api/users` - Get all users (admin)
+- `GET /api/users` - Get all users (admin only)
+- `GET /api/users/search/conversation` - Search users for conversations
 - `GET /api/users/:id` - Get user by ID
-- `PUT /api/users/:id` - Update user
-- `DELETE /api/users/:id` - Delete user (admin)
+- `PUT /api/users/:id` - Update user profile
+- `DELETE /api/users/:id` - Delete user (admin only)
+- `GET /api/users/:id/requests` - Get user's requests
+- `POST /api/users/:id/block` - Block a user
+- `DELETE /api/users/:id/block` - Unblock a user
+- `GET /api/users/blocked/list` - Get blocked users list
+- `GET /api/users/:id/blocked` - Check if user is blocked
+- `POST /api/users/:id/report` - Report a user
+- `GET /api/users/reports/my` - Get user's submitted reports
+- `GET /api/users/blocked` - Get blocked users
+- `GET /api/users/reports/all` - Get all reports (admin only)
+- `PATCH /api/users/reports/:reportId` - Update report status (admin only)
+- `POST /api/users/avatar` - Upload user avatar
+- `DELETE /api/users/avatar` - Delete user avatar
 
 ### Donations
 
-- `GET /api/donations` - Get all donations (paginated, filtered)
+- `GET /api/donations` - Get all donations
 - `GET /api/donations/:id` - Get donation by ID
-- `POST /api/donations` - Create donation (donor)
+- `GET /api/donations/:id/social-proof` - Get social proof data for a donation
+- `POST /api/donations` - Create new donation
 - `PUT /api/donations/:id` - Update donation
 - `DELETE /api/donations/:id` - Delete donation
+- `GET /api/donations/user/my-donations` - Get user's donations
+- `GET /api/donations/stats` - Get donation statistics (admin only)
 
 ### Requests
 
-- `GET /api/requests` - Get requests
-- `POST /api/requests` - Create request (receiver)
+- `GET /api/requests` - Get all requests
+- `GET /api/requests/:id` - Get request by ID
+- `GET /api/requests/receiver/my-requests` - Get my requests as receiver
+- `GET /api/requests/donor/incoming-requests` - Get requests for my donations
+- `POST /api/requests` - Create new request
 - `PUT /api/requests/:id/status` - Update request status
-- `GET /api/requests/receiver/my-requests` - My requests
-- `GET /api/requests/donor/incoming-requests` - Incoming requests
+- `DELETE /api/requests/:id` - Delete request
+- `GET /api/requests/admin/stats` - Get request statistics (admin only)
+- `POST /api/requests/:id/attachment` - Upload/update request attachment
+- `DELETE /api/requests/:id/attachment` - Delete request attachment
+
+### Request Updates
+
+- `GET /api/request-updates/:requestId` - Get updates for a request
+- `POST /api/request-updates` - Create a new request update
+- `PUT /api/request-updates/:id` - Update a request update
+- `DELETE /api/request-updates/:id` - Delete a request update
+
+### Comments
+
+- `GET /api/comments/:donationId` - Get comments for a donation
+- `POST /api/comments/:donationId` - Create a new comment
+- `PUT /api/comments/:id` - Update a comment
+- `DELETE /api/comments/:id` - Delete a comment
+
+### Shares
+
+- `GET /api/shares/:donationId` - Get shares for a donation
+- `POST /api/shares/:donationId` - Create a new share
+- `DELETE /api/shares/:id` - Delete a share
+
+### Verification
+
+- `POST /api/verification/user/documents` - Upload user verification document
+- `GET /api/verification/user/documents` - Get user verification documents
+- `PUT /api/verification/user/documents/:documentId/verify` - Verify user document
+- `POST /api/verification/request/:requestId/documents` - Upload request verification document
+- `GET /api/verification/request/:requestId/documents` - Get request verification documents
+- `PUT /api/verification/request/documents/:documentId/verify` - Verify request document
+- `GET /api/verification/statistics` - Get verification statistics
+- `GET /api/verification/pending/:type` - Get pending verification documents
 
 ### Messages
 
 - `GET /api/messages/conversations` - Get all conversations
-- `GET /api/messages/conversation/:userId` - Get messages with user
-- `POST /api/messages` - Send message
-- `GET /api/messages/unread-count` - Get unread count
+- `GET /api/messages/conversation/:userId` - Get messages for a conversation
+- `POST /api/messages` - Send a new message
+- `PUT /api/messages/:id/read` - Mark a message as read
+- `PUT /api/messages/conversation/:userId/read` - Mark all messages in a conversation as read
+- `GET /api/messages/unread-count` - Get unread message count
+- `DELETE /api/messages/:id` - Delete a message
+- `GET /api/messages/admin/stats` - Get message statistics (admin only)
+- `GET /api/messages/conversations/archived` - Get archived conversations
+- `PUT /api/messages/conversation/:userId/archive` - Archive a conversation
+- `PUT /api/messages/conversation/:userId/unarchive` - Unarchive a conversation
 
 ### Notifications
 
-- `GET /api/notifications` - Get notifications (paginated)
-- `GET /api/notifications/unread-count` - Get unread count
-- `PUT /api/notifications/:id/read` - Mark as read
-- `PUT /api/notifications/read-all` - Mark all as read
+- `GET /api/notifications` - Get all notifications
+- `GET /api/notifications/unread-count` - Get unread notification count
+- `PUT /api/notifications/:id/read` - Mark notification as read
+- `PUT /api/notifications/read-all` - Mark all notifications as read
+- `DELETE /api/notifications/:id` - Delete notification
+- `DELETE /api/notifications` - Delete all notifications
 
 ### Ratings
 
-- `POST /api/ratings` - Create rating
-- `GET /api/ratings/donor/:donorId` - Get donor ratings
-- `GET /api/ratings/receiver/:receiverId` - Get receiver ratings
+- `GET /api/ratings/:userId` - Get user ratings
+- `POST /api/ratings` - Submit a rating
+- `PUT /api/ratings/:id` - Update a rating
+- `DELETE /api/ratings/:id` - Delete a rating
 
-### Analytics (Admin Only)
+### Analytics
 
-- `GET /api/analytics/overview` - Platform overview
-- `GET /api/analytics/donations/trends` - Donation trends
-- `GET /api/analytics/users/growth` - User growth
-- `GET /api/analytics/donors/top` - Top donors
+- `GET /api/analytics/overview` - Get overview statistics
+- `GET /api/analytics/donations/trends` - Get donation trends
+- `GET /api/analytics/users/growth` - Get user growth
+- `GET /api/analytics/donations/category-distribution` - Get category distribution
+- `GET /api/analytics/requests/status-distribution` - Get status distribution
+- `GET /api/analytics/donors/top` - Get top donors
+- `GET /api/analytics/receivers/top` - Get top receivers
+- `GET /api/analytics/donations/geographic-distribution` - Get geographic distribution
+- `GET /api/analytics/requests/success-rate` - Get request success rate
+- `GET /api/analytics/donations/statistics-over-time` - Get donation statistics over time
+- `GET /api/analytics/activity/recent` - Get recent activity
+- `GET /api/analytics/platform/stats` - Get platform statistics
 
-See [API_DOCUMENTATION.md](API_DOCUMENTATION.md) for complete details.
+### Activity
 
-## 🔌 WebSocket Events
+- `GET /api/activity/user/:userId` - Get user activity
+- `GET /api/activity/donation/:donationId` - Get donation activity
+- `GET /api/activity/request/:requestId` - Get request activity
+- `GET /api/activity/admin/recent` - Get recent admin activity
 
-### Client → Server
+### Search
 
-- `send_message` - Send a message
-- `typing` - Start typing indicator
-- `stop_typing` - Stop typing indicator
-- `mark_as_read` - Mark message as read
-- `mark_notification_read` - Mark notification as read
-- `get_unread_count` - Get unread message count
+- `GET /api/search/donations` - Search donations
+- `GET /api/search/requests` - Search requests
+- `GET /api/search/donations/filters` - Get donation filter options
+- `GET /api/search/requests/filters` - Get request filter options
 
-### Server → Client
+### Donation History
 
-- `new_message` - Receive new message
-- `new_notification` - Receive new notification
-- `user_online` - User came online
-- `user_offline` - User went offline
-- `unread_count` - Unread message count update
+- `GET /api/donation-history/user/:userId` - Get user donation history
+- `GET /api/donation-history/donation/:donationId` - Get donation history
+- `GET /api/donation-history/export/:userId` - Export user donation history
+- `GET /api/donation-history/receipt/:transactionId` - Get donation receipt
 
-## 🛠️ Technology Stack
+### Notification Preferences
 
-- **Runtime**: Node.js 16+
-- **Framework**: Express.js 4.18
-- **Database**: MySQL 8.0 with Sequelize ORM
-- **Authentication**: JWT (jsonwebtoken)
-- **Real-time**: Socket.IO
-- **Validation**: express-validator
-- **Security**: helmet, cors, bcryptjs
-- **Rate Limiting**: express-rate-limit
+- `GET /api/notification-preferences` - Get notification preferences
+- `PUT /api/notification-preferences` - Update notification preferences
 
-## 📝 Database Schema
+## Rate Limiting
 
-### Users Table
+To prevent API abuse and ensure fair usage, rate limiting is applied to various endpoints:
 
-- User authentication and profile information
-- Roles: donor, receiver, admin
+### General API Endpoints
 
-### Donations Table
+- **Rate**: 100 requests per 15 minutes per IP
+- **Applied to**: Most public and authenticated API endpoints
 
-- Donation items with categories and conditions
-- Status tracking (available, pending, completed)
+### Authentication Endpoints
 
-### Requests Table
+- **Rate**: 5 requests per 15 minutes per IP
+- **Applied to**: Login and registration endpoints
 
-- Request lifecycle management
-- Links donors and receivers
-- Status: pending → approved → completed
+### Registration Endpoints
 
-### Messages Table
+- **Rate**: 3 requests per hour per IP
+- **Applied to**: User registration endpoints
 
-- Chat messages between users
-- Read/unread status tracking
+### Password Reset Endpoints
 
-### Notifications Table
+- **Rate**: 3 requests per hour per IP
+- **Applied to**: Password reset request endpoints
 
-- System notifications
-- 7 notification types
-- Related entity tracking
+### Email Verification Endpoints
 
-### Ratings Table
+- **Rate**: 5 requests per hour per IP
+- **Applied to**: Email verification endpoints
 
-- 5-star rating system
-- Bi-directional (donor ↔ receiver)
-- One rating per completed request
+### File Upload Endpoints
 
-## 🚢 Deployment
+- **Rate**: 20 requests per hour per IP
+- **Applied to**: File upload endpoints
 
-### Production Checklist
+### Heavy Operation Endpoints
 
-1. **Environment Configuration**
+- **Rate**: 30 requests per 15 minutes per IP
+- **Applied to**: Analytics, statistics, and search endpoints
 
-   ```bash
-   NODE_ENV=production
-   # Set strong JWT_SECRET
-   # Configure production database
-   ```
+When rate limits are exceeded, the API returns a 429 (Too Many Requests) status code with an appropriate error message.
 
-2. **Security**
-
-   - Enable HTTPS/SSL
-   - Set up firewall rules
-   - Configure reverse proxy (nginx)
-   - Update CORS settings
-
-3. **Database**
-
-   - Run migrations
-   - Create backup strategy
-   - Optimize indexes
-
-4. **Monitoring**
-
-   - Set up error logging
-   - Configure performance monitoring
-   - Health check endpoints
-
-5. **Start Server**
-   ```bash
-   npm start
-   ```
-
-### Using PM2 (Production)
-
-```bash
-# Install PM2
-npm install -g pm2
-
-# Start server
-pm2 start src/server.js --name givingbridge-api
-
-# Monitor
-pm2 logs givingbridge-api
-pm2 monit
-
-# Auto-restart on reboot
-pm2 startup
-pm2 save
-```
-
-## 🧑‍💻 Development
-
-### Adding a New Endpoint
-
-1. Create controller method in `src/controllers/`
-2. Add route in `src/routes/`
-3. Add validation middleware
-4. Test with `test-api.js`
-5. Document in `API_DOCUMENTATION.md`
-
-### Creating a Migration
-
-```javascript
-// src/migrations/008_your_migration.js
-module.exports = {
-  up: async (queryInterface, Sequelize) => {
-    // Migration logic
-  },
-  down: async (queryInterface, Sequelize) => {
-    // Rollback logic
-  },
-};
-```
-
-### Code Style
-
-- Use ES6+ features
-- Follow async/await pattern
-- Use try-catch for error handling
-- Add JSDoc comments to controllers
-- Keep controllers thin, models fat
-
-## 🐛 Troubleshooting
-
-### Database Connection Issues
-
-```bash
-# Check MySQL is running
-mysql -u root -p
-
-# Verify credentials in .env
-# Check DB_HOST, DB_USER, DB_PASSWORD, DB_NAME
-```
-
-### Port Already in Use
-
-```bash
-# Find process using port 3000
-# Windows
-netstat -ano | findstr :3000
-
-# Linux/Mac
-lsof -i :3000
-
-# Kill process or change PORT in .env
-```
-
-### Migration Errors
-
-```bash
-# Reset database
-mysql -u root -p
-DROP DATABASE givingbridge;
-CREATE DATABASE givingbridge;
-
-# Restart server (auto-runs migrations)
-npm run dev
-```
-
-## 📞 Support
-
-For issues or questions:
-
-- Check [API_DOCUMENTATION.md](API_DOCUMENTATION.md)
-- Review error logs in console
-- Verify environment configuration
-- Test with `node test-api.js`
-
-## 📄 License
-
-This project is part of the GivingBridge platform.
-
----
-
-**Version**: 1.0.0  
-**Last Updated**: October 20, 2025
+## Setup and Installation

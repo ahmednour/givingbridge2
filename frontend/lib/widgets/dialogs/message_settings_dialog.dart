@@ -214,7 +214,12 @@ class _MessageSettingsDialogState extends State<MessageSettingsDialog> {
       trailing: Switch(
         value: value,
         onChanged: (newValue) => _updateSetting(key, newValue),
-        activeColor: DesignSystem.primaryBlue,
+        thumbColor: WidgetStateProperty.resolveWith<Color>((states) {
+          if (states.contains(WidgetState.selected)) {
+            return DesignSystem.primaryBlue;
+          }
+          return DesignSystem.neutral400;
+        }),
       ),
     );
   }

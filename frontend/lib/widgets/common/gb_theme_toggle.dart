@@ -108,7 +108,12 @@ class GBThemeToggle extends StatelessWidget {
         Switch(
           value: isDark,
           onChanged: (_) => themeProvider.toggleTheme(),
-          activeThumbColor: DesignSystem.primaryBlue,
+          thumbColor: WidgetStateProperty.resolveWith<Color>((states) {
+            if (states.contains(WidgetState.selected)) {
+              return DesignSystem.primaryBlue;
+            }
+            return DesignSystem.neutral400;
+          }),
         ),
         const SizedBox(width: DesignSystem.spaceS),
         Icon(
@@ -190,7 +195,7 @@ class GBThemeToggle extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           color: isSelected
-              ? DesignSystem.primaryBlue.withOpacity(0.1)
+              ? DesignSystem.primaryBlue.withValues(alpha: 0.1)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(DesignSystem.radiusS),
         ),

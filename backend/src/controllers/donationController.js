@@ -1,6 +1,7 @@
 const { Op } = require("sequelize");
 const Donation = require("../models/Donation");
 const User = require("../models/User");
+const notificationService = require("../services/notificationService");
 
 class DonationController {
   /**
@@ -10,13 +11,26 @@ class DonationController {
    * @returns {Promise<Object>} Paginated list of donations with metadata
    */
   static async getAllDonations(filters = {}, pagination = {}) {
-    const { category, location, available } = filters;
+    const { category, location, available, startDate, endDate } = filters;
     const { page = 1, limit = 20 } = pagination;
 
     const where = {};
+
+    // Basic filters
     if (category) where.category = category;
     if (location) where.location = { [Op.like]: `%${location}%` };
     if (available !== undefined) where.isAvailable = available === "true";
+
+    // Date range filter
+    if (startDate || endDate) {
+      where.createdAt = {};
+      if (startDate) {
+        where.createdAt[Op.gte] = new Date(startDate);
+      }
+      if (endDate) {
+        where.createdAt[Op.lte] = new Date(endDate);
+      }
+    }
 
     const offset = (page - 1) * limit;
 
@@ -46,6 +60,20 @@ class DonationController {
    */
   static async getDonationById(id) {
     return await Donation.findByPk(id);
+  }
+
+  /**
+   * Get donation by ID with view count increment
+   * @param {number} id - Donation ID
+   * @returns {Promise<Object|null>} Donation or null if not found
+   */
+  static async getDonationByIdWithViewCount(id) {
+    const donation = await Donation.findByPk(id);
+    if (donation) {
+      // Increment view count
+      await donation.increment("viewCount");
+    }
+    return donation;
   }
 
   /**
@@ -133,6 +161,27 @@ class DonationController {
   }
 
   /**
+   * Send donation confirmation notification
+   * @param {number} donationId - Donation ID
+   * @param {number} donorId - Donor ID
+   * @param {number} receiverId - Receiver ID
+   * @returns {Promise<void>}
+   */
+  static async sendDonationConfirmation(donationId, donorId, receiverId) {
+    const donation = await Donation.findByPk(donationId);
+    const donor = await User.findByPk(donorId);
+    const receiver = await User.findByPk(receiverId);
+
+    if (donation && donor && receiver) {
+      await notificationService.sendDonationConfirmation(
+        donor,
+        receiver,
+        donation
+      );
+    }
+  }
+
+  /**
    * Get donation statistics (for admin dashboard)
    * @returns {Promise<Object>} Donation statistics
    */
@@ -152,6 +201,36 @@ class DonationController {
       total,
       available,
       categories,
+    };
+  }
+
+  /**
+   * Get social proof data for a donation
+   * @param {number} donationId - Donation ID
+   * @returns {Promise<Object>} Social proof data
+   */
+  static async getSocialProof(donationId) {
+    const donation = await Donation.findByPk(donationId);
+    if (!donation) {
+      throw new Error("Donation not found");
+    }
+
+    // Get number of requests for this donation
+    const requestCount = await require("../models/Request").count({
+      where: { donationId },
+    });
+
+    // Get number of completed requests (representing donors who received the donation)
+    const completedRequestCount = await require("../models/Request").count({
+      where: { donationId, status: "completed" },
+    });
+
+    return {
+      views: donation.viewCount,
+      shares: donation.shareCount,
+      comments: donation.commentCount,
+      requests: requestCount,
+      donors: completedRequestCount,
     };
   }
 }

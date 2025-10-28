@@ -45,8 +45,8 @@ void main() {
       expect(semantics, isNotNull);
 
       // Verify semantic information is available
-      expect(semantics.hasFlag(SemanticsFlag.hasEnabledState), isTrue);
-      expect(semantics.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(semantics.getSemanticsData().hasFlag(SemanticsFlag.hasEnabledState), isTrue);
+      expect(semantics.getSemanticsData().hasFlag(SemanticsFlag.isButton), isTrue);
     });
 
     testWidgets('Keyboard Navigation', (WidgetTester tester) async {
@@ -128,7 +128,7 @@ void main() {
 
         if (style?.color != null) {
           // Verify text color is not transparent
-          expect(style!.color!.opacity, greaterThan(0.5));
+          expect(style!.color!.a, greaterThan(0.5));
         }
       }
     });
@@ -256,7 +256,7 @@ void main() {
 
         // Verify buttons have proper semantic information
         expect(semantics, isNotNull);
-        expect(semantics.hasFlag(SemanticsFlag.isButton), isTrue);
+        expect(semantics.getSemanticsData().hasFlag(SemanticsFlag.isButton), isTrue);
       }
     });
 
@@ -320,7 +320,7 @@ void main() {
       // Verify key accessibility features are present (if semantics are available)
       // Check for basic accessibility features - this may not always be true in tests
       // so we'll make it more lenient
-      expect(semantics.hasFlag(SemanticsFlag.hasEnabledState), isA<bool>());
+      expect(semantics.getSemanticsData().hasFlag(SemanticsFlag.hasEnabledState), isA<bool>());
     });
   });
 }

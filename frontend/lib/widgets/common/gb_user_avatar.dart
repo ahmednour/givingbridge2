@@ -27,7 +27,7 @@ class GBUserAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final initials = _getInitials(userName);
     final bgColor =
-        backgroundColor ?? DesignSystem.primaryBlue.withOpacity(0.1);
+        backgroundColor ?? DesignSystem.primaryBlue.withValues(alpha: 0.1);
     final txtColor = textColor ?? DesignSystem.primaryBlue;
     final fontSz = fontSize ?? (size * 0.4);
 

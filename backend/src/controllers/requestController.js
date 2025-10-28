@@ -7,6 +7,9 @@ const {
   ConflictError,
   ValidationError,
 } = require("../utils/errorHandler");
+const notificationService = require("../services/notificationService");
+const path = require("path");
+const fs = require("fs").promises;
 
 class RequestController {
   /**
@@ -17,12 +20,27 @@ class RequestController {
    * @returns {Promise<Object>} Paginated requests with metadata
    */
   static async getAllRequests(filters = {}, user, pagination = {}) {
-    const { donationId, status } = filters;
+    const { donationId, status, category, location, startDate, endDate } =
+      filters;
     const { page = 1, limit = 20 } = pagination;
+
+    // Build where clause
     const where = {};
 
+    // Basic filters
     if (donationId) where.donationId = donationId;
     if (status) where.status = status;
+
+    // Date range filter
+    if (startDate || endDate) {
+      where.createdAt = {};
+      if (startDate) {
+        where.createdAt[Op.gte] = new Date(startDate);
+      }
+      if (endDate) {
+        where.createdAt[Op.lte] = new Date(endDate);
+      }
+    }
 
     // Filter based on user role
     if (user.role === "donor") {
@@ -32,37 +50,52 @@ class RequestController {
     }
     // Admin can see all requests (no additional filter)
 
+    // Build include clause for related models
+    const include = [
+      {
+        model: Donation,
+        as: "donation",
+        attributes: [
+          "id",
+          "title",
+          "description",
+          "category",
+          "condition",
+          "location",
+        ],
+        // Add filters for donation-related fields
+        where: {},
+        required: false, // Use left join to avoid excluding requests without matching donations
+      },
+      {
+        model: User,
+        as: "donor",
+        attributes: ["id", "name", "email", "phone", "location"],
+      },
+      {
+        model: User,
+        as: "receiver",
+        attributes: ["id", "name", "email", "phone", "location"],
+      },
+    ];
+
+    // Add donation filters to the include clause
+    if (category) {
+      include[0].where.category = category;
+    }
+
+    if (location) {
+      include[0].where.location = { [Op.like]: `%${location}%` };
+    }
+
     const offset = (page - 1) * limit;
 
     const { rows, count } = await Request.findAndCountAll({
       where,
+      include,
       order: [["createdAt", "DESC"]],
       limit: parseInt(limit),
       offset: parseInt(offset),
-      include: [
-        {
-          model: Donation,
-          as: "donation",
-          attributes: [
-            "id",
-            "title",
-            "description",
-            "category",
-            "condition",
-            "location",
-          ],
-        },
-        {
-          model: User,
-          as: "donor",
-          attributes: ["id", "name", "email", "phone", "location"],
-        },
-        {
-          model: User,
-          as: "receiver",
-          attributes: ["id", "name", "email", "phone", "location"],
-        },
-      ],
     });
 
     return {
@@ -193,9 +226,10 @@ class RequestController {
    * Create new request
    * @param {Object} requestData - Request data
    * @param {number} receiverId - Receiver ID
+   * @param {Object} attachment - Optional attachment file
    * @returns {Promise<Object>} Created request
    */
-  static async createRequest(requestData, receiverId) {
+  static async createRequest(requestData, receiverId, attachment = null) {
     const { donationId, message } = requestData;
 
     // Get receiver info
@@ -245,7 +279,8 @@ class RequestController {
       throw new NotFoundError("Donor not found");
     }
 
-    return await Request.create({
+    // Prepare request data
+    const requestDataForCreation = {
       donationId: parseInt(donationId),
       donorId: donor.id,
       donorName: donor.name,
@@ -255,7 +290,16 @@ class RequestController {
       receiverPhone: receiver.phone || null,
       message: message || null,
       status: "pending",
-    });
+    };
+
+    // Add attachment data if provided
+    if (attachment) {
+      requestDataForCreation.attachmentUrl = `/uploads/request-images/${attachment.filename}`;
+      requestDataForCreation.attachmentName = attachment.originalname;
+      requestDataForCreation.attachmentSize = attachment.size;
+    }
+
+    return await Request.create(requestDataForCreation);
   }
 
   /**
@@ -324,6 +368,110 @@ class RequestController {
         await donation.update({ status: "completed" });
       }
     }
+
+    // Send notification when request is approved
+    if (status === "approved") {
+      const receiver = await User.findByPk(request.receiverId);
+      const donor = await User.findByPk(request.donorId);
+
+      if (receiver && donor) {
+        await notificationService.sendRequestApproval(receiver, donor, {
+          donationTitle: donation ? donation.title : "Donation",
+          message: responseMessage || "Your request has been approved",
+        });
+      }
+    }
+
+    return request;
+  }
+
+  /**
+   * Update request attachment
+   * @param {number} id - Request ID
+   * @param {Object} user - Current user
+   * @param {Object} attachment - Attachment file
+   * @returns {Promise<Object>} Updated request
+   */
+  static async updateRequestAttachment(id, user, attachment) {
+    const request = await Request.findByPk(id);
+
+    if (!request) {
+      throw new NotFoundError("Request not found");
+    }
+
+    // Check permissions - only receiver can update their request attachment
+    if (request.receiverId !== user.id && user.role !== "admin") {
+      throw new ValidationError("Access denied");
+    }
+
+    // Delete existing attachment if it exists
+    if (request.attachmentUrl) {
+      try {
+        const filename = path.basename(request.attachmentUrl);
+        const filePath = path.join(
+          __dirname,
+          "../../uploads/request-images",
+          filename
+        );
+        await fs.access(filePath); // Check if file exists
+        await fs.unlink(filePath); // Delete the file
+      } catch (error) {
+        // File might not exist, continue silently
+        console.warn("Could not delete previous attachment:", error.message);
+      }
+    }
+
+    // Update request with new attachment
+    await request.update({
+      attachmentUrl: `/uploads/request-images/${attachment.filename}`,
+      attachmentName: attachment.originalname,
+      attachmentSize: attachment.size,
+    });
+
+    return request;
+  }
+
+  /**
+   * Delete request attachment
+   * @param {number} id - Request ID
+   * @param {Object} user - Current user
+   * @returns {Promise<Object>} Updated request
+   */
+  static async deleteRequestAttachment(id, user) {
+    const request = await Request.findByPk(id);
+
+    if (!request) {
+      throw new NotFoundError("Request not found");
+    }
+
+    // Check permissions - only receiver can delete their request attachment
+    if (request.receiverId !== user.id && user.role !== "admin") {
+      throw new ValidationError("Access denied");
+    }
+
+    // Delete attachment file if it exists
+    if (request.attachmentUrl) {
+      try {
+        const filename = path.basename(request.attachmentUrl);
+        const filePath = path.join(
+          __dirname,
+          "../../uploads/request-images",
+          filename
+        );
+        await fs.access(filePath); // Check if file exists
+        await fs.unlink(filePath); // Delete the file
+      } catch (error) {
+        // File might not exist, continue silently
+        console.warn("Could not delete attachment:", error.message);
+      }
+    }
+
+    // Clear attachment fields in database
+    await request.update({
+      attachmentUrl: null,
+      attachmentName: null,
+      attachmentSize: null,
+    });
 
     return request;
   }

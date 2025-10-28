@@ -2,9 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'dart:io';
 import '../repositories/message_repository.dart';
 import '../core/constants/api_constants.dart';
-import '../services/api_service.dart' hide ChatMessage;
+import '../services/api_service.dart';
 import '../models/chat_message.dart' as models;
-import '../models/chat_message.dart';
 
 /// Provider for managing message state and operations
 class MessageProvider extends ChangeNotifier {

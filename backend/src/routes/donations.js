@@ -1,27 +1,166 @@
 const express = require("express");
-const { body, validationResult } = require("express-validator");
 const router = express.Router();
 const DonationController = require("../controllers/donationController");
-const User = require("../models/User");
-const { loadUser, requireAdmin, asyncHandler } = require("../middleware");
+const {
+  authenticateToken,
+  requireAdmin,
+  asyncHandler,
+} = require("../middleware");
+const {
+  heavyOperationLimiter,
+  generalLimiter,
+} = require("../middleware/rateLimiting");
+const upload = require("../middleware/upload");
 
-// Import authentication middleware from auth routes
-const { authenticateToken } = require("./auth");
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     DonationRequest:
+ *       type: object
+ *       required:
+ *         - title
+ *         - description
+ *         - category
+ *         - location
+ *       properties:
+ *         title:
+ *           type: string
+ *           description: Donation title
+ *           example: Winter Clothes for Homeless
+ *         description:
+ *           type: string
+ *           description: Detailed donation description
+ *           example: Warm winter clothes including jackets, sweaters, and blankets
+ *         category:
+ *           type: string
+ *           description: Donation category
+ *           example: clothing
+ *         location:
+ *           type: string
+ *           description: Donation pickup location
+ *           example: New York, NY
+ *         condition:
+ *           type: string
+ *           enum: [new, like_new, good, fair]
+ *           description: Item condition
+ *           example: good
+ *         quantity:
+ *           type: integer
+ *           description: Number of items
+ *           example: 5
+ *         expiryDate:
+ *           type: string
+ *           format: date
+ *           description: Donation expiry date (for perishables)
+ *           example: 2024-12-31
+ */
 
-// Get all donations with optional filters and pagination
-router.get("/", async (req, res) => {
-  try {
-    const { category, location, available, page, limit } = req.query;
+/**
+ * @swagger
+ * /api/donations:
+ *   get:
+ *     summary: Get all donations
+ *     description: Retrieve a paginated list of donations with optional filtering
+ *     tags: [Donations]
+ *     security: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/PageParam'
+ *       - $ref: '#/components/parameters/LimitParam'
+ *       - name: category
+ *         in: query
+ *         description: Filter by donation category
+ *         required: false
+ *         schema:
+ *           type: string
+ *           example: clothing
+ *       - name: location
+ *         in: query
+ *         description: Filter by location
+ *         required: false
+ *         schema:
+ *           type: string
+ *           example: New York, NY
+ *       - name: available
+ *         in: query
+ *         description: Filter by availability status
+ *         required: false
+ *         schema:
+ *           type: boolean
+ *           example: true
+ *       - name: startDate
+ *         in: query
+ *         description: Filter donations created after this date
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: date
+ *           example: 2024-01-01
+ *       - name: endDate
+ *         in: query
+ *         description: Filter donations created before this date
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: date
+ *           example: 2024-12-31
+ *     responses:
+ *       200:
+ *         description: Donations retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Donations retrieved successfully
+ *                 donations:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Donation'
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     page:
+ *                       type: integer
+ *                       example: 1
+ *                     limit:
+ *                       type: integer
+ *                       example: 20
+ *                     total:
+ *                       type: integer
+ *                       example: 100
+ *                     totalPages:
+ *                       type: integer
+ *                       example: 5
+ *       429:
+ *         $ref: '#/components/responses/RateLimitError'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
+router.get(
+  "/",
+  generalLimiter, // Apply general rate limiting
+  asyncHandler(async (req, res) => {
+    const { category, location, available, startDate, endDate, page, limit } =
+      req.query;
+
+    const filters = {};
+    if (category) filters.category = category;
+    if (location) filters.location = location;
+    if (available !== undefined) filters.available = available;
+    if (startDate) filters.startDate = startDate;
+    if (endDate) filters.endDate = endDate;
+
+    const pagination = {
+      page: page || 1,
+      limit: limit || 20,
+    };
+
     const result = await DonationController.getAllDonations(
-      {
-        category,
-        location,
-        available,
-      },
-      {
-        page: page || 1,
-        limit: limit || 20,
-      }
+      filters,
+      pagination
     );
 
     res.json({
@@ -29,48 +168,127 @@ router.get("/", async (req, res) => {
       donations: result.donations,
       pagination: result.pagination,
     });
-  } catch (error) {
-    console.error("Get donations error:", error);
-    res.status(500).json({
-      message: "Failed to retrieve donations",
-      error: error.message,
-    });
-  }
-});
+  })
+);
 
-// Get donation by ID
-router.get("/:id", async (req, res) => {
-  try {
+// Get donation by ID (public endpoint with view count) with rate limiting
+router.get(
+  "/:id",
+  generalLimiter, // Apply general rate limiting
+  asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const donation = await DonationController.getDonationById(id);
+    const donation = await DonationController.getDonationByIdWithViewCount(id);
 
     if (!donation) {
-      return res.status(404).json({
-        message: "Donation not found",
-      });
+      return res.status(404).json({ message: "Donation not found" });
     }
 
     res.json({
       message: "Donation retrieved successfully",
       donation,
     });
-  } catch (error) {
-    console.error("Get donation error:", error);
-    res.status(500).json({
-      message: "Failed to retrieve donation",
-      error: error.message,
-    });
-  }
-});
+  })
+);
 
-// Get donations by donor (requires authentication)
+// Get social proof data for a donation with rate limiting
 router.get(
-  "/donor/my-donations",
-  authenticateToken,
+  "/:id/social-proof",
+  generalLimiter, // Apply general rate limiting
   asyncHandler(async (req, res) => {
-    const donations = await DonationController.getDonationsByDonor(
-      req.user.userId
+    const { id } = req.params;
+    const socialProof = await DonationController.getSocialProof(id);
+
+    res.json({
+      message: "Social proof data retrieved successfully",
+      data: socialProof,
+    });
+  })
+);
+
+// Create new donation (authenticated users only) with rate limiting
+router.post(
+  "/",
+  authenticateToken,
+  generalLimiter, // Apply general rate limiting
+  upload.single("image"),
+  asyncHandler(async (req, res) => {
+    const donationData = { ...req.body };
+
+    // Handle image upload
+    if (req.file) {
+      donationData.imageUrl = `/uploads/${req.file.filename}`;
+    }
+
+    const donation = await DonationController.createDonation(
+      donationData,
+      req.user.id
     );
+
+    res.status(201).json({
+      message: "Donation created successfully",
+      donation,
+    });
+  })
+);
+
+// Update donation (donor or admin only) with rate limiting
+router.put(
+  "/:id",
+  authenticateToken,
+  generalLimiter, // Apply general rate limiting
+  upload.single("image"),
+  asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const updateData = { ...req.body };
+
+    // Handle image upload
+    if (req.file) {
+      updateData.imageUrl = `/uploads/${req.file.filename}`;
+    }
+
+    try {
+      const donation = await DonationController.updateDonation(
+        id,
+        updateData,
+        req.user.id,
+        req.user.role
+      );
+
+      res.json({
+        message: "Donation updated successfully",
+        donation,
+      });
+    } catch (error) {
+      res.status(403).json({ message: error.message });
+    }
+  })
+);
+
+// Delete donation (donor or admin only) with rate limiting
+router.delete(
+  "/:id",
+  authenticateToken,
+  generalLimiter, // Apply general rate limiting
+  asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      await DonationController.deleteDonation(id, req.user.id, req.user.role);
+
+      res.json({ message: "Donation deleted successfully" });
+    } catch (error) {
+      res.status(403).json({ message: error.message });
+    }
+  })
+);
+
+// Get user's donations (authenticated users only) with rate limiting
+router.get(
+  "/user/my-donations",
+  authenticateToken,
+  generalLimiter, // Apply general rate limiting
+  asyncHandler(async (req, res) => {
+    const donations = await DonationController.getDonationsByDonor(req.user.id);
 
     res.json({
       message: "Your donations retrieved successfully",
@@ -80,149 +298,12 @@ router.get(
   })
 );
 
-// Create new donation (requires authentication)
-router.post(
-  "/",
-  [
-    authenticateToken,
-    body("title")
-      .trim()
-      .isLength({ min: 3 })
-      .withMessage("Title must be at least 3 characters"),
-    body("description")
-      .trim()
-      .isLength({ min: 10 })
-      .withMessage("Description must be at least 10 characters"),
-    body("category")
-      .isIn(["food", "clothes", "books", "electronics", "other"])
-      .withMessage("Invalid category"),
-    body("condition")
-      .isIn(["new", "like-new", "good", "fair"])
-      .withMessage("Invalid condition"),
-    body("location")
-      .trim()
-      .isLength({ min: 2 })
-      .withMessage("Location must be at least 2 characters"),
-  ],
-  async (req, res) => {
-    try {
-      // Check for validation errors
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({
-          message: "Validation failed",
-          errors: errors.array(),
-        });
-      }
-
-      const donation = await DonationController.createDonation(
-        req.body,
-        req.user.userId
-      );
-
-      res.status(201).json({
-        message: "Donation created successfully",
-        donation,
-      });
-    } catch (error) {
-      console.error("Create donation error:", error);
-      res.status(500).json({
-        message: "Failed to create donation",
-        error: error.message,
-      });
-    }
-  }
-);
-
-// Update donation (requires authentication and ownership)
-router.put(
-  "/:id",
-  [
-    authenticateToken,
-    body("title")
-      .optional()
-      .trim()
-      .isLength({ min: 3 })
-      .withMessage("Title must be at least 3 characters"),
-    body("description")
-      .optional()
-      .trim()
-      .isLength({ min: 10 })
-      .withMessage("Description must be at least 10 characters"),
-    body("category")
-      .optional()
-      .isIn(["food", "clothes", "books", "electronics", "other"])
-      .withMessage("Invalid category"),
-    body("condition")
-      .optional()
-      .isIn(["new", "like-new", "good", "fair"])
-      .withMessage("Invalid condition"),
-    body("location")
-      .optional()
-      .trim()
-      .isLength({ min: 2 })
-      .withMessage("Location must be at least 2 characters"),
-  ],
-  async (req, res) => {
-    try {
-      // Check for validation errors
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({
-          message: "Validation failed",
-          errors: errors.array(),
-        });
-      }
-
-      const { id } = req.params;
-      const user = await User.findByPk(req.user.userId);
-
-      const donation = await DonationController.updateDonation(
-        id,
-        req.body,
-        req.user.userId,
-        user.role
-      );
-
-      res.json({
-        message: "Donation updated successfully",
-        donation,
-      });
-    } catch (error) {
-      console.error("Update donation error:", error);
-      res.status(500).json({
-        message: "Failed to update donation",
-        error: error.message,
-      });
-    }
-  }
-);
-
-// Delete donation (requires authentication and ownership)
-router.delete("/:id", authenticateToken, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const user = await User.findByPk(req.user.userId);
-
-    await DonationController.deleteDonation(id, req.user.userId, user.role);
-
-    res.json({
-      message: "Donation deleted successfully",
-    });
-  } catch (error) {
-    console.error("Delete donation error:", error);
-    res.status(500).json({
-      message: "Failed to delete donation",
-      error: error.message,
-    });
-  }
-});
-
-// Get donation statistics (for admin dashboard)
+// Get donation statistics (admin only) with rate limiting
 router.get(
-  "/admin/stats",
+  "/stats",
   authenticateToken,
   requireAdmin,
+  heavyOperationLimiter, // Apply heavy operation rate limiting
   asyncHandler(async (req, res) => {
     const stats = await DonationController.getDonationStats();
 

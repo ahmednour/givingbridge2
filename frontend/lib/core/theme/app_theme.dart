@@ -54,7 +54,7 @@ class AppTheme {
   // Shadows
   static List<BoxShadow> shadowSM = [
     BoxShadow(
-      color: Colors.black.withOpacity(0.05),
+      color: Colors.black.withValues(alpha: 0.05),
       blurRadius: 2,
       offset: const Offset(0, 1),
     ),
@@ -62,7 +62,7 @@ class AppTheme {
 
   static List<BoxShadow> shadowMD = [
     BoxShadow(
-      color: Colors.black.withOpacity(0.1),
+      color: Colors.black.withValues(alpha: 0.1),
       blurRadius: 6,
       offset: const Offset(0, 4),
     ),
@@ -70,7 +70,7 @@ class AppTheme {
 
   static List<BoxShadow> shadowLG = [
     BoxShadow(
-      color: Colors.black.withOpacity(0.15),
+      color: Colors.black.withValues(alpha: 0.15),
       blurRadius: 10,
       offset: const Offset(0, 10),
     ),
@@ -220,9 +220,9 @@ class AppTheme {
   static MaterialColor _createMaterialColor(Color color) {
     List<double> strengths = <double>[.05];
     Map<int, Color> swatch = <int, Color>{};
-    final int r = color.red.toInt(),
-        g = color.green.toInt(),
-        b = color.blue.toInt();
+    final int r = color.r.toInt(),
+        g = color.g.toInt(),
+        b = color.b.toInt();
 
     for (int i = 1; i < 10; i++) {
       strengths.add(0.1 * i);
@@ -236,7 +236,7 @@ class AppTheme {
         1,
       );
     }
-    return MaterialColor(color.value, swatch);
+    return MaterialColor(color.value.toInt(), swatch);
   }
 
   // Dark Theme
@@ -312,7 +312,7 @@ class AppTheme {
         ),
         labelStyle: bodyMedium.copyWith(color: darkTextSecondaryColor),
         hintStyle:
-            bodyMedium.copyWith(color: darkTextSecondaryColor.withOpacity(0.6)),
+            bodyMedium.copyWith(color: darkTextSecondaryColor.withValues(alpha: 0.6)),
       ),
       colorScheme: ColorScheme.fromSwatch(
               primarySwatch: _createMaterialColor(primaryColor),

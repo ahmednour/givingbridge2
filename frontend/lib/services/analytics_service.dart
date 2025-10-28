@@ -462,4 +462,92 @@ class AnalyticsService {
       return ApiResponse.error('Network error: ${e.toString()}');
     }
   }
+
+  /// Get advanced analytics data
+  static Future<ApiResponse<Map<String, dynamic>>> getAdvancedAnalytics({
+    DateTime? startDate,
+    DateTime? endDate,
+    int topLimit = 10,
+    int activityLimit = 20,
+  }) async {
+    try {
+      final start = startDate ?? DateTime.now().subtract(const Duration(days: 30));
+      final end = endDate ?? DateTime.now();
+      final startDateStr = start.toIso8601String().split('T')[0];
+      final endDateStr = end.toIso8601String().split('T')[0];
+
+      final response = await http.get(
+        Uri.parse('$baseUrl/advanced?startDate=$startDateStr&endDate=$endDateStr&topLimit=$topLimit&activityLimit=$activityLimit'),
+        headers: await _getHeaders(),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return ApiResponse.success(data['data'] as Map<String, dynamic>);
+      } else {
+        final error = jsonDecode(response.body);
+        return ApiResponse.error(
+            error['message'] ?? 'Failed to get advanced analytics');
+      }
+    } catch (e) {
+      return ApiResponse.error('Network error: ${e.toString()}');
+    }
+  }
+
+  /// Get real-time analytics data
+  static Future<ApiResponse<Map<String, dynamic>>> getRealtimeAnalytics() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/realtime'),
+        headers: await _getHeaders(),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return ApiResponse.success(data['data'] as Map<String, dynamic>);
+      } else {
+        final error = jsonDecode(response.body);
+        return ApiResponse.error(
+            error['message'] ?? 'Failed to get realtime analytics');
+      }
+    } catch (e) {
+      return ApiResponse.error('Network error: ${e.toString()}');
+    }
+  }
+
+  /// Generate and download report
+  static Future<ApiResponse<dynamic>> generateReport({
+    DateTime? startDate,
+    DateTime? endDate,
+    String format = 'json',
+    String reportType = 'comprehensive',
+  }) async {
+    try {
+      final start = startDate ?? DateTime.now().subtract(const Duration(days: 30));
+      final end = endDate ?? DateTime.now();
+      final startDateStr = start.toIso8601String().split('T')[0];
+      final endDateStr = end.toIso8601String().split('T')[0];
+
+      final response = await http.get(
+        Uri.parse('$baseUrl/reports/generate?startDate=$startDateStr&endDate=$endDateStr&format=$format&reportType=$reportType'),
+        headers: await _getHeaders(),
+      );
+
+      if (response.statusCode == 200) {
+        if (format == 'json') {
+          final data = jsonDecode(response.body);
+          return ApiResponse.success(data['data']);
+        } else {
+          // For PDF/CSV, return the raw bytes
+          return ApiResponse.success(response.bodyBytes);
+        }
+      } else {
+        final error = jsonDecode(response.body);
+        return ApiResponse.error(
+            error['message'] ?? 'Failed to generate report');
+      }
+    } catch (e) {
+      return ApiResponse.error('Network error: ${e.toString()}');
+    }
+  }
 }

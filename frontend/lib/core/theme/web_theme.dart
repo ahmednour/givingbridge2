@@ -29,7 +29,7 @@ class WebTheme {
   /// Subtle shadow for cards (like Tailwind shadow-sm)
   static List<BoxShadow> get cardShadow => [
         BoxShadow(
-          color: Colors.black.withOpacity(0.03),
+          color: Colors.black.withValues(alpha: 0.03),
           blurRadius: 10,
           spreadRadius: 0,
           offset: const Offset(0, 1),
@@ -39,7 +39,7 @@ class WebTheme {
   /// Hover state shadow (like Tailwind shadow-md)
   static List<BoxShadow> get hoverShadow => [
         BoxShadow(
-          color: Colors.black.withOpacity(0.08),
+          color: Colors.black.withValues(alpha: 0.08),
           blurRadius: 20,
           spreadRadius: -2,
           offset: const Offset(0, 4),
@@ -49,7 +49,7 @@ class WebTheme {
   /// Elevated shadow for modals/dropdowns (like Tailwind shadow-xl)
   static List<BoxShadow> get elevatedShadow => [
         BoxShadow(
-          color: Colors.black.withOpacity(0.12),
+          color: Colors.black.withValues(alpha: 0.12),
           blurRadius: 40,
           spreadRadius: -4,
           offset: const Offset(0, 12),
@@ -98,7 +98,7 @@ class WebTheme {
   // ========== WEB COLORS ==========
 
   /// Background overlay for modals
-  static Color get modalOverlay => Colors.black.withOpacity(0.5);
+  static Color get modalOverlay => Colors.black.withValues(alpha: 0.5);
 
   /// Hover state backgrounds
   static Color get hoverBackground => DesignSystem.neutral100;
@@ -106,9 +106,9 @@ class WebTheme {
 
   /// Active/selected state
   static Color get activeBackground =>
-      DesignSystem.primaryBlue.withOpacity(0.08);
+      DesignSystem.primaryBlue.withValues(alpha: 0.08);
   static Color get activeBackgroundDark =>
-      DesignSystem.primaryBlue.withOpacity(0.16);
+      DesignSystem.primaryBlue.withValues(alpha: 0.16);
 
   // ========== NAVIGATION STYLES ==========
 
@@ -135,7 +135,7 @@ class WebTheme {
             ? activeBackgroundDark
             : activeBackground,
         border: Border.all(
-          color: DesignSystem.primaryBlue.withOpacity(0.3),
+          color: DesignSystem.primaryBlue.withValues(alpha: 0.3),
           width: 1,
         ),
       );
@@ -157,7 +157,7 @@ class WebTheme {
         color: DesignSystem.getSurfaceColor(context),
         borderRadius: BorderRadius.circular(DesignSystem.radiusL),
         border: Border.all(
-          color: DesignSystem.primaryBlue.withOpacity(0.3),
+          color: DesignSystem.primaryBlue.withValues(alpha: 0.3),
           width: 1,
         ),
         boxShadow: hoverShadow,

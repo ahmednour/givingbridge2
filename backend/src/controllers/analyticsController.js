@@ -148,8 +148,7 @@ class AnalyticsController {
       topDonors.map(async (donor) => {
         const ratings = await Rating.findAll({
           where: {
-            donorId: donor.donorId,
-            ratedBy: "receiver",
+            ratedUserId: donor.donorId,
           },
           attributes: [[fn("AVG", col("rating")), "avgRating"]],
           raw: true,
@@ -165,6 +164,160 @@ class AnalyticsController {
     );
 
     return donorsWithRatings;
+  }
+
+  /**
+   * Get top receivers (by request count)
+   */
+  static async getTopReceivers(limit = 10) {
+    const topReceivers = await Request.findAll({
+      attributes: [
+        "receiverId",
+        "receiverName",
+        [fn("COUNT", col("id")), "requestCount"],
+      ],
+      group: ["receiverId", "receiverName"],
+      order: [[fn("COUNT", col("id")), "DESC"]],
+      limit,
+      raw: true,
+    });
+
+    // Get average ratings for each receiver
+    const receiversWithRatings = await Promise.all(
+      topReceivers.map(async (receiver) => {
+        const ratings = await Rating.findAll({
+          where: {
+            ratedUserId: receiver.receiverId,
+          },
+          attributes: [[fn("AVG", col("rating")), "avgRating"]],
+          raw: true,
+        });
+
+        return {
+          ...receiver,
+          averageRating: ratings[0]?.avgRating
+            ? parseFloat(ratings[0].avgRating).toFixed(1)
+            : 0,
+        };
+      })
+    );
+
+    return receiversWithRatings;
+  }
+
+  /**
+   * Get geographic distribution of donations
+   */
+  static async getGeographicDistribution() {
+    const distribution = await Donation.findAll({
+      attributes: ["location", [fn("COUNT", col("id")), "count"]],
+      group: ["location"],
+      order: [[fn("COUNT", col("id")), "DESC"]],
+      raw: true,
+    });
+
+    return distribution;
+  }
+
+  /**
+   * Get request success rate statistics
+   */
+  static async getRequestSuccessRate() {
+    const totalRequests = await Request.count();
+    const approvedRequests = await Request.count({
+      where: { status: "approved" },
+    });
+    const completedRequests = await Request.count({
+      where: { status: "completed" },
+    });
+    const declinedRequests = await Request.count({
+      where: { status: "declined" },
+    });
+    const cancelledRequests = await Request.count({
+      where: { status: "cancelled" },
+    });
+    const pendingRequests = await Request.count({
+      where: { status: "pending" },
+    });
+
+    const successRate =
+      totalRequests > 0
+        ? ((completedRequests / totalRequests) * 100).toFixed(2)
+        : 0;
+
+    const approvalRate =
+      totalRequests > 0
+        ? (
+            ((approvedRequests + completedRequests) / totalRequests) *
+            100
+          ).toFixed(2)
+        : 0;
+
+    return {
+      total: totalRequests,
+      approved: approvedRequests,
+      completed: completedRequests,
+      declined: declinedRequests,
+      cancelled: cancelledRequests,
+      pending: pendingRequests,
+      successRate: parseFloat(successRate),
+      approvalRate: parseFloat(approvalRate),
+    };
+  }
+
+  /**
+   * Get comprehensive donation statistics over time
+   */
+  static async getDonationStatisticsOverTime(days = 30) {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+
+    // Get donations grouped by date
+    const donationsOverTime = await Donation.findAll({
+      attributes: [
+        [fn("DATE", col("createdAt")), "date"],
+        [fn("COUNT", col("id")), "totalDonations"],
+      ],
+      where: {
+        createdAt: {
+          [Op.gte]: startDate,
+        },
+      },
+      group: [fn("DATE", col("createdAt"))],
+      order: [[fn("DATE", col("createdAt")), "ASC"]],
+      raw: true,
+    });
+
+    // Get completed donations grouped by date
+    const completedDonationsOverTime = await Donation.findAll({
+      attributes: [
+        [fn("DATE", col("updatedAt")), "date"],
+        [fn("COUNT", col("id")), "completedDonations"],
+      ],
+      where: {
+        status: "completed",
+        updatedAt: {
+          [Op.gte]: startDate,
+        },
+      },
+      group: [fn("DATE", col("updatedAt"))],
+      order: [[fn("DATE", col("updatedAt")), "ASC"]],
+      raw: true,
+    });
+
+    // Merge the data
+    const mergedData = donationsOverTime.map((donation) => {
+      const completed = completedDonationsOverTime.find(
+        (c) => c.date === donation.date
+      );
+      return {
+        date: donation.date,
+        totalDonations: donation.totalDonations,
+        completedDonations: completed ? completed.completedDonations : 0,
+      };
+    });
+
+    return mergedData;
   }
 
   /**
@@ -232,6 +385,9 @@ class AnalyticsController {
     const categoryDist = await this.getCategoryDistribution();
     const statusDist = await this.getStatusDistribution();
     const topDonors = await this.getTopDonors(5);
+    const geographicDist = await this.getGeographicDistribution();
+    const requestSuccessRate = await this.getRequestSuccessRate();
+    const donationTrends = await this.getDonationStatisticsOverTime(30);
 
     // Calculate success rate
     const successRate =
@@ -252,8 +408,11 @@ class AnalyticsController {
       distributions: {
         categories: categoryDist,
         statuses: statusDist,
+        geographic: geographicDist,
       },
       topDonors,
+      requestSuccessRate,
+      donationTrends,
     };
   }
 }
