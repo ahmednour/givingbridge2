@@ -1153,6 +1153,88 @@ class ApiService {
       return ApiResponse.error('Network error: ${e.toString()}');
     }
   }
+
+  // Get blocked users
+  static Future<ApiResponse<List<User>>> getBlockedUsers() async {
+    try {
+      final token = await getToken();
+      final response = await http.get(
+        Uri.parse('${ApiConfig.baseUrl}/users/blocked'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final users = (data['users'] as List)
+            .map((user) => User.fromJson(user))
+            .toList();
+        return ApiResponse.success(users);
+      } else {
+        final error = json.decode(response.body);
+        return ApiResponse.error(error['message'] ?? 'Failed to get blocked users');
+      }
+    } catch (e) {
+      return ApiResponse.error('Network error: ${e.toString()}');
+    }
+  }
+
+  // Block user
+  static Future<ApiResponse<String>> blockUser(String userId, {String? reason}) async {
+    try {
+      final token = await getToken();
+      final response = await http.post(
+        Uri.parse('${ApiConfig.baseUrl}/users/$userId/block'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: reason != null ? json.encode({'reason': reason}) : null,
+      );
+
+      if (response.statusCode == 200) {
+        return ApiResponse.success('User blocked successfully');
+      } else {
+        final error = json.decode(response.body);
+        return ApiResponse.error(error['message'] ?? 'Failed to block user');
+      }
+    } catch (e) {
+      return ApiResponse.error('Network error: ${e.toString()}');
+    }
+  }
+
+  // Report user
+  static Future<ApiResponse<String>> reportUser({
+    required String userId,
+    required String reason,
+    String? description,
+  }) async {
+    try {
+      final token = await getToken();
+      final response = await http.post(
+        Uri.parse('${ApiConfig.baseUrl}/users/$userId/report'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'reason': reason,
+          'description': description,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return ApiResponse.success('User reported successfully');
+      } else {
+        final error = json.decode(response.body);
+        return ApiResponse.error(error['message'] ?? 'Failed to report user');
+      }
+    } catch (e) {
+      return ApiResponse.error('Network error: ${e.toString()}');
+    }
+  }
 }
 
 // Data models

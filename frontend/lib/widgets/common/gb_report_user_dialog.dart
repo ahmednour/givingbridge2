@@ -74,8 +74,8 @@ class _GBReportUserDialogState extends State<GBReportUserDialog> {
     setState(() => _isLoading = true);
 
     final response = await ApiService.reportUser(
-      userId: widget.userId,
-      reason: _selectedReason!,
+      userId: widget.userId.toString(),
+      reason: _selectedReason!.apiValue,
       description: _descriptionController.text.trim(),
     );
 

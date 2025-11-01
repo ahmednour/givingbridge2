@@ -50,7 +50,7 @@ class _GBBlockUserDialogState extends State<GBBlockUserDialog> {
     setState(() => _isLoading = true);
 
     final response = await ApiService.blockUser(
-      widget.userId,
+      widget.userId.toString(),
       reason: _reasonController.text.trim().isEmpty
           ? null
           : _reasonController.text.trim(),

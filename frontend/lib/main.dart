@@ -8,20 +8,15 @@ import 'providers/donation_provider.dart';
 import 'providers/request_provider.dart';
 import 'providers/message_provider.dart';
 import 'providers/notification_provider.dart';
-import 'services/navigation_service.dart';
-import 'services/error_handler.dart';
-import 'services/network_status_service.dart';
-import 'services/socket_service.dart';
-import 'core/routing/app_router.dart';
+import 'providers/locale_provider.dart';
+import 'core/routes/app_router.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/landing_screen.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Initialize global error handler
-  GlobalErrorHandler.initialize();
-
   runApp(const GivingBridgeApp());
 }
 
@@ -38,18 +33,27 @@ class GivingBridgeApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => RequestProvider()),
         ChangeNotifierProvider(create: (_) => MessageProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
-        ChangeNotifierProvider(
-            create: (_) => NetworkStatusService()..initialize()),
+        ChangeNotifierProvider(create: (_) => LocaleProvider()),
       ],
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, child) {
+      child: Consumer2<ThemeProvider, LocaleProvider>(
+        builder: (context, themeProvider, localeProvider, child) {
           return MaterialApp(
             title: 'Giving Bridge',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: themeProvider.themeMode,
-            navigatorKey: NavigationService.navigatorKey,
+            locale: localeProvider.locale,
+            supportedLocales: const [
+              Locale('en', ''), // English
+              Locale('ar', ''), // Arabic
+            ],
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
             onGenerateRoute: AppRouter.generateRoute,
             initialRoute: '/',
             home: const AuthWrapper(),
@@ -68,8 +72,6 @@ class AuthWrapper extends StatefulWidget {
 }
 
 class _AuthWrapperState extends State<AuthWrapper> {
-  bool _socketInitialized = false;
-
   @override
   void initState() {
     super.initState();
@@ -88,44 +90,12 @@ class _AuthWrapperState extends State<AuthWrapper> {
           return const LoadingScreen();
         }
 
-        // Initialize socket service and set authenticated user ID when user is authenticated
-        if (authProvider.isAuthenticated && !_socketInitialized) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            _initializeServices(context, authProvider);
-          });
-        }
-
         // Show appropriate screen based on auth state
         return authProvider.isAuthenticated
             ? const DashboardScreen()
             : const LandingScreen();
       },
     );
-  }
-
-  Future<void> _initializeServices(
-      BuildContext context, AuthProvider authProvider) async {
-    try {
-      // Set authenticated user ID in message provider
-      final messageProvider =
-          Provider.of<MessageProvider>(context, listen: false);
-      if (authProvider.user?.id != null) {
-        messageProvider
-            .setAuthenticatedUserId(authProvider.user!.id.toString());
-      }
-
-      // Initialize socket service
-      final socketService = SocketService();
-      await socketService.connect();
-
-
-
-      setState(() {
-        _socketInitialized = true;
-      });
-    } catch (e) {
-      debugPrint('Error initializing services: $e');
-    }
   }
 }
 
@@ -144,7 +114,7 @@ class LoadingScreen extends StatelessWidget {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withOpacity(0.1),
+                color: AppTheme.primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppTheme.radiusXL),
               ),
               child: const Icon(

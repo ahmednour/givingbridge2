@@ -61,9 +61,8 @@ class _AdminRequestsScreenState extends State<AdminRequestsScreen> {
   Future<void> _updateRequestStatus(Request request, String newStatus) async {
     try {
       final response = await ApiService.updateRequestStatus(
-        request.id.toString(),
-        newStatus,
-        null, // No response message for admin updates
+        requestId: request.id.toString(),
+        status: newStatus,
       );
 
       if (response.success) {

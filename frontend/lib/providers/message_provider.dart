@@ -475,7 +475,7 @@ class MessageProvider extends ChangeNotifier {
     try {
       final response = await ApiService.getBlockedUsers();
       if (response.success && response.data != null) {
-        _blockedUserIds = response.data!.map((bu) => bu.blockedId).toSet();
+        _blockedUserIds = response.data!.map((bu) => bu.id).toSet();
       }
     } catch (e) {
       debugPrint('Error loading blocked users: ${e.toString()}');

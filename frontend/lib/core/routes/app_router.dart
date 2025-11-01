@@ -3,6 +3,7 @@ import '../../screens/dashboard_screen.dart';
 import '../../screens/landing_screen.dart';
 import '../../screens/settings_screen.dart';
 import '../../screens/login_screen.dart';
+import '../../screens/register_screen.dart';
 
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -22,6 +23,12 @@ class AppRouter {
       case '/login':
         return MaterialPageRoute(
           builder: (_) => const LoginScreen(),
+          settings: settings,
+        );
+      
+      case '/register':
+        return MaterialPageRoute(
+          builder: (_) => const RegisterScreen(),
           settings: settings,
         );
       

@@ -25,7 +25,9 @@ abstract class BaseRepository {
       // Add CSRF token for authenticated requests
       try {
         final csrfToken = await CsrfService.getToken();
-        headers['X-CSRF-Token'] = csrfToken;
+        if (csrfToken != null) {
+          headers['X-CSRF-Token'] = csrfToken;
+        }
       } catch (e) {
         print('⚠️ Warning: Could not get CSRF token: $e');
         // Continue without CSRF token - server will reject if required
@@ -78,7 +80,9 @@ abstract class BaseRepository {
       // Add CSRF token for authenticated requests
       try {
         final csrfToken = await CsrfService.getToken();
-        request.headers['X-CSRF-Token'] = csrfToken;
+        if (csrfToken != null) {
+          request.headers['X-CSRF-Token'] = csrfToken;
+        }
       } catch (e) {
         print('⚠️ Warning: Could not get CSRF token: $e');
         // Continue without CSRF token - server will reject if required
@@ -138,7 +142,9 @@ abstract class BaseRepository {
       // Add CSRF token for authenticated requests
       try {
         final csrfToken = await CsrfService.getToken();
-        request.headers['X-CSRF-Token'] = csrfToken;
+        if (csrfToken != null) {
+          request.headers['X-CSRF-Token'] = csrfToken;
+        }
       } catch (e) {
         print('⚠️ Warning: Could not get CSRF token: $e');
         // Continue without CSRF token - server will reject if required

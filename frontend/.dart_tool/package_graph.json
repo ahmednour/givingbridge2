@@ -11,6 +11,7 @@
         "connectivity_plus",
         "flutter",
         "flutter_animate",
+        "flutter_localizations",
         "go_router",
         "google_fonts",
         "hovering",
@@ -18,11 +19,13 @@
         "http_parser",
         "image",
         "image_picker",
+        "intl",
         "mime",
         "path",
         "path_provider",
         "provider",
-        "shared_preferences"
+        "shared_preferences",
+        "socket_io_client"
       ],
       "devDependencies": [
         "build_runner",
@@ -119,6 +122,15 @@
         "stream_channel",
         "test_api",
         "vector_math"
+      ]
+    },
+    {
+      "name": "socket_io_client",
+      "version": "2.0.3+1",
+      "dependencies": [
+        "js",
+        "logging",
+        "socket_io_common"
       ]
     },
     {
@@ -265,6 +277,24 @@
         "http_parser",
         "meta",
         "web"
+      ]
+    },
+    {
+      "name": "flutter_localizations",
+      "version": "0.0.0",
+      "dependencies": [
+        "flutter",
+        "intl",
+        "path"
+      ]
+    },
+    {
+      "name": "intl",
+      "version": "0.20.2",
+      "dependencies": [
+        "clock",
+        "meta",
+        "path"
       ]
     },
     {
@@ -646,6 +676,20 @@
       ]
     },
     {
+      "name": "socket_io_common",
+      "version": "2.0.3",
+      "dependencies": [
+        "logging"
+      ]
+    },
+    {
+      "name": "js",
+      "version": "0.6.7",
+      "dependencies": [
+        "meta"
+      ]
+    },
+    {
       "name": "flutter_web_plugins",
       "version": "0.0.0",
       "dependencies": [
@@ -706,13 +750,6 @@
       "version": "0.5.0",
       "dependencies": [
         "dbus"
-      ]
-    },
-    {
-      "name": "js",
-      "version": "0.6.7",
-      "dependencies": [
-        "meta"
       ]
     },
     {
