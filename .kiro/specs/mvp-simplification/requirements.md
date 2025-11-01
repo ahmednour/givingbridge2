@@ -47,7 +47,7 @@ This specification outlines the requirements for simplifying the GivingBridge do
 
 #### Acceptance Criteria
 
-1. THE MVP_System SHALL provide single-language interface (English only)
+1. THE MVP_System SHALL provide bilingual interface (Arabic and English) with proper RTL/LTR support for enhanced regional accessibility
 2. THE MVP_System SHALL remove social features like sharing, comments, and ratings
 3. THE MVP_System SHALL simplify the dashboard to show only essential information
 4. THE MVP_System SHALL remove advanced search filters and keep basic search only

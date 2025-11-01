@@ -27,6 +27,11 @@ class DesignSystem {
   static const Color warning = Color(0xFFF59E0B);
   static const Color error = Color(0xFFEF4444);
   static const Color info = Color(0xFF3B82F6);
+  
+  /// Alias colors for backward compatibility
+  static const Color successGreen = success;
+  static const Color warningOrange = warning;
+  static const Color infoBlue = info;
 
   /// Neutral Colors - Light Mode
   static const Color neutral50 = Color(0xFFFAFAFA);
@@ -199,7 +204,7 @@ class DesignSystem {
         fontSize: 57,
         fontWeight: FontWeight.w700,
         letterSpacing: -0.25,
-        color: _getTextColor(context),
+        color: getTextColor(context),
         height: 1.12,
       );
 
@@ -207,7 +212,7 @@ class DesignSystem {
         fontSize: 45,
         fontWeight: FontWeight.w700,
         letterSpacing: 0,
-        color: _getTextColor(context),
+        color: getTextColor(context),
         height: 1.16,
       );
 
@@ -215,7 +220,7 @@ class DesignSystem {
         fontSize: 36,
         fontWeight: FontWeight.w600,
         letterSpacing: 0,
-        color: _getTextColor(context),
+        color: getTextColor(context),
         height: 1.22,
       );
 
@@ -224,7 +229,7 @@ class DesignSystem {
         fontSize: 32,
         fontWeight: FontWeight.w600,
         letterSpacing: 0,
-        color: _getTextColor(context),
+        color: getTextColor(context),
         height: 1.25,
       );
 
@@ -232,7 +237,7 @@ class DesignSystem {
         fontSize: 28,
         fontWeight: FontWeight.w600,
         letterSpacing: 0,
-        color: _getTextColor(context),
+        color: getTextColor(context),
         height: 1.29,
       );
 
@@ -240,7 +245,7 @@ class DesignSystem {
         fontSize: 24,
         fontWeight: FontWeight.w600,
         letterSpacing: 0,
-        color: _getTextColor(context),
+        color: getTextColor(context),
         height: 1.33,
       );
 
@@ -249,7 +254,7 @@ class DesignSystem {
         fontSize: 22,
         fontWeight: FontWeight.w500,
         letterSpacing: 0,
-        color: _getTextColor(context),
+        color: getTextColor(context),
         height: 1.27,
       );
 
@@ -257,7 +262,7 @@ class DesignSystem {
         fontSize: 16,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.15,
-        color: _getTextColor(context),
+        color: getTextColor(context),
         height: 1.5,
       );
 
@@ -265,7 +270,7 @@ class DesignSystem {
         fontSize: 14,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.1,
-        color: _getTextColor(context),
+        color: getTextColor(context),
         height: 1.43,
       );
 
@@ -274,7 +279,7 @@ class DesignSystem {
         fontSize: 16,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.5,
-        color: _getTextColor(context),
+        color: getTextColor(context),
         height: 1.5,
       );
 
@@ -282,7 +287,7 @@ class DesignSystem {
         fontSize: 14,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.25,
-        color: _getTextColor(context),
+        color: getTextColor(context),
         height: 1.43,
       );
 
@@ -299,7 +304,7 @@ class DesignSystem {
         fontSize: 14,
         fontWeight: FontWeight.w500,
         letterSpacing: 0.1,
-        color: _getTextColor(context),
+        color: getTextColor(context),
         height: 1.43,
       );
 
@@ -307,7 +312,7 @@ class DesignSystem {
         fontSize: 12,
         fontWeight: FontWeight.w500,
         letterSpacing: 0.5,
-        color: _getTextColor(context),
+        color: getTextColor(context),
         height: 1.33,
       );
 
@@ -367,7 +372,7 @@ class DesignSystem {
 
   // ========== HELPER METHODS ==========
 
-  static Color _getTextColor(BuildContext context) {
+  static Color getTextColor(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark
         ? textPrimaryDark
         : textPrimary;
