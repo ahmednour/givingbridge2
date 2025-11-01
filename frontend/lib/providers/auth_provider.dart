@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import '../services/api_service.dart';
 import '../models/user.dart';
-import '../services/firebase_notification_service.dart';
+
 
 enum AuthState { loading, authenticated, unauthenticated, error }
 
@@ -66,26 +66,8 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> _setupNotifications() async {
-    final fcmService = FirebaseNotificationService();
-    final token = fcmService.fcmToken;
-
-    if (token != null) {
-      // Send token to backend
-      try {
-        await ApiService.updateFCMToken(token);
-
-        // Subscribe to topics
-        await fcmService.subscribeToRoleTopics(
-            _user!.role, _user!.id.toString());
-      } catch (e) {
-        debugPrint('Error setting up notifications: $e');
-      }
-    }
-
-    // Listen for token refresh
-    fcmService.tokenStream.listen((newToken) async {
-      await ApiService.updateFCMToken(newToken);
-    });
+    // Basic notification setup - Firebase push notifications removed for MVP
+    // Only in-app notifications for messages will be supported
   }
 
   // Register

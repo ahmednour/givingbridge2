@@ -209,35 +209,7 @@ class DonationController {
     };
   }
 
-  /**
-   * Get social proof data for a donation
-   * @param {number} donationId - Donation ID
-   * @returns {Promise<Object>} Social proof data
-   */
-  static async getSocialProof(donationId) {
-    const donation = await Donation.findByPk(donationId);
-    if (!donation) {
-      throw new Error("Donation not found");
-    }
 
-    // Get number of requests for this donation
-    const requestCount = await require("../models/Request").count({
-      where: { donationId },
-    });
-
-    // Get number of completed requests (representing donors who received the donation)
-    const completedRequestCount = await require("../models/Request").count({
-      where: { donationId, status: "completed" },
-    });
-
-    return {
-      views: donation.viewCount,
-      shares: donation.shareCount,
-      comments: donation.commentCount,
-      requests: requestCount,
-      donors: completedRequestCount,
-    };
-  }
 }
 
 module.exports = DonationController;

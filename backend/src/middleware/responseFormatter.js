@@ -1,9 +1,9 @@
-const { CURRENT_VERSION } = require('./apiVersioning');
-
 /**
  * Response Formatter Middleware
  * Standardizes API response format across all endpoints
  */
+
+const CURRENT_VERSION = "1.0.0";
 
 /**
  * Standard API response format

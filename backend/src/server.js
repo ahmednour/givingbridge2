@@ -9,7 +9,7 @@ require("dotenv").config();
 
 // Import configuration and utilities
 let config, sequelize, testConnection, MigrationRunner, errorHandler, notFound, models;
-let pushNotificationService, notificationService;
+let notificationService;
 
 try {
   // Load configuration with proper error handling
@@ -30,7 +30,6 @@ try {
   models = require("./models");
   
   // Load services with error handling
-  pushNotificationService = require("./services/pushNotificationService");
   notificationService = require("./services/notificationService");
   
   console.log("✅ All modules loaded successfully");
@@ -72,14 +71,12 @@ const { generalRateLimit, addRateLimitHeaders } = require("./middleware/rateLimi
 
 // Import security middleware
 const cookieParser = require('cookie-parser');
-const { csrfProtection, csrfErrorHandler, getCsrfToken } = require('./middleware/csrf');
 const { sanitizeInput } = require('./middleware/sanitization');
 
 // Import Swagger configuration
 const { specs, swaggerUi, swaggerOptions } = require("./config/swagger");
 
-// Import API versioning and response formatting
-const { apiVersioning, backwardCompatibility, getVersionInfo } = require("./middleware/apiVersioning");
+// Import response formatting
 const { responseFormatter, addResponseHeaders, requestTiming } = require("./middleware/responseFormatter");
 
 // Request timing middleware
@@ -95,9 +92,7 @@ app.use(compressionMiddleware);
 app.use(helmet(config.security.helmet));
 app.use(cors(config.cors));
 
-// API versioning middleware
-app.use('/api', apiVersioning);
-app.use('/api', backwardCompatibility);
+// API middleware
 
 // Response formatting middleware
 app.use(responseFormatter);
@@ -124,7 +119,6 @@ app.use(express.urlencoded({ extended: true }));
 // Security middleware - MUST be after body parsing
 app.use(cookieParser());
 app.use(sanitizeInput);
-app.use('/api', csrfProtection); // CSRF protection with smart route skipping
 
 // Serve static files (avatars)
 app.use("/uploads", express.static("uploads"));
@@ -257,11 +251,14 @@ app.get("/", (req, res) => {
   });
 });
 
-// API version info endpoint
-app.get("/api/version", getVersionInfo);
-
-// CSRF token endpoint
-app.get("/api/csrf-token", getCsrfToken);
+// API info endpoint
+app.get("/api/version", (req, res) => {
+  res.json({
+    version: "1.0.0",
+    name: "GivingBridge API",
+    timestamp: new Date().toISOString()
+  });
+});
 
 // Health check
 app.get("/health", async (req, res) => {
@@ -300,10 +297,10 @@ app.get("/health", async (req, res) => {
 
   // Check notification services
   try {
-    if (notificationService && pushNotificationService) {
+    if (notificationService) {
       healthStatus.services.notifications = "available";
     } else {
-      healthStatus.services.notifications = "partial";
+      healthStatus.services.notifications = "unavailable";
     }
   } catch (error) {
     healthStatus.services.notifications = "unavailable";
@@ -318,21 +315,10 @@ app.use("/api/users", require("./routes/users"));
 app.use("/api/donations", require("./routes/donations"));
 app.use("/api/requests", require("./routes/requests"));
 app.use("/api/request-updates", require("./routes/requestUpdates"));
-app.use("/api/comments", require("./routes/comments"));
-app.use("/api/shares", require("./routes/shares"));
-app.use("/api/verification", require("./routes/verification"));
 app.use("/api/messages", require("./routes/messages"));
 app.use("/api/notifications", require("./routes/notifications"));
-app.use("/api/ratings", require("./routes/ratings"));
-app.use("/api/analytics", require("./routes/analytics"));
-app.use("/api/activity", require("./routes/activity"));
 app.use("/api/search", require("./routes/search"));
 app.use("/api/donation-history", require("./routes/donationHistory"));
-app.use("/api/disaster-recovery", require("./routes/disaster-recovery"));
-app.use(
-  "/api/notification-preferences",
-  require("./routes/notificationPreferenceRoutes")
-);
 
 // Serve static files for receipts
 app.use("/receipts", express.static("receipts"));
@@ -350,7 +336,6 @@ if (io) {
 
 // Error handling middleware (must be after routes)
 app.use(logger.errorLogger()); // Log errors before handling them
-app.use(csrfErrorHandler); // Handle CSRF errors
 app.use(notFound);
 app.use(errorHandler);
 
@@ -364,16 +349,7 @@ async function startServer() {
   // Initialize services with error handling
   let servicesInitialized = 0;
   
-  // Initialize push notifications
-  try {
-    if (pushNotificationService) {
-      pushNotificationService.initialize();
-      console.log("✅ Push notification service initialized");
-      servicesInitialized++;
-    }
-  } catch (error) {
-    console.error("⚠️ Failed to initialize push notification service:", error.message);
-  }
+  // Push notification service removed as part of MVP simplification
 
   // Initialize notification service (email + push + in-app) - remove duplicate
   try {

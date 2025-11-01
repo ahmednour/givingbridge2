@@ -13,17 +13,12 @@ const sequelize = new Sequelize(
   }
 );
 
-// List of migrations to run in order
+// List of migrations to run in order (simplified for MVP)
 const migrations = [
-  { file: "006_create_notifications_table", name: "notifications" },
-  { file: "007_create_ratings_table", name: "ratings" },
-  { file: "008_create_blocked_users_table", name: "blocked_users" },
-  { file: "009_create_user_reports_table", name: "user_reports" },
-  { file: "011_add_archived_to_messages", name: "archived column in messages" },
-  {
-    file: "012_create_notification_preferences_table",
-    name: "notification_preferences",
-  },
+  { file: "030_simplify_users_table", name: "simplify users table" },
+  { file: "031_simplify_donations_table", name: "simplify donations table" },
+  { file: "032_simplify_requests_table", name: "simplify requests table" },
+  { file: "033_simplify_messages_table", name: "simplify messages table" },
 ];
 
 async function runAllMigrations() {

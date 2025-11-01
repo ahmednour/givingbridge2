@@ -3,7 +3,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import '../core/theme/design_system.dart';
 import '../widgets/common/gb_button.dart';
-import '../widgets/common/gb_review_dialog.dart';
 import '../widgets/common/gb_timeline.dart';
 import '../widgets/common/gb_status_badge.dart';
 import '../widgets/common/gb_filter_chips.dart';
@@ -14,7 +13,6 @@ import '../widgets/rtl/directional_container.dart';
 import '../widgets/rtl/directional_app_bar.dart';
 import '../services/rtl_layout_service.dart';
 import '../services/api_service.dart';
-import '../providers/rating_provider.dart';
 import '../providers/locale_provider.dart';
 import '../l10n/app_localizations.dart';
 
@@ -33,7 +31,6 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
   bool _isLoading = true;
   String _selectedFilter = 'all';
   String? _expandedRequestId;
-  late RatingProvider _ratingProvider;
 
   List<GBFilterOption<String>> _getFilters(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -53,7 +50,6 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
   @override
   void initState() {
     super.initState();
-    _ratingProvider = Provider.of<RatingProvider>(context, listen: false);
     _loadRequests();
   }
 
@@ -65,36 +61,8 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
     try {
       final response = await ApiService.getMyRequests();
       if (response.success && response.data != null) {
-        // Check if each request has been rated
-        final updatedRequests = <DonationRequest>[];
-        for (final request in response.data!) {
-          // Check if request has been rated
-          await _ratingProvider.loadRequestRating(request.id);
-          final isRated = _ratingProvider.getRequestRating(request.id) != null;
-
-          updatedRequests.add(
-            DonationRequest(
-              id: request.id,
-              donationId: request.donationId,
-              donorId: request.donorId,
-              donorName: request.donorName,
-              receiverId: request.receiverId,
-              receiverName: request.receiverName,
-              receiverEmail: request.receiverEmail,
-              receiverPhone: request.receiverPhone,
-              message: request.message,
-              status: request.status,
-              responseMessage: request.responseMessage,
-              createdAt: request.createdAt,
-              updatedAt: request.updatedAt,
-              respondedAt: request.respondedAt,
-              isRated: isRated,
-            ),
-          );
-        }
-
         setState(() {
-          _requests = updatedRequests;
+          _requests = response.data!;
         });
       } else {
         final l10n = AppLocalizations.of(context)!;
@@ -236,53 +204,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
     }
   }
 
-  Future<void> _rateDonor(DonationRequest request) async {
-    final result = await GBReviewDialog.show(
-      context: context,
-      title: 'Rate Donor',
-      subtitle: 'Share your experience with this donation',
-      revieweeName: request.donorName,
-      requireComment: true,
-      minCommentLength: 10,
-      maxCommentLength: 500,
-      onSubmit: (rating, comment) async {
-        // Submit rating using the rating provider
-        await _ratingProvider.submitRating(
-          requestId: request.id,
-          rating: rating.toInt(),
-          feedback: comment,
-        );
-      },
-    );
 
-    if (result == true && mounted) {
-      _showSuccessSnackbar('Thank you for your feedback!');
-      // Update the request to mark as rated
-      setState(() {
-        _requests = _requests
-            .map((r) => r.id == request.id
-                ? DonationRequest(
-                    id: r.id,
-                    donationId: r.donationId,
-                    donorId: r.donorId,
-                    donorName: r.donorName,
-                    receiverId: r.receiverId,
-                    receiverName: r.receiverName,
-                    receiverEmail: r.receiverEmail,
-                    receiverPhone: r.receiverPhone,
-                    message: r.message,
-                    status: r.status,
-                    responseMessage: r.responseMessage,
-                    createdAt: r.createdAt,
-                    updatedAt: r.updatedAt,
-                    respondedAt: r.respondedAt,
-                    isRated: true,
-                  )
-                : r)
-            .toList();
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -582,27 +504,14 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
                     ),
                   ),
                 ] else if (request.isCompleted) ...[
-                  if (request.isRated) ...[
-                    Expanded(
-                      child: GBButton(
-                        text: 'Rated',
-                        onPressed: null,
-                        variant: GBButtonVariant.outline,
-                        size: GBButtonSize.small,
-                      ),
+                  Expanded(
+                    child: GBButton(
+                      text: 'Completed',
+                      onPressed: null,
+                      variant: GBButtonVariant.outline,
+                      size: GBButtonSize.small,
                     ),
-                  ] else ...[
-                    Expanded(
-                      child: GBButton(
-                        text: 'Rate Donor',
-                        leftIcon: const Icon(Icons.star,
-                            size: 18, color: Colors.white),
-                        onPressed: () => _rateDonor(request),
-                        variant: GBButtonVariant.primary,
-                        size: GBButtonSize.small,
-                      ),
-                    ),
-                  ],
+                  ),
                 ] else ...[
                   const Expanded(
                     child: SizedBox(), // Empty space for alignment

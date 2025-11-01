@@ -1,9 +1,6 @@
 const jwt = require("jsonwebtoken");
 const Message = require("./models/Message");
 const User = require("./models/User");
-const Notification = require("./models/Notification");
-const NotificationController = require("./controllers/notificationController");
-const pushNotificationService = require("./services/pushNotificationService");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
@@ -110,52 +107,8 @@ module.exports = (io) => {
           count: unreadCount,
         });
 
-        // Create notification for receiver
-        try {
-          const notification = await NotificationController.notifyNewMessage(
-            parseInt(receiverId),
-            sender.name,
-            message.id
-          );
-
-          // Send notification via socket if user is online
-          io.to(`user_${receiverId}`).emit("new_notification", {
-            id: notification.id,
-            type: notification.type,
-            title: notification.title,
-            message: notification.message,
-            isRead: notification.isRead,
-            relatedId: notification.relatedId,
-            relatedType: notification.relatedType,
-            createdAt: notification.createdAt,
-          });
-
-          // Update unread notification count
-          const unreadNotifCount = await Notification.count({
-            where: {
-              userId: parseInt(receiverId),
-              isRead: false,
-            },
-          });
-
-          io.to(`user_${receiverId}`).emit("unread_notification_count", {
-            count: unreadNotifCount,
-          });
-
-          // Send push notification if user is offline or on different device
-          const isReceiverOnline = connectedUsers.has(parseInt(receiverId));
-          if (pushNotificationService.isInitialized()) {
-            await pushNotificationService.notifyNewMessage(
-              receiver,
-              sender.name,
-              content.substring(0, 100)
-            );
-            console.log(`📩 Push notification sent to ${receiver.name}`);
-          }
-        } catch (notifError) {
-          console.error("Error creating message notification:", notifError);
-          // Don't fail the message send if notification fails
-        }
+        // Simplified notification - just log for MVP
+        console.log(`📨 New message notification for user ${receiverId}`);
         console.log(`📨 Message sent from ${sender.name} to ${receiver.name}`);
       } catch (error) {
         console.error("Error sending message:", error);
@@ -258,32 +211,7 @@ module.exports = (io) => {
           messagesRead: affectedCount,
         });
 
-        // Mark related notifications as read
-        if (affectedCount > 0) {
-          await Notification.update(
-            { isRead: true },
-            {
-              where: {
-                userId: socket.userId,
-                type: "message",
-                relatedType: "message",
-                isRead: false,
-              },
-            }
-          );
-
-          // Update notification count
-          const unreadNotifCount = await Notification.count({
-            where: {
-              userId: socket.userId,
-              isRead: false,
-            },
-          });
-
-          socket.emit("unread_notification_count", {
-            count: unreadNotifCount,
-          });
-        }
+        // Simplified for MVP - no notification management needed
 
         console.log(
           `✅ Conversation with user ${otherUserId} marked as read (${affectedCount} messages)`
@@ -352,89 +280,7 @@ module.exports = (io) => {
       io.emit("user_offline", { userId: socket.userId });
     });
 
-    // Handle marking notification as read
-    socket.on("mark_notification_read", async (data) => {
-      try {
-        const { notificationId } = data;
-
-        const notification = await Notification.findByPk(notificationId);
-
-        if (!notification) {
-          socket.emit("error", { message: "Notification not found" });
-          return;
-        }
-
-        // Only owner can mark as read
-        if (notification.userId !== socket.userId) {
-          socket.emit("error", { message: "Unauthorized" });
-          return;
-        }
-
-        await notification.update({ isRead: true });
-
-        // Update unread notification count
-        const unreadNotifCount = await Notification.count({
-          where: {
-            userId: socket.userId,
-            isRead: false,
-          },
-        });
-
-        socket.emit("unread_notification_count", { count: unreadNotifCount });
-
-        console.log(`✅ Notification ${notificationId} marked as read`);
-      } catch (error) {
-        console.error("Error marking notification as read:", error);
-        socket.emit("error", {
-          message: "Failed to mark notification as read",
-        });
-      }
-    });
-
-    // Handle marking all notifications as read
-    socket.on("mark_all_notifications_read", async () => {
-      try {
-        await Notification.update(
-          { isRead: true },
-          {
-            where: {
-              userId: socket.userId,
-              isRead: false,
-            },
-          }
-        );
-
-        socket.emit("unread_notification_count", { count: 0 });
-
-        console.log(
-          `✅ All notifications marked as read for user ${socket.userId}`
-        );
-      } catch (error) {
-        console.error("Error marking all notifications as read:", error);
-        socket.emit("error", {
-          message: "Failed to mark all notifications as read",
-        });
-      }
-    });
-
-    // Handle getting unread notification count
-    socket.on("get_unread_notification_count", async () => {
-      try {
-        const unreadNotifCount = await Notification.count({
-          where: {
-            userId: socket.userId,
-            isRead: false,
-          },
-        });
-
-        socket.emit("unread_notification_count", { count: unreadNotifCount });
-      } catch (error) {
-        console.error("Error getting unread notification count:", error);
-        socket.emit("error", {
-          message: "Failed to get unread notification count",
-        });
-      }
-    });
+    // Notification handlers removed for MVP simplification
 
     // Handle errors
     socket.on("error", (error) => {
@@ -442,93 +288,5 @@ module.exports = (io) => {
     });
   });
 
-  // Expose helper function to send notifications
-  io.sendNotification = async (userId, notificationData) => {
-    try {
-      // Create notification in database
-      const notification = await Notification.create({
-        userId,
-        ...notificationData,
-      });
-
-      // Send to user if online
-      io.to(`user_${userId}`).emit("new_notification", {
-        id: notification.id,
-        type: notification.type,
-        title: notification.title,
-        message: notification.message,
-        isRead: notification.isRead,
-        relatedId: notification.relatedId,
-        relatedType: notification.relatedType,
-        metadata: notification.metadata,
-        createdAt: notification.createdAt,
-      });
-
-      // Update unread count
-      const unreadCount = await Notification.count({
-        where: {
-          userId,
-          isRead: false,
-        },
-      });
-
-      io.to(`user_${userId}`).emit("unread_notification_count", {
-        count: unreadCount,
-      });
-
-      // Send push notification
-      if (pushNotificationService.isInitialized()) {
-        try {
-          const user = await User.findByPk(userId);
-          if (user && user.fcmToken) {
-            await pushNotificationService.sendToDevice(
-              user.fcmToken,
-              {
-                title: notification.title,
-                body: notification.message,
-              },
-              {
-                type: notification.type,
-                relatedId: notification.relatedId?.toString() || "",
-                relatedType: notification.relatedType || "",
-                badge: unreadCount,
-              }
-            );
-            console.log(`📩 Push notification sent to user ${userId}`);
-          }
-        } catch (pushError) {
-          console.error("Error sending push notification:", pushError);
-          // Don't fail the notification if push fails
-        }
-      }
-
-      console.log(
-        `🔔 Notification sent to user ${userId}: ${notification.title}`
-      );
-      return notification;
-    } catch (error) {
-      console.error("Error sending notification:", error);
-      throw error;
-    }
-  };
-
-  // Expose helper function to broadcast system notifications
-  io.broadcastSystemNotification = async (notificationData) => {
-    try {
-      const users = await User.findAll({ attributes: ["id"] });
-
-      for (const user of users) {
-        await io.sendNotification(user.id, notificationData);
-      }
-
-      console.log(
-        `📢 System notification broadcasted to ${users.length} users`
-      );
-    } catch (error) {
-      console.error("Error broadcasting system notification:", error);
-      throw error;
-    }
-  };
-
-  console.log("🔌 Socket.IO handlers configured with notification support");
+  console.log("🔌 Socket.IO handlers configured for MVP");
 };

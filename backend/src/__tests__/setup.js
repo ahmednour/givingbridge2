@@ -46,17 +46,6 @@ afterEach(async () => {
     await testSequelize.query("SET FOREIGN_KEY_CHECKS = 0");
     
     const tableNames = [
-      "shares",
-      "comments", 
-      "request_updates",
-      "request_verification_documents",
-      "user_verification_documents",
-      "ratings",
-      "blocked_users",
-      "user_reports",
-      "activity_logs",
-      "notification_preferences",
-      "notifications",
       "messages",
       "requests",
       "donations",

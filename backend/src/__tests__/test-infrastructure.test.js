@@ -48,11 +48,7 @@ describe("Test Infrastructure", () => {
     expect(models.Donation).toBeDefined();
     expect(models.Request).toBeDefined();
     expect(models.Message).toBeDefined();
-    expect(models.UserVerificationDocument).toBeDefined();
-    expect(models.RequestVerificationDocument).toBeDefined();
-    expect(models.RequestUpdate).toBeDefined();
-    expect(models.Comment).toBeDefined();
-    expect(models.Share).toBeDefined();
+    // Advanced models removed for MVP simplification
   });
 
   it("should have proper model associations defined", () => {

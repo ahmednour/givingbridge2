@@ -58,10 +58,7 @@ const User = sequelize.define(
         len: [0, 500],
       },
     },
-    fcmToken: {
-      type: DataTypes.STRING(500),
-      allowNull: true,
-    },
+    // Keep basic email verification for security
     isEmailVerified: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -83,21 +80,6 @@ const User = sequelize.define(
       type: DataTypes.DATE,
       allowNull: true,
     },
-    // Verification fields
-    isVerified: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-    },
-    verificationLevel: {
-      type: DataTypes.ENUM("unverified", "basic", "verified", "premium"),
-      allowNull: false,
-      defaultValue: "unverified",
-    },
-    lastVerificationAttempt: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
   },
   {
     tableName: "users",
@@ -113,7 +95,7 @@ const User = sequelize.define(
   }
 );
 
-// Define associations in a separate function to avoid circular dependencies
+// Define associations in a separate function to avoid circular dependencies (simplified for MVP)
 User.associate = (models) => {
   User.hasMany(models.Donation, { foreignKey: "donorId", as: "donations" });
   User.hasMany(models.Request, {
@@ -124,30 +106,10 @@ User.associate = (models) => {
     foreignKey: "donorId",
     as: "donatedRequests",
   });
-  User.hasMany(models.UserVerificationDocument, {
-    foreignKey: "userId",
-    as: "verificationDocuments",
-  });
-  User.hasMany(models.UserVerificationDocument, {
-    foreignKey: "verifiedBy",
-    as: "verifiedDocuments",
-  });
-  User.hasMany(models.RequestVerificationDocument, {
-    foreignKey: "verifiedBy",
-    as: "verifiedRequestDocuments",
-  });
   
-  // Additional associations
+  // Core associations only
   User.hasMany(models.Message, { foreignKey: "senderId", as: "sentMessages" });
   User.hasMany(models.Message, { foreignKey: "receiverId", as: "receivedMessages" });
-  User.hasMany(models.Notification, { foreignKey: "userId", as: "notifications" });
-  User.hasMany(models.Rating, { foreignKey: "raterId", as: "givenRatings" });
-  User.hasMany(models.Rating, { foreignKey: "ratedUserId", as: "receivedRatings" });
-  User.hasMany(models.ActivityLog, { foreignKey: "userId", as: "activities" });
-  User.hasOne(models.NotificationPreference, { foreignKey: "userId", as: "notificationPreferences" });
-  User.hasMany(models.Comment, { foreignKey: "userId", as: "comments" });
-  User.hasMany(models.Share, { foreignKey: "userId", as: "shares" });
-  User.hasMany(models.RequestUpdate, { foreignKey: "userId", as: "requestUpdates" });
 };
 
 module.exports = User;

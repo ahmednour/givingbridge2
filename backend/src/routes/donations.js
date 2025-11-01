@@ -55,102 +55,12 @@ const imageUpload = require("../middleware/imageUpload");
  *           example: 2024-12-31
  */
 
-/**
- * @swagger
- * /api/donations:
- *   get:
- *     summary: Get all donations
- *     description: Retrieve a paginated list of donations with optional filtering
- *     tags: [Donations]
- *     security: []
- *     parameters:
- *       - $ref: '#/components/parameters/PageParam'
- *       - $ref: '#/components/parameters/LimitParam'
- *       - name: category
- *         in: query
- *         description: Filter by donation category
- *         required: false
- *         schema:
- *           type: string
- *           example: clothing
- *       - name: location
- *         in: query
- *         description: Filter by location
- *         required: false
- *         schema:
- *           type: string
- *           example: New York, NY
- *       - name: available
- *         in: query
- *         description: Filter by availability status
- *         required: false
- *         schema:
- *           type: boolean
- *           example: true
- *       - name: startDate
- *         in: query
- *         description: Filter donations created after this date
- *         required: false
- *         schema:
- *           type: string
- *           format: date
- *           example: 2024-01-01
- *       - name: endDate
- *         in: query
- *         description: Filter donations created before this date
- *         required: false
- *         schema:
- *           type: string
- *           format: date
- *           example: 2024-12-31
- *     responses:
- *       200:
- *         description: Donations retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Donations retrieved successfully
- *                 donations:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Donation'
- *                 pagination:
- *                   type: object
- *                   properties:
- *                     page:
- *                       type: integer
- *                       example: 1
- *                     limit:
- *                       type: integer
- *                       example: 20
- *                     total:
- *                       type: integer
- *                       example: 100
- *                     totalPages:
- *                       type: integer
- *                       example: 5
- *       429:
- *         $ref: '#/components/responses/RateLimitError'
- *       500:
- *         $ref: '#/components/responses/ServerError'
- */
+// Get all donations with basic pagination (simplified for MVP)
 router.get(
   "/",
-  generalRateLimit, // Apply general rate limiting
+  generalRateLimit,
   asyncHandler(async (req, res) => {
-    const { category, location, available, startDate, endDate, page, limit } =
-      req.query;
-
-    const filters = {};
-    if (category) filters.category = category;
-    if (location) filters.location = location;
-    if (available !== undefined) filters.available = available;
-    if (startDate) filters.startDate = startDate;
-    if (endDate) filters.endDate = endDate;
+    const { page, limit } = req.query;
 
     const pagination = {
       page: page || 1,
@@ -158,7 +68,7 @@ router.get(
     };
 
     const result = await DonationController.getAllDonations(
-      filters,
+      {},  // No filters for MVP
       pagination
     );
 
@@ -189,45 +99,20 @@ router.get(
   })
 );
 
-// Get social proof data for a donation with rate limiting
-router.get(
-  "/:id/social-proof",
-  generalRateLimit, // Apply general rate limiting
-  asyncHandler(async (req, res) => {
-    const { id } = req.params;
-    const socialProof = await DonationController.getSocialProof(id);
+// Social proof features removed for MVP
 
-    res.json({
-      message: "Social proof data retrieved successfully",
-      data: socialProof,
-    });
-  })
-);
-
-// Create new donation (authenticated users only) with rate limiting
+// Create new donation (simplified for MVP)
 router.post(
   "/",
   authenticateToken,
-  generalRateLimit, // Apply general rate limiting
+  generalRateLimit,
   imageUpload.single("image"),
-  imageUpload.optimizeUploadedImage, // Optimize uploaded image
   asyncHandler(async (req, res) => {
-    // Log request details for debugging
-    console.log("Create donation request:", {
-      userId: req.user?.id,
-      userEmail: req.user?.email,
-      hasFile: !!req.file,
-      body: req.body,
-    });
-
     const donationData = { ...req.body };
 
-    // Handle image upload with optimization info
+    // Handle basic image upload without optimization
     if (req.file) {
       donationData.imageUrl = `/uploads/images/${req.file.filename}`;
-      donationData.thumbnailUrl = `/uploads/images/${req.file.thumbnailFilename}`;
-      
-      console.log(`📸 Image optimized: ${req.file.savings}% size reduction`);
     }
 
     const donation = await DonationController.createDonation(

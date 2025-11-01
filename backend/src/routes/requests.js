@@ -16,32 +16,15 @@ const { authenticateToken } = require("./auth");
 // Import upload middleware
 const requestImageUpload = require("../middleware/requestImageUpload");
 
-// Get all requests with optional filters and pagination
+// Get all requests with basic pagination (simplified for MVP)
 router.get("/", authenticateToken, generalRateLimit, async (req, res) => {
   try {
-    const {
-      donationId,
-      status,
-      category,
-      location,
-      startDate,
-      endDate,
-      page,
-      limit,
-    } = req.query;
+    const { page, limit } = req.query;
     const user = await User.findByPk(req.user.userId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
-    const filters = {};
-    if (donationId) filters.donationId = donationId;
-    if (status) filters.status = status;
-    if (category) filters.category = category;
-    if (location) filters.location = location;
-    if (startDate) filters.startDate = startDate;
-    if (endDate) filters.endDate = endDate;
 
     const pagination = {
       page: page || 1,
@@ -51,7 +34,7 @@ router.get("/", authenticateToken, generalRateLimit, async (req, res) => {
     // Import RequestController dynamically to avoid circular dependency issues
     const RequestController = require("../controllers/requestController");
     const result = await RequestController.getAllRequests(
-      filters,
+      {},  // No filters for MVP
       user,
       pagination
     );

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+
 import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'providers/auth_provider.dart';
@@ -14,13 +14,12 @@ import 'providers/message_provider.dart';
 import 'providers/notification_provider.dart';
 import 'providers/filter_provider.dart';
 import 'providers/backend_notification_provider.dart';
-import 'providers/rating_provider.dart';
 import 'providers/analytics_provider.dart';
 import 'services/navigation_service.dart';
 import 'services/error_handler.dart';
 import 'services/offline_service.dart';
 import 'services/network_status_service.dart';
-import 'services/firebase_notification_service.dart';
+
 import 'services/socket_service.dart';
 import 'services/font_loading_service.dart';
 import 'screens/dashboard_screen.dart';
@@ -45,8 +44,7 @@ void main() async {
   // Initialize offline service
   await OfflineService().initialize();
 
-  // Initialize Firebase Notification Service
-  await FirebaseNotificationService().initialize();
+  // Firebase push notifications removed for MVP
 
   // Preload Arabic fonts
   await FontLoadingService.preloadArabicFonts();
@@ -70,7 +68,6 @@ class GivingBridgeApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
         ChangeNotifierProvider(create: (_) => FilterProvider()),
         ChangeNotifierProvider(create: (_) => BackendNotificationProvider()),
-        ChangeNotifierProvider(create: (_) => RatingProvider()),
         ChangeNotifierProvider(create: (_) => AnalyticsProvider()),
         ChangeNotifierProvider(
             create: (_) => NetworkStatusService()..initialize()),

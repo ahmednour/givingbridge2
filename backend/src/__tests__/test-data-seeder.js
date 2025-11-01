@@ -8,13 +8,6 @@ class TestDataSeeder {
       donations: [],
       requests: [],
       messages: [],
-      notifications: [],
-      ratings: [],
-      userVerificationDocuments: [],
-      requestVerificationDocuments: [],
-      requestUpdates: [],
-      comments: [],
-      shares: [],
     };
   }
 
@@ -154,25 +147,7 @@ class TestDataSeeder {
     return messages;
   }
 
-  async seedTestNotifications(users, count = 2) {
-    const notifications = [];
-
-    for (let i = 1; i <= count && users.length > 0; i++) {
-      const user = users[i % users.length];
-
-      const notification = await models.Notification.create({
-        userId: user.id,
-        title: `Test Notification ${i}`,
-        message: `This is test notification ${i}`,
-        type: i === 1 ? "donation_request" : "message",
-        isRead: i === 1,
-      });
-      notifications.push(notification);
-      this.createdData.notifications.push(notification.id);
-    }
-
-    return notifications;
-  }
+  // Notification seeding removed for MVP simplification
 
   async seedAllTestData() {
     try {
@@ -181,9 +156,7 @@ class TestDataSeeder {
       const users = await this.seedTestUsers(3);
       const donations = await this.seedTestDonations(users, 2);
       const requests = await this.seedTestRequests(users, donations, 2);
-      const { userDocs, requestDocs } = await this.seedTestVerificationDocuments(users, requests);
       const messages = await this.seedTestMessages(users, 2);
-      const notifications = await this.seedTestNotifications(users, 2);
 
       console.log("✅ Test data seeded successfully");
       return {
@@ -191,9 +164,7 @@ class TestDataSeeder {
         donations,
         requests,
         userVerificationDocuments: userDocs,
-        requestVerificationDocuments: requestDocs,
         messages,
-        notifications,
       };
     } catch (error) {
       console.error("❌ Failed to seed test data:", error);
@@ -207,13 +178,6 @@ class TestDataSeeder {
 
       // Clean up in reverse order of dependencies
       const cleanupOrder = [
-        "shares",
-        "comments",
-        "requestUpdates",
-        "requestVerificationDocuments",
-        "userVerificationDocuments",
-        "ratings",
-        "notifications",
         "messages",
         "requests",
         "donations",
@@ -254,13 +218,6 @@ class TestDataSeeder {
       donations: "Donation",
       requests: "Request",
       messages: "Message",
-      notifications: "Notification",
-      ratings: "Rating",
-      userVerificationDocuments: "UserVerificationDocument",
-      requestVerificationDocuments: "RequestVerificationDocument",
-      requestUpdates: "RequestUpdate",
-      comments: "Comment",
-      shares: "Share",
     };
     return modelMap[tableName];
   }

@@ -81,16 +81,6 @@ const Request = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    // Verification fields
-    isVerified: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-    },
-    verificationNotes: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
   },
   {
     tableName: "requests",
@@ -134,13 +124,9 @@ Request.associate = (models) => {
     foreignKey: "donationId",
     as: "donation",
   });
-  Request.hasMany(models.RequestVerificationDocument, {
+  Request.hasMany(models.Message, {
     foreignKey: "requestId",
-    as: "verificationDocuments",
-  });
-  Request.hasMany(models.RequestUpdate, {
-    foreignKey: "requestId",
-    as: "updates",
+    as: "messages",
   });
 };
 

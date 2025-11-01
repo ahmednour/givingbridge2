@@ -245,28 +245,7 @@ class ApiService {
     await deleteToken();
   }
 
-  // Update FCM token for push notifications
-  static Future<ApiResponse<bool>> updateFCMToken(String fcmToken) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/auth/fcm-token'),
-        headers: await _getHeaders(includeAuth: true),
-        body: jsonEncode({
-          'fcmToken': fcmToken,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        return ApiResponse.success(true);
-      } else {
-        final error = jsonDecode(response.body);
-        return ApiResponse.error(
-            error['message'] ?? 'Failed to update FCM token');
-      }
-    } catch (e) {
-      return ApiResponse.error('Network error: ${e.toString()}');
-    }
-  }
+  // FCM token functionality removed for MVP
 
   // Update user profile
   static Future<ApiResponse<User>> updateProfile({
@@ -1548,7 +1527,6 @@ class DonationRequest {
   final String createdAt;
   final String updatedAt;
   final String? respondedAt;
-  final bool isRated;
 
   DonationRequest({
     required this.id,
@@ -1565,7 +1543,6 @@ class DonationRequest {
     required this.createdAt,
     required this.updatedAt,
     this.respondedAt,
-    this.isRated = false,
   });
 
   factory DonationRequest.fromJson(Map<String, dynamic> json) {
@@ -1584,7 +1561,6 @@ class DonationRequest {
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
       respondedAt: json['respondedAt'],
-      isRated: json['isRated'] ?? false,
     );
   }
 
@@ -1604,7 +1580,6 @@ class DonationRequest {
       'createdAt': createdAt,
       'updatedAt': updatedAt,
       'respondedAt': respondedAt,
-      'isRated': isRated,
     };
   }
 

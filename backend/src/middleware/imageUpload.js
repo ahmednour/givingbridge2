@@ -1,7 +1,6 @@
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-const imageOptimizationService = require("../services/imageOptimizationService");
 
 // Ensure uploads directory exists
 const uploadDir = path.join(__dirname, "../../uploads/images");
@@ -57,60 +56,26 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// Configure multer for image uploads with memory storage for optimization
+// Configure multer for image uploads (simplified for MVP)
 const imageUpload = multer({
-  storage: multer.memoryStorage(), // Store in memory for optimization
+  storage: storage, // Use disk storage directly
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB max file size (will be optimized)
+    fileSize: 5 * 1024 * 1024, // 5MB max file size (no optimization)
   },
   fileFilter: fileFilter,
 });
 
 /**
- * Middleware to optimize uploaded images
+ * Simple middleware for basic image upload (MVP version)
  */
-const optimizeUploadedImage = async (req, res, next) => {
+const processUploadedImage = (req, res, next) => {
   if (!req.file) {
     return next();
   }
 
-  try {
-    const userId = req.user?.id || 'anonymous';
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const ext = path.extname(req.file.originalname);
-    const filename = `user-${userId}-${uniqueSuffix}${ext}`;
-    const filepath = path.join(uploadDir, filename);
-    
-    // Optimize image
-    const optimized = await imageOptimizationService.optimizeImage(req.file.buffer);
-    
-    // Generate thumbnail
-    const thumbnailFilename = `user-${userId}-${uniqueSuffix}_thumb${ext}`;
-    const thumbnailPath = path.join(uploadDir, thumbnailFilename);
-    const thumbnail = await imageOptimizationService.generateThumbnail(req.file.buffer);
-    
-    // Save optimized image and thumbnail
-    await fs.promises.writeFile(filepath, optimized);
-    await fs.promises.writeFile(thumbnailPath, thumbnail);
-    
-    // Update req.file with new information
-    req.file.filename = filename;
-    req.file.path = filepath;
-    req.file.size = optimized.length;
-    req.file.thumbnailFilename = thumbnailFilename;
-    req.file.thumbnailPath = thumbnailPath;
-    req.file.originalSize = req.file.buffer.length;
-    req.file.optimizedSize = optimized.length;
-    req.file.savings = ((req.file.originalSize - optimized.length) / req.file.originalSize * 100).toFixed(2);
-    
-    console.log(`✅ Image optimized: ${req.file.originalSize} → ${optimized.length} bytes (${req.file.savings}% savings)`);
-    
-    next();
-  } catch (error) {
-    console.error('Image optimization error:', error);
-    next(error);
-  }
+  console.log(`✅ Image uploaded: ${req.file.filename} (${req.file.size} bytes)`);
+  next();
 };
 
 module.exports = imageUpload;
-module.exports.optimizeUploadedImage = optimizeUploadedImage;
+module.exports.processUploadedImage = processUploadedImage;
