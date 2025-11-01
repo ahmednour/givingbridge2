@@ -1,54 +1,52 @@
+# ===================================
+# GivingBridge Project .gitignore
+# ===================================
+
+# ===================================
+# Node.js Backend
+# ===================================
+
 # Dependencies
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Firebase credentials
-firebase-service-account.json
-config/firebase-service-account.json
-backend/config/firebase-service-account.json
-**/firebase-service-account.json
-
-# Build outputs
-dist/
-build/
-*.tgz
-*.tar.gz
-
-# Logs
-logs
-*.log
+# Package manager lock files (keep one, ignore others)
+# package-lock.json  # Uncomment if using yarn or pnpm
+# yarn.lock          # Uncomment if using npm or pnpm
+# pnpm-lock.yaml     # Uncomment if using npm or yarn
 
 # Runtime data
-pids
+pids/
 *.pid
 *.seed
 *.pid.lock
 
 # Coverage directory used by tools like istanbul
 coverage/
-.nyc_output
+*.lcov
+.nyc_output/
 
 # Compiled binary addons
-build/Release
-
-# Dependency directories
-node_modules/
-jspm_packages/
+build/Release/
 
 # Optional npm cache directory
-.npm
+.npm/
 
 # Optional eslint cache
 .eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
 
 # Optional REPL history
 .node_repl_history
@@ -59,21 +57,18 @@ jspm_packages/
 # Yarn Integrity file
 .yarn-integrity
 
-# parcel-bundler cache (https://parceljs.org/)
-.cache
-.parcel-cache
+# parcel-bundler cache
+.cache/
+.parcel-cache/
 
-# next.js build output
-.next
+# Vite cache
+.vite/
 
-# nuxt.js build output
-.nuxt
-
-# vuepress build output
-.vuepress/dist
+# Rollup cache
+.rollup.cache/
 
 # Serverless directories
-.serverless
+.serverless/
 
 # FuseBox cache
 .fusebox/
@@ -84,27 +79,453 @@ jspm_packages/
 # TernJS port file
 .tern-port
 
-# Flutter
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test/
+
+# yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# ===================================
+# Environment Variables & Secrets
+# ===================================
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+.env.staging
+.env.staging.local
+
+# Backend environment files
+backend/.env
+backend/.env.local
+backend/.env.development
+backend/.env.test
+backend/.env.production
+backend/.env.staging
+
+# Frontend environment files
+frontend/.env
+frontend/.env.local
+frontend/.env.development
+frontend/.env.test
+frontend/.env.production
+frontend/.env.staging
+
+# Firebase credentials and service accounts
+firebase-service-account.json
+**/firebase-service-account.json
+firebase-adminsdk-*.json
+**/firebase-adminsdk-*.json
+firebase-config.json
+**/firebase-config.json
+
+# AWS credentials
+.aws/
+aws-credentials.json
+
+# Google Cloud credentials
+gcloud-service-key.json
+google-credentials.json
+
+# Other sensitive files
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets.json
+credentials.json
+
+# ===================================
+# Build Outputs & Distribution
+# ===================================
+
+# Build directories
+dist/
+build/
+out/
+.output/
+.vercel/
+.netlify/
+
+# Backend build outputs
+backend/dist/
+backend/build/
+backend/lib/
+
+# Frontend build outputs
+frontend/build/
+frontend/dist/
+frontend/web/build/
+
+# Static files
+public/uploads/
+uploads/
+static/uploads/
+
+# Compiled assets
+*.min.js
+*.min.css
+
+# ===================================
+# Logs & Debugging
+# ===================================
+
+# Log files
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Application logs
+backend/logs/
+frontend/logs/
+app.log
+error.log
+access.log
+combined.log
+
+# Debug files
+debug/
+*.debug
+
+# ===================================
+# Testing
+# ===================================
+
+# Test coverage
+coverage/
+.coverage/
+*.lcov
+.nyc_output/
+test-results/
+junit.xml
+
+# Jest cache
+.jest/
+
+# Playwright
+test-results/
+playwright-report/
+playwright/.cache/
+
+# ===================================
+# Flutter Frontend
+# ===================================
+
+# Flutter/Dart specific
 .dart_tool/
 .packages
 .pub-cache/
 .pub/
-build/
-.flutter-plugins
-.flutter-plugins-dependencies
+.metadata
+pubspec.lock
 
-# IDEs
+# Flutter build outputs
+frontend/build/
+frontend/.dart_tool/
+frontend/.packages
+frontend/.pub/
+frontend/.pub-cache/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+frontend/.fvm/
+
+# Flutter web specific
+frontend/web/build/
+
+# Flutter generated files
+frontend/lib/generated/
+frontend/lib/l10n/
+
+# Flutter coverage
+frontend/coverage/
+
+# ===================================
+# Database
+# ===================================
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+
+# Database dumps
+*.sql
+*.dump
+backup.sql
+database_backup_*
+
+# MySQL
+mysql-data/
+mysql-logs/
+
+# PostgreSQL
+postgres-data/
+postgresql-data/
+
+# ===================================
+# Docker & Containers
+# ===================================
+
+# Docker volumes
+docker-data/
+mysql-data/
+postgres-data/
+redis-data/
+
+# Docker override files
+docker-compose.override.yml
+docker-compose.local.yml
+
+# Container logs
+containers/
+
+# ===================================
+# IDEs & Editors
+# ===================================
+
+# Visual Studio Code
 .vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+# Local History for Visual Studio Code
+.history/
+
+# Built Visual Studio Code Extensions
+*.vsix
+
+# JetBrains IDEs
 .idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Vim
 *.swp
 *.swo
 *~
+.netrwhist
 
-# OS
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Atom
+.atom/
+
+# ===================================
+# Operating Systems
+# ===================================
+
+# macOS
 .DS_Store
 .DS_Store?
 ._*
 .Spotlight-V100
 .Trashes
-ehthumbs.db
+.AppleDouble
+.LSOverride
+Icon?
+
+# Windows
 Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ===================================
+# Temporary Files
+# ===================================
+
+# Temporary directories
+tmp/
+temp/
+.tmp/
+.temp/
+
+# Cache directories
+.cache/
+cache/
+.sass-cache/
+
+# Runtime files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.orig
+
+# ===================================
+# Documentation & Generated Files
+# ===================================
+
+# Generated documentation
+docs/build/
+docs/_build/
+site/
+
+# API documentation
+api-docs/
+swagger-output.json
+
+# ===================================
+# Monitoring & Analytics
+# ===================================
+
+# Sentry
+.sentryclirc
+
+# New Relic
+newrelic.js
+newrelic_agent.log
+
+# ===================================
+# Package Managers & Tools
+# ===================================
+
+# Bower
+bower_components/
+
+# JSPM
+jspm_packages/
+
+# TypeScript
+*.tsbuildinfo
+
+# ESLint
+.eslintcache
+
+# Prettier
+.prettierignore
+
+# Stylelint
+.stylelintcache
+
+# ===================================
+# Miscellaneous
+# ===================================
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Local configuration files
+local.json
+local.config.js
+
+# Backup files
+*.backup
+*.bak
+*.orig
+
+# Archive files
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# ===================================
+# Project Specific
+# ===================================
+
+# Upload directories
+backend/uploads/
+frontend/web/uploads/
+public/uploads/
+uploads/
+
+# Generated files
+backend/src/generated/
+frontend/lib/generated/
+
+# Migration backups
+backend/migrations/backup/
+
+# Test data
+test-data/
+mock-data/
+
+# Local development files
+.local/
+local/
+
+# Performance monitoring
+.clinic/
+clinic/
+
+# Security scanning results
+.snyk
+security-report.json
+
+# ===================================
+# Keep These Files (Examples)
+# ===================================
+
+# Keep example environment files
+!.env.example
+!backend/.env.example
+!frontend/.env.example
+
+# Keep important configuration templates
+!docker-compose.example.yml
+!nginx.conf.example
+
+# Keep documentation assets
+!docs/assets/
+!docs/images/
+
+# Keep test fixtures (if needed)
+# !test/fixtures/
