@@ -3,7 +3,9 @@ import 'package:provider/provider.dart';
 import '../../core/theme/design_system.dart';
 import '../../core/utils/responsive_utils.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/locale_provider.dart';
 import '../../l10n/app_localizations.dart';
+import '../language_selector.dart';
 
 /// Mobile-optimized navigation components
 class MobileBottomNavigation extends StatelessWidget {
@@ -275,6 +277,22 @@ class MobileDrawer extends StatelessWidget {
               ),
               child: Column(
                 children: [
+                  // Language selector
+                  ListTile(
+                    leading: const Icon(
+                      Icons.language,
+                      color: DesignSystem.textSecondary,
+                    ),
+                    title: Text(
+                      l10n.language,
+                      style: DesignSystem.bodyMedium(context),
+                    ),
+                    trailing: const LanguageToggleButton(),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _showLanguageSelector(context);
+                    },
+                  ),
                   ListTile(
                     leading: const Icon(
                       Icons.settings_outlined,
@@ -311,6 +329,16 @@ class MobileDrawer extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void _showLanguageSelector(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(DesignSystem.radiusL)),
+      ),
+      builder: (context) => const LanguageSelector(showAsButton: false),
     );
   }
 }

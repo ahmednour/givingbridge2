@@ -8,7 +8,13 @@ import '../widgets/common/gb_button.dart';
 import '../widgets/common/gb_multiple_image_upload.dart';
 import '../widgets/common/web_card.dart';
 import '../widgets/common/gb_text_field.dart';
+import '../widgets/rtl/directional_row.dart';
+import '../widgets/rtl/directional_column.dart';
+import '../widgets/rtl/directional_container.dart';
+import '../widgets/rtl/directional_app_bar.dart';
+import '../services/rtl_layout_service.dart';
 import '../providers/donation_provider.dart';
+import '../providers/locale_provider.dart';
 import '../models/donation.dart';
 import '../l10n/app_localizations.dart';
 
@@ -201,7 +207,7 @@ class _CreateDonationScreenEnhancedState
   void _showSuccessSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Row(
+        content: DirectionalRow(
           children: [
             const Icon(Icons.check_circle, color: Colors.white),
             const SizedBox(width: 12),
@@ -221,7 +227,7 @@ class _CreateDonationScreenEnhancedState
   void _showErrorSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Row(
+        content: DirectionalRow(
           children: [
             const Icon(Icons.error_outline, color: Colors.white),
             const SizedBox(width: 12),
@@ -240,14 +246,26 @@ class _CreateDonationScreenEnhancedState
 
   IconData _getCategoryIcon(DonationCategory category) {
     switch (category) {
+      case DonationCategory.medical:
+        return Icons.medical_services;
+      case DonationCategory.education:
+        return Icons.school;
       case DonationCategory.food:
         return Icons.restaurant;
+      case DonationCategory.housing:
+        return Icons.home;
+      case DonationCategory.emergency:
+        return Icons.emergency;
       case DonationCategory.clothes:
         return Icons.checkroom;
       case DonationCategory.books:
         return Icons.menu_book;
       case DonationCategory.electronics:
         return Icons.devices;
+      case DonationCategory.furniture:
+        return Icons.chair;
+      case DonationCategory.toys:
+        return Icons.toys;
       case DonationCategory.other:
         return Icons.category;
     }
@@ -256,43 +274,48 @@ class _CreateDonationScreenEnhancedState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final localeProvider = Provider.of<LocaleProvider>(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Scaffold(
-      backgroundColor: DesignSystem.getBackgroundColor(context),
-      appBar: AppBar(
-        backgroundColor: DesignSystem.getSurfaceColor(context),
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            RTLUtils.getDirectionalIcon(context, Icons.arrow_back,
-                start: Icons.arrow_back, end: Icons.arrow_forward),
-            color: isDark ? DesignSystem.neutral200 : DesignSystem.neutral900,
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          widget.donation != null ? l10n.editDonation : l10n.createDonation,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color:
-                    isDark ? DesignSystem.neutral200 : DesignSystem.neutral900,
-                fontWeight: FontWeight.w600,
+    return Directionality(
+      textDirection: localeProvider.textDirection,
+      child: Scaffold(
+        backgroundColor: DesignSystem.getBackgroundColor(context),
+        appBar: DirectionalAppBar(
+          backgroundColor: DesignSystem.getSurfaceColor(context),
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(
+              localeProvider.getDirectionalIcon(
+                start: Icons.arrow_back,
+                end: Icons.arrow_forward,
               ),
-        ),
-        centerTitle: true,
-        actions: [
-          if (_currentStep > 0)
-            TextButton(
-              onPressed: _previousStep,
-              child: Text(
-                l10n.previous,
-                style: TextStyle(color: DesignSystem.primaryBlue),
-              ),
+              color: isDark ? DesignSystem.neutral200 : DesignSystem.neutral900,
             ),
-        ],
-      ),
-      body: Column(
-        children: [
+            onPressed: () => Navigator.pop(context),
+          ),
+          title: Text(
+            widget.donation != null ? l10n.editDonation : l10n.createDonation,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color:
+                      isDark ? DesignSystem.neutral200 : DesignSystem.neutral900,
+                  fontWeight: FontWeight.w600,
+                ),
+          ),
+          centerTitle: localeProvider.isRTL,
+          actions: [
+            if (_currentStep > 0)
+              TextButton(
+                onPressed: _previousStep,
+                child: Text(
+                  l10n.previous,
+                  style: TextStyle(color: DesignSystem.primaryBlue),
+                ),
+              ),
+          ],
+        ),
+        body: DirectionalColumn(
+          children: [
           // Progress Indicator
           _buildProgressIndicator(),
 
@@ -318,6 +341,7 @@ class _CreateDonationScreenEnhancedState
           _buildNavigationButtons(),
         ],
       ),
+    ),
     );
   }
 

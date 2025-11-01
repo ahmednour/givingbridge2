@@ -6,6 +6,10 @@ import '../core/theme/design_system.dart';
 import '../core/theme/web_theme.dart';
 import '../widgets/common/web_button.dart';
 import '../widgets/common/web_card.dart';
+import '../widgets/rtl/directional_row.dart';
+import '../widgets/rtl/directional_column.dart';
+import '../widgets/rtl/directional_container.dart';
+import '../services/rtl_layout_service.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/locale_provider.dart';
 import '../providers/theme_provider.dart';
@@ -287,42 +291,46 @@ class _LandingScreenState extends State<LandingScreen>
     final isDark = theme.brightness == Brightness.dark;
     final size = MediaQuery.of(context).size;
     final isDesktop = size.width > 768;
+    final localeProvider = Provider.of<LocaleProvider>(context);
 
-    return Scaffold(
-      body: SingleChildScrollView(
-        controller: _scrollController,
-        child: Column(
-          children: [
-            // Header
-            _buildHeader(context, isDark),
+    return Directionality(
+      textDirection: localeProvider.textDirection,
+      child: Scaffold(
+        body: SingleChildScrollView(
+          controller: _scrollController,
+          child: Column(
+            children: [
+              // Header
+              _buildHeader(context, isDark),
 
-            // Hero Section
-            _buildHeroSection(context, theme, isDark, isDesktop),
+              // Hero Section
+              _buildHeroSection(context, theme, isDark, isDesktop),
 
-            // Animated Stats Section
-            _buildAnimatedStatsSection(context, theme, isDark, isDesktop),
+              // Animated Stats Section
+              _buildAnimatedStatsSection(context, theme, isDark, isDesktop),
 
-            // Features Section
-            _buildFeaturesSection(context, theme, isDark, isDesktop),
+              // Features Section
+              _buildFeaturesSection(context, theme, isDark, isDesktop),
 
-            // How It Works Section
-            _buildHowItWorksSection(context, theme, isDark, isDesktop),
+              // How It Works Section
+              _buildHowItWorksSection(context, theme, isDark, isDesktop),
 
-            // Featured Donations Section
-            _buildFeaturedDonationsSection(context, theme, isDark, isDesktop),
+              // Featured Donations Section
+              _buildFeaturedDonationsSection(context, theme, isDark, isDesktop),
 
-            // Stats Section
-            _buildStatsSection(context, theme, isDark, isDesktop),
+              // Stats Section
+              _buildStatsSection(context, theme, isDark, isDesktop),
 
-            // Testimonials Section
-            _buildTestimonialsSection(context, theme, isDark, isDesktop),
+              // Testimonials Section
+              _buildTestimonialsSection(context, theme, isDark, isDesktop),
 
-            // CTA Section
-            _buildCTASection(context, theme, isDark, isDesktop),
+              // CTA Section
+              _buildCTASection(context, theme, isDark, isDesktop),
 
-            // Footer
-            _buildFooter(context, theme, isDark),
-          ],
+              // Footer
+              _buildFooter(context, theme, isDark),
+            ],
+          ),
         ),
       ),
     );
@@ -350,13 +358,13 @@ class _LandingScreenState extends State<LandingScreen>
           horizontal: DesignSystem.spaceXL,
           vertical: DesignSystem.spaceM,
         ),
-        child: Row(
+        child: DirectionalRow(
           children: [
             // Logo
             Semantics(
               label: '${l10n.appTitle} logo and home',
               button: true,
-              child: Row(
+              child: DirectionalRow(
                 children: [
                   Container(
                     width: 40,
@@ -390,7 +398,7 @@ class _LandingScreenState extends State<LandingScreen>
 
             // Navigation buttons
             if (isDesktop) ...[
-              Row(
+              DirectionalRow(
                 children: [
                   // Dark Mode Toggle
                   Consumer<ThemeProvider>(
@@ -489,7 +497,7 @@ class _LandingScreenState extends State<LandingScreen>
                 ],
               ),
             ] else ...[
-              Row(
+              DirectionalRow(
                 children: [
                   // Dark Mode Toggle for Mobile
                   Consumer<ThemeProvider>(
@@ -557,7 +565,7 @@ class _LandingScreenState extends State<LandingScreen>
                 : DesignSystem.spaceXXL,
           ),
           child: isDesktop
-              ? Row(
+              ? DirectionalRow(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Expanded(
@@ -571,7 +579,7 @@ class _LandingScreenState extends State<LandingScreen>
                     ),
                   ],
                 )
-              : Column(
+              : DirectionalColumn(
                   children: [
                     _buildHeroContent(theme, isDesktop, l10n),
                     const SizedBox(height: DesignSystem.spaceXXL),
@@ -585,9 +593,12 @@ class _LandingScreenState extends State<LandingScreen>
 
   Widget _buildHeroContent(
       ThemeData theme, bool isDesktop, AppLocalizations l10n) {
-    return Column(
-      crossAxisAlignment:
-          isDesktop ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+    final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
+    
+    return DirectionalColumn(
+      crossAxisAlignment: isDesktop 
+          ? (localeProvider.isRTL ? CrossAxisAlignment.end : CrossAxisAlignment.start)
+          : CrossAxisAlignment.center,
       children: [
         // Main headline
         Semantics(
@@ -632,7 +643,7 @@ class _LandingScreenState extends State<LandingScreen>
 
         // CTA Buttons
         if (isDesktop)
-          Row(
+          DirectionalRow(
             children: [
               Expanded(
                 child: WebButton(
@@ -661,7 +672,7 @@ class _LandingScreenState extends State<LandingScreen>
               .fadeIn(duration: 600.ms)
               .slideY(begin: 0.3, end: 0)
         else
-          Column(
+          DirectionalColumn(
             children: [
               WebButton(
                 text: l10n.startDonating,
@@ -688,9 +699,11 @@ class _LandingScreenState extends State<LandingScreen>
 
         // Trust indicators
         const SizedBox(height: DesignSystem.spaceXXL),
-        Row(
+        DirectionalRow(
           mainAxisAlignment:
-              isDesktop ? MainAxisAlignment.start : MainAxisAlignment.center,
+              isDesktop 
+                ? (localeProvider.isRTL ? MainAxisAlignment.end : MainAxisAlignment.start)
+                : MainAxisAlignment.center,
           children: [
             _buildHeroFeature(
               icon: Icons.people_outline,
@@ -721,7 +734,7 @@ class _LandingScreenState extends State<LandingScreen>
     required IconData icon,
     required String label,
   }) {
-    return Row(
+    return DirectionalRow(
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(

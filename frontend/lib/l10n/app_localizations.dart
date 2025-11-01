@@ -2456,11 +2456,77 @@ abstract class AppLocalizations {
   /// **'Change app language'**
   String get changeAppLanguage;
 
+  /// No description provided for @languageChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Language changed successfully'**
+  String get languageChanged;
+
+  /// No description provided for @selectLanguagePrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your preferred language'**
+  String get selectLanguagePrompt;
+
+  /// No description provided for @currentLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Language'**
+  String get currentLanguage;
+
   /// No description provided for @failedToUpdateSetting.
   ///
   /// In en, this message translates to:
   /// **'Failed to update setting'**
   String get failedToUpdateSetting;
+
+  /// No description provided for @createRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Request'**
+  String get createRequest;
+
+  /// No description provided for @reports.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get reports;
+
+  /// No description provided for @manageAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Account'**
+  String get manageAccount;
+
+  /// No description provided for @chatWithUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat with Users'**
+  String get chatWithUsers;
+
+  /// No description provided for @manageAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Alerts'**
+  String get manageAlerts;
+
+  /// No description provided for @helpSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Help & Support'**
+  String get helpSupport;
+
+  /// No description provided for @getAssistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Assistance'**
+  String get getAssistance;
+
+  /// No description provided for @searchDonations.
+  ///
+  /// In en, this message translates to:
+  /// **'Search donations...'**
+  String get searchDonations;
 }
 
 class _AppLocalizationsDelegate

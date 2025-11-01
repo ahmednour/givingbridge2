@@ -1264,5 +1264,38 @@ class AppLocalizationsEn extends AppLocalizations {
   String get changeAppLanguage => 'Change app language';
 
   @override
+  String get languageChanged => 'Language changed successfully';
+
+  @override
+  String get selectLanguagePrompt => 'Select your preferred language';
+
+  @override
+  String get currentLanguage => 'Current Language';
+
+  @override
   String get failedToUpdateSetting => 'Failed to update setting';
+
+  @override
+  String get createRequest => 'Create Request';
+
+  @override
+  String get reports => 'Reports';
+
+  @override
+  String get manageAccount => 'Manage Account';
+
+  @override
+  String get chatWithUsers => 'Chat with Users';
+
+  @override
+  String get manageAlerts => 'Manage Alerts';
+
+  @override
+  String get helpSupport => 'Help & Support';
+
+  @override
+  String get getAssistance => 'Get Assistance';
+
+  @override
+  String get searchDonations => 'Search donations...';
 }

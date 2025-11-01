@@ -513,8 +513,19 @@
   "turnOnAllNotifications": "Turn on all notifications",
   "language": "Language",
   "changeAppLanguage": "Change app language",
+  "languageChanged": "Language changed successfully",
+  "selectLanguagePrompt": "Select your preferred language",
+  "currentLanguage": "Current Language",
   "noArchivedConversations": "No archived conversations",
   "noArchivedConversationsDescription": "Your archived conversations will appear here",
   "unarchive": "Unarchive",
-  "failedToUpdateSetting": "Failed to update setting"
+  "failedToUpdateSetting": "Failed to update setting",
+  "createRequest": "Create Request",
+  "reports": "Reports",
+  "manageAccount": "Manage Account",
+  "chatWithUsers": "Chat with Users",
+  "manageAlerts": "Manage Alerts",
+  "helpSupport": "Help & Support",
+  "getAssistance": "Get Assistance",
+  "searchDonations": "Search donations..."
 }

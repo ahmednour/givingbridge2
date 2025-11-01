@@ -22,6 +22,7 @@ import 'services/offline_service.dart';
 import 'services/network_status_service.dart';
 import 'services/firebase_notification_service.dart';
 import 'services/socket_service.dart';
+import 'services/font_loading_service.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/landing_screen.dart';
 import 'widgets/offline_banner.dart';
@@ -46,6 +47,9 @@ void main() async {
 
   // Initialize Firebase Notification Service
   await FirebaseNotificationService().initialize();
+
+  // Preload Arabic fonts
+  await FontLoadingService.preloadArabicFonts();
 
   runApp(const GivingBridgeApp());
 }
@@ -110,6 +114,14 @@ class GivingBridgeApp extends StatelessWidget {
               return supportedLocales.first;
             },
 
+            // RTL Support - Wrap the entire app with Directionality
+            builder: (context, child) {
+              return Directionality(
+                textDirection: localeProvider.textDirection,
+                child: child ?? const SizedBox.shrink(),
+              );
+            },
+
             home: const AuthWrapper(),
           );
         },
@@ -139,10 +151,10 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AuthProvider>(
-      builder: (context, authProvider, child) {
-        // Show loading screen while checking auth state
-        if (authProvider.isLoading) {
+    return Consumer2<AuthProvider, LocaleProvider>(
+      builder: (context, authProvider, localeProvider, child) {
+        // Show loading screen while checking auth state or initializing locale
+        if (authProvider.isLoading || localeProvider.isLoading) {
           return const LoadingScreen();
         }
 

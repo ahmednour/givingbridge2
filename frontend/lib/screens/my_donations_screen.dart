@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:provider/provider.dart';
 import '../core/theme/design_system.dart';
 import '../widgets/common/gb_button.dart';
 import '../widgets/common/gb_empty_state.dart';
 import '../widgets/common/web_card.dart';
+import '../widgets/rtl/directional_row.dart';
+import '../widgets/rtl/directional_column.dart';
+import '../widgets/rtl/directional_container.dart';
+import '../widgets/rtl/directional_app_bar.dart';
+import '../services/rtl_layout_service.dart';
 import '../services/api_service.dart';
+import '../providers/locale_provider.dart';
 import '../models/donation.dart';
 import 'create_donation_screen_enhanced.dart';
 import '../l10n/app_localizations.dart';
@@ -52,7 +59,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
   void _showErrorSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Row(
+        content: DirectionalRow(
           children: [
             const Icon(Icons.error_outline, color: Colors.white),
             const SizedBox(width: DesignSystem.spaceM),
@@ -68,7 +75,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
   void _showSuccessSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Row(
+        content: DirectionalRow(
           children: [
             const Icon(Icons.check_circle, color: Colors.white),
             const SizedBox(width: DesignSystem.spaceM),
@@ -168,29 +175,40 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: DesignSystem.getBackgroundColor(context),
-      appBar: AppBar(
-        backgroundColor: DesignSystem.getSurfaceColor(context),
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: DesignSystem.textPrimary),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'My Donations',
-          style: TextStyle(
-            color: DesignSystem.textPrimary,
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
+    final localeProvider = Provider.of<LocaleProvider>(context);
+    final l10n = AppLocalizations.of(context)!;
+    
+    return Directionality(
+      textDirection: localeProvider.textDirection,
+      child: Scaffold(
+        backgroundColor: DesignSystem.getBackgroundColor(context),
+        appBar: DirectionalAppBar(
+          backgroundColor: DesignSystem.getSurfaceColor(context),
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(
+              localeProvider.getDirectionalIcon(
+                start: Icons.arrow_back,
+                end: Icons.arrow_forward,
+              ),
+              color: DesignSystem.textPrimary,
+            ),
+            onPressed: () => Navigator.pop(context),
           ),
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add, color: DesignSystem.primaryBlue),
-            onPressed: _createDonation,
+          title: Text(
+            l10n.myDonations ?? 'My Donations',
+            style: const TextStyle(
+              color: DesignSystem.textPrimary,
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
           ),
+          centerTitle: localeProvider.isRTL,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.add, color: DesignSystem.primaryBlue),
+              onPressed: _createDonation,
+            ),
         ],
       ),
       body: _isLoading
@@ -218,6 +236,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
         backgroundColor: DesignSystem.primaryBlue,
         child: const Icon(Icons.add, color: Colors.white),
       ),
+    ),
     );
   }
 
@@ -232,12 +251,16 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
   }
 
   Widget _buildDonationCard(Donation donation) {
+    final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
+    
     return Container(
       margin: const EdgeInsets.only(bottom: DesignSystem.spaceL),
       child: WebCard(
         padding: EdgeInsets.zero,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: DirectionalColumn(
+          crossAxisAlignment: localeProvider.isRTL 
+              ? CrossAxisAlignment.end 
+              : CrossAxisAlignment.start,
           children: [
             // Image (if available)
             if (donation.imageUrl != null && donation.imageUrl!.isNotEmpty)
@@ -296,11 +319,13 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
 
             Padding(
               padding: const EdgeInsets.all(DesignSystem.spaceL),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: DirectionalColumn(
+                crossAxisAlignment: localeProvider.isRTL 
+                    ? CrossAxisAlignment.end 
+                    : CrossAxisAlignment.start,
                 children: [
                   // Status and Category
-                  Row(
+                  DirectionalRow(
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
@@ -364,7 +389,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                         itemBuilder: (context) => [
                           PopupMenuItem(
                             value: 'edit',
-                            child: Row(
+                            child: DirectionalRow(
                               children: [
                                 const Icon(Icons.edit, size: 16),
                                 const SizedBox(width: 8),
@@ -374,7 +399,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                           ),
                           PopupMenuItem(
                             value: 'toggle',
-                            child: Row(
+                            child: DirectionalRow(
                               children: [
                                 Icon(
                                   donation.isAvailable
@@ -391,7 +416,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                           ),
                           PopupMenuItem(
                             value: 'delete',
-                            child: Row(
+                            child: DirectionalRow(
                               children: [
                                 const Icon(Icons.delete,
                                     size: 16, color: DesignSystem.error),
@@ -442,7 +467,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                   const SizedBox(height: DesignSystem.spaceM),
 
                   // Location and Condition
-                  Row(
+                  DirectionalRow(
                     children: [
                       const Icon(
                         Icons.location_on_outlined,
@@ -458,6 +483,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                             color: DesignSystem.textSecondary,
                           ),
                           overflow: TextOverflow.ellipsis,
+                          textAlign: localeProvider.isRTL ? TextAlign.right : TextAlign.left,
                         ),
                       ),
                       const SizedBox(width: DesignSystem.spaceM),
@@ -487,7 +513,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                   const SizedBox(height: DesignSystem.spaceL),
 
                   // Quick Actions
-                  Row(
+                  DirectionalRow(
                     children: [
                       Expanded(
                         child: GBOutlineButton(

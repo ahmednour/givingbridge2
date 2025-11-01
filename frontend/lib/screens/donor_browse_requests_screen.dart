@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:provider/provider.dart';
 import '../core/theme/design_system.dart';
 import '../widgets/common/gb_filter_chips.dart';
 import '../widgets/common/gb_empty_state.dart';
 import '../widgets/common/web_card.dart';
+import '../widgets/rtl/directional_row.dart';
+import '../widgets/rtl/directional_column.dart';
+import '../widgets/rtl/directional_container.dart';
+import '../widgets/rtl/directional_app_bar.dart';
+import '../services/rtl_layout_service.dart';
+import '../providers/locale_provider.dart';
 import '../l10n/app_localizations.dart';
 import '../services/api_service.dart';
 import 'chat_screen_enhanced.dart';
@@ -42,7 +49,7 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Row(
+            content: DirectionalRow(
               children: [
                 const Icon(Icons.error_outline, color: Colors.white),
                 const SizedBox(width: DesignSystem.spaceM),
@@ -85,7 +92,7 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Row(
+              content: DirectionalRow(
                 children: [
                   const Icon(Icons.check_circle_outline, color: Colors.white),
                   const SizedBox(width: DesignSystem.spaceM),
@@ -167,19 +174,23 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final localeProvider = Provider.of<LocaleProvider>(context);
     final size = MediaQuery.of(context).size;
     final isDesktop = size.width > 768;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.incomingRequests),
-        backgroundColor: DesignSystem.primaryBlue,
-        foregroundColor: Colors.white,
-        elevation: 0,
-      ),
-      backgroundColor: DesignSystem.getBackgroundColor(context),
-      body: Column(
-        children: [
+    return Directionality(
+      textDirection: localeProvider.textDirection,
+      child: Scaffold(
+        appBar: DirectionalAppBar(
+          title: Text(l10n.incomingRequests),
+          backgroundColor: DesignSystem.primaryBlue,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          centerTitle: localeProvider.isRTL,
+        ),
+        backgroundColor: DesignSystem.getBackgroundColor(context),
+        body: DirectionalColumn(
+          children: [
           // Filter Bar
           Container(
             padding: const EdgeInsets.all(16),
@@ -223,6 +234,7 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
           ),
         ],
       ),
+    ),
     );
   }
 

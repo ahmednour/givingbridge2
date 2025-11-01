@@ -12,8 +12,14 @@ import '../widgets/common/gb_skeleton_widgets.dart';
 import '../widgets/common/web_card.dart';
 import '../widgets/common/mobile_navigation.dart';
 import '../widgets/common/touch_friendly_widgets.dart';
+import '../widgets/rtl/directional_row.dart';
+import '../widgets/rtl/directional_column.dart';
+import '../widgets/rtl/directional_container.dart';
+import '../widgets/rtl/directional_app_bar.dart';
+import '../services/rtl_layout_service.dart';
 import '../services/api_service.dart';
 import '../providers/auth_provider.dart';
+import '../providers/locale_provider.dart';
 import '../models/donation.dart';
 import '../models/user.dart';
 import '../l10n/app_localizations.dart';
@@ -129,7 +135,7 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
   void _showErrorSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Row(
+        content: DirectionalRow(
           children: [
             const Icon(Icons.error_outline, color: Colors.white),
             const SizedBox(width: DesignSystem.spaceM),
@@ -145,7 +151,7 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
   void _showSuccessSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Row(
+        content: DirectionalRow(
           children: [
             const Icon(Icons.check_circle, color: Colors.white),
             const SizedBox(width: DesignSystem.spaceM),
@@ -188,87 +194,97 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final localeProvider = Provider.of<LocaleProvider>(context);
     final user = authProvider.user;
     final l10n = AppLocalizations.of(context)!;
 
-    return ResponsiveLayoutBuilder(
-      builder: (context, screenSize) {
-        return Scaffold(
-          backgroundColor: DesignSystem.getBackgroundColor(context),
-          appBar: ResponsiveUtils.isMobile(context)
-              ? MobileAppBar(
-                  title: l10n.browseDonations ?? 'Browse Donations',
-                  showBackButton: true,
-                )
-              : AppBar(
-                  backgroundColor: DesignSystem.getSurfaceColor(context),
-                  elevation: 0,
-                  leading: IconButton(
-                    icon: Icon(Icons.arrow_back, color: DesignSystem.textPrimary),
-                    onPressed: () => Navigator.pop(context),
+    return Directionality(
+      textDirection: localeProvider.textDirection,
+      child: ResponsiveLayoutBuilder(
+        builder: (context, screenSize) {
+          return Scaffold(
+            backgroundColor: DesignSystem.getBackgroundColor(context),
+            appBar: ResponsiveUtils.isMobile(context)
+                ? MobileAppBar(
+                    title: l10n.browseDonations ?? 'Browse Donations',
+                    showBackButton: true,
+                  ) as PreferredSizeWidget
+                : DirectionalAppBar(
+                    backgroundColor: DesignSystem.getSurfaceColor(context),
+                    elevation: 0,
+                    leading: IconButton(
+                      icon: Icon(
+                        localeProvider.getDirectionalIcon(
+                          start: Icons.arrow_back,
+                          end: Icons.arrow_forward,
+                        ),
+                        color: DesignSystem.textPrimary,
+                      ),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    title: Text(
+                      l10n.browseDonations ?? 'Browse Donations',
+                      style: TextStyle(
+                        color: DesignSystem.textPrimary,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    centerTitle: localeProvider.isRTL,
                   ),
-                  title: Text(
-                    'Browse Donations',
-                    style: TextStyle(
-                      color: DesignSystem.textPrimary,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                    ),
+            body: DirectionalColumn(
+              children: [
+                // Search and Filters
+                DirectionalContainer(
+                  color: DesignSystem.getSurfaceColor(context),
+                  padding: ResponsiveUtils.responsivePadding(context),
+                  child: DirectionalColumn(
+                    children: [
+                      // Search Bar
+                      GBSearchBar(
+                        hint: l10n.searchDonations ?? 'Search donations...',
+                        onSearch: (query) {
+                          setState(() {
+                            _searchQuery = query;
+                          });
+                          _applyFilters();
+                        },
+                        onChanged: _onSearchChanged,
+                        controller: _searchController,
+                      ),
+
+                      SizedBox(height: ResponsiveUtils.getSpacing(context)),
+
+                      // Category Filters
+                      GBFilterChips<String>(
+                        options: _categoryOptions,
+                        selectedValues: _selectedCategories,
+                        onChanged: _onCategorySelected,
+                        multiSelect: false,
+                        scrollable: true,
+                      ),
+                    ],
                   ),
-                  centerTitle: true,
                 ),
-          body: Column(
-            children: [
-              // Search and Filters
-              Container(
-                color: DesignSystem.getSurfaceColor(context),
-                padding: ResponsiveUtils.responsivePadding(context),
-                child: Column(
-                  children: [
-                    // Search Bar
-                    GBSearchBar(
-                      hint: 'Search donations...',
-                      onSearch: (query) {
-                        setState(() {
-                          _searchQuery = query;
-                        });
-                        _applyFilters();
-                      },
-                      onChanged: _onSearchChanged,
-                      controller: _searchController,
-                    ),
 
-                    SizedBox(height: ResponsiveUtils.getSpacing(context)),
-
-                    // Category Filters
-                    GBFilterChips<String>(
-                      options: _categoryOptions,
-                      selectedValues: _selectedCategories,
-                      onChanged: _onCategorySelected,
-                      multiSelect: false,
-                      scrollable: true,
-                    ),
-                  ],
+                // Donations List
+                Expanded(
+                  child: _isLoading && _donations.isEmpty
+                      ? const GBDonationListSkeleton(itemCount: 4)
+                      : _filteredDonations.isEmpty
+                          ? _buildEmptyState()
+                          : RefreshIndicator(
+                              onRefresh: _loadDonations,
+                              child: ResponsiveUtils.isMobile(context)
+                                  ? _buildMobileList(user!)
+                                  : _buildDesktopGrid(user!),
+                            ),
                 ),
-              ),
-
-              // Donations List
-              Expanded(
-                child: _isLoading && _donations.isEmpty
-                    ? const GBDonationListSkeleton(itemCount: 4)
-                    : _filteredDonations.isEmpty
-                        ? _buildEmptyState()
-                        : RefreshIndicator(
-                            onRefresh: _loadDonations,
-                            child: ResponsiveUtils.isMobile(context)
-                                ? _buildMobileList(user!)
-                                : _buildDesktopGrid(user!),
-                          ),
-              ),
-            ],
-          ),
-        );
-      },
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -311,11 +327,15 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
   }
 
   Widget _buildMobileDonationCard(Donation donation, User user) {
+    final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
+    
     return TouchCard(
       onTap: () => _showDonationDetails(donation),
       margin: EdgeInsets.only(bottom: ResponsiveUtils.getSpacing(context)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: DirectionalColumn(
+        crossAxisAlignment: localeProvider.isRTL 
+            ? CrossAxisAlignment.end 
+            : CrossAxisAlignment.start,
         children: [
           // Image (if available)
           if (donation.imageUrl != null && donation.imageUrl!.isNotEmpty)
@@ -347,8 +367,10 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
 
           Padding(
             padding: const EdgeInsets.all(DesignSystem.spaceL),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: DirectionalColumn(
+              crossAxisAlignment: localeProvider.isRTL 
+                  ? CrossAxisAlignment.end 
+                  : CrossAxisAlignment.start,
               children: [
                 // Category and Condition chips
                 Wrap(
@@ -393,7 +415,7 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
                 const SizedBox(height: DesignSystem.spaceM),
 
                 // Donor and Location
-                Row(
+                DirectionalRow(
                   children: [
                     Icon(
                       Icons.person_outline,
@@ -406,6 +428,7 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
                         donation.donorName,
                         style: DesignSystem.bodySmall(context),
                         overflow: TextOverflow.ellipsis,
+                        textAlign: localeProvider.isRTL ? TextAlign.right : TextAlign.left,
                       ),
                     ),
                   ],
@@ -413,7 +436,7 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
 
                 const SizedBox(height: DesignSystem.spaceXS),
 
-                Row(
+                DirectionalRow(
                   children: [
                     Icon(
                       Icons.location_on_outlined,
@@ -426,6 +449,7 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
                         donation.location,
                         style: DesignSystem.bodySmall(context),
                         overflow: TextOverflow.ellipsis,
+                        textAlign: localeProvider.isRTL ? TextAlign.right : TextAlign.left,
                       ),
                     ),
                   ],
@@ -450,12 +474,16 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
   }
 
   Widget _buildDonationCard(Donation donation, User user) {
+    final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
+    
     return Container(
       margin: const EdgeInsets.only(bottom: DesignSystem.spaceL),
       child: WebCard(
         padding: EdgeInsets.zero,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: DirectionalColumn(
+          crossAxisAlignment: localeProvider.isRTL 
+              ? CrossAxisAlignment.end 
+              : CrossAxisAlignment.start,
           children: [
             // Image (if available)
             if (donation.imageUrl != null && donation.imageUrl!.isNotEmpty)
@@ -486,11 +514,13 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
 
             Padding(
               padding: const EdgeInsets.all(DesignSystem.spaceL),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: DirectionalColumn(
+                crossAxisAlignment: localeProvider.isRTL 
+                    ? CrossAxisAlignment.end 
+                    : CrossAxisAlignment.start,
                 children: [
                   // Category and Condition
-                  Row(
+                  DirectionalRow(
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
@@ -564,7 +594,7 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
                   const SizedBox(height: DesignSystem.spaceM),
 
                   // Donor and Location
-                  Row(
+                  DirectionalRow(
                     children: [
                       const Icon(
                         Icons.person_outline,

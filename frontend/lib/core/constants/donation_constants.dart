@@ -2,10 +2,16 @@
 import 'package:flutter/material.dart';
 
 enum DonationCategory {
+  medical('medical', 'Medical', 'طبي'),
+  education('education', 'Education', 'تعليم'),
   food('food', 'Food', 'طعام'),
+  housing('housing', 'Housing', 'إسكان'),
+  emergency('emergency', 'Emergency', 'طوارئ'),
   clothes('clothes', 'Clothes', 'ملابس'),
   books('books', 'Books', 'كتب'),
   electronics('electronics', 'Electronics', 'إلكترونيات'),
+  furniture('furniture', 'Furniture', 'أثاث'),
+  toys('toys', 'Toys', 'ألعاب'),
   other('other', 'Other', 'أخرى');
 
   const DonationCategory(this.value, this.displayNameEn, this.displayNameAr);
@@ -157,10 +163,16 @@ class DonationConstants {
 
   // Category Icons
   static const Map<String, String> categoryIcons = {
+    'medical': 'medical_services',
+    'education': 'school',
     'food': 'restaurant',
+    'housing': 'home',
+    'emergency': 'emergency',
     'clothes': 'checkroom',
     'books': 'menu_book',
     'electronics': 'devices',
+    'furniture': 'chair',
+    'toys': 'toys',
     'other': 'category',
   };
 
@@ -214,6 +226,62 @@ class DonationConstants {
   static const String successRequestUpdated = 'Request updated successfully';
 }
 
+/// Category descriptions in Arabic and English
+class CategoryDescriptions {
+  static const Map<String, Map<String, String>> descriptions = {
+    'medical': {
+      'en': 'Medical supplies, medications, and healthcare equipment',
+      'ar': 'مستلزمات طبية وأدوية ومعدات رعاية صحية'
+    },
+    'education': {
+      'en': 'School books, educational supplies, and learning materials',
+      'ar': 'كتب مدرسية ولوازم تعليمية ومواد تعلم'
+    },
+    'food': {
+      'en': 'Food items, groceries, and ready-to-eat meals',
+      'ar': 'مواد غذائية وبقالة ووجبات جاهزة'
+    },
+    'housing': {
+      'en': 'Home furniture and housing essentials',
+      'ar': 'أثاث منزلي ومستلزمات السكن'
+    },
+    'emergency': {
+      'en': 'Urgent aid and emergency supplies',
+      'ar': 'مساعدات عاجلة وإمدادات طوارئ'
+    },
+    'clothes': {
+      'en': 'Clothing, shoes, and accessories',
+      'ar': 'ملابس وأحذية وإكسسوارات'
+    },
+    'books': {
+      'en': 'Books, magazines, and reading materials',
+      'ar': 'كتب ومجلات ومواد قراءة'
+    },
+    'electronics': {
+      'en': 'Electronic devices and technology items',
+      'ar': 'أجهزة إلكترونية وعناصر تقنية'
+    },
+    'furniture': {
+      'en': 'Home and office furniture',
+      'ar': 'أثاث منزلي ومكتبي'
+    },
+    'toys': {
+      'en': 'Toys and entertainment for children',
+      'ar': 'ألعاب وترفيه للأطفال'
+    },
+    'other': {
+      'en': 'Various other items',
+      'ar': 'عناصر أخرى متنوعة'
+    },
+  };
+
+  static String getDescription(String category, bool isArabic) {
+    final categoryDesc = descriptions[category];
+    if (categoryDesc == null) return '';
+    return categoryDesc[isArabic ? 'ar' : 'en'] ?? '';
+  }
+}
+
 /// Helper class for category-related utilities
 class CategoryHelper {
   /// Get all categories with icons (for filter/browse screens)
@@ -221,9 +289,29 @@ class CategoryHelper {
     return [
       {'value': 'all', 'label': 'All', 'icon': Icons.apps},
       {
+        'value': DonationCategory.medical.value,
+        'label': 'Medical',
+        'icon': Icons.medical_services
+      },
+      {
+        'value': DonationCategory.education.value,
+        'label': 'Education',
+        'icon': Icons.school
+      },
+      {
         'value': DonationCategory.food.value,
         'label': 'Food',
         'icon': Icons.restaurant
+      },
+      {
+        'value': DonationCategory.housing.value,
+        'label': 'Housing',
+        'icon': Icons.home
+      },
+      {
+        'value': DonationCategory.emergency.value,
+        'label': 'Emergency',
+        'icon': Icons.emergency
       },
       {
         'value': DonationCategory.clothes.value,
@@ -241,6 +329,16 @@ class CategoryHelper {
         'icon': Icons.devices
       },
       {
+        'value': DonationCategory.furniture.value,
+        'label': 'Furniture',
+        'icon': Icons.chair
+      },
+      {
+        'value': DonationCategory.toys.value,
+        'label': 'Toys',
+        'icon': Icons.toys
+      },
+      {
         'value': DonationCategory.other.value,
         'label': 'Other',
         'icon': Icons.category
@@ -251,14 +349,26 @@ class CategoryHelper {
   /// Get category icon
   static IconData getCategoryIcon(String category) {
     switch (category) {
+      case 'medical':
+        return Icons.medical_services;
+      case 'education':
+        return Icons.school;
       case 'food':
         return Icons.restaurant;
+      case 'housing':
+        return Icons.home;
+      case 'emergency':
+        return Icons.emergency;
       case 'clothes':
         return Icons.checkroom;
       case 'books':
         return Icons.menu_book;
       case 'electronics':
         return Icons.devices;
+      case 'furniture':
+        return Icons.chair;
+      case 'toys':
+        return Icons.toys;
       default:
         return Icons.category;
     }
@@ -267,14 +377,26 @@ class CategoryHelper {
   /// Get category color
   static Color getCategoryColor(String category) {
     switch (category) {
+      case 'medical':
+        return const Color(0xFFEF4444); // Red
+      case 'education':
+        return const Color(0xFF3B82F6); // Blue
       case 'food':
         return const Color(0xFF10B981); // Green
-      case 'clothes':
+      case 'housing':
         return const Color(0xFF8B5CF6); // Purple
+      case 'emergency':
+        return const Color(0xFFDC2626); // Dark Red
+      case 'clothes':
+        return const Color(0xFF06B6D4); // Cyan
       case 'books':
-        return const Color(0xFF3B82F6); // Blue
+        return const Color(0xFF0EA5E9); // Sky Blue
       case 'electronics':
         return const Color(0xFFF59E0B); // Orange
+      case 'furniture':
+        return const Color(0xFF84CC16); // Lime
+      case 'toys':
+        return const Color(0xFFEC4899); // Pink
       default:
         return const Color(0xFF6B7280); // Gray
     }

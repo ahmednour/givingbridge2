@@ -8,8 +8,14 @@ import '../widgets/common/gb_timeline.dart';
 import '../widgets/common/gb_status_badge.dart';
 import '../widgets/common/gb_filter_chips.dart';
 import '../widgets/common/gb_empty_state.dart';
+import '../widgets/rtl/directional_row.dart';
+import '../widgets/rtl/directional_column.dart';
+import '../widgets/rtl/directional_container.dart';
+import '../widgets/rtl/directional_app_bar.dart';
+import '../services/rtl_layout_service.dart';
 import '../services/api_service.dart';
 import '../providers/rating_provider.dart';
+import '../providers/locale_provider.dart';
 import '../l10n/app_localizations.dart';
 
 // Import DonationRequest model from api_service.dart
@@ -114,7 +120,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
   void _showErrorSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Row(
+        content: DirectionalRow(
           children: [
             const Icon(Icons.error_outline, color: Colors.white),
             const SizedBox(width: DesignSystem.spaceM),
@@ -130,7 +136,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
   void _showSuccessSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Row(
+        content: DirectionalRow(
           children: [
             const Icon(Icons.check_circle, color: Colors.white),
             const SizedBox(width: DesignSystem.spaceM),
@@ -282,27 +288,37 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
   Widget build(BuildContext context) {
     final filteredRequests = _filteredRequests;
 
-    return Scaffold(
-      backgroundColor: DesignSystem.getBackgroundColor(context),
-      appBar: AppBar(
-        backgroundColor: DesignSystem.getSurfaceColor(context),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: DesignSystem.textPrimary),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          AppLocalizations.of(context)!.myRequests,
-          style: const TextStyle(
-            color: DesignSystem.textPrimary,
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
+    final localeProvider = Provider.of<LocaleProvider>(context);
+    
+    return Directionality(
+      textDirection: localeProvider.textDirection,
+      child: Scaffold(
+        backgroundColor: DesignSystem.getBackgroundColor(context),
+        appBar: DirectionalAppBar(
+          backgroundColor: DesignSystem.getSurfaceColor(context),
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(
+              localeProvider.getDirectionalIcon(
+                start: Icons.arrow_back,
+                end: Icons.arrow_forward,
+              ),
+              color: DesignSystem.textPrimary,
+            ),
+            onPressed: () => Navigator.pop(context),
           ),
+          title: Text(
+            AppLocalizations.of(context)!.myRequests,
+            style: const TextStyle(
+              color: DesignSystem.textPrimary,
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          centerTitle: localeProvider.isRTL,
         ),
-        centerTitle: true,
-      ),
-      body: Column(
-        children: [
+        body: DirectionalColumn(
+          children: [
           // Filter Chips
           Container(
             color: DesignSystem.getSurfaceColor(context),
@@ -346,6 +362,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
           ),
         ],
       ),
+    ),
     );
   }
 
@@ -365,6 +382,8 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
   }
 
   Widget _buildRequestCard(DonationRequest request) {
+    final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
+    
     return Container(
       margin: const EdgeInsets.only(bottom: DesignSystem.spaceM),
       decoration: BoxDecoration(
@@ -380,11 +399,13 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
       ),
       child: Padding(
         padding: const EdgeInsets.all(DesignSystem.spaceM),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: DirectionalColumn(
+          crossAxisAlignment: localeProvider.isRTL 
+              ? CrossAxisAlignment.end 
+              : CrossAxisAlignment.start,
           children: [
             // Status and Date
-            Row(
+            DirectionalRow(
               children: [
                 _buildStatusBadge(request),
                 const Spacer(),
@@ -509,7 +530,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    const DirectionalRow(
                       children: [
                         Icon(
                           Icons.timeline,
@@ -540,7 +561,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
             const SizedBox(height: DesignSystem.spaceM),
 
             // Action Buttons
-            Row(
+            DirectionalRow(
               children: [
                 if (request.isPending) ...[
                   Expanded(

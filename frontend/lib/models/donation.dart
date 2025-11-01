@@ -67,14 +67,26 @@ class Donation {
 
   String get categoryDisplayName {
     switch (category) {
+      case 'medical':
+        return 'Medical';
+      case 'education':
+        return 'Education';
       case 'food':
         return 'Food';
+      case 'housing':
+        return 'Housing';
+      case 'emergency':
+        return 'Emergency';
       case 'clothes':
         return 'Clothes';
       case 'books':
         return 'Books';
       case 'electronics':
         return 'Electronics';
+      case 'furniture':
+        return 'Furniture';
+      case 'toys':
+        return 'Toys';
       case 'other':
         return 'Other';
       default:

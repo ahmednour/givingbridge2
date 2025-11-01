@@ -58,3 +58,16 @@ flutter:
 
   assets:
     - web/assets/images/hero/
+    - assets/fonts/
+
+  fonts:
+    - family: Cairo
+      fonts:
+        - asset: assets/fonts/Cairo_regular_4b11e795d4ad8cd5df4d5a6499fd802f226d4f2005612e8963e1a39053d18d1b.ttf
+          weight: 400
+        - asset: assets/fonts/Cairo_500_e3d37369ef6468651f579859edf81b7c8952a26e4e4bd20ae685b86714396b77.ttf
+          weight: 500
+        - asset: assets/fonts/Cairo_600_1b16088a549cf542a3e12718ec366a54883588accd7bfa7e459d5aebbb48ef10.ttf
+          weight: 600
+        - asset: assets/fonts/Cairo_700_6ba65ef98b11bcd9889f0df67db2cd6ed86c891f2b5f07bf1403aeae0b9e696c.ttf
+          weight: 700

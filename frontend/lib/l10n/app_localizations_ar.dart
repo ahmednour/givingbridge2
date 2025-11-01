@@ -189,7 +189,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get requiredField => 'هذا الحقل مطلوب';
 
   @override
-  String get titleTooShort => 'يجب أن يكون العنوان 3 أحرف على الأقل';
+  String get titleTooShort => 'العنوان قصير جداً (3 أحرف على الأقل)';
 
   @override
   String get donationDescription => 'الوصف';
@@ -198,7 +198,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get donationDescriptionHint => 'صف تبرعك بالتفصيل';
 
   @override
-  String get descriptionTooShort => 'يجب أن يكون الوصف 10 أحرف على الأقل';
+  String get descriptionTooShort => 'الوصف قصير جداً (10 أحرف على الأقل)';
 
   @override
   String get donationLocation => 'الموقع';
@@ -207,7 +207,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get donationLocationHint => 'أدخل الموقع الذي يتوفر فيه التبرع';
 
   @override
-  String get locationTooShort => 'يجب أن يكون الموقع حرفين على الأقل';
+  String get locationTooShort => 'الموقع قصير جداً (حرفان على الأقل)';
 
   @override
   String get quantity => 'الكمية';
@@ -222,7 +222,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get invalidPhone => 'الرجاء إدخال رقم هاتف صحيح';
 
   @override
-  String get passwordTooShort => 'يجب أن تكون كلمة المرور 6 أحرف على الأقل';
+  String get passwordTooShort => 'كلمة المرور قصيرة جداً (6 أحرف على الأقل)';
 
   @override
   String get passwordsDoNotMatch => 'كلمات المرور غير متطابقة';
@@ -1241,5 +1241,38 @@ class AppLocalizationsAr extends AppLocalizations {
   String get changeAppLanguage => 'تغيير لغة التطبيق';
 
   @override
+  String get languageChanged => 'تم تغيير اللغة بنجاح';
+
+  @override
+  String get selectLanguagePrompt => 'اختر لغتك المفضلة';
+
+  @override
+  String get currentLanguage => 'اللغة الحالية';
+
+  @override
   String get failedToUpdateSetting => 'فشل تحديث الإعداد';
+
+  @override
+  String get createRequest => 'إنشاء طلب';
+
+  @override
+  String get reports => 'التقارير';
+
+  @override
+  String get manageAccount => 'إدارة الحساب';
+
+  @override
+  String get chatWithUsers => 'الدردشة مع المستخدمين';
+
+  @override
+  String get manageAlerts => 'إدارة التنبيهات';
+
+  @override
+  String get helpSupport => 'المساعدة والدعم';
+
+  @override
+  String get getAssistance => 'الحصول على المساعدة';
+
+  @override
+  String get searchDonations => 'البحث في التبرعات...';
 }
