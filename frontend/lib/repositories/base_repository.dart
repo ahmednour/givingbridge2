@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:mime/mime.dart';
+import 'package:http_parser/http_parser.dart';
 import '../core/constants/api_constants.dart';
 import '../core/config/env_config.dart';
 import '../services/api_service.dart';
+import '../services/csrf_service.dart';
 
 /// Base repository class with common functionality
 abstract class BaseRepository {
@@ -17,6 +20,15 @@ abstract class BaseRepository {
       String? token = await ApiService.getToken();
       if (token != null) {
         headers['Authorization'] = 'Bearer $token';
+      }
+      
+      // Add CSRF token for authenticated requests
+      try {
+        final csrfToken = await CsrfService.getToken();
+        headers['X-CSRF-Token'] = csrfToken;
+      } catch (e) {
+        print('⚠️ Warning: Could not get CSRF token: $e');
+        // Continue without CSRF token - server will reject if required
       }
     }
 
@@ -45,6 +57,54 @@ abstract class BaseRepository {
     return response;
   }
 
+  Future<http.Response> postMultipart(
+    String endpoint,
+    Map<String, String> fields, {
+    Map<String, String>? files,
+    bool includeAuth = false,
+  }) async {
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse('$baseUrl$endpoint'),
+    );
+
+    // Add headers
+    if (includeAuth) {
+      String? token = await ApiService.getToken();
+      if (token != null) {
+        request.headers['Authorization'] = 'Bearer $token';
+      }
+      
+      // Add CSRF token for authenticated requests
+      try {
+        final csrfToken = await CsrfService.getToken();
+        request.headers['X-CSRF-Token'] = csrfToken;
+      } catch (e) {
+        print('⚠️ Warning: Could not get CSRF token: $e');
+        // Continue without CSRF token - server will reject if required
+      }
+    }
+
+    // Add fields
+    request.fields.addAll(fields);
+
+    // Add files with explicit MIME type
+    if (files != null) {
+      for (var entry in files.entries) {
+        final mimeType = lookupMimeType(entry.value) ?? 'application/octet-stream';
+        final file = await http.MultipartFile.fromPath(
+          entry.key,
+          entry.value,
+          contentType: MediaType.parse(mimeType),
+        );
+        request.files.add(file);
+      }
+    }
+
+    final streamedResponse = await request.send().timeout(APIConstants.sendTimeout);
+    return await http.Response.fromStream(streamedResponse);
+  }
+
   Future<http.Response> put(String endpoint, Map<String, dynamic> body,
       {bool includeAuth = false}) async {
     final response = await http
@@ -55,6 +115,54 @@ abstract class BaseRepository {
         )
         .timeout(APIConstants.sendTimeout);
     return response;
+  }
+
+  Future<http.Response> putMultipart(
+    String endpoint,
+    Map<String, String> fields, {
+    Map<String, String>? files,
+    bool includeAuth = false,
+  }) async {
+    final request = http.MultipartRequest(
+      'PUT',
+      Uri.parse('$baseUrl$endpoint'),
+    );
+
+    // Add headers
+    if (includeAuth) {
+      String? token = await ApiService.getToken();
+      if (token != null) {
+        request.headers['Authorization'] = 'Bearer $token';
+      }
+      
+      // Add CSRF token for authenticated requests
+      try {
+        final csrfToken = await CsrfService.getToken();
+        request.headers['X-CSRF-Token'] = csrfToken;
+      } catch (e) {
+        print('⚠️ Warning: Could not get CSRF token: $e');
+        // Continue without CSRF token - server will reject if required
+      }
+    }
+
+    // Add fields
+    request.fields.addAll(fields);
+
+    // Add files with explicit MIME type
+    if (files != null) {
+      for (var entry in files.entries) {
+        final mimeType = lookupMimeType(entry.value) ?? 'application/octet-stream';
+        final file = await http.MultipartFile.fromPath(
+          entry.key,
+          entry.value,
+          contentType: MediaType.parse(mimeType),
+        );
+        request.files.add(file);
+      }
+    }
+
+    final streamedResponse = await request.send().timeout(APIConstants.sendTimeout);
+    return await http.Response.fromStream(streamedResponse);
   }
 
   Future<http.Response> delete(String endpoint,

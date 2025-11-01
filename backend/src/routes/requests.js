@@ -7,8 +7,7 @@ const Donation = require("../models/Donation");
 const User = require("../models/User");
 const { sequelize } = require("../config/db");
 const {
-  generalLimiter,
-  heavyOperationLimiter,
+  generalRateLimit,
 } = require("../middleware/rateLimiting");
 
 // Import authentication middleware from auth routes
@@ -18,7 +17,7 @@ const { authenticateToken } = require("./auth");
 const requestImageUpload = require("../middleware/requestImageUpload");
 
 // Get all requests with optional filters and pagination
-router.get("/", authenticateToken, generalLimiter, async (req, res) => {
+router.get("/", authenticateToken, generalRateLimit, async (req, res) => {
   try {
     const {
       donationId,
@@ -72,7 +71,7 @@ router.get("/", authenticateToken, generalLimiter, async (req, res) => {
 });
 
 // Get request by ID
-router.get("/:id", authenticateToken, generalLimiter, async (req, res) => {
+router.get("/:id", authenticateToken, generalRateLimit, async (req, res) => {
   try {
     const { id } = req.params;
     const request = await Request.findByPk(id);
@@ -113,7 +112,7 @@ router.get("/:id", authenticateToken, generalLimiter, async (req, res) => {
 router.get(
   "/receiver/my-requests",
   authenticateToken,
-  generalLimiter,
+  generalRateLimit,
   async (req, res) => {
     try {
       const requests = await Request.findAll({
@@ -140,7 +139,7 @@ router.get(
 router.get(
   "/donor/incoming-requests",
   authenticateToken,
-  generalLimiter,
+  generalRateLimit,
   async (req, res) => {
     try {
       const requests = await Request.findAll({
@@ -168,7 +167,7 @@ router.post(
   "/",
   [
     authenticateToken,
-    generalLimiter, // Apply general rate limiting
+    generalRateLimit, // Apply general rate limiting
     body("donationId")
       .isInt({ min: 1 })
       .withMessage("Valid donation ID is required"),
@@ -324,7 +323,7 @@ router.put(
   "/:id/status",
   [
     authenticateToken,
-    generalLimiter, // Apply general rate limiting
+    generalRateLimit, // Apply general rate limiting
     body("status")
       .isIn(["approved", "declined", "completed", "cancelled"])
       .withMessage("Invalid status"),
@@ -456,7 +455,7 @@ router.put(
 );
 
 // Delete request (only by receiver or admin)
-router.delete("/:id", authenticateToken, generalLimiter, async (req, res) => {
+router.delete("/:id", authenticateToken, generalRateLimit, async (req, res) => {
   try {
     const { id } = req.params;
     const request = await Request.findByPk(id);
@@ -501,7 +500,7 @@ router.delete("/:id", authenticateToken, generalLimiter, async (req, res) => {
 router.get(
   "/admin/stats",
   authenticateToken,
-  heavyOperationLimiter,
+  generalRateLimit,
   async (req, res) => {
     try {
       // Check if user is admin
@@ -548,7 +547,7 @@ router.post(
   "/:id/attachment",
   [
     authenticateToken,
-    generalLimiter, // Apply general rate limiting
+    generalRateLimit, // Apply general rate limiting
   ],
   requestImageUpload.single("attachment"),
   async (req, res) => {
@@ -627,7 +626,7 @@ router.post(
 router.delete(
   "/:id/attachment",
   authenticateToken,
-  generalLimiter,
+  generalRateLimit,
   async (req, res) => {
     try {
       const { id } = req.params;

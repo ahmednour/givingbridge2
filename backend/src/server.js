@@ -4,6 +4,7 @@ const { Server } = require("socket.io");
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
+const compressionMiddleware = require("./middleware/compression");
 require("dotenv").config();
 
 // Import configuration and utilities
@@ -69,6 +70,11 @@ const PORT = config.port;
 const logger = require("./utils/logger");
 const { generalRateLimit, addRateLimitHeaders } = require("./middleware/rateLimiting");
 
+// Import security middleware
+const cookieParser = require('cookie-parser');
+const { csrfProtection, csrfErrorHandler, getCsrfToken } = require('./middleware/csrf');
+const { sanitizeInput } = require('./middleware/sanitization');
+
 // Import Swagger configuration
 const { specs, swaggerUi, swaggerOptions } = require("./config/swagger");
 
@@ -81,6 +87,9 @@ app.use(requestTiming);
 
 // Request logging middleware
 app.use(logger.requestLogger());
+
+// Compression middleware (before other middleware for best results)
+app.use(compressionMiddleware);
 
 // Security middleware
 app.use(helmet(config.security.helmet));
@@ -111,6 +120,11 @@ app.use(express.json({
   }
 }));
 app.use(express.urlencoded({ extended: true }));
+
+// Security middleware - MUST be after body parsing
+app.use(cookieParser());
+app.use(sanitizeInput);
+app.use('/api', csrfProtection); // CSRF protection with smart route skipping
 
 // Serve static files (avatars)
 app.use("/uploads", express.static("uploads"));
@@ -246,6 +260,9 @@ app.get("/", (req, res) => {
 // API version info endpoint
 app.get("/api/version", getVersionInfo);
 
+// CSRF token endpoint
+app.get("/api/csrf-token", getCsrfToken);
+
 // Health check
 app.get("/health", async (req, res) => {
   const healthStatus = {
@@ -333,6 +350,7 @@ if (io) {
 
 // Error handling middleware (must be after routes)
 app.use(logger.errorLogger()); // Log errors before handling them
+app.use(csrfErrorHandler); // Handle CSRF errors
 app.use(notFound);
 app.use(errorHandler);
 

@@ -10,6 +10,7 @@ import '../models/user_report.dart';
 import '../models/activity_log.dart';
 import '../models/notification_preference.dart';
 import '../core/config/api_config.dart';
+import 'csrf_service.dart';
 
 /// Pagination information from API
 class PaginationInfo {
@@ -105,7 +106,7 @@ class ApiService {
     throw Exception('Max retries exceeded');
   }
 
-  // Helper method to get headers with auth token
+  // Helper method to get headers with auth token and CSRF token
   static Future<Map<String, String>> _getHeaders(
       {bool includeAuth = false}) async {
     Map<String, String> headers = {
@@ -116,6 +117,15 @@ class ApiService {
       String? token = await getToken();
       if (token != null) {
         headers['Authorization'] = 'Bearer $token';
+      }
+      
+      // Add CSRF token for authenticated requests
+      try {
+        final csrfToken = await CsrfService.getToken();
+        headers['X-CSRF-Token'] = csrfToken;
+      } catch (e) {
+        print('⚠️ Warning: Could not get CSRF token: $e');
+        // Continue without CSRF token - server will reject if required
       }
     }
 
@@ -161,7 +171,7 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final authResult = AuthResult.fromJson(data);
+        final authResult = AuthResult.fromJson(data['data']);
         await saveToken(authResult.token);
 
         return ApiResponse.success(authResult);

@@ -2,14 +2,13 @@ const express = require("express");
 const router = express.Router();
 const VerificationController = require("../controllers/verificationController");
 const {
-  authenticateToken,
   requireAdmin,
   asyncHandler,
 } = require("../middleware");
-const upload = require("../middleware/upload");
+const { authenticateToken } = require("../middleware/auth");
+const { upload } = require("../middleware/upload");
 const {
-  generalLimiter,
-  heavyOperationLimiter,
+  generalRateLimit,
 } = require("../middleware/rateLimiting");
 
 // All routes require authentication
@@ -18,7 +17,7 @@ router.use(authenticateToken);
 // Upload user verification document
 router.post(
   "/user/documents",
-  generalLimiter, // Apply general rate limiting
+  generalRateLimit, // Apply general rate limiting
   upload.single("document"),
   asyncHandler(async (req, res) => {
     const { documentType } = req.body;
@@ -56,7 +55,7 @@ router.post(
 // Get user verification documents
 router.get(
   "/user/documents",
-  generalLimiter, // Apply general rate limiting
+  generalRateLimit, // Apply general rate limiting
   asyncHandler(async (req, res) => {
     const userId = req.user.id;
 
@@ -77,7 +76,7 @@ router.put(
   "/user/documents/:documentId/verify",
   [
     requireAdmin,
-    generalLimiter, // Apply general rate limiting
+    generalRateLimit, // Apply general rate limiting
   ],
   asyncHandler(async (req, res) => {
     const { documentId } = req.params;
@@ -103,7 +102,7 @@ router.put(
 // Upload request verification document
 router.post(
   "/request/:requestId/documents",
-  generalLimiter, // Apply general rate limiting
+  generalRateLimit, // Apply general rate limiting
   upload.single("document"),
   asyncHandler(async (req, res) => {
     const { requestId } = req.params;
@@ -143,7 +142,7 @@ router.post(
 // Get request verification documents
 router.get(
   "/request/:requestId/documents",
-  generalLimiter, // Apply general rate limiting
+  generalRateLimit, // Apply general rate limiting
   asyncHandler(async (req, res) => {
     const { requestId } = req.params;
     const user = req.user;
@@ -167,7 +166,7 @@ router.put(
   "/request/documents/:documentId/verify",
   [
     requireAdmin,
-    generalLimiter, // Apply general rate limiting
+    generalRateLimit, // Apply general rate limiting
   ],
   asyncHandler(async (req, res) => {
     const { documentId } = req.params;
@@ -195,7 +194,7 @@ router.get(
   "/statistics",
   [
     requireAdmin,
-    heavyOperationLimiter, // Apply heavy operation rate limiting
+    generalRateLimit, // Apply heavy operation rate limiting
   ],
   asyncHandler(async (req, res) => {
     const statistics = await VerificationController.getVerificationStatistics();
@@ -213,7 +212,7 @@ router.get(
   "/pending/:type",
   [
     requireAdmin,
-    generalLimiter, // Apply general rate limiting
+    generalRateLimit, // Apply general rate limiting
   ],
   asyncHandler(async (req, res) => {
     const { type } = req.params; // user or request

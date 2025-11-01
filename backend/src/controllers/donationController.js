@@ -98,10 +98,15 @@ class DonationController {
     const { title, description, category, condition, location, imageUrl } =
       donationData;
 
+    // Validate donorId
+    if (!donorId) {
+      throw new Error("Donor ID is required");
+    }
+
     // Get user info from database
     const user = await User.findByPk(donorId);
     if (!user) {
-      throw new Error("User not found");
+      throw new Error(`User not found with ID: ${donorId}. Please log in again.`);
     }
 
     return await Donation.create({

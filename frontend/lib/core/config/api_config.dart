@@ -1,11 +1,6 @@
 class ApiConfig {
-  // Check if we're in web mode and use environment variable or default
-  static const String _baseUrl = String.fromEnvironment(
-    'API_BASE_URL',
-    defaultValue: 'http://localhost:3000/api',
-  );
-
-  static String get baseUrl => _baseUrl;
+  // For now, use a hardcoded URL to test if the issue is with the JS interop
+  static String get baseUrl => 'http://localhost:3000/api';
 
   // Auth endpoints
   static const String loginEndpoint = '/auth/login';

@@ -69,7 +69,7 @@ class RequestController {
       },
       {
         model: User,
-        as: "donor",
+        as: "requestDonor",
         attributes: ["id", "name", "email", "phone", "location"],
       },
       {
@@ -133,7 +133,7 @@ class RequestController {
         },
         {
           model: User,
-          as: "donor",
+          as: "requestDonor",
           attributes: ["id", "name", "email", "phone", "location"],
         },
         {
@@ -184,7 +184,7 @@ class RequestController {
         },
         {
           model: User,
-          as: "donor",
+          as: "requestDonor",
           attributes: ["id", "name", "email", "phone", "location"],
         },
       ],

@@ -495,7 +495,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get getStarted => 'ابدأ الآن';
 
   @override
-  String get connectHeartsShareHope => 'نربط القلوب،\nنشارك الأمل';
+  String get connectHeartsShareHope => 'نربط القلوب،نشارك الأمل';
 
   @override
   String get landingHeroDescription =>
@@ -508,7 +508,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get learnMore => 'اعرف المزيد';
 
   @override
-  String get beautifulIllustrationComingSoon => 'رسم توضيحي جميل\nقريباً';
+  String get beautifulIllustrationComingSoon => 'رسم توضيحي جميل قريباً';
 
   @override
   String get whyChooseGivingBridge => 'لماذا تختار جسر العطاء؟';
@@ -813,7 +813,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String requestFrom(String name) {
-    return 'طلب من $name';
+    return ' $nameطلب من';
   }
 
   @override
@@ -827,6 +827,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get requestedAt => 'تم الطلب';
+
+  @override
+  String get markAllRead => 'وضع علامة مقروء على الكل';
 
   @override
   String unreadNotifications(int count) {
@@ -1107,6 +1110,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get peopleHelped => 'الأشخاص الذين تمت مساعدتهم';
+
+  @override
+  String get approvedRequests => 'الطلبات المقبولة';
 
   @override
   String get pendingRequests => 'الطلبات المعلقة';

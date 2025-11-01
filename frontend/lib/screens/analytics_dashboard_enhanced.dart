@@ -586,13 +586,19 @@ class _AnalyticsDashboardEnhancedState extends State<AnalyticsDashboardEnhanced>
             isDark: isDark,
             title: 'User Growth',
             child: GBLineChart(
-              data: (trends['userGrowth'] as List).map((item) => 
-                ChartDataPoint(
-                  x: item['date'],
-                  y: (item['count'] as num).toDouble(),
-                )
-              ).toList(),
-              color: DesignSystem.primaryBlue,
+              data: [
+                GBLineChartData(
+                  name: 'User Growth',
+                  points: (trends['userGrowth'] as List).asMap().entries.map((entry) => 
+                    GBChartPoint(
+                      x: entry.key.toDouble(),
+                      y: (entry.value['count'] as num).toDouble(),
+                    )
+                  ).toList(),
+                  color: DesignSystem.primaryBlue,
+                ),
+              ],
+              xLabels: (trends['userGrowth'] as List).map((item) => item['date'].toString()).toList(),
             ),
           ),
         
@@ -605,7 +611,7 @@ class _AnalyticsDashboardEnhancedState extends State<AnalyticsDashboardEnhanced>
             title: 'Category Distribution',
             child: GBPieChart(
               data: (distributions['categories'] as List).map((item) => 
-                PieChartDataPoint(
+                GBPieChartData(
                   label: item['category'],
                   value: (item['count'] as num).toDouble(),
                   color: _getCategoryColor(item['category']),

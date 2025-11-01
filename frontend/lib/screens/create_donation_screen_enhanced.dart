@@ -150,43 +150,32 @@ class _CreateDonationScreenEnhancedState
       final donationProvider =
           Provider.of<DonationProvider>(context, listen: false);
 
-      final donation = Donation(
-        id: widget.donation?.id ?? 0, // Temporary ID for new donations
-        title: _titleController.text.trim(),
-        description: _descriptionController.text.trim(),
-        category: _selectedCategory,
-        condition: _selectedCondition,
-        location: _locationController.text.trim(),
-        donorId: widget.donation?.donorId ?? 0, // Current user ID
-        donorName: widget.donation?.donorName ?? 'Current User',
-        imageUrl: widget.donation?.imageUrl,
-        isAvailable: true, // New donations are available by default
-        status: 'available',
-        createdAt:
-            widget.donation?.createdAt ?? DateTime.now().toIso8601String(),
-        updatedAt: DateTime.now().toIso8601String(),
-      );
+      // Get the first image path if available
+      String? imagePath;
+      if (_selectedImages.isNotEmpty) {
+        imagePath = _selectedImages.first.path;
+      }
 
       bool success;
       if (widget.donation != null) {
         success = await donationProvider.updateDonation(
-          id: donation.id.toString(),
-          title: donation.title,
-          description: donation.description,
-          category: donation.category,
-          condition: donation.condition,
-          location: donation.location,
-          imageUrl: donation.imageUrl,
-          isAvailable: donation.isAvailable,
+          id: widget.donation!.id.toString(),
+          title: _titleController.text.trim(),
+          description: _descriptionController.text.trim(),
+          category: _selectedCategory,
+          condition: _selectedCondition,
+          location: _locationController.text.trim(),
+          imagePath: imagePath,
+          isAvailable: true,
         );
       } else {
         success = await donationProvider.createDonation(
-          title: donation.title,
-          description: donation.description,
-          category: donation.category,
-          condition: donation.condition,
-          location: donation.location,
-          imageUrl: donation.imageUrl,
+          title: _titleController.text.trim(),
+          description: _descriptionController.text.trim(),
+          category: _selectedCategory,
+          condition: _selectedCondition,
+          location: _locationController.text.trim(),
+          imagePath: imagePath,
         );
       }
 

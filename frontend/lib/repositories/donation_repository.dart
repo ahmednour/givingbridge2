@@ -69,10 +69,10 @@ class DonationRepository extends BaseRepository {
     required String category,
     required String condition,
     required String location,
-    String? imageUrl,
+    String? imagePath,
   }) async {
     try {
-      final response = await post(
+      final response = await postMultipart(
         APIConstants.donations,
         {
           'title': title,
@@ -80,8 +80,8 @@ class DonationRepository extends BaseRepository {
           'category': category,
           'condition': condition,
           'location': location,
-          if (imageUrl != null) 'imageUrl': imageUrl,
         },
+        files: imagePath != null ? {'image': imagePath} : null,
         includeAuth: true,
       );
       return handleResponse(
@@ -99,21 +99,24 @@ class DonationRepository extends BaseRepository {
     String? category,
     String? condition,
     String? location,
-    String? imageUrl,
+    String? imagePath,
     bool? isAvailable,
   }) async {
     try {
-      Map<String, dynamic> body = {};
-      if (title != null) body['title'] = title;
-      if (description != null) body['description'] = description;
-      if (category != null) body['category'] = category;
-      if (condition != null) body['condition'] = condition;
-      if (location != null) body['location'] = location;
-      if (imageUrl != null) body['imageUrl'] = imageUrl;
-      if (isAvailable != null) body['isAvailable'] = isAvailable;
+      Map<String, String> fields = {};
+      if (title != null) fields['title'] = title;
+      if (description != null) fields['description'] = description;
+      if (category != null) fields['category'] = category;
+      if (condition != null) fields['condition'] = condition;
+      if (location != null) fields['location'] = location;
+      if (isAvailable != null) fields['isAvailable'] = isAvailable.toString();
 
-      final response =
-          await put('${APIConstants.donations}/$id', body, includeAuth: true);
+      final response = await putMultipart(
+        '${APIConstants.donations}/$id',
+        fields,
+        files: imagePath != null ? {'image': imagePath} : null,
+        includeAuth: true,
+      );
       return handleResponse(
           response, (json) => Donation.fromJson(json['donation']));
     } catch (e) {

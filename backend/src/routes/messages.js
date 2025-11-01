@@ -6,8 +6,7 @@ const Message = require("../models/Message");
 const User = require("../models/User");
 const MessageController = require("../controllers/messageController");
 const {
-  generalLimiter,
-  heavyOperationLimiter,
+  generalRateLimit,
 } = require("../middleware/rateLimiting");
 
 // Import authentication middleware from auth routes
@@ -17,7 +16,7 @@ const { authenticateToken } = require("./auth");
 router.get(
   "/conversations",
   authenticateToken,
-  generalLimiter,
+  generalRateLimit,
   async (req, res) => {
     try {
       const userId = req.user.userId;
@@ -93,7 +92,7 @@ router.get(
 router.get(
   "/conversation/:userId",
   authenticateToken,
-  generalLimiter,
+  generalRateLimit,
   async (req, res) => {
     try {
       const { userId: otherUserId } = req.params;
@@ -153,7 +152,7 @@ router.post(
   "/",
   [
     authenticateToken,
-    generalLimiter, // Apply general rate limiting
+    generalRateLimit, // Apply general rate limiting
     body("receiverId")
       .isInt({ min: 1 })
       .withMessage("Valid receiver ID is required"),
@@ -233,7 +232,9 @@ router.post(
 
       const message = await Message.create({
         senderId: sender.id,
+        senderName: sender.name,
         receiverId: receiver.id,
+        receiverName: receiver.name,
         donationId: donationId ? parseInt(donationId) : null,
         requestId: requestId ? parseInt(requestId) : null,
         content: content.trim(),
@@ -258,7 +259,7 @@ router.post(
 );
 
 // Mark a message as read
-router.put("/:id/read", authenticateToken, generalLimiter, async (req, res) => {
+router.put("/:id/read", authenticateToken, generalRateLimit, async (req, res) => {
   try {
     const { id } = req.params;
     const message = await Message.findByPk(id);
@@ -295,7 +296,7 @@ router.put("/:id/read", authenticateToken, generalLimiter, async (req, res) => {
 router.put(
   "/conversation/:userId/read",
   authenticateToken,
-  generalLimiter, // Apply general rate limiting
+  generalRateLimit, // Apply general rate limiting
   async (req, res) => {
     try {
       const otherUserId = parseInt(req.params.userId);
@@ -329,7 +330,7 @@ router.put(
 router.get(
   "/unread-count",
   authenticateToken,
-  generalLimiter,
+  generalRateLimit,
   async (req, res) => {
     try {
       const unreadCount = await Message.count({
@@ -354,7 +355,7 @@ router.get(
 );
 
 // Delete a message (only sender can delete)
-router.delete("/:id", authenticateToken, generalLimiter, async (req, res) => {
+router.delete("/:id", authenticateToken, generalRateLimit, async (req, res) => {
   try {
     const { id } = req.params;
     const message = await Message.findByPk(id);
@@ -392,7 +393,7 @@ router.delete("/:id", authenticateToken, generalLimiter, async (req, res) => {
 router.get(
   "/admin/stats",
   authenticateToken,
-  heavyOperationLimiter,
+  generalRateLimit,
   async (req, res) => {
     try {
       // Check if user is admin
@@ -430,7 +431,7 @@ router.get(
 router.get(
   "/conversations/archived",
   authenticateToken,
-  generalLimiter,
+  generalRateLimit,
   async (req, res) => {
     try {
       const userId = req.user.userId;
@@ -515,7 +516,7 @@ router.get(
 router.put(
   "/conversation/:userId/archive",
   authenticateToken,
-  generalLimiter, // Apply general rate limiting
+  generalRateLimit, // Apply general rate limiting
   async (req, res) => {
     try {
       const otherUserId = parseInt(req.params.userId);
@@ -542,7 +543,7 @@ router.put(
 router.put(
   "/conversation/:userId/unarchive",
   authenticateToken,
-  generalLimiter, // Apply general rate limiting
+  generalRateLimit, // Apply general rate limiting
   async (req, res) => {
     try {
       const otherUserId = parseInt(req.params.userId);

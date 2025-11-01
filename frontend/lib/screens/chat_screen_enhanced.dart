@@ -237,18 +237,58 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
     _messageController.clear();
     _scrollToBottom();
 
-    // Send message via socket
+    // Try to send message via Socket.IO first, then fallback to REST API
     try {
-      SocketService().sendMessage(
-        receiverId: widget.otherUserId,
-        content: content,
-        donationId: widget.donationId,
-        requestId: widget.requestId,
-      );
+      if (SocketService().isConnected) {
+        // Send via Socket.IO
+        SocketService().sendMessage(
+          receiverId: widget.otherUserId,
+          content: content,
+          donationId: widget.donationId,
+          requestId: widget.requestId,
+        );
+        
+        // Wait a bit to see if Socket.IO succeeds, otherwise fallback to REST API
+        await Future.delayed(const Duration(milliseconds: 1000));
+        
+        // Check if the optimistic message is still there (not replaced by real message)
+        // If it's still there, it means Socket.IO didn't work, so use REST API
+        final messages = messageProvider.getMessagesByUserId(widget.otherUserId);
+        final stillOptimistic = messages.any((m) {
+          final messageId = m is ChatMessage ? m.id : m['id'];
+          return messageId == optimisticMessage.id;
+        });
+        
+        if (stillOptimistic) {
+          // Socket.IO didn't work, fallback to REST API
+          await _sendMessageViaAPI(content, optimisticMessage, messageProvider);
+        }
+      } else {
+        // Socket not connected, use REST API directly
+        await _sendMessageViaAPI(content, optimisticMessage, messageProvider);
+      }
     } catch (e) {
       // Remove optimistic message on error
       messageProvider.deleteMessage(optimisticMessage.id.toString());
       _showErrorSnackbar('Failed to send message: ${e.toString()}');
+    }
+  }
+
+  Future<void> _sendMessageViaAPI(String content, ChatMessage optimisticMessage, MessageProvider messageProvider) async {
+    final success = await messageProvider.sendMessage(
+      receiverId: widget.otherUserId,
+      content: content,
+      donationId: widget.donationId,
+      requestId: widget.requestId,
+    );
+
+    if (success) {
+      // Remove the optimistic message since the real one was added by the provider
+      messageProvider.deleteMessage(optimisticMessage.id.toString());
+    } else {
+      // Remove optimistic message on error
+      messageProvider.deleteMessage(optimisticMessage.id.toString());
+      _showErrorSnackbar('Failed to send message via API');
     }
   }
 

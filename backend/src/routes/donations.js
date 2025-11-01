@@ -2,15 +2,14 @@ const express = require("express");
 const router = express.Router();
 const DonationController = require("../controllers/donationController");
 const {
-  authenticateToken,
   requireAdmin,
   asyncHandler,
 } = require("../middleware");
+const { authenticateToken } = require("../middleware/auth");
 const {
-  heavyOperationLimiter,
-  generalLimiter,
+  generalRateLimit,
 } = require("../middleware/rateLimiting");
-const upload = require("../middleware/upload");
+const imageUpload = require("../middleware/imageUpload");
 
 /**
  * @swagger
@@ -141,7 +140,7 @@ const upload = require("../middleware/upload");
  */
 router.get(
   "/",
-  generalLimiter, // Apply general rate limiting
+  generalRateLimit, // Apply general rate limiting
   asyncHandler(async (req, res) => {
     const { category, location, available, startDate, endDate, page, limit } =
       req.query;
@@ -174,7 +173,7 @@ router.get(
 // Get donation by ID (public endpoint with view count) with rate limiting
 router.get(
   "/:id",
-  generalLimiter, // Apply general rate limiting
+  generalRateLimit, // Apply general rate limiting
   asyncHandler(async (req, res) => {
     const { id } = req.params;
     const donation = await DonationController.getDonationByIdWithViewCount(id);
@@ -193,7 +192,7 @@ router.get(
 // Get social proof data for a donation with rate limiting
 router.get(
   "/:id/social-proof",
-  generalLimiter, // Apply general rate limiting
+  generalRateLimit, // Apply general rate limiting
   asyncHandler(async (req, res) => {
     const { id } = req.params;
     const socialProof = await DonationController.getSocialProof(id);
@@ -209,14 +208,26 @@ router.get(
 router.post(
   "/",
   authenticateToken,
-  generalLimiter, // Apply general rate limiting
-  upload.single("image"),
+  generalRateLimit, // Apply general rate limiting
+  imageUpload.single("image"),
+  imageUpload.optimizeUploadedImage, // Optimize uploaded image
   asyncHandler(async (req, res) => {
+    // Log request details for debugging
+    console.log("Create donation request:", {
+      userId: req.user?.id,
+      userEmail: req.user?.email,
+      hasFile: !!req.file,
+      body: req.body,
+    });
+
     const donationData = { ...req.body };
 
-    // Handle image upload
+    // Handle image upload with optimization info
     if (req.file) {
-      donationData.imageUrl = `/uploads/${req.file.filename}`;
+      donationData.imageUrl = `/uploads/images/${req.file.filename}`;
+      donationData.thumbnailUrl = `/uploads/images/${req.file.thumbnailFilename}`;
+      
+      console.log(`📸 Image optimized: ${req.file.savings}% size reduction`);
     }
 
     const donation = await DonationController.createDonation(
@@ -235,15 +246,15 @@ router.post(
 router.put(
   "/:id",
   authenticateToken,
-  generalLimiter, // Apply general rate limiting
-  upload.single("image"),
+  generalRateLimit, // Apply general rate limiting
+  imageUpload.single("image"),
   asyncHandler(async (req, res) => {
     const { id } = req.params;
     const updateData = { ...req.body };
 
     // Handle image upload
     if (req.file) {
-      updateData.imageUrl = `/uploads/${req.file.filename}`;
+      updateData.imageUrl = `/uploads/images/${req.file.filename}`;
     }
 
     try {
@@ -268,7 +279,7 @@ router.put(
 router.delete(
   "/:id",
   authenticateToken,
-  generalLimiter, // Apply general rate limiting
+  generalRateLimit, // Apply general rate limiting
   asyncHandler(async (req, res) => {
     const { id } = req.params;
 
@@ -286,7 +297,7 @@ router.delete(
 router.get(
   "/user/my-donations",
   authenticateToken,
-  generalLimiter, // Apply general rate limiting
+  generalRateLimit, // Apply general rate limiting
   asyncHandler(async (req, res) => {
     const donations = await DonationController.getDonationsByDonor(req.user.id);
 
@@ -303,7 +314,7 @@ router.get(
   "/stats",
   authenticateToken,
   requireAdmin,
-  heavyOperationLimiter, // Apply heavy operation rate limiting
+  generalRateLimit, // Apply heavy operation rate limiting
   asyncHandler(async (req, res) => {
     const stats = await DonationController.getDonationStats();
 

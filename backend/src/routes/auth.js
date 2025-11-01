@@ -442,7 +442,7 @@ router.post(
 // Request password reset with rate limiting
 router.post(
   "/forgot-password",
-  passwordResetLimiter, // Apply password reset rate limiting
+  passwordResetRateLimit, // Apply password reset rate limiting
   [
     body("email")
       .isEmail()
@@ -487,7 +487,7 @@ router.post(
 // Reset password with rate limiting
 router.post(
   "/reset-password",
-  passwordResetLimiter, // Apply password reset rate limiting
+  passwordResetRateLimit, // Apply password reset rate limiting
   [
     body("email")
       .isEmail()

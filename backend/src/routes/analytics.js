@@ -4,7 +4,7 @@ const AnalyticsController = require("../controllers/analyticsController");
 const ReportingService = require("../services/reportingService");
 const { authenticateToken } = require("./auth");
 const { requireAdmin, asyncHandler } = require("../middleware");
-const { heavyOperationLimiter } = require("../middleware/rateLimiting");
+const { generalRateLimit } = require("../middleware/rateLimiting");
 
 // All analytics routes require admin authentication
 router.use(authenticateToken);
@@ -13,7 +13,7 @@ router.use(requireAdmin);
 // Get overview statistics
 router.get(
   "/overview",
-  heavyOperationLimiter, // Apply heavy operation rate limiting
+  generalRateLimit, // Apply heavy operation rate limiting
   asyncHandler(async (req, res) => {
     const overview = await AnalyticsController.getOverview();
 
@@ -28,7 +28,7 @@ router.get(
 // Get donation trends
 router.get(
   "/donations/trends",
-  heavyOperationLimiter, // Apply heavy operation rate limiting
+  generalRateLimit, // Apply heavy operation rate limiting
   asyncHandler(async (req, res) => {
     const { days } = req.query;
     const trends = await AnalyticsController.getDonationTrends(days || 30);
@@ -44,7 +44,7 @@ router.get(
 // Get user growth
 router.get(
   "/users/growth",
-  heavyOperationLimiter, // Apply heavy operation rate limiting
+  generalRateLimit, // Apply heavy operation rate limiting
   asyncHandler(async (req, res) => {
     const { days } = req.query;
     const growth = await AnalyticsController.getUserGrowth(days || 30);
@@ -60,7 +60,7 @@ router.get(
 // Get category distribution
 router.get(
   "/donations/category-distribution",
-  heavyOperationLimiter, // Apply heavy operation rate limiting
+  generalRateLimit, // Apply heavy operation rate limiting
   asyncHandler(async (req, res) => {
     const distribution = await AnalyticsController.getCategoryDistribution();
 
@@ -75,7 +75,7 @@ router.get(
 // Get status distribution
 router.get(
   "/requests/status-distribution",
-  heavyOperationLimiter, // Apply heavy operation rate limiting
+  generalRateLimit, // Apply heavy operation rate limiting
   asyncHandler(async (req, res) => {
     const distribution = await AnalyticsController.getStatusDistribution();
 
@@ -90,7 +90,7 @@ router.get(
 // Get top donors
 router.get(
   "/donors/top",
-  heavyOperationLimiter, // Apply heavy operation rate limiting
+  generalRateLimit, // Apply heavy operation rate limiting
   asyncHandler(async (req, res) => {
     const { limit } = req.query;
     const topDonors = await AnalyticsController.getTopDonors(limit || 10);
@@ -106,7 +106,7 @@ router.get(
 // Get top receivers
 router.get(
   "/receivers/top",
-  heavyOperationLimiter, // Apply heavy operation rate limiting
+  generalRateLimit, // Apply heavy operation rate limiting
   asyncHandler(async (req, res) => {
     const { limit } = req.query;
     const topReceivers = await AnalyticsController.getTopReceivers(limit || 10);
@@ -122,7 +122,7 @@ router.get(
 // Get geographic distribution
 router.get(
   "/donations/geographic-distribution",
-  heavyOperationLimiter, // Apply heavy operation rate limiting
+  generalRateLimit, // Apply heavy operation rate limiting
   asyncHandler(async (req, res) => {
     const distribution = await AnalyticsController.getGeographicDistribution();
 
@@ -137,7 +137,7 @@ router.get(
 // Get request success rate
 router.get(
   "/requests/success-rate",
-  heavyOperationLimiter, // Apply heavy operation rate limiting
+  generalRateLimit, // Apply heavy operation rate limiting
   asyncHandler(async (req, res) => {
     const successRate = await AnalyticsController.getRequestSuccessRate();
 
@@ -152,7 +152,7 @@ router.get(
 // Get donation statistics over time
 router.get(
   "/donations/statistics-over-time",
-  heavyOperationLimiter, // Apply heavy operation rate limiting
+  generalRateLimit, // Apply heavy operation rate limiting
   asyncHandler(async (req, res) => {
     const { days } = req.query;
     const statistics = await AnalyticsController.getDonationStatisticsOverTime(
@@ -170,7 +170,7 @@ router.get(
 // Get recent activity
 router.get(
   "/activity/recent",
-  heavyOperationLimiter, // Apply heavy operation rate limiting
+  generalRateLimit, // Apply heavy operation rate limiting
   asyncHandler(async (req, res) => {
     const { limit } = req.query;
     const activity = await AnalyticsController.getRecentActivity(limit || 20);
@@ -186,7 +186,7 @@ router.get(
 // Get platform statistics (comprehensive)
 router.get(
   "/platform/stats",
-  heavyOperationLimiter, // Apply heavy operation rate limiting
+  generalRateLimit, // Apply heavy operation rate limiting
   asyncHandler(async (req, res) => {
     const stats = await AnalyticsController.getPlatformStats();
 
@@ -201,7 +201,7 @@ router.get(
 // Generate comprehensive analytics report
 router.get(
   "/reports/generate",
-  heavyOperationLimiter,
+  generalRateLimit,
   asyncHandler(async (req, res) => {
     const { 
       startDate, 
@@ -264,7 +264,7 @@ router.get(
 // Get advanced analytics data (for dashboard)
 router.get(
   "/advanced",
-  heavyOperationLimiter,
+  generalRateLimit,
   asyncHandler(async (req, res) => {
     const { 
       startDate, 
@@ -302,7 +302,7 @@ router.get(
 // Get real-time metrics (for live dashboard updates)
 router.get(
   "/realtime",
-  heavyOperationLimiter,
+  generalRateLimit,
   asyncHandler(async (req, res) => {
     // Get metrics for the last 24 hours
     const end = new Date();
@@ -328,7 +328,7 @@ router.get(
 // Get geographic analytics
 router.get(
   "/geographic",
-  heavyOperationLimiter,
+  generalRateLimit,
   asyncHandler(async (req, res) => {
     const { 
       startDate, 

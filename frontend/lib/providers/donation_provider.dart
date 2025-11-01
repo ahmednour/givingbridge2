@@ -178,7 +178,7 @@ class DonationProvider extends ChangeNotifier {
     required String category,
     required String condition,
     required String location,
-    String? imageUrl,
+    String? imagePath,
   }) async {
     _setLoading(true);
     _clearError();
@@ -190,7 +190,7 @@ class DonationProvider extends ChangeNotifier {
         category: category,
         condition: condition,
         location: location,
-        imageUrl: imageUrl,
+        imagePath: imagePath,
       );
 
       if (response.success && response.data != null) {
@@ -217,7 +217,7 @@ class DonationProvider extends ChangeNotifier {
     String? category,
     String? condition,
     String? location,
-    String? imageUrl,
+    String? imagePath,
     bool? isAvailable,
   }) async {
     _setLoading(true);
@@ -231,7 +231,7 @@ class DonationProvider extends ChangeNotifier {
         category: category,
         condition: condition,
         location: location,
-        imageUrl: imageUrl,
+        imagePath: imagePath,
         isAvailable: isAvailable,
       );
 

@@ -3,15 +3,14 @@ const router = express.Router();
 const SearchController = require("../controllers/searchController");
 const { authenticateToken } = require("./auth");
 const {
-  generalLimiter,
-  heavyOperationLimiter,
+  generalRateLimit,
 } = require("../middleware/rateLimiting");
 
 /**
  * Search donations
  * @route GET /api/search/donations
  */
-router.get("/donations", generalLimiter, async (req, res) => {
+router.get("/donations", generalRateLimit, async (req, res) => {
   try {
     const {
       query,
@@ -82,7 +81,7 @@ router.get("/donations", generalLimiter, async (req, res) => {
  * Search requests
  * @route GET /api/search/requests
  */
-router.get("/requests", authenticateToken, generalLimiter, async (req, res) => {
+router.get("/requests", authenticateToken, generalRateLimit, async (req, res) => {
   try {
     const {
       query,
@@ -145,7 +144,7 @@ router.get("/requests", authenticateToken, generalLimiter, async (req, res) => {
  * Get donation filter options
  * @route GET /api/search/donations/filters
  */
-router.get("/donations/filters", generalLimiter, async (req, res) => {
+router.get("/donations/filters", generalRateLimit, async (req, res) => {
   try {
     const filterOptions = await SearchController.getDonationFilterOptions();
 
@@ -169,7 +168,7 @@ router.get("/donations/filters", generalLimiter, async (req, res) => {
 router.get(
   "/requests/filters",
   authenticateToken,
-  generalLimiter,
+  generalRateLimit,
   async (req, res) => {
     try {
       const filterOptions = await SearchController.getRequestFilterOptions();
@@ -192,7 +191,7 @@ router.get(
  * Get search suggestions
  * @route GET /api/search/suggestions
  */
-router.get("/suggestions", generalLimiter, async (req, res) => {
+router.get("/suggestions", generalRateLimit, async (req, res) => {
   try {
     const { q: partialTerm, type = 'all', limit = 10 } = req.query;
 
@@ -226,7 +225,7 @@ router.get("/suggestions", generalLimiter, async (req, res) => {
  * Get user's search history
  * @route GET /api/search/history
  */
-router.get("/history", authenticateToken, generalLimiter, async (req, res) => {
+router.get("/history", authenticateToken, generalRateLimit, async (req, res) => {
   try {
     const { limit = 20 } = req.query;
     const userId = req.user.userId;
@@ -253,7 +252,7 @@ router.get("/history", authenticateToken, generalLimiter, async (req, res) => {
  * Clear user's search history
  * @route DELETE /api/search/history
  */
-router.delete("/history", authenticateToken, generalLimiter, async (req, res) => {
+router.delete("/history", authenticateToken, generalRateLimit, async (req, res) => {
   try {
     const userId = req.user.userId;
 
@@ -281,7 +280,7 @@ router.delete("/history", authenticateToken, generalLimiter, async (req, res) =>
  * Get popular search terms
  * @route GET /api/search/popular
  */
-router.get("/popular", generalLimiter, async (req, res) => {
+router.get("/popular", generalRateLimit, async (req, res) => {
   try {
     const { limit = 10, days = 30 } = req.query;
 
@@ -307,7 +306,7 @@ router.get("/popular", generalLimiter, async (req, res) => {
  * Get search analytics (admin only)
  * @route GET /api/search/analytics
  */
-router.get("/analytics", authenticateToken, heavyOperationLimiter, async (req, res) => {
+router.get("/analytics", authenticateToken, generalRateLimit, async (req, res) => {
   try {
     const user = await require("../models/User").findByPk(req.user.userId);
     if (!user || user.role !== 'admin') {

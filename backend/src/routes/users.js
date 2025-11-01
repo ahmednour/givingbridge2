@@ -1,17 +1,16 @@
 const express = require("express");
 const { body, validationResult } = require("express-validator");
-const { authenticateToken } = require("./auth");
+const { authenticateToken } = require("../middleware/auth");
 const User = require("../models/User");
 const UserController = require("../controllers/userController");
-const upload = require("../middleware/upload");
+const { upload } = require("../middleware/upload");
 const {
-  generalLimiter,
-  heavyOperationLimiter,
+  generalRateLimit,
 } = require("../middleware/rateLimiting");
 const router = express.Router();
 
 // Get all users (admin only)
-router.get("/", authenticateToken, heavyOperationLimiter, async (req, res) => {
+router.get("/", authenticateToken, generalRateLimit, async (req, res) => {
   try {
     // Check if user is admin
     if (req.user.role !== "admin") {
@@ -42,7 +41,7 @@ router.get("/", authenticateToken, heavyOperationLimiter, async (req, res) => {
 router.get(
   "/search/conversation",
   authenticateToken,
-  generalLimiter,
+  generalRateLimit,
   async (req, res) => {
     try {
       const { query, limit = 10 } = req.query;
@@ -71,7 +70,7 @@ router.get(
 );
 
 // Get user by ID
-router.get("/:id", authenticateToken, generalLimiter, async (req, res) => {
+router.get("/:id", authenticateToken, generalRateLimit, async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
 
@@ -109,7 +108,7 @@ router.put(
   "/:id",
   [
     authenticateToken,
-    generalLimiter, // Apply general rate limiting
+    generalRateLimit, // Apply general rate limiting
     body("name")
       .optional()
       .trim()
@@ -202,7 +201,7 @@ router.put(
 );
 
 // Delete user (admin only)
-router.delete("/:id", authenticateToken, generalLimiter, async (req, res) => {
+router.delete("/:id", authenticateToken, generalRateLimit, async (req, res) => {
   try {
     // Check if user is admin
     if (req.user.role !== "admin") {
@@ -242,7 +241,7 @@ router.delete("/:id", authenticateToken, generalLimiter, async (req, res) => {
 });
 
 // Get user's requests
-router.get("/:id/requests", authenticateToken, generalLimiter, (req, res) => {
+router.get("/:id/requests", authenticateToken, generalRateLimit, (req, res) => {
   try {
     const userId = parseInt(req.params.id);
 
@@ -277,7 +276,7 @@ router.post(
   "/:id/block",
   [
     authenticateToken,
-    generalLimiter, // Apply general rate limiting
+    generalRateLimit, // Apply general rate limiting
     body("reason")
       .optional()
       .trim()
@@ -314,7 +313,7 @@ router.post(
 router.delete(
   "/:id/block",
   authenticateToken,
-  generalLimiter,
+  generalRateLimit,
   async (req, res) => {
     try {
       const userId = parseInt(req.params.id);
@@ -334,7 +333,7 @@ router.delete(
 router.get(
   "/blocked/list",
   authenticateToken,
-  generalLimiter,
+  generalRateLimit,
   async (req, res) => {
     try {
       const blockedUsers = await UserController.getBlockedUsers(req.user);
@@ -356,7 +355,7 @@ router.get(
 router.get(
   "/:id/blocked",
   authenticateToken,
-  generalLimiter,
+  generalRateLimit,
   async (req, res) => {
     try {
       const userId = parseInt(req.params.id);
@@ -377,7 +376,7 @@ router.post(
   "/:id/report",
   [
     authenticateToken,
-    generalLimiter, // Apply general rate limiting
+    generalRateLimit, // Apply general rate limiting
     body("reason")
       .notEmpty()
       .withMessage("Reason is required")
@@ -430,7 +429,7 @@ router.post(
 router.get(
   "/reports/my",
   authenticateToken,
-  generalLimiter,
+  generalRateLimit,
   async (req, res) => {
     try {
       const reports = await UserController.getUserReports(req.user);
@@ -449,7 +448,7 @@ router.get(
 );
 
 // Get blocked users
-router.get("/blocked", authenticateToken, generalLimiter, async (req, res) => {
+router.get("/blocked", authenticateToken, generalRateLimit, async (req, res) => {
   try {
     const blockedUsers = await UserController.getBlockedUsers(req.user);
     res.json({
@@ -469,7 +468,7 @@ router.get("/blocked", authenticateToken, generalLimiter, async (req, res) => {
 router.get(
   "/reports/all",
   authenticateToken,
-  heavyOperationLimiter,
+  generalRateLimit,
   async (req, res) => {
     try {
       if (req.user.role !== "admin") {
@@ -500,7 +499,7 @@ router.patch(
   "/reports/:reportId",
   [
     authenticateToken,
-    generalLimiter, // Apply general rate limiting
+    generalRateLimit, // Apply general rate limiting
     body("status")
       .optional()
       .isIn(["pending", "reviewed", "resolved", "dismissed"])
@@ -552,7 +551,7 @@ router.post(
   "/avatar",
   [
     authenticateToken,
-    generalLimiter, // Apply general rate limiting
+    generalRateLimit, // Apply general rate limiting
   ],
   upload.single("avatar"),
   async (req, res) => {
@@ -573,7 +572,7 @@ router.post(
 router.delete(
   "/avatar",
   authenticateToken,
-  generalLimiter,
+  generalRateLimit,
   async (req, res) => {
     try {
       const result = await UserController.deleteAvatar(req.user);

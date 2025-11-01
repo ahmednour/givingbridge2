@@ -181,7 +181,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Provide basic information about your donation';
 
   @override
-  String get donationTitle => 'Donation Title';
+  String get donationTitle => 'Donation';
 
   @override
   String get donationTitleHint => 'Enter a descriptive title for your donation';
@@ -510,7 +510,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Giving Bridge connects generous donors with those in need, creating a community where kindness flows freely and every donation makes a real difference.';
 
   @override
-  String get startDonating => 'Start Donating';
+  String get startDonating => 'Start donating to see your impact!';
 
   @override
   String get learnMore => 'Learn More';
@@ -657,13 +657,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Notification settings coming soon!';
 
   @override
-  String get languageSettingsComingSoon => 'Language settings coming soon! ';
+  String get languageSettingsComingSoon => 'Language settings coming soon!';
 
   @override
   String get helpSupportComingSoon => 'Help & Support coming soon!';
 
   @override
-  String get selectLanguage => 'Select Language';
+  String get selectLanguage => 'Select Language / اختر اللغة';
 
   @override
   String get overview => 'Overview';
@@ -829,7 +829,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String requestFrom(String name) {
-    return 'Request from $name';
+    return 'Request from';
   }
 
   @override
@@ -844,6 +844,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get requestedAt => 'Requested';
+
+  @override
+  String get markAllRead => 'Mark all read';
 
   @override
   String unreadNotifications(int count) {
@@ -1127,6 +1130,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get peopleHelped => 'People Helped';
+
+  @override
+  String get approvedRequests => 'Approved Requests';
 
   @override
   String get pendingRequests => 'Pending Requests';
