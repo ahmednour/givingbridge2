@@ -922,7 +922,7 @@ class _LandingScreenState extends State<LandingScreen>
         horizontal: isDesktop
             ? AppTheme.spacingXXL + AppTheme.spacingM
             : AppTheme.spacingL,
-        vertical: AppTheme.spacingXXL + AppTheme.spacingM,
+        vertical: AppTheme.spacingL + AppTheme.spacingM,
       ),
       child: isDesktop
           ? Row(

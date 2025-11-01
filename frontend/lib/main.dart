@@ -153,17 +153,10 @@ class _AuthWrapperState extends State<AuthWrapper> {
           });
         }
 
-        // Show appropriate screen based on auth state with offline banner
-        return Column(
-          children: [
-            const AnimatedOfflineBanner(),
-            Expanded(
-              child: authProvider.isAuthenticated
-                  ? const DashboardScreen()
-                  : const LandingScreen(),
-            ),
-          ],
-        );
+        // Show appropriate screen based on auth state
+        return authProvider.isAuthenticated
+            ? const DashboardScreen()
+            : const LandingScreen();
       },
     );
   }
