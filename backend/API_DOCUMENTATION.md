@@ -1,8 +1,8 @@
-# GivingBridge API Documentation
+# GivingBridge MVP API Documentation
 
 ## Overview
 
-The GivingBridge API provides a comprehensive set of endpoints for managing donations, requests, users, and all platform functionality. This RESTful API follows modern standards and best practices.
+The GivingBridge MVP API provides essential endpoints for managing donations, requests, users, and core platform functionality. This simplified RESTful API focuses on core features for graduation project demonstration.
 
 ## Base URL
 

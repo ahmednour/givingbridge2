@@ -46,7 +46,7 @@ class EnvConfig {
   static bool get enableDebugLogging => isDevelopment;
   static bool get enablePerformanceMonitoring => isProduction;
   static bool get enableRealTimeUpdates => true;
-  static bool get enablePushNotifications => isProduction || isStaging;
+  static bool get enablePushNotifications => false; // Removed for MVP
   static bool get enableFileUpload => true;
   static bool get enableLocationServices => true;
   static bool get enableOfflineMode => true;

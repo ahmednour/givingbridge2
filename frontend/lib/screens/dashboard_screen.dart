@@ -13,7 +13,7 @@ import '../l10n/app_localizations.dart';
 import 'login_screen.dart';
 import 'donor_dashboard_enhanced.dart';
 import 'receiver_dashboard_enhanced.dart';
-import 'admin_dashboard_enhanced.dart';
+import 'admin_dashboard_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -98,7 +98,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       case 'receiver':
         return const ReceiverDashboardEnhanced();
       case 'admin':
-        return const AdminDashboardEnhanced();
+        return const AdminDashboardScreen();
       default:
         // Fallback to donor dashboard for unknown roles
         return const DonorDashboardEnhanced();

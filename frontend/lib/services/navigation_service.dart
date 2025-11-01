@@ -13,7 +13,9 @@ import '../screens/my_requests_screen.dart';
 import '../screens/incoming_requests_screen.dart';
 import '../screens/messages_screen_enhanced.dart';
 import '../screens/chat_screen_enhanced.dart';
-import '../screens/admin_dashboard_enhanced.dart';
+import '../screens/admin_dashboard_screen.dart';
+import '../screens/admin_users_screen.dart';
+import '../screens/admin_requests_screen.dart';
 import '../screens/donor_dashboard_enhanced.dart';
 import '../screens/receiver_dashboard_enhanced.dart';
 import '../screens/notifications_screen.dart';
@@ -226,7 +228,15 @@ class AppRouter {
 
       case RouteConstants.adminDashboard:
         return MaterialPageRoute(
-            builder: (_) => const AdminDashboardEnhanced());
+            builder: (_) => const AdminDashboardScreen());
+
+      case '/admin/users':
+        return MaterialPageRoute(
+            builder: (_) => const AdminUsersScreen());
+
+      case '/admin/requests':
+        return MaterialPageRoute(
+            builder: (_) => const AdminRequestsScreen());
 
       case RouteConstants.donorDashboard:
         return MaterialPageRoute(

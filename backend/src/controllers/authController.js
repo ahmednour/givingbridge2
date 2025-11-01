@@ -172,27 +172,7 @@ class AuthController {
     });
   }
 
-  /**
-   * Update user's FCM token for push notifications
-   * @param {number} userId - User ID
-   * @param {string} fcmToken - Firebase Cloud Messaging token
-   * @returns {Promise<Object>} Update result
-   */
-  static async updateFCMToken(userId, fcmToken) {
-    const user = await User.findByPk(userId);
-    if (!user) {
-      throw new NotFoundError("User not found");
-    }
-
-    await user.update({ fcmToken });
-
-    console.log(`✅ Updated FCM token for user ${userId}`);
-
-    return {
-      success: true,
-      message: "FCM token updated successfully",
-    };
-  }
+  // FCM token functionality removed for MVP
 
   /**
    * Verify user's email address

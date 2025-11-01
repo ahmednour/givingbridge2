@@ -9,10 +9,8 @@
       "dependencies": [
         "cached_network_image",
         "connectivity_plus",
-        "fl_chart",
         "flutter",
         "flutter_animate",
-        "flutter_localizations",
         "go_router",
         "google_fonts",
         "hovering",
@@ -20,7 +18,6 @@
         "http_parser",
         "image",
         "image_picker",
-        "intl",
         "mime",
         "path",
         "path_provider",
@@ -32,23 +29,7 @@
         "flutter_lints",
         "flutter_test",
         "integration_test",
-        "intl_utils",
         "mockito"
-      ]
-    },
-    {
-      "name": "intl_utils",
-      "version": "2.8.12",
-      "dependencies": [
-        "analyzer",
-        "archive",
-        "args",
-        "dart_style",
-        "http",
-        "intl",
-        "path",
-        "petitparser",
-        "yaml"
       ]
     },
     {
@@ -164,14 +145,6 @@
       "dependencies": [
         "flutter",
         "flutter_shaders"
-      ]
-    },
-    {
-      "name": "fl_chart",
-      "version": "0.66.2",
-      "dependencies": [
-        "equatable",
-        "flutter"
       ]
     },
     {
@@ -295,24 +268,6 @@
       ]
     },
     {
-      "name": "intl",
-      "version": "0.20.2",
-      "dependencies": [
-        "clock",
-        "meta",
-        "path"
-      ]
-    },
-    {
-      "name": "flutter_localizations",
-      "version": "0.0.0",
-      "dependencies": [
-        "flutter",
-        "intl",
-        "path"
-      ]
-    },
-    {
       "name": "flutter",
       "version": "0.0.0",
       "dependencies": [
@@ -331,60 +286,6 @@
         "collection",
         "source_span",
         "string_scanner"
-      ]
-    },
-    {
-      "name": "petitparser",
-      "version": "7.0.1",
-      "dependencies": [
-        "collection",
-        "meta"
-      ]
-    },
-    {
-      "name": "dart_style",
-      "version": "3.1.2",
-      "dependencies": [
-        "analyzer",
-        "args",
-        "collection",
-        "package_config",
-        "path",
-        "pub_semver",
-        "source_span",
-        "yaml"
-      ]
-    },
-    {
-      "name": "args",
-      "version": "2.7.0",
-      "dependencies": []
-    },
-    {
-      "name": "archive",
-      "version": "4.0.7",
-      "dependencies": [
-        "crypto",
-        "path",
-        "posix"
-      ]
-    },
-    {
-      "name": "analyzer",
-      "version": "8.2.0",
-      "dependencies": [
-        "_fe_analyzer_shared",
-        "collection",
-        "convert",
-        "crypto",
-        "glob",
-        "meta",
-        "package_config",
-        "path",
-        "pub_semver",
-        "source_span",
-        "watcher",
-        "yaml"
       ]
     },
     {
@@ -506,6 +407,20 @@
       ]
     },
     {
+      "name": "dart_style",
+      "version": "3.1.2",
+      "dependencies": [
+        "analyzer",
+        "args",
+        "collection",
+        "package_config",
+        "path",
+        "pub_semver",
+        "source_span",
+        "yaml"
+      ]
+    },
+    {
       "name": "crypto",
       "version": "3.0.6",
       "dependencies": [
@@ -596,6 +511,29 @@
       "dependencies": [
         "collection",
         "meta"
+      ]
+    },
+    {
+      "name": "args",
+      "version": "2.7.0",
+      "dependencies": []
+    },
+    {
+      "name": "analyzer",
+      "version": "8.2.0",
+      "dependencies": [
+        "_fe_analyzer_shared",
+        "collection",
+        "convert",
+        "crypto",
+        "glob",
+        "meta",
+        "package_config",
+        "path",
+        "pub_semver",
+        "source_span",
+        "watcher",
+        "yaml"
       ]
     },
     {
@@ -723,14 +661,6 @@
       ]
     },
     {
-      "name": "equatable",
-      "version": "2.0.7",
-      "dependencies": [
-        "collection",
-        "meta"
-      ]
-    },
-    {
       "name": "octo_image",
       "version": "2.1.0",
       "dependencies": [
@@ -847,6 +777,15 @@
         "collection",
         "meta",
         "petitparser"
+      ]
+    },
+    {
+      "name": "archive",
+      "version": "4.0.7",
+      "dependencies": [
+        "crypto",
+        "path",
+        "posix"
       ]
     },
     {
@@ -1028,22 +967,6 @@
       "dependencies": []
     },
     {
-      "name": "posix",
-      "version": "6.0.3",
-      "dependencies": [
-        "ffi",
-        "meta",
-        "path"
-      ]
-    },
-    {
-      "name": "_fe_analyzer_shared",
-      "version": "89.0.0",
-      "dependencies": [
-        "meta"
-      ]
-    },
-    {
       "name": "web_socket",
       "version": "1.0.1",
       "dependencies": [
@@ -1081,6 +1004,13 @@
         "json_annotation",
         "source_span",
         "yaml"
+      ]
+    },
+    {
+      "name": "_fe_analyzer_shared",
+      "version": "89.0.0",
+      "dependencies": [
+        "meta"
       ]
     },
     {
@@ -1193,6 +1123,23 @@
       "name": "xdg_directories",
       "version": "1.1.0",
       "dependencies": [
+        "meta",
+        "path"
+      ]
+    },
+    {
+      "name": "petitparser",
+      "version": "7.0.1",
+      "dependencies": [
+        "collection",
+        "meta"
+      ]
+    },
+    {
+      "name": "posix",
+      "version": "6.0.3",
+      "dependencies": [
+        "ffi",
         "meta",
         "path"
       ]

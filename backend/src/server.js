@@ -314,11 +314,10 @@ app.use("/api/auth", require("./routes/auth"));
 app.use("/api/users", require("./routes/users"));
 app.use("/api/donations", require("./routes/donations"));
 app.use("/api/requests", require("./routes/requests"));
-app.use("/api/request-updates", require("./routes/requestUpdates"));
 app.use("/api/messages", require("./routes/messages"));
-app.use("/api/notifications", require("./routes/notifications"));
 app.use("/api/search", require("./routes/search"));
 app.use("/api/donation-history", require("./routes/donationHistory"));
+app.use("/api/admin", require("./routes/admin"));
 
 // Serve static files for receipts
 app.use("/receipts", express.static("receipts"));

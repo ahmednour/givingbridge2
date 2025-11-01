@@ -1,31 +1,29 @@
-# GivingBridge - Donation Platform
+# GivingBridge - MVP Donation Platform
 
-A comprehensive donation platform connecting donors and receivers, built with Node.js/Express backend and Flutter web frontend. GivingBridge facilitates meaningful connections between those who want to give and those in need, creating a transparent and secure environment for charitable donations.
+A simplified donation platform connecting donors and receivers, built with Node.js/Express backend and Flutter web frontend. This MVP version focuses on core functionality for a graduation project demonstration.
 
-## ✨ Features
+## ✨ MVP Features
 
 ### 🎯 Core Functionality
-- **Multi-role System**: Donors, Receivers, and Administrators with distinct capabilities
+- **Multi-role System**: Donors, Receivers, and Administrators with essential capabilities
 - **Real-time Messaging**: Socket.io powered communication between users
 - **Secure Authentication**: JWT-based authentication with bcrypt password hashing
-- **File Upload Support**: Image and document uploads with security scanning
-- **Advanced Search**: Full-text search across donations and requests
-- **Analytics Dashboard**: Comprehensive platform statistics and insights
+- **Basic File Upload**: Simple image uploads for donation requests
+- **Basic Search**: Simple search across donations and requests
+- **Essential Admin Panel**: Basic user and request management
 
 ### 🔒 Security & Performance
-- **Rate Limiting**: Configurable rate limits for different endpoint types
-- **Input Validation**: Express-validator for comprehensive request validation
-- **XSS Protection**: Sanitization of user inputs to prevent cross-site scripting
+- **Input Validation**: Express-validator for request validation
+- **XSS Protection**: Basic sanitization of user inputs
 - **CORS Configuration**: Secure cross-origin resource sharing
-- **Redis Caching**: Performance optimization with Redis integration
-- **Health Monitoring**: Built-in health checks and monitoring endpoints
+- **Health Monitoring**: Basic health checks
 
-### 🌐 Modern Architecture
+### 🌐 Simplified Architecture
 - **RESTful API**: Well-documented API with Swagger/OpenAPI specification
 - **Responsive Design**: Flutter web frontend optimized for all devices
 - **Containerized Deployment**: Docker and Docker Compose for easy deployment
 - **Database Migrations**: Sequelize ORM with version-controlled schema changes
-- **Testing Suite**: Comprehensive unit and integration tests
+- **English-only Interface**: Simplified single-language interface
 
 ## 🚀 Quick Start
 
@@ -201,44 +199,30 @@ DB_HOST=localhost
 DB_PORT=3307
 DB_NAME=givingbridge
 DB_USER=givingbridge_user
-DB_PASSWORD=secure_prod_password_2024
+DB_PASSWORD=secure_password_2024
 
 # JWT Configuration
-JWT_SECRET=prod_jwt_secret_key_2024_secure_random_string_min_32_chars_long
+JWT_SECRET=jwt_secret_key_2024_secure_random_string_min_32_chars_long
 JWT_EXPIRES_IN=7d
 
 # Security Configuration
-BCRYPT_ROUNDS=14
+BCRYPT_ROUNDS=12
 RATE_LIMIT_WINDOW_MS=900000
-RATE_LIMIT_MAX_REQUESTS=500
-LOGIN_RATE_LIMIT_WINDOW_MS=900000
-LOGIN_RATE_LIMIT_MAX_ATTEMPTS=50
+RATE_LIMIT_MAX_REQUESTS=100
 
 # File Upload Configuration
-MAX_FILE_SIZE=10
+MAX_FILE_SIZE=5
 UPLOAD_PATH=./uploads
 
-# Email Configuration (for notifications)
+# Email Configuration (basic notifications)
 EMAIL_HOST=smtp.example.com
 EMAIL_PORT=587
 EMAIL_USER=your_email_user
 EMAIL_PASS=your_email_password
 EMAIL_FROM=noreply@givingbridge.com
 
-# Redis Configuration (optional, for caching)
-REDIS_HOST=localhost
-REDIS_PORT=6379
-REDIS_PASSWORD=
-
-# Firebase Configuration (for push notifications)
-FIREBASE_PROJECT_ID=your_firebase_project_id
-FIREBASE_PRIVATE_KEY_ID=your_private_key_id
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nyour_private_key\n-----END PRIVATE KEY-----\n"
-FIREBASE_CLIENT_EMAIL=your_service_account_email
-
 # Logging Configuration
 LOG_LEVEL=info
-SENTRY_DSN=your_sentry_dsn_for_error_tracking
 ```
 
 ### Frontend Environment Variables
@@ -247,14 +231,6 @@ SENTRY_DSN=your_sentry_dsn_for_error_tracking
 # API Configuration
 BACKEND_API_URL=http://localhost:3000/api
 SOCKET_URL=http://localhost:3000
-
-# Firebase Configuration (for push notifications)
-FIREBASE_API_KEY=your_firebase_api_key
-FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-FIREBASE_PROJECT_ID=your_firebase_project_id
-FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-FIREBASE_MESSAGING_SENDER_ID=123456789
-FIREBASE_APP_ID=1:123456789:web:abcdef123456
 ```
 
 ## 📚 Documentation
@@ -808,35 +784,39 @@ We welcome contributions from the community! Please read our [Contributing Guide
 
 ## �  Project Status
 
-### Current Version: 1.0.0
+### Current Version: 1.0.0 MVP
 
-- ✅ **Backend API**: Fully functional with comprehensive endpoints
-- ✅ **Frontend Web App**: Complete Flutter web application
+- ✅ **Backend API**: Essential endpoints for core functionality
+- ✅ **Frontend Web App**: Simplified Flutter web application
 - ✅ **Authentication**: JWT-based secure authentication
 - ✅ **Database**: MySQL with Sequelize ORM and migrations
 - ✅ **Real-time Features**: Socket.io messaging system
-- ✅ **File Uploads**: Secure file handling with validation
-- ✅ **Testing**: Unit and integration test suites
-- ✅ **Documentation**: Comprehensive API and development docs
-- ✅ **Docker Support**: Full containerization for all services
-- ✅ **Security**: Rate limiting, input validation, XSS protection
+- ✅ **File Uploads**: Basic file handling for images
+- ✅ **Documentation**: Essential API and development docs
+- ✅ **Docker Support**: Containerization for easy deployment
+- ✅ **Security**: Basic input validation and XSS protection
 
-### Roadmap
+### MVP Scope
 
-#### v1.1.0 (Next Release)
-- [ ] Mobile app (Flutter iOS/Android)
-- [ ] Advanced analytics dashboard
-- [ ] Email notification system
-- [ ] Payment integration (Stripe/PayPal)
-- [ ] Advanced search filters
-- [ ] User verification system
+This is a simplified version designed for graduation project demonstration:
 
-#### v1.2.0 (Future)
-- [ ] Multi-language support
-- [ ] Social media integration
-- [ ] Advanced reporting features
-- [ ] API rate limiting per user
-- [ ] Webhook system for integrations
+#### Included Features
+- ✅ User registration and authentication
+- ✅ Basic donation request creation and browsing
+- ✅ Simple messaging between users
+- ✅ Essential admin panel for user and request management
+- ✅ English-only interface
+- ✅ Basic file uploads for request images
+
+#### Removed for Simplification
+- ❌ Multi-language support (Arabic removed)
+- ❌ Advanced analytics and reporting
+- ❌ Social features (ratings, comments, sharing)
+- ❌ Advanced notifications (Firebase push notifications)
+- ❌ Complex caching (Redis removed)
+- ❌ Advanced security features
+- ❌ User verification and document management
+- ❌ Activity logging and monitoring
 
 ## 🛡️ Security
 

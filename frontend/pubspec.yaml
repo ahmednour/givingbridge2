@@ -6,9 +6,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_localizations:
-    sdk: flutter
-  intl: any
 
   http: ^1.0.0
   http_parser: ^4.0.2
@@ -27,8 +24,7 @@ dependencies:
   connectivity_plus: ^4.0.2
   cached_network_image: ^3.3.0
 
-  # Charts and data visualization
-  fl_chart: ^0.66.0
+
 
   # Web enhancements
   flutter_animate: ^4.5.0
@@ -43,11 +39,9 @@ dev_dependencies:
     sdk: flutter
   mockito: ^5.4.2
   build_runner: ^2.4.7
-  intl_utils: ^2.8.4
 
 flutter:
   uses-material-design: true
-  generate: true
 
   assets:
     - web/assets/images/hero/

@@ -5,12 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import '../models/donation.dart';
 import '../models/user.dart';
-import '../models/blocked_user.dart';
-import '../models/user_report.dart';
-import '../models/activity_log.dart';
 import '../models/notification_preference.dart';
 import '../core/config/api_config.dart';
-import 'csrf_service.dart';
 
 /// Pagination information from API
 class PaginationInfo {
@@ -106,7 +102,7 @@ class ApiService {
     throw Exception('Max retries exceeded');
   }
 
-  // Helper method to get headers with auth token and CSRF token
+  // Helper method to get headers with auth token
   static Future<Map<String, String>> _getHeaders(
       {bool includeAuth = false}) async {
     Map<String, String> headers = {
@@ -117,15 +113,6 @@ class ApiService {
       String? token = await getToken();
       if (token != null) {
         headers['Authorization'] = 'Bearer $token';
-      }
-      
-      // Add CSRF token for authenticated requests
-      try {
-        final csrfToken = await CsrfService.getToken();
-        headers['X-CSRF-Token'] = csrfToken;
-      } catch (e) {
-        print('⚠️ Warning: Could not get CSRF token: $e');
-        // Continue without CSRF token - server will reject if required
       }
     }
 
@@ -283,7 +270,7 @@ class ApiService {
   }
 
   // Get all users (admin only)
-  static Future<ApiResponse<List<User>>> getAllUsers() async {
+  static Future<ApiResponse<Map<String, dynamic>>> getAllUsers() async {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/users'),
@@ -292,12 +279,50 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final users =
-            (data['users'] as List).map((json) => User.fromJson(json)).toList();
-        return ApiResponse.success(users);
+        return ApiResponse.success(data);
       } else {
         final error = jsonDecode(response.body);
         return ApiResponse.error(error['message'] ?? 'Failed to load users');
+      }
+    } catch (e) {
+      return ApiResponse.error('Network error: ${e.toString()}');
+    }
+  }
+
+  // Delete user (admin only)
+  static Future<ApiResponse<String>> deleteUser(String userId) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/users/$userId'),
+        headers: await _getHeaders(includeAuth: true),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return ApiResponse.success(data['message']);
+      } else {
+        final error = jsonDecode(response.body);
+        return ApiResponse.error(error['message'] ?? 'Failed to delete user');
+      }
+    } catch (e) {
+      return ApiResponse.error('Network error: ${e.toString()}');
+    }
+  }
+
+  // Get admin statistics
+  static Future<ApiResponse<Map<String, dynamic>>> getAdminStats() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/admin/stats'),
+        headers: await _getHeaders(includeAuth: true),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return ApiResponse.success(data);
+      } else {
+        final error = jsonDecode(response.body);
+        return ApiResponse.error(error['message'] ?? 'Failed to load admin stats');
       }
     } catch (e) {
       return ApiResponse.error('Network error: ${e.toString()}');
@@ -632,6 +657,26 @@ class ApiService {
             pagination: pagination,
           ),
         );
+      } else {
+        final error = jsonDecode(response.body);
+        return ApiResponse.error(error['message'] ?? 'Failed to load requests');
+      }
+    } catch (e) {
+      return ApiResponse.error('Network error: ${e.toString()}');
+    }
+  }
+
+  // Get all requests (admin only)
+  static Future<ApiResponse<Map<String, dynamic>>> getAllRequests() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/requests'),
+        headers: await _getHeaders(includeAuth: true),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return ApiResponse.success(data);
       } else {
         final error = jsonDecode(response.body);
         return ApiResponse.error(error['message'] ?? 'Failed to load requests');
@@ -981,221 +1026,8 @@ class ApiService {
     }
   }
 
-  // ========== USER SAFETY METHODS (BLOCK/REPORT) ==========
-
-  // Block a user
-  static Future<ApiResponse<String>> blockUser(int userId,
-      {String? reason}) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/users/$userId/block'),
-        headers: await _getHeaders(includeAuth: true),
-        body: jsonEncode({
-          if (reason != null && reason.isNotEmpty) 'reason': reason,
-        }),
-      );
-
-      if (response.statusCode == 201) {
-        final data = jsonDecode(response.body);
-        return ApiResponse.success(data['message']);
-      } else {
-        final error = jsonDecode(response.body);
-        return ApiResponse.error(error['message'] ?? 'Failed to block user');
-      }
-    } catch (e) {
-      return ApiResponse.error('Network error: ${e.toString()}');
-    }
-  }
-
-  // Unblock a user
-  static Future<ApiResponse<String>> unblockUser(int userId) async {
-    try {
-      final response = await http.delete(
-        Uri.parse('$baseUrl/users/$userId/block'),
-        headers: await _getHeaders(includeAuth: true),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return ApiResponse.success(data['message']);
-      } else {
-        final error = jsonDecode(response.body);
-        return ApiResponse.error(error['message'] ?? 'Failed to unblock user');
-      }
-    } catch (e) {
-      return ApiResponse.error('Network error: ${e.toString()}');
-    }
-  }
-
-  // Get list of blocked users
-  static Future<ApiResponse<List<BlockedUser>>> getBlockedUsers() async {
-    try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/users/blocked/list'),
-        headers: await _getHeaders(includeAuth: true),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final blockedUsers = (data['blockedUsers'] as List)
-            .map((json) => BlockedUser.fromJson(json))
-            .toList();
-        return ApiResponse.success(blockedUsers);
-      } else {
-        final error = jsonDecode(response.body);
-        return ApiResponse.error(
-            error['message'] ?? 'Failed to load blocked users');
-      }
-    } catch (e) {
-      return ApiResponse.error('Network error: ${e.toString()}');
-    }
-  }
-
-  // Check if a user is blocked
-  static Future<ApiResponse<bool>> isUserBlocked(int userId) async {
-    try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/users/$userId/blocked'),
-        headers: await _getHeaders(includeAuth: true),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return ApiResponse.success(data['isBlocked']);
-      } else {
-        final error = jsonDecode(response.body);
-        return ApiResponse.error(
-            error['message'] ?? 'Failed to check block status');
-      }
-    } catch (e) {
-      return ApiResponse.error('Network error: ${e.toString()}');
-    }
-  }
-
-  // Report a user
-  static Future<ApiResponse<String>> reportUser({
-    required int userId,
-    required ReportReason reason,
-    required String description,
-  }) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/users/$userId/report'),
-        headers: await _getHeaders(includeAuth: true),
-        body: jsonEncode({
-          'reason': reason.apiValue,
-          'description': description,
-        }),
-      );
-
-      if (response.statusCode == 201) {
-        final data = jsonDecode(response.body);
-        return ApiResponse.success(data['message']);
-      } else {
-        final error = jsonDecode(response.body);
-        return ApiResponse.error(error['message'] ?? 'Failed to report user');
-      }
-    } catch (e) {
-      return ApiResponse.error('Network error: ${e.toString()}');
-    }
-  }
-
-  // Get my submitted reports
-  static Future<ApiResponse<List<UserReport>>> getMyReports() async {
-    try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/users/reports/my'),
-        headers: await _getHeaders(includeAuth: true),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final reports = (data['reports'] as List)
-            .map((json) => UserReport.fromJson(json))
-            .toList();
-        return ApiResponse.success(reports);
-      } else {
-        final error = jsonDecode(response.body);
-        return ApiResponse.error(
-            error['message'] ?? 'Failed to load your reports');
-      }
-    } catch (e) {
-      return ApiResponse.error('Network error: ${e.toString()}');
-    }
-  }
-
-  // Get all reports (admin only)
-  static Future<ApiResponse<PaginatedResponse<UserReport>>> getAllReports({
-    String? status,
-    int page = 1,
-    int limit = 20,
-  }) async {
-    try {
-      List<String> params = [];
-
-      if (status != null) params.add('status=$status');
-      params.add('page=$page');
-      params.add('limit=$limit');
-
-      final queryParams = params.isNotEmpty ? '?${params.join('&')}' : '';
-
-      final response = await http.get(
-        Uri.parse('$baseUrl/users/reports/all$queryParams'),
-        headers: await _getHeaders(includeAuth: true),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final reports = (data['reports'] as List)
-            .map((json) => UserReport.fromJson(json))
-            .toList();
-
-        final pagination = PaginationInfo.fromJson(data['pagination']);
-
-        return ApiResponse.success(
-          PaginatedResponse<UserReport>(
-            items: reports,
-            pagination: pagination,
-          ),
-        );
-      } else {
-        final error = jsonDecode(response.body);
-        return ApiResponse.error(error['message'] ?? 'Failed to load reports');
-      }
-    } catch (e) {
-      return ApiResponse.error('Network error: ${e.toString()}');
-    }
-  }
-
-  // Update report status (admin only)
-  static Future<ApiResponse<String>> updateReportStatus({
-    required int reportId,
-    required String status,
-    String? reviewNotes,
-  }) async {
-    try {
-      final response = await http.patch(
-        Uri.parse('$baseUrl/users/reports/$reportId'),
-        headers: await _getHeaders(includeAuth: true),
-        body: jsonEncode({
-          'status': status,
-          if (reviewNotes != null && reviewNotes.isNotEmpty)
-            'reviewNotes': reviewNotes,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return ApiResponse.success(data['message']);
-      } else {
-        final error = jsonDecode(response.body);
-        return ApiResponse.error(
-            error['message'] ?? 'Failed to update report status');
-      }
-    } catch (e) {
-      return ApiResponse.error('Network error: ${e.toString()}');
-    }
-  }
+  // ========== USER SAFETY METHODS REMOVED FOR MVP ==========
+  // User blocking, reporting, and verification features removed for MVP simplification
 
   // ========== AVATAR UPLOAD METHODS ==========
 
@@ -1296,163 +1128,8 @@ class ApiService {
     }
   }
 
-  // ========== ACTIVITY LOG METHODS ==========
-
-  // Get activity logs with filtering and pagination
-  // Users see their own logs, admins see all
-  static Future<ApiResponse<PaginatedResponse<ActivityLog>>> getActivityLogs({
-    int? userId,
-    String? actionCategory,
-    String? action,
-    DateTime? startDate,
-    DateTime? endDate,
-    String? search,
-    int page = 1,
-    int limit = 20,
-  }) async {
-    try {
-      List<String> params = [];
-
-      if (userId != null) params.add('userId=$userId');
-      if (actionCategory != null) params.add('actionCategory=$actionCategory');
-      if (action != null) params.add('action=$action');
-      if (startDate != null) {
-        params.add('startDate=${startDate.toIso8601String()}');
-      }
-      if (endDate != null) {
-        params.add('endDate=${endDate.toIso8601String()}');
-      }
-      if (search != null && search.isNotEmpty) params.add('search=$search');
-      params.add('page=$page');
-      params.add('limit=$limit');
-
-      final queryParams = params.isNotEmpty ? '?${params.join('&')}' : '';
-
-      final response = await http.get(
-        Uri.parse('$baseUrl/activity$queryParams'),
-        headers: await _getHeaders(includeAuth: true),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final logs = (data['logs'] as List)
-            .map((json) => ActivityLog.fromJson(json))
-            .toList();
-
-        final pagination = PaginationInfo.fromJson(data['pagination']);
-
-        return ApiResponse.success(
-          PaginatedResponse<ActivityLog>(
-            items: logs,
-            pagination: pagination,
-          ),
-        );
-      } else {
-        final error = jsonDecode(response.body);
-        return ApiResponse.error(
-            error['message'] ?? 'Failed to load activity logs');
-      }
-    } catch (e) {
-      return ApiResponse.error('Network error: ${e.toString()}');
-    }
-  }
-
-  // Get activity log statistics (admin only)
-  static Future<ApiResponse<ActivityLogStatistics>> getActivityStatistics({
-    DateTime? startDate,
-    DateTime? endDate,
-  }) async {
-    try {
-      List<String> params = [];
-
-      if (startDate != null) {
-        params.add('startDate=${startDate.toIso8601String()}');
-      }
-      if (endDate != null) {
-        params.add('endDate=${endDate.toIso8601String()}');
-      }
-
-      final queryParams = params.isNotEmpty ? '?${params.join('&')}' : '';
-
-      final response = await http.get(
-        Uri.parse('$baseUrl/activity/statistics$queryParams'),
-        headers: await _getHeaders(includeAuth: true),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final statistics = ActivityLogStatistics.fromJson(data['statistics']);
-        return ApiResponse.success(statistics);
-      } else {
-        final error = jsonDecode(response.body);
-        return ApiResponse.error(
-            error['message'] ?? 'Failed to load activity statistics');
-      }
-    } catch (e) {
-      return ApiResponse.error('Network error: ${e.toString()}');
-    }
-  }
-
-  // Get single activity log by ID
-  static Future<ApiResponse<ActivityLog>> getActivityLogById(int id) async {
-    try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/activity/$id'),
-        headers: await _getHeaders(includeAuth: true),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final log = ActivityLog.fromJson(data['log']);
-        return ApiResponse.success(log);
-      } else {
-        final error = jsonDecode(response.body);
-        return ApiResponse.error(
-            error['message'] ?? 'Failed to load activity log');
-      }
-    } catch (e) {
-      return ApiResponse.error('Network error: ${e.toString()}');
-    }
-  }
-
-  // Export activity logs as CSV
-  static Future<ApiResponse<String>> exportActivityLogs({
-    int? userId,
-    String? actionCategory,
-    DateTime? startDate,
-    DateTime? endDate,
-  }) async {
-    try {
-      List<String> params = [];
-
-      if (userId != null) params.add('userId=$userId');
-      if (actionCategory != null) params.add('actionCategory=$actionCategory');
-      if (startDate != null) {
-        params.add('startDate=${startDate.toIso8601String()}');
-      }
-      if (endDate != null) {
-        params.add('endDate=${endDate.toIso8601String()}');
-      }
-
-      final queryParams = params.isNotEmpty ? '?${params.join('&')}' : '';
-
-      final response = await http.get(
-        Uri.parse('$baseUrl/activity/export/csv$queryParams'),
-        headers: await _getHeaders(includeAuth: true),
-      );
-
-      if (response.statusCode == 200) {
-        // Return CSV content as string
-        return ApiResponse.success(response.body);
-      } else {
-        final error = jsonDecode(response.body);
-        return ApiResponse.error(
-            error['message'] ?? 'Failed to export activity logs');
-      }
-    } catch (e) {
-      return ApiResponse.error('Network error: ${e.toString()}');
-    }
-  }
+  // ========== ACTIVITY LOG METHODS REMOVED FOR MVP ==========
+  // Activity logging and monitoring features removed for MVP simplification
 
   // Get rating by request ID
   static Future<ApiResponse<dynamic>> getRatingByRequest(int requestId) async {

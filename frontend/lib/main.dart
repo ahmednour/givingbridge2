@@ -1,53 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:firebase_core/firebase_core.dart';
 
-import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'providers/auth_provider.dart';
-import 'providers/locale_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/donation_provider.dart';
 import 'providers/request_provider.dart';
 import 'providers/message_provider.dart';
 import 'providers/notification_provider.dart';
-import 'providers/filter_provider.dart';
-import 'providers/backend_notification_provider.dart';
-import 'providers/analytics_provider.dart';
 import 'services/navigation_service.dart';
 import 'services/error_handler.dart';
-import 'services/offline_service.dart';
 import 'services/network_status_service.dart';
-
 import 'services/socket_service.dart';
-import 'services/font_loading_service.dart';
+import 'core/routing/app_router.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/landing_screen.dart';
-import 'widgets/offline_banner.dart';
-import 'l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
-  // Setup background message handler
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-
   // Initialize global error handler
   GlobalErrorHandler.initialize();
-
-  // Initialize offline service
-  await OfflineService().initialize();
-
-  // Firebase push notifications removed for MVP
-
-  // Preload Arabic fonts
-  await FontLoadingService.preloadArabicFonts();
 
   runApp(const GivingBridgeApp());
 }
@@ -60,20 +33,16 @@ class GivingBridgeApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => LocaleProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => DonationProvider()),
         ChangeNotifierProvider(create: (_) => RequestProvider()),
         ChangeNotifierProvider(create: (_) => MessageProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
-        ChangeNotifierProvider(create: (_) => FilterProvider()),
-        ChangeNotifierProvider(create: (_) => BackendNotificationProvider()),
-        ChangeNotifierProvider(create: (_) => AnalyticsProvider()),
         ChangeNotifierProvider(
             create: (_) => NetworkStatusService()..initialize()),
       ],
-      child: Consumer2<LocaleProvider, ThemeProvider>(
-        builder: (context, localeProvider, themeProvider, child) {
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
           return MaterialApp(
             title: 'Giving Bridge',
             debugShowCheckedModeBanner: false,
@@ -83,42 +52,6 @@ class GivingBridgeApp extends StatelessWidget {
             navigatorKey: NavigationService.navigatorKey,
             onGenerateRoute: AppRouter.generateRoute,
             initialRoute: '/',
-
-            // Localization support
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: const [
-              Locale('en', ''), // English
-              Locale('ar', ''), // Arabic
-            ],
-
-            // Use selected locale
-            locale: localeProvider.locale,
-
-            // Use system locale or fallback to English
-            localeResolutionCallback: (locale, supportedLocales) {
-              // Check if the current device locale is supported
-              for (var supportedLocale in supportedLocales) {
-                if (supportedLocale.languageCode == locale?.languageCode) {
-                  return supportedLocale;
-                }
-              }
-              // If not supported, return English
-              return supportedLocales.first;
-            },
-
-            // RTL Support - Wrap the entire app with Directionality
-            builder: (context, child) {
-              return Directionality(
-                textDirection: localeProvider.textDirection,
-                child: child ?? const SizedBox.shrink(),
-              );
-            },
-
             home: const AuthWrapper(),
           );
         },
@@ -148,10 +81,10 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<AuthProvider, LocaleProvider>(
-      builder: (context, authProvider, localeProvider, child) {
-        // Show loading screen while checking auth state or initializing locale
-        if (authProvider.isLoading || localeProvider.isLoading) {
+    return Consumer<AuthProvider>(
+      builder: (context, authProvider, child) {
+        // Show loading screen while checking auth state
+        if (authProvider.isLoading) {
           return const LoadingScreen();
         }
 
@@ -185,10 +118,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
       final socketService = SocketService();
       await socketService.connect();
 
-      // Initialize backend notification provider
-      final backendNotificationProvider =
-          Provider.of<BackendNotificationProvider>(context, listen: false);
-      await backendNotificationProvider.initialize();
+
 
       setState(() {
         _socketInitialized = true;
@@ -204,8 +134,6 @@ class LoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       body: Center(
@@ -227,14 +155,14 @@ class LoadingScreen extends StatelessWidget {
             ),
             const SizedBox(height: AppTheme.spacingXL),
             Text(
-              l10n.appTitle,
+              'Giving Bridge',
               style: AppTheme.headingLarge.copyWith(
                 color: AppTheme.primaryColor,
               ),
             ),
             const SizedBox(height: AppTheme.spacingM),
             Text(
-              l10n.connectingHearts,
+              'Connecting Hearts, Sharing Hope',
               style: AppTheme.bodyMedium.copyWith(
                 color: AppTheme.textSecondaryColor,
               ),
