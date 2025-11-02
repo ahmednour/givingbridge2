@@ -26,7 +26,7 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced> {
   // Real data state
   List<User> _users = [];
   List<Donation> _donations = [];
-  List<dynamic> _requests = [];
+  List<DonationRequest> _requests = [];
   bool _isLoading = false;
   
   // Search and filter state
@@ -101,7 +101,9 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced> {
     if (response.success && mounted) {
       setState(() {
         final data = response.data as Map<String, dynamic>;
-        _requests = (data['requests'] as List<dynamic>).map((json) => json as Map<String, dynamic>).toList();
+        _requests = (data['requests'] as List<dynamic>)
+            .map((json) => DonationRequest.fromJson(json as Map<String, dynamic>))
+            .toList();
       });
     }
   }
@@ -109,7 +111,7 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced> {
   void _calculateStats() {
     final donors = _users.where((u) => u.role == 'donor').length;
     final receivers = _users.where((u) => u.role == 'receiver').length;
-    final pendingReqs = _requests.where((r) => r['status'] == 'pending').length;
+    final pendingReqs = _requests.where((r) => r.status == 'pending').length;
     
     setState(() {
       _stats = {
@@ -122,7 +124,7 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced> {
         'admins': _users.where((u) => u.role == 'admin').length,
         'availableDonations': _donations.where((d) => d.isAvailable).length,
         'claimedDonations': _donations.where((d) => !d.isAvailable).length,
-        'approvedRequests': _requests.where((r) => r['status'] == 'approved').length,
+        'approvedRequests': _requests.where((r) => r.status == 'approved').length,
       };
     });
   }
@@ -1078,8 +1080,8 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced> {
     for (final request in recentRequests) {
       activities.add(_buildActivityItem(
         l10n.newRequestSubmittedActivity,
-        '${request["requesterName"] ?? l10n.someone} ${l10n.requestedHelp}',
-        _getTimeAgo(DateTime.tryParse(request["createdAt"]?.toString() ?? "")),
+        '${request.receiverName} ${l10n.requestedHelp}',
+        _getTimeAgo(DateTime.tryParse(request.createdAt)),
         Icons.assignment_add,
         DesignSystem.primaryBlue,
       ));
@@ -1216,7 +1218,7 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced> {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-    final pendingRequests = _requests.where((r) => r['status'] == 'pending').toList();
+    final pendingRequests = _requests.where((r) => r.status == 'pending').toList();
     
     return SingleChildScrollView(
       padding: const EdgeInsets.all(DesignSystem.spaceL),

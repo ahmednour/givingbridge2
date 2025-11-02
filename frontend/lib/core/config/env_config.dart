@@ -17,26 +17,28 @@ class EnvConfig {
   static String get apiBaseUrl {
     switch (currentEnvironment) {
       case development:
-        return 'http://localhost:3000/api';
+        // Use your computer's IP when running Flutter outside Docker
+        return 'http://192.168.100.7:3000/api';
       case staging:
         return 'https://staging-api.givingbridge.com/api';
       case production:
         return 'https://api.givingbridge.com/api';
       default:
-        return 'http://localhost:3000/api';
+        return 'http://192.168.100.7:3000/api';
     }
   }
 
   static String get socketUrl {
     switch (currentEnvironment) {
       case development:
-        return 'http://localhost:3000';
+        // Use your computer's IP when running Flutter outside Docker
+        return 'http://192.168.100.7:3000';
       case staging:
         return 'https://staging-api.givingbridge.com';
       case production:
         return 'https://api.givingbridge.com';
       default:
-        return 'http://localhost:3000';
+        return 'http://192.168.100.7:3000';
     }
   }
 

@@ -30,6 +30,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Consumer2<AuthProvider, LocaleProvider>(
       builder: (context, authProvider, localeProvider, child) {
+        // Show loading state
+        if (authProvider.isLoading) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        // Check authentication
         if (!authProvider.isAuthenticated || authProvider.user == null) {
           return const LoginScreen();
         }

@@ -15,6 +15,9 @@ import '../l10n/app_localizations.dart';
 import '../services/api_service.dart';
 import 'chat_screen_enhanced.dart';
 
+// Import the DonationRequest model from api_service
+// It's already defined there, we just need to use it
+
 class DonorBrowseRequestsScreen extends StatefulWidget {
   const DonorBrowseRequestsScreen({Key? key}) : super(key: key);
 
@@ -25,7 +28,7 @@ class DonorBrowseRequestsScreen extends StatefulWidget {
 
 class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
   bool _isLoading = true;
-  List<dynamic> _requests = [];
+  List<DonationRequest> _requests = [];
   String _selectedFilter = 'all';
 
   @override
@@ -80,12 +83,12 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
     ];
   }
 
-  List<dynamic> get _filteredRequests {
+  List<DonationRequest> get _filteredRequests {
     if (_selectedFilter == 'all') return _requests;
     return _requests.where((r) => r.status == _selectedFilter).toList();
   }
 
-  Future<void> _approveRequest(dynamic request) async {
+  Future<void> _approveRequest(DonationRequest request) async {
     try {
       final response = await ApiService.approveRequest(request.id);
       if (response.success) {
@@ -128,7 +131,7 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
     }
   }
 
-  Future<void> _declineRequest(dynamic request) async {
+  Future<void> _declineRequest(DonationRequest request) async {
     try {
       final response = await ApiService.declineRequest(request.id);
       if (response.success) {
@@ -247,7 +250,7 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
   }
 
   Widget _buildRequestCard(
-    dynamic request,
+    DonationRequest request,
     AppLocalizations l10n,
     bool isDesktop,
   ) {
@@ -291,7 +294,7 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
             const SizedBox(height: 16),
 
             // Message
-            if (request.message != null && request.message!.isNotEmpty)
+            if (request.message != null && request.message!.isNotEmpty) ...[
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
@@ -306,6 +309,7 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
                   ),
                 ),
               ),
+            ],
 
             const SizedBox(height: 16),
 
@@ -377,7 +381,7 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => ChatScreenEnhanced(
-                          otherUserId: request.receiverId,
+                          otherUserId: request.receiverId.toString(),
                           otherUserName: request.receiverName,
                         ),
                       ),

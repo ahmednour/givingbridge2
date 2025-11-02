@@ -50,27 +50,37 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
   }
 
   Future<void> _loadRequests() async {
+    if (!mounted) return;
+    
     setState(() {
       _isLoading = true;
     });
 
     try {
       final response = await ApiService.getIncomingRequests();
+      if (!mounted) return;
+      
       if (response.success && response.data != null) {
         setState(() {
           _requests = response.data!;
         });
       } else {
-        final l10n = AppLocalizations.of(context)!;
-        _showErrorSnackbar(response.error ?? l10n.failedToLoadRequests);
+        if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
+          _showErrorSnackbar(response.error ?? l10n.failedToLoadRequests);
+        }
       }
     } catch (e) {
-      final l10n = AppLocalizations.of(context)!;
-      _showErrorSnackbar('${l10n.networkError}: ${e.toString()}');
+      if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        _showErrorSnackbar('${l10n.networkError}: ${e.toString()}');
+      }
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -82,6 +92,8 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
   }
 
   void _showErrorSnackbar(String message) {
+    if (!mounted) return;
+    
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: DirectionalRow(

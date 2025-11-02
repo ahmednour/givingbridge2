@@ -1370,10 +1370,13 @@ class AuthResult {
   });
 
   factory AuthResult.fromJson(Map<String, dynamic> json) {
+    // Handle both direct response and nested data structure
+    final data = json['data'] ?? json;
+    
     return AuthResult(
-      message: json['message'],
-      user: User.fromJson(json['user']),
-      token: json['token'],
+      message: data['message'] ?? 'Success',
+      user: User.fromJson(data['user']),
+      token: data['token'],
     );
   }
 }
