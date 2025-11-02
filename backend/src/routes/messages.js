@@ -8,6 +8,7 @@ const MessageController = require("../controllers/messageController");
 const {
   generalRateLimit,
 } = require("../middleware/rateLimiting");
+const { asyncHandler } = require("../middleware");
 
 // Import authentication middleware from auth routes
 const { authenticateToken } = require("./auth");
@@ -17,9 +18,8 @@ router.get(
   "/conversations",
   authenticateToken,
   generalRateLimit,
-  async (req, res) => {
-    try {
-      const userId = req.user.userId;
+  asyncHandler(async (req, res) => {
+    const userId = req.user.userId;
 
       // Get all messages where user is sender or receiver
       const messages = await Message.findAll({
@@ -78,14 +78,7 @@ router.get(
         conversations,
         total: conversations.length,
       });
-    } catch (error) {
-      console.error("Get conversations error:", error);
-      res.status(500).json({
-        message: "Failed to retrieve conversations",
-        error: error.message,
-      });
-    }
-  }
+  })
 );
 
 // Get messages for a specific conversation
@@ -93,10 +86,9 @@ router.get(
   "/conversation/:userId",
   authenticateToken,
   generalRateLimit,
-  async (req, res) => {
-    try {
-      const { userId: otherUserId } = req.params;
-      const { page = 1, limit = 50 } = req.query;
+  asyncHandler(async (req, res) => {
+    const { userId: otherUserId } = req.params;
+    const { page = 1, limit = 50 } = req.query;
 
       const offset = (page - 1) * parseInt(limit);
 
@@ -137,14 +129,7 @@ router.get(
         page: parseInt(page),
         totalPages: Math.ceil(count / parseInt(limit)),
       });
-    } catch (error) {
-      console.error("Get conversation messages error:", error);
-      res.status(500).json({
-        message: "Failed to retrieve messages",
-        error: error.message,
-      });
-    }
-  }
+  })
 );
 
 // Send a new message
@@ -259,10 +244,9 @@ router.post(
 );
 
 // Mark a message as read
-router.put("/:id/read", authenticateToken, generalRateLimit, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const message = await Message.findByPk(id);
+router.put("/:id/read", authenticateToken, generalRateLimit, asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const message = await Message.findByPk(id);
 
     if (!message) {
       return res.status(404).json({
@@ -283,14 +267,7 @@ router.put("/:id/read", authenticateToken, generalRateLimit, async (req, res) =>
       message: "Message marked as read",
       data: message,
     });
-  } catch (error) {
-    console.error("Mark message as read error:", error);
-    res.status(500).json({
-      message: "Failed to mark message as read",
-      error: error.message,
-    });
-  }
-});
+}));
 
 // Mark all messages in a conversation as read
 router.put(
@@ -355,10 +332,9 @@ router.get(
 );
 
 // Delete a message (only sender can delete)
-router.delete("/:id", authenticateToken, generalRateLimit, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const message = await Message.findByPk(id);
+router.delete("/:id", authenticateToken, generalRateLimit, asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const message = await Message.findByPk(id);
 
     if (!message) {
       return res.status(404).json({
@@ -380,14 +356,7 @@ router.delete("/:id", authenticateToken, generalRateLimit, async (req, res) => {
     res.json({
       message: "Message deleted successfully",
     });
-  } catch (error) {
-    console.error("Delete message error:", error);
-    res.status(500).json({
-      message: "Failed to delete message",
-      error: error.message,
-    });
-  }
-});
+}));
 
 // Get message statistics (for admin dashboard)
 router.get(

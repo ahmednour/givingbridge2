@@ -10,6 +10,10 @@ class Donation {
   final String? imageUrl;
   final bool isAvailable;
   final String status;
+  final String approvalStatus;
+  final int? approvedBy;
+  final String? approvedAt;
+  final String? rejectionReason;
   final String createdAt;
   final String updatedAt;
 
@@ -25,6 +29,10 @@ class Donation {
     this.imageUrl,
     required this.isAvailable,
     required this.status,
+    this.approvalStatus = 'pending',
+    this.approvedBy,
+    this.approvedAt,
+    this.rejectionReason,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -42,6 +50,10 @@ class Donation {
       imageUrl: json['imageUrl'],
       isAvailable: json['isAvailable'] ?? true,
       status: json['status'] ?? 'available',
+      approvalStatus: json['approvalStatus'] ?? 'pending',
+      approvedBy: json['approvedBy'],
+      approvedAt: json['approvedAt'],
+      rejectionReason: json['rejectionReason'],
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
     );
@@ -60,10 +72,31 @@ class Donation {
       'imageUrl': imageUrl,
       'isAvailable': isAvailable,
       'status': status,
+      'approvalStatus': approvalStatus,
+      'approvedBy': approvedBy,
+      'approvedAt': approvedAt,
+      'rejectionReason': rejectionReason,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
     };
   }
+
+  String get approvalStatusDisplayName {
+    switch (approvalStatus) {
+      case 'pending':
+        return 'Pending Review';
+      case 'approved':
+        return 'Approved';
+      case 'rejected':
+        return 'Rejected';
+      default:
+        return approvalStatus;
+    }
+  }
+
+  bool get isPending => approvalStatus == 'pending';
+  bool get isApproved => approvalStatus == 'approved';
+  bool get isRejected => approvalStatus == 'rejected';
 
   String get categoryDisplayName {
     switch (category) {

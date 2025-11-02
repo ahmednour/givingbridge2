@@ -10,8 +10,8 @@ import '../widgets/common/gb_confetti.dart';
 import '../widgets/common/gb_empty_state.dart';
 import '../widgets/common/gb_search_bar.dart';
 import '../widgets/common/gb_filter_chips.dart';
-import '../widgets/common/web_sidebar_nav.dart';
 import '../widgets/common/web_button.dart';
+import '../providers/locale_provider.dart';
 import '../widgets/common/gb_skeleton_widgets.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
@@ -31,7 +31,6 @@ class DonorDashboardEnhanced extends StatefulWidget {
 
 class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
   String _currentRoute = 'overview';
-  bool _isSidebarCollapsed = false;
 
   List<Donation> _donations = [];
   List<Donation> _filteredDonations = []; // Filtered/searched donations
@@ -175,127 +174,393 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
     final size = MediaQuery.of(context).size;
     final isDesktop = size.width >= 1024;
     final authProvider = Provider.of<AuthProvider>(context);
+    final localeProvider = Provider.of<LocaleProvider>(context);
 
-    return Scaffold(
-      backgroundColor: DesignSystem.getBackgroundColor(context),
-      body: isDesktop
-          ? Row(
+    return Directionality(
+      textDirection: localeProvider.textDirection,
+      child: Scaffold(
+        backgroundColor: DesignSystem.getBackgroundColor(context),
+        body: isDesktop
+            ? Row(
+                children: [
+                  // Custom Fixed Sidebar
+                  _buildDesktopSidebar(context, l10n, authProvider),
+                  // Main Content
+                  Expanded(
+                    child: _buildMainContent(context, theme, isDark, isDesktop),
+                  ),
+                ],
+              )
+            : Column(
+                children: [
+                  // Main Content
+                  Expanded(
+                    child: _buildMainContent(context, theme, isDark, isDesktop),
+                  ),
+                  // Bottom Navigation
+                  _buildMobileBottomNav(context, l10n),
+                ],
+              ),
+        floatingActionButton: !isDesktop && _currentRoute == 'donations'
+            ? FloatingActionButton.extended(
+                onPressed: () => _navigateToCreateDonation(),
+                backgroundColor: DesignSystem.primaryBlue,
+                foregroundColor: Colors.white,
+                elevation: 4,
+                icon: const Icon(Icons.add),
+                label: Text(l10n.createDonation,
+                    style: const TextStyle(fontWeight: FontWeight.w600)),
+              )
+            : null,
+      ),
+    );
+  }
+
+  Widget _buildDesktopSidebar(BuildContext context, AppLocalizations l10n, AuthProvider authProvider) {
+    return Container(
+      width: 280,
+      decoration: BoxDecoration(
+        color: DesignSystem.getSurfaceColor(context),
+        border: Border(
+          right: BorderSide(
+            color: DesignSystem.getBorderColor(context),
+            width: 1,
+          ),
+        ),
+      ),
+      child: Column(
+        children: [
+          // Header with Language Toggle
+          Container(
+            padding: const EdgeInsets.all(DesignSystem.spaceL),
+            child: Column(
               children: [
-                // Sidebar Navigation
-                WebSidebarNav(
-                  currentRoute: _currentRoute,
-                  items: [
-                    WebNavItem(
-                      route: 'overview',
-                      label: l10n.overview,
-                      icon: Icons.dashboard_outlined,
-                      color: DesignSystem.primaryBlue,
-                      onTap: () => setState(() => _currentRoute = 'overview'),
+                Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        gradient: DesignSystem.donorGradient,
+                        borderRadius: BorderRadius.circular(DesignSystem.radiusM),
+                      ),
+                      child: const Icon(
+                        Icons.volunteer_activism,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                     ),
-                    WebNavItem(
-                      route: 'donations',
-                      label: l10n.myDonations,
-                      icon: Icons.volunteer_activism,
-                      color: DesignSystem.accentPink,
-                      onTap: () => setState(() => _currentRoute = 'donations'),
-                      badge: _donations.isNotEmpty
-                          ? _donations.length.toString()
-                          : null,
-                    ),
-                    WebNavItem(
-                      route: 'requests',
-                      label: l10n.browseRequests,
-                      icon: Icons.list_alt_outlined,
-                      color: DesignSystem.accentPurple,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const DonorBrowseRequestsScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                    WebNavItem(
-                      route: 'impact',
-                      label: l10n.viewImpact,
-                      icon: Icons.analytics_outlined,
-                      color: DesignSystem.accentAmber,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const DonorImpactScreen(),
-                          ),
-                        );
-                      },
+                    const SizedBox(width: DesignSystem.spaceM),
+                    Expanded(
+                      child: Text(
+                        'Donor',
+                        style: DesignSystem.headlineSmall(context).copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                   ],
-                  userSection: _buildUserSection(authProvider),
-                  onLogout: () {
-                    authProvider.logout();
-                    Navigator.pushReplacementNamed(context, '/login');
-                  },
-                  isCollapsed: _isSidebarCollapsed,
-                  onCollapseChanged: (collapsed) {
-                    setState(() => _isSidebarCollapsed = collapsed);
-                  },
                 ),
-                // Main Content
-                Expanded(
-                  child: _buildMainContent(context, theme, isDark, isDesktop),
-                ),
+                const SizedBox(height: DesignSystem.spaceM),
+                _buildLanguageToggle(context),
               ],
-            )
-          : Column(
+            ),
+          ),
+          
+          const Divider(height: 1),
+          
+          // User Section
+          Padding(
+            padding: const EdgeInsets.all(DesignSystem.spaceM),
+            child: _buildUserSection(authProvider),
+          ),
+          
+          const Divider(height: 1),
+          
+          // Navigation Items
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(vertical: DesignSystem.spaceM),
               children: [
-                Expanded(
-                  child: _buildMainContent(context, theme, isDark, isDesktop),
+                _buildNavItem(
+                  context,
+                  l10n.overview,
+                  Icons.dashboard_outlined,
+                  DesignSystem.primaryBlue,
+                  'overview',
+                  () => setState(() => _currentRoute = 'overview'),
                 ),
-                // Bottom Navigation for Mobile
-                WebBottomNav(
-                  currentRoute: _currentRoute,
-                  items: [
-                    WebNavItem(
-                      route: 'overview',
-                      label: l10n.overview,
-                      icon: Icons.dashboard_outlined,
-                      color: DesignSystem.primaryBlue,
-                      onTap: () => setState(() => _currentRoute = 'overview'),
-                    ),
-                    WebNavItem(
-                      route: 'donations',
-                      label: l10n.myDonations,
-                      icon: Icons.volunteer_activism,
-                      color: DesignSystem.accentPink,
-                      onTap: () => setState(() => _currentRoute = 'donations'),
-                      badge: _donations.isNotEmpty
-                          ? _donations.length.toString()
-                          : null,
-                    ),
-                    WebNavItem(
-                      route: 'more',
-                      label: 'More',
-                      icon: Icons.menu,
-                      color: DesignSystem.neutral600,
-                      onTap: () => _showMobileMenu(context),
-                    ),
-                  ],
+                _buildNavItem(
+                  context,
+                  l10n.myDonations,
+                  Icons.volunteer_activism,
+                  DesignSystem.accentPink,
+                  'donations',
+                  () => setState(() => _currentRoute = 'donations'),
+                  badge: _donations.isNotEmpty ? _donations.length.toString() : null,
+                ),
+                _buildNavItem(
+                  context,
+                  l10n.browseRequests,
+                  Icons.list_alt_outlined,
+                  DesignSystem.accentPurple,
+                  'requests',
+                  () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const DonorBrowseRequestsScreen(),
+                      ),
+                    );
+                  },
+                ),
+                _buildNavItem(
+                  context,
+                  l10n.viewImpact,
+                  Icons.analytics_outlined,
+                  DesignSystem.accentAmber,
+                  'impact',
+                  () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const DonorImpactScreen(),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
-      floatingActionButton: !isDesktop && _currentRoute == 'donations'
-          ? FloatingActionButton.extended(
-              onPressed: () => _navigateToCreateDonation(),
-              backgroundColor: DesignSystem.primaryBlue,
-              foregroundColor: Colors.white,
-              elevation: 4,
-              icon: const Icon(Icons.add),
-              label: Text(l10n.createDonation,
-                  style: const TextStyle(fontWeight: FontWeight.w600)),
-            )
-          : null,
+          ),
+          
+          const Divider(height: 1),
+          
+          // Logout Button
+          Padding(
+            padding: const EdgeInsets.all(DesignSystem.spaceM),
+            child: GBButton(
+              text: l10n.logout,
+              onPressed: () {
+                authProvider.logout();
+                Navigator.pushReplacementNamed(context, '/login');
+              },
+              variant: GBButtonVariant.secondary,
+              leftIcon: const Icon(Icons.logout, size: 18),
+              fullWidth: true,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNavItem(
+    BuildContext context,
+    String label,
+    IconData icon,
+    Color color,
+    String route,
+    VoidCallback onTap, {
+    String? badge,
+  }) {
+    final isActive = _currentRoute == route;
+    
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: DesignSystem.spaceM,
+        vertical: DesignSystem.spaceXS,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(DesignSystem.radiusM),
+          child: Container(
+            padding: const EdgeInsets.all(DesignSystem.spaceM),
+            decoration: BoxDecoration(
+              color: isActive ? color.withOpacity(0.1) : Colors.transparent,
+              borderRadius: BorderRadius.circular(DesignSystem.radiusM),
+              border: isActive ? Border.all(color: color.withOpacity(0.3)) : null,
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  icon,
+                  color: isActive ? color : DesignSystem.getTextColor(context).withOpacity(0.7),
+                  size: 20,
+                ),
+                const SizedBox(width: DesignSystem.spaceM),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: DesignSystem.bodyMedium(context).copyWith(
+                      color: isActive ? color : DesignSystem.getTextColor(context),
+                      fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+                    ),
+                  ),
+                ),
+                if (badge != null)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: DesignSystem.spaceS,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: color,
+                      borderRadius: BorderRadius.circular(DesignSystem.radiusPill),
+                    ),
+                    child: Text(
+                      badge,
+                      style: DesignSystem.bodySmall(context).copyWith(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+
+
+  Widget _buildMobileBottomNav(BuildContext context, AppLocalizations l10n) {
+    return Container(
+      decoration: BoxDecoration(
+        color: DesignSystem.getSurfaceColor(context),
+        border: Border(
+          top: BorderSide(
+            color: DesignSystem.getBorderColor(context),
+            width: 1,
+          ),
+        ),
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: DesignSystem.spaceS),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildMobileNavItem(
+                context,
+                l10n.overview,
+                Icons.dashboard_outlined,
+                'overview',
+                () => setState(() => _currentRoute = 'overview'),
+              ),
+              _buildMobileNavItem(
+                context,
+                l10n.myDonations,
+                Icons.volunteer_activism,
+                'donations',
+                () => setState(() => _currentRoute = 'donations'),
+              ),
+              _buildMobileNavItem(
+                context,
+                'More',
+                Icons.menu,
+                'more',
+                () => _showMobileMenu(context),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMobileNavItem(
+    BuildContext context,
+    String label,
+    IconData icon,
+    String route,
+    VoidCallback onTap,
+  ) {
+    final isActive = _currentRoute == route;
+    
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: DesignSystem.spaceS,
+          vertical: DesignSystem.spaceXS,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: isActive
+                  ? DesignSystem.primaryBlue
+                  : DesignSystem.getTextColor(context).withOpacity(0.6),
+              size: 24,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: DesignSystem.bodySmall(context).copyWith(
+                color: isActive
+                    ? DesignSystem.primaryBlue
+                    : DesignSystem.getTextColor(context).withOpacity(0.6),
+                fontSize: 11,
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageToggle(BuildContext context) {
+    final localeProvider = Provider.of<LocaleProvider>(context);
+    
+    return Container(
+      decoration: BoxDecoration(
+        color: DesignSystem.getSurfaceColor(context),
+        borderRadius: BorderRadius.circular(DesignSystem.radiusM),
+        border: Border.all(color: DesignSystem.getBorderColor(context)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildLanguageButton('en', 'EN', localeProvider),
+          _buildLanguageButton('ar', 'ع', localeProvider),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLanguageButton(String locale, String label, LocaleProvider localeProvider) {
+    final isActive = localeProvider.locale.languageCode == locale;
+    
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => localeProvider.setLocale(Locale(locale)),
+        borderRadius: BorderRadius.circular(DesignSystem.radiusS),
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: DesignSystem.spaceM,
+            vertical: DesignSystem.spaceS,
+          ),
+          decoration: BoxDecoration(
+            color: isActive ? DesignSystem.primaryBlue : null,
+            borderRadius: BorderRadius.circular(DesignSystem.radiusS),
+          ),
+          child: Text(
+            label,
+            style: DesignSystem.bodySmall(context).copyWith(
+              color: isActive ? Colors.white : DesignSystem.getTextColor(context),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -303,45 +568,55 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
     final userName = authProvider.user?.name ?? 'Donor';
     final userEmail = authProvider.user?.email ?? '';
 
-    return Column(
-      children: [
-        CircleAvatar(
-          radius: _isSidebarCollapsed ? 20 : 28,
-          backgroundColor: DesignSystem.primaryBlue.withOpacity(0.1),
-          child: Text(
-            userName.isNotEmpty ? userName[0].toUpperCase() : 'D',
-            style: TextStyle(
-              fontSize: _isSidebarCollapsed ? 18 : 24,
-              fontWeight: FontWeight.bold,
-              color: DesignSystem.primaryBlue,
+    return Container(
+      padding: const EdgeInsets.all(DesignSystem.spaceM),
+      decoration: BoxDecoration(
+        color: DesignSystem.accentPink.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(DesignSystem.radiusM),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 20,
+            backgroundColor: DesignSystem.accentPink,
+            child: Text(
+              userName.isNotEmpty ? userName[0].toUpperCase() : 'D',
+              style: DesignSystem.bodyMedium(context).copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
-        ),
-        if (!_isSidebarCollapsed) ...[
-          const SizedBox(height: DesignSystem.spaceS),
-          Text(
-            userName,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.onSurface,
+          const SizedBox(width: DesignSystem.spaceM),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  userName,
+                  style: DesignSystem.bodyMedium(context).copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  userEmail,
+                  style: DesignSystem.bodySmall(context).copyWith(
+                    color: DesignSystem.getTextColor(context).withOpacity(0.7),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          Text(
-            userEmail,
-            style: TextStyle(
-              fontSize: 12,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
           ),
         ],
-      ],
+      ),
     );
   }
+
+
 
   void _showMobileMenu(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -460,13 +735,13 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
                     .fadeIn(duration: 600.ms)
                     .slideY(begin: 0.2, end: 0),
 
-                const SizedBox(height: DesignSystem.spaceXXL),
-
-                // Recent Activity with animation
-                _buildRecentActivity(context, theme, isDark)
-                    .animate(delay: 800.ms)
-                    .fadeIn(duration: 600.ms)
-                    .slideY(begin: 0.2, end: 0),
+                // Recent Activity section hidden until API is ready
+                // TODO: Implement activity log API endpoint
+                // const SizedBox(height: DesignSystem.spaceXXL),
+                // _buildRecentActivity(context, theme, isDark)
+                //     .animate(delay: 800.ms)
+                //     .fadeIn(duration: 600.ms)
+                //     .slideY(begin: 0.2, end: 0),
               ],
             ),
           ),
@@ -564,11 +839,6 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
         _donations.where((d) => d.status == 'completed').length;
     final impactScore = totalDonations * 10;
 
-    // Calculate trends (mock data - replace with real data from previous period)
-    final totalTrend = totalDonations > 10 ? 12.5 : 0.0;
-    final activeTrend = activeDonations > 5 ? 8.3 : 0.0;
-    final completedTrend = completedDonations > 0 ? 15.7 : 0.0;
-
     return GridView.count(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -582,9 +852,7 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
           value: totalDonations.toString(),
           icon: Icons.volunteer_activism,
           color: DesignSystem.primaryBlue,
-          trend: totalTrend,
-          subtitle:
-              '+${(totalTrend * totalDonations / 100).toInt()} this month',
+          subtitle: 'All donations',
           isLoading: _isLoading,
         ),
         GBStatCard(
@@ -592,7 +860,6 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
           value: activeDonations.toString(),
           icon: Icons.check_circle_outline,
           color: DesignSystem.success,
-          trend: activeTrend,
           subtitle: 'Available now',
           isLoading: _isLoading,
         ),
@@ -601,8 +868,7 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
           value: completedDonations.toString(),
           icon: Icons.handshake_outlined,
           color: DesignSystem.accentPurple,
-          trend: completedTrend,
-          subtitle: 'All time',
+          subtitle: 'Successfully delivered',
           isLoading: _isLoading,
         ),
         GBStatCard(
@@ -610,13 +876,21 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
           value: impactScore.toString(),
           icon: Icons.trending_up,
           color: DesignSystem.accentAmber,
-          subtitle: 'Top 10%',
+          subtitle: 'Community impact',
           isLoading: _isLoading,
         ),
       ],
     );
   }
 
+  // Recent Activity section - Hidden until API is ready
+  // TODO: Implement activity log API endpoint (GET /activity/recent)
+  // This should return real user activities like:
+  // - New requests received
+  // - Donations completed
+  // - Messages received
+  // - Item views
+  /*
   Widget _buildRecentActivity(
       BuildContext context, ThemeData theme, bool isDark) {
     final l10n = AppLocalizations.of(context)!;
@@ -710,6 +984,7 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
       ],
     );
   }
+  */
 
   Widget _buildQuickActions(
       BuildContext context, ThemeData theme, bool isDesktop) {

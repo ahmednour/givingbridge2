@@ -117,6 +117,25 @@ class NotificationService {
     // Simplified for MVP - basic email notifications only
     console.log(`New donation notification for ${users.length} users: ${donation.title}`);
   }
+
+  /**
+   * Send donation approval/rejection notification to donor
+   * @param {object} donor - Donor user object
+   * @param {object} donation - Donation object
+   * @param {string} status - Approval status (approved/rejected)
+   * @param {string} reason - Rejection reason (optional)
+   */
+  async sendDonationApprovalNotification(donor, donation, status, reason = null) {
+    // Send email notification
+    if (this.emailService.isInitialized()) {
+      await this.emailService.sendDonationApprovalNotification(
+        donor,
+        donation,
+        status,
+        reason
+      );
+    }
+  }
 }
 
 // Export singleton instance

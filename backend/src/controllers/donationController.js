@@ -10,11 +10,19 @@ class DonationController {
    * @param {Object} pagination - Pagination options (page, limit)
    * @returns {Promise<Object>} Paginated list of donations with metadata
    */
-  static async getAllDonations(filters = {}, pagination = {}) {
-    const { category, location, available, startDate, endDate } = filters;
+  static async getAllDonations(filters = {}, pagination = {}, userRole = null) {
+    const { category, location, available, startDate, endDate, approvalStatus } = filters;
     const { page = 1, limit = 20 } = pagination;
 
     const where = {};
+
+    // Only show approved donations to non-admin users
+    if (userRole !== "admin") {
+      where.approvalStatus = "approved";
+    } else if (approvalStatus) {
+      // Admin can filter by approval status
+      where.approvalStatus = approvalStatus;
+    }
 
     // Basic filters
     if (category) where.category = category;
@@ -56,19 +64,35 @@ class DonationController {
   /**
    * Get donation by ID
    * @param {number} id - Donation ID
+   * @param {string} userRole - User role (to check if admin)
    * @returns {Promise<Object|null>} Donation or null if not found
    */
-  static async getDonationById(id) {
-    return await Donation.findByPk(id);
+  static async getDonationById(id, userRole = null) {
+    const where = { id };
+    
+    // Only show approved donations to non-admin users
+    if (userRole !== "admin") {
+      where.approvalStatus = "approved";
+    }
+    
+    return await Donation.findOne({ where });
   }
 
   /**
    * Get donation by ID with view count increment
    * @param {number} id - Donation ID
+   * @param {string} userRole - User role (to check if admin)
    * @returns {Promise<Object|null>} Donation or null if not found
    */
-  static async getDonationByIdWithViewCount(id) {
-    const donation = await Donation.findByPk(id);
+  static async getDonationByIdWithViewCount(id, userRole = null) {
+    const where = { id };
+    
+    // Only show approved donations to non-admin users
+    if (userRole !== "admin") {
+      where.approvalStatus = "approved";
+    }
+    
+    const donation = await Donation.findOne({ where });
     if (donation) {
       // Increment view count
       await donation.increment("viewCount");
@@ -109,6 +133,7 @@ class DonationController {
       throw new Error(`User not found with ID: ${donorId}. Please log in again.`);
     }
 
+    // Create donation with pending approval status
     return await Donation.create({
       title,
       description,
@@ -118,6 +143,8 @@ class DonationController {
       donorId: user.id,
       donorName: user.name,
       imageUrl: imageUrl || null,
+      approvalStatus: "pending", // Requires admin approval
+      status: "available",
     });
   }
 
@@ -193,6 +220,9 @@ class DonationController {
   static async getDonationStats() {
     const total = await Donation.count();
     const available = await Donation.count({ where: { isAvailable: true } });
+    const pending = await Donation.count({ where: { approvalStatus: "pending" } });
+    const approved = await Donation.count({ where: { approvalStatus: "approved" } });
+    const rejected = await Donation.count({ where: { approvalStatus: "rejected" } });
 
     const categories = {
       food: await Donation.count({ where: { category: "food" } }),
@@ -205,11 +235,124 @@ class DonationController {
     return {
       total,
       available,
+      pending,
+      approved,
+      rejected,
       categories,
     };
   }
 
+  /**
+   * Approve donation (admin only)
+   * @param {number} donationId - Donation ID
+   * @param {number} adminId - Admin user ID
+   * @returns {Promise<Object>} Updated donation
+   */
+  static async approveDonation(donationId, adminId) {
+    const donation = await Donation.findByPk(donationId);
+    
+    if (!donation) {
+      throw new Error("Donation not found");
+    }
 
+    if (donation.approvalStatus === "approved") {
+      throw new Error("Donation is already approved");
+    }
+
+    await donation.update({
+      approvalStatus: "approved",
+      approvedBy: adminId,
+      approvedAt: new Date(),
+      rejectionReason: null, // Clear any previous rejection reason
+    });
+
+    // Notify donor about approval
+    try {
+      const donor = await User.findByPk(donation.donorId);
+      if (donor) {
+        await notificationService.sendDonationApprovalNotification(donor, donation, "approved");
+      }
+    } catch (error) {
+      console.error("Failed to send approval notification:", error);
+    }
+
+    return donation;
+  }
+
+  /**
+   * Reject donation (admin only)
+   * @param {number} donationId - Donation ID
+   * @param {number} adminId - Admin user ID
+   * @param {string} reason - Rejection reason
+   * @returns {Promise<Object>} Updated donation
+   */
+  static async rejectDonation(donationId, adminId, reason) {
+    const donation = await Donation.findByPk(donationId);
+    
+    if (!donation) {
+      throw new Error("Donation not found");
+    }
+
+    if (donation.approvalStatus === "rejected") {
+      throw new Error("Donation is already rejected");
+    }
+
+    await donation.update({
+      approvalStatus: "rejected",
+      approvedBy: adminId,
+      approvedAt: new Date(),
+      rejectionReason: reason || "Does not meet platform guidelines",
+      isAvailable: false, // Make unavailable when rejected
+    });
+
+    // Notify donor about rejection
+    try {
+      const donor = await User.findByPk(donation.donorId);
+      if (donor) {
+        await notificationService.sendDonationApprovalNotification(donor, donation, "rejected", reason);
+      }
+    } catch (error) {
+      console.error("Failed to send rejection notification:", error);
+    }
+
+    return donation;
+  }
+
+  /**
+   * Get pending donations (admin only)
+   * @param {Object} pagination - Pagination options
+   * @returns {Promise<Object>} Paginated list of pending donations
+   */
+  static async getPendingDonations(pagination = {}) {
+    const { page = 1, limit = 20 } = pagination;
+    const offset = (page - 1) * limit;
+
+    const { rows, count } = await Donation.findAndCountAll({
+      where: { approvalStatus: "pending" },
+      order: [["createdAt", "ASC"]], // Oldest first for FIFO processing
+      limit: parseInt(limit),
+      offset: parseInt(offset),
+      include: [
+        {
+          model: User,
+          as: "donor",
+          attributes: ["id", "name", "email", "role"],
+        },
+      ],
+    });
+
+    return {
+      donations: rows,
+      pagination: {
+        total: count,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        totalPages: Math.ceil(count / limit),
+        hasMore: offset + rows.length < count,
+      },
+    };
+  }
 }
+
 
 module.exports = DonationController;

@@ -1703,13 +1703,13 @@ abstract class AppLocalizations {
   /// Minutes ago
   ///
   /// In en, this message translates to:
-  /// **'{minutes}m ago'**
+  /// **'minutes ago'**
   String minutesAgo(int minutes);
 
   /// Hours ago
   ///
   /// In en, this message translates to:
-  /// **'{hours}h ago'**
+  /// **'hours ago'**
   String hoursAgo(int hours);
 
   /// Days ago
@@ -1877,7 +1877,7 @@ abstract class AppLocalizations {
   /// No description provided for @newDonationRequest.
   ///
   /// In en, this message translates to:
-  /// **'New donation request'**
+  /// **'New donation request submitted'**
   String get newDonationRequest;
 
   /// No description provided for @donationApproved.
@@ -2527,6 +2527,414 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search donations...'**
   String get searchDonations;
+
+  /// No description provided for @overviewSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Monitor your platform performance and activity'**
+  String get overviewSubtitle;
+
+  /// No description provided for @usersSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage registered users and their permissions'**
+  String get usersSubtitle;
+
+  /// No description provided for @requestsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review and manage donation requests'**
+  String get requestsSubtitle;
+
+  /// No description provided for @donationsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Track and manage all donations'**
+  String get donationsSubtitle;
+
+  /// No description provided for @analyticsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View detailed analytics and reports'**
+  String get analyticsSubtitle;
+
+  /// No description provided for @settingsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure system settings and preferences'**
+  String get settingsSubtitle;
+
+  /// No description provided for @adminDashboardWelcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to the admin dashboard'**
+  String get adminDashboardWelcome;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon...'**
+  String get comingSoon;
+
+  /// No description provided for @refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refresh;
+
+  /// No description provided for @newUserRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'New user registered'**
+  String get newUserRegistered;
+
+  /// No description provided for @hourAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'hour ago'**
+  String get hourAgo;
+
+  /// No description provided for @recentUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Users'**
+  String get recentUsers;
+
+  /// No description provided for @noUsersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No Users'**
+  String get noUsersFound;
+
+  /// No description provided for @noUsersFoundMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No users found in the system'**
+  String get noUsersFoundMessage;
+
+  /// No description provided for @noDonationsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No Donations'**
+  String get noDonationsFound;
+
+  /// No description provided for @noDonationsFoundMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No donations found in the system'**
+  String get noDonationsFoundMessage;
+
+  /// No description provided for @noPendingRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No Pending Requests'**
+  String get noPendingRequests;
+
+  /// No description provided for @noPendingRequestsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'All requests have been processed'**
+  String get noPendingRequestsMessage;
+
+  /// No description provided for @noRecentActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'No recent activity'**
+  String get noRecentActivity;
+
+  /// No description provided for @newUserRegisteredActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'New user registered'**
+  String get newUserRegisteredActivity;
+
+  /// No description provided for @newDonationPostedActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'New donation posted'**
+  String get newDonationPostedActivity;
+
+  /// No description provided for @newRequestSubmittedActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'New request submitted'**
+  String get newRequestSubmittedActivity;
+
+  /// No description provided for @joinedAs.
+  ///
+  /// In en, this message translates to:
+  /// **'joined as'**
+  String get joinedAs;
+
+  /// No description provided for @donated.
+  ///
+  /// In en, this message translates to:
+  /// **'donated'**
+  String get donated;
+
+  /// No description provided for @requestedHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'requested help'**
+  String get requestedHelp;
+
+  /// No description provided for @unknownTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown time'**
+  String get unknownTime;
+
+  /// No description provided for @justNowTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get justNowTime;
+
+  /// No description provided for @weeksAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'weeks ago'**
+  String get weeksAgo;
+
+  /// No description provided for @claimed.
+  ///
+  /// In en, this message translates to:
+  /// **'Claimed'**
+  String get claimed;
+
+  /// No description provided for @anonymous.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous'**
+  String get anonymous;
+
+  /// No description provided for @someone.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone'**
+  String get someone;
+
+  /// No description provided for @platformInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform Information'**
+  String get platformInformation;
+
+  /// No description provided for @systemSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'System Settings'**
+  String get systemSettings;
+
+  /// No description provided for @platformName.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform Name'**
+  String get platformName;
+
+  /// No description provided for @version.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get version;
+
+  /// No description provided for @supportEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Support Email'**
+  String get supportEmail;
+
+  /// No description provided for @maxUploadSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Max Upload Size'**
+  String get maxUploadSize;
+
+  /// No description provided for @sessionTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Session Timeout'**
+  String get sessionTimeout;
+
+  /// No description provided for @apiVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'API Version'**
+  String get apiVersion;
+
+  /// No description provided for @databaseStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Database Status'**
+  String get databaseStatus;
+
+  /// No description provided for @totalTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Transactions'**
+  String get totalTransactions;
+
+  /// No description provided for @availableDonations.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Donations'**
+  String get availableDonations;
+
+  /// No description provided for @donors.
+  ///
+  /// In en, this message translates to:
+  /// **'Donors'**
+  String get donors;
+
+  /// No description provided for @receivers.
+  ///
+  /// In en, this message translates to:
+  /// **'Receivers'**
+  String get receivers;
+
+  /// No description provided for @totalUsersLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Users'**
+  String get totalUsersLabel;
+
+  /// No description provided for @pendingRequestsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Requests'**
+  String get pendingRequestsCount;
+
+  /// No description provided for @pendingDonations.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Donations'**
+  String get pendingDonations;
+
+  /// No description provided for @approveDonation.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve Donation'**
+  String get approveDonation;
+
+  /// No description provided for @rejectDonation.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject Donation'**
+  String get rejectDonation;
+
+  /// No description provided for @areYouSureApprove.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to approve \"{title}\"?'**
+  String areYouSureApprove(String title);
+
+  /// No description provided for @rejecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejecting: \"{title}\"'**
+  String rejecting(String title);
+
+  /// No description provided for @rejectionReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejection Reason'**
+  String get rejectionReason;
+
+  /// No description provided for @provideRejectionReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Please provide a reason for rejection'**
+  String get provideRejectionReason;
+
+  /// No description provided for @pleaseProvideRejectionReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Please provide a rejection reason'**
+  String get pleaseProvideRejectionReason;
+
+  /// No description provided for @reject.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get reject;
+
+  /// No description provided for @rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get rejected;
+
+  /// No description provided for @donationApprovedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Donation approved successfully'**
+  String get donationApprovedSuccessfully;
+
+  /// No description provided for @failedToApproveDonation.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to approve donation'**
+  String get failedToApproveDonation;
+
+  /// No description provided for @donationRejectedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Donation rejected successfully'**
+  String get donationRejectedSuccessfully;
+
+  /// No description provided for @failedToRejectDonation.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to reject donation'**
+  String get failedToRejectDonation;
+
+  /// No description provided for @failedToLoadPendingDonations.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load pending donations'**
+  String get failedToLoadPendingDonations;
+
+  /// No description provided for @noPendingDonations.
+  ///
+  /// In en, this message translates to:
+  /// **'No Pending Donations'**
+  String get noPendingDonations;
+
+  /// No description provided for @noPendingDonationsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'All donations have been reviewed'**
+  String get noPendingDonationsMessage;
+
+  /// No description provided for @donorName.
+  ///
+  /// In en, this message translates to:
+  /// **'Donor Name'**
+  String get donorName;
+
+  /// No description provided for @submittedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted On'**
+  String get submittedOn;
+
+  /// No description provided for @actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get actions;
+
+  /// No description provided for @pendingReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Review'**
+  String get pendingReview;
+
+  /// No description provided for @approvalStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Approval Status'**
+  String get approvalStatus;
 }
 
 class _AppLocalizationsDelegate

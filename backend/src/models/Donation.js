@@ -71,6 +71,27 @@ const Donation = sequelize.define(
       allowNull: false,
       defaultValue: "available",
     },
+    approvalStatus: {
+      type: DataTypes.ENUM("pending", "approved", "rejected"),
+      allowNull: false,
+      defaultValue: "pending",
+    },
+    approvedBy: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: "users",
+        key: "id",
+      },
+    },
+    approvedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    rejectionReason: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
   },
   {
     tableName: "donations",
@@ -90,6 +111,9 @@ const Donation = sequelize.define(
       {
         fields: ["status"],
       },
+      {
+        fields: ["approvalStatus"],
+      },
     ],
   }
 );
@@ -97,6 +121,7 @@ const Donation = sequelize.define(
 // Define associations in a separate function to avoid circular dependencies
 Donation.associate = (models) => {
   Donation.belongsTo(models.User, { foreignKey: "donorId", as: "donor" });
+  Donation.belongsTo(models.User, { foreignKey: "approvedBy", as: "approver" });
   Donation.hasMany(models.Request, {
     foreignKey: "donationId",
     as: "requests",

@@ -500,7 +500,7 @@ class ApiService {
   static Future<ApiResponse<List<Donation>>> getMyDonations() async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/donations/donor/my-donations'),
+        Uri.parse('$baseUrl/donations/user/my-donations'),
         headers: await _getHeaders(includeAuth: true),
       );
 
@@ -1230,6 +1230,113 @@ class ApiService {
       } else {
         final error = json.decode(response.body);
         return ApiResponse.error(error['message'] ?? 'Failed to report user');
+      }
+    } catch (e) {
+      return ApiResponse.error('Network error: ${e.toString()}');
+    }
+  }
+
+  // ========== ADMIN DONATION APPROVAL METHODS ==========
+
+  /// Get pending donations (admin only)
+  static Future<ApiResponse<PaginatedResponse<Donation>>> getPendingDonations({
+    int page = 1,
+    int limit = 20,
+  }) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/donations/admin/pending?page=$page&limit=$limit'),
+        headers: await _getHeaders(includeAuth: true),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final donations = (data['donations'] as List)
+            .map((json) => Donation.fromJson(json))
+            .toList();
+
+        final pagination = PaginationInfo.fromJson(data['pagination']);
+
+        return ApiResponse.success(
+          PaginatedResponse<Donation>(
+            items: donations,
+            pagination: pagination,
+          ),
+        );
+      } else {
+        final error = jsonDecode(response.body);
+        return ApiResponse.error(
+            error['message'] ?? 'Failed to load pending donations');
+      }
+    } catch (e) {
+      return ApiResponse.error('Network error: ${e.toString()}');
+    }
+  }
+
+  /// Approve donation (admin only)
+  static Future<ApiResponse<Donation>> approveDonation(int donationId) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$baseUrl/donations/$donationId/approve'),
+        headers: await _getHeaders(includeAuth: true),
+        body: jsonEncode({}), // Send empty JSON body
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final donation = Donation.fromJson(data['donation']);
+        return ApiResponse.success(donation);
+      } else {
+        final error = jsonDecode(response.body);
+        return ApiResponse.error(
+            error['message'] ?? 'Failed to approve donation');
+      }
+    } catch (e) {
+      return ApiResponse.error('Network error: ${e.toString()}');
+    }
+  }
+
+  /// Reject donation (admin only)
+  static Future<ApiResponse<Donation>> rejectDonation(
+    int donationId,
+    String reason,
+  ) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$baseUrl/donations/$donationId/reject'),
+        headers: await _getHeaders(includeAuth: true),
+        body: jsonEncode({'reason': reason}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final donation = Donation.fromJson(data['donation']);
+        return ApiResponse.success(donation);
+      } else {
+        final error = jsonDecode(response.body);
+        return ApiResponse.error(
+            error['message'] ?? 'Failed to reject donation');
+      }
+    } catch (e) {
+      return ApiResponse.error('Network error: ${e.toString()}');
+    }
+  }
+
+  /// Get pending donations count (admin only)
+  static Future<ApiResponse<int>> getPendingDonationsCount() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/admin/donations/pending/count'),
+        headers: await _getHeaders(includeAuth: true),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return ApiResponse.success(data['count'] ?? 0);
+      } else {
+        final error = jsonDecode(response.body);
+        return ApiResponse.error(
+            error['message'] ?? 'Failed to get pending count');
       }
     } catch (e) {
       return ApiResponse.error('Network error: ${e.toString()}');

@@ -847,12 +847,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String minutesAgo(int minutes) {
-    return '$minutes د';
+    return 'دقائق مضت';
   }
 
   @override
   String hoursAgo(int hours) {
-    return '$hours س';
+    return 'ساعات مضت';
   }
 
   @override
@@ -943,7 +943,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get notificationsRefreshed => 'تم تحديث الإشعارات';
 
   @override
-  String get newDonationRequest => 'طلب تبرع جديد';
+  String get newDonationRequest => 'تم تقديم طلب تبرع جديد';
 
   @override
   String get donationApproved => 'تم قبول التبرع!';
@@ -952,7 +952,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get pickupReminder => 'تذكير بالاستلام';
 
   @override
-  String get donationCompleted => 'اكتمل التبرع';
+  String get donationCompleted => 'تم إكمال التبرع';
 
   @override
   String get newDonationAvailable => 'تبرع جديد متاح';
@@ -1275,4 +1275,212 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get searchDonations => 'البحث في التبرعات...';
+
+  @override
+  String get overviewSubtitle => 'راقب أداء المنصة والنشاط';
+
+  @override
+  String get usersSubtitle => 'إدارة المستخدمين المسجلين وصلاحياتهم';
+
+  @override
+  String get requestsSubtitle => 'مراجعة وإدارة طلبات التبرع';
+
+  @override
+  String get donationsSubtitle => 'تتبع وإدارة جميع التبرعات';
+
+  @override
+  String get analyticsSubtitle => 'عرض التحليلات والتقارير التفصيلية';
+
+  @override
+  String get settingsSubtitle => 'تكوين إعدادات النظام والتفضيلات';
+
+  @override
+  String get adminDashboardWelcome => 'مرحباً بك في لوحة تحكم المدير';
+
+  @override
+  String get comingSoon => 'قريباً...';
+
+  @override
+  String get refresh => 'تحديث';
+
+  @override
+  String get newUserRegistered => 'تم تسجيل مستخدم جديد';
+
+  @override
+  String get hourAgo => 'ساعة مضت';
+
+  @override
+  String get recentUsers => 'المستخدمون الأخيرون';
+
+  @override
+  String get noUsersFound => 'لا يوجد مستخدمون';
+
+  @override
+  String get noUsersFoundMessage => 'لم يتم العثور على مستخدمين في النظام';
+
+  @override
+  String get noDonationsFound => 'لا توجد تبرعات';
+
+  @override
+  String get noDonationsFoundMessage => 'لم يتم العثور على تبرعات في النظام';
+
+  @override
+  String get noPendingRequests => 'لا توجد طلبات معلقة';
+
+  @override
+  String get noPendingRequestsMessage => 'تمت معالجة جميع الطلبات';
+
+  @override
+  String get noRecentActivity => 'لا يوجد نشاط حديث';
+
+  @override
+  String get newUserRegisteredActivity => 'تم تسجيل مستخدم جديد';
+
+  @override
+  String get newDonationPostedActivity => 'تم نشر تبرع جديد';
+
+  @override
+  String get newRequestSubmittedActivity => 'تم تقديم طلب جديد';
+
+  @override
+  String get joinedAs => 'انضم كـ';
+
+  @override
+  String get donated => 'تبرع بـ';
+
+  @override
+  String get requestedHelp => 'طلب المساعدة';
+
+  @override
+  String get unknownTime => 'وقت غير معروف';
+
+  @override
+  String get justNowTime => 'الآن';
+
+  @override
+  String get weeksAgo => 'أسابيع مضت';
+
+  @override
+  String get claimed => 'تم المطالبة به';
+
+  @override
+  String get anonymous => 'مجهول';
+
+  @override
+  String get someone => 'شخص ما';
+
+  @override
+  String get platformInformation => 'معلومات المنصة';
+
+  @override
+  String get systemSettings => 'إعدادات النظام';
+
+  @override
+  String get platformName => 'اسم المنصة';
+
+  @override
+  String get version => 'الإصدار';
+
+  @override
+  String get supportEmail => 'البريد الإلكتروني للدعم';
+
+  @override
+  String get maxUploadSize => 'الحد الأقصى لحجم التحميل';
+
+  @override
+  String get sessionTimeout => 'مهلة الجلسة';
+
+  @override
+  String get apiVersion => 'إصدار API';
+
+  @override
+  String get databaseStatus => 'حالة قاعدة البيانات';
+
+  @override
+  String get totalTransactions => 'إجمالي المعاملات';
+
+  @override
+  String get availableDonations => 'التبرعات المتاحة';
+
+  @override
+  String get donors => 'المتبرعون';
+
+  @override
+  String get receivers => 'المستقبلون';
+
+  @override
+  String get totalUsersLabel => 'إجمالي المستخدمين';
+
+  @override
+  String get pendingRequestsCount => 'الطلبات المعلقة';
+
+  @override
+  String get pendingDonations => 'التبرعات المعلقة';
+
+  @override
+  String get approveDonation => 'الموافقة على التبرع';
+
+  @override
+  String get rejectDonation => 'رفض التبرع';
+
+  @override
+  String areYouSureApprove(String title) {
+    return 'هل أنت متأكد من الموافقة على \"$title\"؟';
+  }
+
+  @override
+  String rejecting(String title) {
+    return 'رفض: \"$title\"';
+  }
+
+  @override
+  String get rejectionReason => 'سبب الرفض';
+
+  @override
+  String get provideRejectionReason => 'يرجى تقديم سبب الرفض';
+
+  @override
+  String get pleaseProvideRejectionReason => 'يرجى تقديم سبب الرفض';
+
+  @override
+  String get reject => 'رفض';
+
+  @override
+  String get rejected => 'مرفوض';
+
+  @override
+  String get donationApprovedSuccessfully => 'تمت الموافقة على التبرع بنجاح';
+
+  @override
+  String get failedToApproveDonation => 'فشل في الموافقة على التبرع';
+
+  @override
+  String get donationRejectedSuccessfully => 'تم رفض التبرع بنجاح';
+
+  @override
+  String get failedToRejectDonation => 'فشل في رفض التبرع';
+
+  @override
+  String get failedToLoadPendingDonations => 'فشل في تحميل التبرعات المعلقة';
+
+  @override
+  String get noPendingDonations => 'لا توجد تبرعات معلقة';
+
+  @override
+  String get noPendingDonationsMessage => 'تمت مراجعة جميع التبرعات';
+
+  @override
+  String get donorName => 'اسم المتبرع';
+
+  @override
+  String get submittedOn => 'تم التقديم في';
+
+  @override
+  String get actions => 'الإجراءات';
+
+  @override
+  String get pendingReview => 'قيد المراجعة';
+
+  @override
+  String get approvalStatus => 'حالة الموافقة';
 }

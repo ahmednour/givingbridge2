@@ -10,8 +10,8 @@ import '../widgets/common/gb_confetti.dart';
 import '../widgets/common/gb_empty_state.dart';
 import '../widgets/common/gb_search_bar.dart';
 import '../widgets/common/gb_filter_chips.dart';
-import '../widgets/common/web_sidebar_nav.dart';
 import '../providers/auth_provider.dart';
+import '../providers/locale_provider.dart';
 import '../services/api_service.dart';
 import '../models/donation.dart';
 import 'chat_screen_enhanced.dart';
@@ -28,7 +28,6 @@ class ReceiverDashboardEnhanced extends StatefulWidget {
 
 class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
   String _currentRoute = 'browse';
-  bool _isSidebarCollapsed = false;
 
   List<Donation> _availableDonations = [];
   List<Donation> _filteredDonations = []; // Filtered/searched results
@@ -181,94 +180,360 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
     final size = MediaQuery.of(context).size;
     final isDesktop = size.width >= 1024;
     final authProvider = Provider.of<AuthProvider>(context);
+    final localeProvider = Provider.of<LocaleProvider>(context);
 
-    return Scaffold(
-      backgroundColor: DesignSystem.getBackgroundColor(context),
-      body: isDesktop
-          ? Row(
+    return Directionality(
+      textDirection: localeProvider.textDirection,
+      child: Scaffold(
+        backgroundColor: DesignSystem.getBackgroundColor(context),
+        body: isDesktop
+            ? Row(
+                children: [
+                  // Custom Fixed Sidebar
+                  _buildDesktopSidebar(context, l10n, authProvider),
+                  // Main Content
+                  Expanded(
+                    child: _buildMainContent(context, theme, isDark, isDesktop),
+                  ),
+                ],
+              )
+            : Column(
+                children: [
+                  // Main Content
+                  Expanded(
+                    child: _buildMainContent(context, theme, isDark, isDesktop),
+                  ),
+                  // Bottom Navigation
+                  _buildMobileBottomNav(context, l10n),
+                ],
+              ),
+      ),
+    );
+  }
+
+  Widget _buildDesktopSidebar(BuildContext context, AppLocalizations l10n, AuthProvider authProvider) {
+    return Container(
+      width: 280,
+      decoration: BoxDecoration(
+        color: DesignSystem.getSurfaceColor(context),
+        border: Border(
+          right: BorderSide(
+            color: DesignSystem.getBorderColor(context),
+            width: 1,
+          ),
+        ),
+      ),
+      child: Column(
+        children: [
+          // Header with Language Toggle
+          Container(
+            padding: const EdgeInsets.all(DesignSystem.spaceL),
+            child: Column(
               children: [
-                // Sidebar Navigation
-                WebSidebarNav(
-                  currentRoute: _currentRoute,
-                  items: [
-                    WebNavItem(
-                      route: 'browse',
-                      label: l10n.browseDonations,
-                      icon: Icons.search,
-                      color: DesignSystem.secondaryGreen,
-                      onTap: () => setState(() => _currentRoute = 'browse'),
+                Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        gradient: DesignSystem.receiverGradient,
+                        borderRadius: BorderRadius.circular(DesignSystem.radiusM),
+                      ),
+                      child: const Icon(
+                        Icons.inbox,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                     ),
-                    WebNavItem(
-                      route: 'requests',
-                      label: l10n.myRequests,
-                      icon: Icons.inbox_outlined,
-                      color: DesignSystem.accentPurple,
-                      onTap: () => setState(() => _currentRoute = 'requests'),
-                      badge: _myRequests.isNotEmpty
-                          ? _myRequests.length.toString()
-                          : null,
-                    ),
-                    WebNavItem(
-                      route: 'overview',
-                      label: l10n.overview,
-                      icon: Icons.dashboard_outlined,
-                      color: DesignSystem.primaryBlue,
-                      onTap: () => setState(() => _currentRoute = 'overview'),
+                    const SizedBox(width: DesignSystem.spaceM),
+                    Expanded(
+                      child: Text(
+                        'Receiver',
+                        style: DesignSystem.headlineSmall(context).copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                   ],
-                  userSection: _buildUserSection(authProvider),
-                  onLogout: () {
-                    authProvider.logout();
-                    Navigator.pushReplacementNamed(context, '/login');
-                  },
-                  isCollapsed: _isSidebarCollapsed,
-                  onCollapseChanged: (collapsed) {
-                    setState(() => _isSidebarCollapsed = collapsed);
-                  },
                 ),
-                // Main Content
-                Expanded(
-                  child: _buildMainContent(context, theme, isDark, isDesktop),
-                ),
+                const SizedBox(height: DesignSystem.spaceM),
+                _buildLanguageToggle(context),
               ],
-            )
-          : Column(
+            ),
+          ),
+          
+          const Divider(height: 1),
+          
+          // User Section
+          Padding(
+            padding: const EdgeInsets.all(DesignSystem.spaceM),
+            child: _buildUserSection(authProvider),
+          ),
+          
+          const Divider(height: 1),
+          
+          // Navigation Items
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(vertical: DesignSystem.spaceM),
               children: [
-                Expanded(
-                  child: _buildMainContent(context, theme, isDark, isDesktop),
+                _buildNavItem(
+                  context,
+                  l10n.browseDonations,
+                  Icons.search,
+                  DesignSystem.secondaryGreen,
+                  'browse',
+                  () => setState(() => _currentRoute = 'browse'),
                 ),
-                // Bottom Navigation for Mobile
-                WebBottomNav(
-                  currentRoute: _currentRoute,
-                  items: [
-                    WebNavItem(
-                      route: 'browse',
-                      label: l10n.browseDonations,
-                      icon: Icons.search,
-                      color: DesignSystem.secondaryGreen,
-                      onTap: () => setState(() => _currentRoute = 'browse'),
-                    ),
-                    WebNavItem(
-                      route: 'requests',
-                      label: l10n.myRequests,
-                      icon: Icons.inbox_outlined,
-                      color: DesignSystem.accentPurple,
-                      onTap: () => setState(() => _currentRoute = 'requests'),
-                      badge: _myRequests.isNotEmpty
-                          ? _myRequests.length.toString()
-                          : null,
-                    ),
-                    WebNavItem(
-                      route: 'more',
-                      label: 'More',
-                      icon: Icons.menu,
-                      color: DesignSystem.neutral600,
-                      onTap: () => _showMobileMenu(context),
-                    ),
-                  ],
+                _buildNavItem(
+                  context,
+                  l10n.myRequests,
+                  Icons.inbox_outlined,
+                  DesignSystem.accentPurple,
+                  'requests',
+                  () => setState(() => _currentRoute = 'requests'),
+                  badge: _myRequests.isNotEmpty ? _myRequests.length.toString() : null,
+                ),
+                _buildNavItem(
+                  context,
+                  l10n.overview,
+                  Icons.dashboard_outlined,
+                  DesignSystem.primaryBlue,
+                  'overview',
+                  () => setState(() => _currentRoute = 'overview'),
                 ),
               ],
             ),
+          ),
+          
+          const Divider(height: 1),
+          
+          // Logout Button
+          Padding(
+            padding: const EdgeInsets.all(DesignSystem.spaceM),
+            child: GBButton(
+              text: l10n.logout,
+              onPressed: () {
+                authProvider.logout();
+                Navigator.pushReplacementNamed(context, '/login');
+              },
+              variant: GBButtonVariant.secondary,
+              leftIcon: const Icon(Icons.logout, size: 18),
+              fullWidth: true,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNavItem(
+    BuildContext context,
+    String label,
+    IconData icon,
+    Color color,
+    String route,
+    VoidCallback onTap, {
+    String? badge,
+  }) {
+    final isActive = _currentRoute == route;
+    
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: DesignSystem.spaceM,
+        vertical: DesignSystem.spaceXS,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(DesignSystem.radiusM),
+          child: Container(
+            padding: const EdgeInsets.all(DesignSystem.spaceM),
+            decoration: BoxDecoration(
+              color: isActive ? color.withOpacity(0.1) : Colors.transparent,
+              borderRadius: BorderRadius.circular(DesignSystem.radiusM),
+              border: isActive ? Border.all(color: color.withOpacity(0.3)) : null,
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  icon,
+                  color: isActive ? color : DesignSystem.getTextColor(context).withOpacity(0.7),
+                  size: 20,
+                ),
+                const SizedBox(width: DesignSystem.spaceM),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: DesignSystem.bodyMedium(context).copyWith(
+                      color: isActive ? color : DesignSystem.getTextColor(context),
+                      fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+                    ),
+                  ),
+                ),
+                if (badge != null)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: DesignSystem.spaceS,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: color,
+                      borderRadius: BorderRadius.circular(DesignSystem.radiusPill),
+                    ),
+                    child: Text(
+                      badge,
+                      style: DesignSystem.bodySmall(context).copyWith(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+
+
+  Widget _buildMobileBottomNav(BuildContext context, AppLocalizations l10n) {
+    return Container(
+      decoration: BoxDecoration(
+        color: DesignSystem.getSurfaceColor(context),
+        border: Border(
+          top: BorderSide(
+            color: DesignSystem.getBorderColor(context),
+            width: 1,
+          ),
+        ),
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: DesignSystem.spaceS),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildMobileNavItem(
+                context,
+                l10n.browseDonations,
+                Icons.search,
+                'browse',
+                () => setState(() => _currentRoute = 'browse'),
+              ),
+              _buildMobileNavItem(
+                context,
+                l10n.myRequests,
+                Icons.inbox_outlined,
+                'requests',
+                () => setState(() => _currentRoute = 'requests'),
+              ),
+              _buildMobileNavItem(
+                context,
+                'More',
+                Icons.menu,
+                'more',
+                () => _showMobileMenu(context),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMobileNavItem(
+    BuildContext context,
+    String label,
+    IconData icon,
+    String route,
+    VoidCallback onTap,
+  ) {
+    final isActive = _currentRoute == route;
+    
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: DesignSystem.spaceS,
+          vertical: DesignSystem.spaceXS,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: isActive
+                  ? DesignSystem.secondaryGreen
+                  : DesignSystem.getTextColor(context).withOpacity(0.6),
+              size: 24,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: DesignSystem.bodySmall(context).copyWith(
+                color: isActive
+                    ? DesignSystem.secondaryGreen
+                    : DesignSystem.getTextColor(context).withOpacity(0.6),
+                fontSize: 11,
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageToggle(BuildContext context) {
+    final localeProvider = Provider.of<LocaleProvider>(context);
+    
+    return Container(
+      decoration: BoxDecoration(
+        color: DesignSystem.getSurfaceColor(context),
+        borderRadius: BorderRadius.circular(DesignSystem.radiusM),
+        border: Border.all(color: DesignSystem.getBorderColor(context)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildLanguageButton('en', 'EN', localeProvider),
+          _buildLanguageButton('ar', 'ع', localeProvider),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLanguageButton(String locale, String label, LocaleProvider localeProvider) {
+    final isActive = localeProvider.locale.languageCode == locale;
+    
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => localeProvider.setLocale(Locale(locale)),
+        borderRadius: BorderRadius.circular(DesignSystem.radiusS),
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: DesignSystem.spaceM,
+            vertical: DesignSystem.spaceS,
+          ),
+          decoration: BoxDecoration(
+            color: isActive ? DesignSystem.secondaryGreen : null,
+            borderRadius: BorderRadius.circular(DesignSystem.radiusS),
+          ),
+          child: Text(
+            label,
+            style: DesignSystem.bodySmall(context).copyWith(
+              color: isActive ? Colors.white : DesignSystem.getTextColor(context),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -276,43 +541,51 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
     final userName = authProvider.user?.name ?? 'Receiver';
     final userEmail = authProvider.user?.email ?? '';
 
-    return Column(
-      children: [
-        CircleAvatar(
-          radius: _isSidebarCollapsed ? 20 : 28,
-          backgroundColor: DesignSystem.secondaryGreen.withOpacity(0.1),
-          child: Text(
-            userName.isNotEmpty ? userName[0].toUpperCase() : 'R',
-            style: TextStyle(
-              fontSize: _isSidebarCollapsed ? 18 : 24,
-              fontWeight: FontWeight.bold,
-              color: DesignSystem.secondaryGreen,
+    return Container(
+      padding: const EdgeInsets.all(DesignSystem.spaceM),
+      decoration: BoxDecoration(
+        color: DesignSystem.secondaryGreen.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(DesignSystem.radiusM),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 20,
+            backgroundColor: DesignSystem.secondaryGreen,
+            child: Text(
+              userName.isNotEmpty ? userName[0].toUpperCase() : 'R',
+              style: DesignSystem.bodyMedium(context).copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
-        ),
-        if (!_isSidebarCollapsed) ...[
-          const SizedBox(height: DesignSystem.spaceS),
-          Text(
-            userName,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.onSurface,
+          const SizedBox(width: DesignSystem.spaceM),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  userName,
+                  style: DesignSystem.bodyMedium(context).copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  userEmail,
+                  style: DesignSystem.bodySmall(context).copyWith(
+                    color: DesignSystem.getTextColor(context).withOpacity(0.7),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          Text(
-            userEmail,
-            style: TextStyle(
-              fontSize: 12,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
           ),
         ],
-      ],
+      ),
     );
   }
 

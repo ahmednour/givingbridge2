@@ -9,6 +9,7 @@ import '../widgets/rtl/directional_row.dart';
 import '../widgets/rtl/directional_column.dart';
 import '../widgets/rtl/directional_container.dart';
 import '../widgets/rtl/directional_app_bar.dart';
+import '../widgets/donations/approval_status_badge.dart';
 import '../services/rtl_layout_service.dart';
 import '../services/api_service.dart';
 import '../providers/locale_provider.dart';
@@ -324,9 +325,13 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                     ? CrossAxisAlignment.end 
                     : CrossAxisAlignment.start,
                 children: [
-                  // Status and Category
+                  // Status, Approval Status, and Category
                   DirectionalRow(
                     children: [
+                      // Approval Status Badge
+                      ApprovalStatusBadge(donation: donation),
+                      const SizedBox(width: DesignSystem.spaceS),
+                      // Availability Status
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: DesignSystem.spaceM,
@@ -463,6 +468,49 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
+
+                  // Rejection Reason (if rejected)
+                  if (donation.isRejected && donation.rejectionReason != null) ...[
+                    const SizedBox(height: DesignSystem.spaceM),
+                    Container(
+                      padding: const EdgeInsets.all(DesignSystem.spaceM),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(DesignSystem.radiusM),
+                        border: Border.all(color: Colors.red.withOpacity(0.3)),
+                      ),
+                      child: DirectionalRow(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(Icons.info_outline, size: 16, color: Colors.red),
+                          const SizedBox(width: DesignSystem.spaceS),
+                          Expanded(
+                            child: DirectionalColumn(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Rejection Reason:',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  donation.rejectionReason!,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
 
                   const SizedBox(height: DesignSystem.spaceM),
 

@@ -300,6 +300,79 @@ class EmailService {
 
     return this.sendEmail(user.email, subject, html);
   }
+
+  /**
+   * Send donation approval/rejection notification email
+   * @param {object} donor - Donor user object
+   * @param {object} donation - Donation object
+   * @param {string} status - Approval status (approved/rejected)
+   * @param {string} reason - Rejection reason (optional)
+   */
+  async sendDonationApprovalNotification(donor, donation, status, reason = null) {
+    if (!this.initialized) {
+      console.warn("Email service not initialized. Skipping approval notification email.");
+      return;
+    }
+
+    const subject = status === "approved" 
+      ? `✅ Your Donation "${donation.title}" Has Been Approved!`
+      : `❌ Your Donation "${donation.title}" Requires Attention`;
+
+    const htmlContent = status === "approved"
+      ? `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #10b981;">Great News! Your Donation Has Been Approved</h2>
+          
+          <p>Dear ${donor.name},</p>
+          
+          <p>We're pleased to inform you that your donation has been approved and is now visible to receivers on our platform.</p>
+          
+          <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0; color: #374151;">Donation Details:</h3>
+            <p><strong>Title:</strong> ${donation.title}</p>
+            <p><strong>Category:</strong> ${donation.category}</p>
+            <p><strong>Condition:</strong> ${donation.condition}</p>
+            <p><strong>Location:</strong> ${donation.location}</p>
+          </div>
+          
+          <p>Your generosity will help someone in need. Receivers can now see and request your donation.</p>
+          
+          <p>Thank you for being part of the ${this.appName} community!</p>
+          
+          <p style="margin-top: 30px;">
+            Best regards,<br>
+            The ${this.appName} Team
+          </p>
+        </div>
+      `
+      : `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #ef4444;">Donation Review Update</h2>
+          
+          <p>Dear ${donor.name},</p>
+          
+          <p>Thank you for your donation submission. After review, we're unable to approve your donation at this time.</p>
+          
+          <div style="background-color: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ef4444;">
+            <h3 style="margin-top: 0; color: #991b1b;">Donation Details:</h3>
+            <p><strong>Title:</strong> ${donation.title}</p>
+            <p><strong>Category:</strong> ${donation.category}</p>
+            ${reason ? `<p><strong>Reason:</strong> ${reason}</p>` : ''}
+          </div>
+          
+          <p>If you believe this is an error or would like to submit a revised donation, please feel free to create a new donation listing or contact our support team.</p>
+          
+          <p>We appreciate your understanding and your commitment to helping others.</p>
+          
+          <p style="margin-top: 30px;">
+            Best regards,<br>
+            The ${this.appName} Team
+          </p>
+        </div>
+      `;
+
+    return this.sendEmail(donor.email, subject, htmlContent);
+  }
 }
 
 // Export singleton instance

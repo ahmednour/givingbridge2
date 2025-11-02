@@ -53,15 +53,19 @@ class _GBMultipleImageUploadState extends State<GBMultipleImageUpload> {
 
     try {
       final List<XFile> images = await _picker.pickMultiImage(
-        maxWidth: 1200,
-        maxHeight: 800,
-        imageQuality: 70,
+        imageQuality: 85,
       );
 
       if (images.isNotEmpty) {
         // Validate file size and extension
         List<XFile> validImages = [];
         for (final image in images) {
+          // Check max images limit first
+          if (_images.length + validImages.length >= widget.maxImages) {
+            _showError('Maximum ${widget.maxImages} images allowed');
+            break;
+          }
+
           final bytes = await image.readAsBytes();
           final sizeMB = bytes.length / (1024 * 1024);
 
@@ -70,7 +74,8 @@ class _GBMultipleImageUploadState extends State<GBMultipleImageUpload> {
             continue;
           }
 
-          final extension = image.path.split('.').last.toLowerCase();
+          // Get extension from name instead of path for web compatibility
+          final extension = image.name.split('.').last.toLowerCase();
           if (!widget.allowedExtensions.contains(extension)) {
             _showError(
                 '${image.name}: Only ${widget.allowedExtensions.join(', ')} allowed');
@@ -78,12 +83,6 @@ class _GBMultipleImageUploadState extends State<GBMultipleImageUpload> {
           }
 
           validImages.add(image);
-
-          // Check max images limit
-          if (_images.length + validImages.length >= widget.maxImages) {
-            _showError('Maximum ${widget.maxImages} images allowed');
-            break;
-          }
         }
 
         if (validImages.isNotEmpty) {
@@ -243,7 +242,7 @@ class _GBMultipleImageUploadState extends State<GBMultipleImageUpload> {
                     child: GBSecondaryButton(
                       text: 'Take Photo',
                       leftIcon: const Icon(Icons.camera_alt_outlined, size: 20),
-                      onPressed: _isUploading ? null : _takePhoto,
+                      onPressed: (_isUploading || kIsWeb) ? null : _takePhoto, // Disable camera on web
                     ),
                   ),
                 ],

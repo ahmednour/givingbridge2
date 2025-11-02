@@ -864,12 +864,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String minutesAgo(int minutes) {
-    return '${minutes}m ago';
+    return 'minutes ago';
   }
 
   @override
   String hoursAgo(int hours) {
-    return '${hours}h ago';
+    return 'hours ago';
   }
 
   @override
@@ -961,7 +961,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationsRefreshed => 'Notifications refreshed';
 
   @override
-  String get newDonationRequest => 'New donation request';
+  String get newDonationRequest => 'New donation request submitted';
 
   @override
   String get donationApproved => 'Donation approved!';
@@ -1298,4 +1298,214 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get searchDonations => 'Search donations...';
+
+  @override
+  String get overviewSubtitle =>
+      'Monitor your platform performance and activity';
+
+  @override
+  String get usersSubtitle => 'Manage registered users and their permissions';
+
+  @override
+  String get requestsSubtitle => 'Review and manage donation requests';
+
+  @override
+  String get donationsSubtitle => 'Track and manage all donations';
+
+  @override
+  String get analyticsSubtitle => 'View detailed analytics and reports';
+
+  @override
+  String get settingsSubtitle => 'Configure system settings and preferences';
+
+  @override
+  String get adminDashboardWelcome => 'Welcome to the admin dashboard';
+
+  @override
+  String get comingSoon => 'Coming soon...';
+
+  @override
+  String get refresh => 'Refresh';
+
+  @override
+  String get newUserRegistered => 'New user registered';
+
+  @override
+  String get hourAgo => 'hour ago';
+
+  @override
+  String get recentUsers => 'Recent Users';
+
+  @override
+  String get noUsersFound => 'No Users';
+
+  @override
+  String get noUsersFoundMessage => 'No users found in the system';
+
+  @override
+  String get noDonationsFound => 'No Donations';
+
+  @override
+  String get noDonationsFoundMessage => 'No donations found in the system';
+
+  @override
+  String get noPendingRequests => 'No Pending Requests';
+
+  @override
+  String get noPendingRequestsMessage => 'All requests have been processed';
+
+  @override
+  String get noRecentActivity => 'No recent activity';
+
+  @override
+  String get newUserRegisteredActivity => 'New user registered';
+
+  @override
+  String get newDonationPostedActivity => 'New donation posted';
+
+  @override
+  String get newRequestSubmittedActivity => 'New request submitted';
+
+  @override
+  String get joinedAs => 'joined as';
+
+  @override
+  String get donated => 'donated';
+
+  @override
+  String get requestedHelp => 'requested help';
+
+  @override
+  String get unknownTime => 'Unknown time';
+
+  @override
+  String get justNowTime => 'Just now';
+
+  @override
+  String get weeksAgo => 'weeks ago';
+
+  @override
+  String get claimed => 'Claimed';
+
+  @override
+  String get anonymous => 'Anonymous';
+
+  @override
+  String get someone => 'Someone';
+
+  @override
+  String get platformInformation => 'Platform Information';
+
+  @override
+  String get systemSettings => 'System Settings';
+
+  @override
+  String get platformName => 'Platform Name';
+
+  @override
+  String get version => 'Version';
+
+  @override
+  String get supportEmail => 'Support Email';
+
+  @override
+  String get maxUploadSize => 'Max Upload Size';
+
+  @override
+  String get sessionTimeout => 'Session Timeout';
+
+  @override
+  String get apiVersion => 'API Version';
+
+  @override
+  String get databaseStatus => 'Database Status';
+
+  @override
+  String get totalTransactions => 'Total Transactions';
+
+  @override
+  String get availableDonations => 'Available Donations';
+
+  @override
+  String get donors => 'Donors';
+
+  @override
+  String get receivers => 'Receivers';
+
+  @override
+  String get totalUsersLabel => 'Total Users';
+
+  @override
+  String get pendingRequestsCount => 'Pending Requests';
+
+  @override
+  String get pendingDonations => 'Pending Donations';
+
+  @override
+  String get approveDonation => 'Approve Donation';
+
+  @override
+  String get rejectDonation => 'Reject Donation';
+
+  @override
+  String areYouSureApprove(String title) {
+    return 'Are you sure you want to approve \"$title\"?';
+  }
+
+  @override
+  String rejecting(String title) {
+    return 'Rejecting: \"$title\"';
+  }
+
+  @override
+  String get rejectionReason => 'Rejection Reason';
+
+  @override
+  String get provideRejectionReason => 'Please provide a reason for rejection';
+
+  @override
+  String get pleaseProvideRejectionReason =>
+      'Please provide a rejection reason';
+
+  @override
+  String get reject => 'Reject';
+
+  @override
+  String get rejected => 'Rejected';
+
+  @override
+  String get donationApprovedSuccessfully => 'Donation approved successfully';
+
+  @override
+  String get failedToApproveDonation => 'Failed to approve donation';
+
+  @override
+  String get donationRejectedSuccessfully => 'Donation rejected successfully';
+
+  @override
+  String get failedToRejectDonation => 'Failed to reject donation';
+
+  @override
+  String get failedToLoadPendingDonations => 'Failed to load pending donations';
+
+  @override
+  String get noPendingDonations => 'No Pending Donations';
+
+  @override
+  String get noPendingDonationsMessage => 'All donations have been reviewed';
+
+  @override
+  String get donorName => 'Donor Name';
+
+  @override
+  String get submittedOn => 'Submitted On';
+
+  @override
+  String get actions => 'Actions';
+
+  @override
+  String get pendingReview => 'Pending Review';
+
+  @override
+  String get approvalStatus => 'Approval Status';
 }

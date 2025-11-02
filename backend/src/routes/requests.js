@@ -9,6 +9,7 @@ const { sequelize } = require("../config/db");
 const {
   generalRateLimit,
 } = require("../middleware/rateLimiting");
+const { asyncHandler } = require("../middleware");
 
 // Import authentication middleware from auth routes
 const { authenticateToken } = require("./auth");
@@ -17,47 +18,38 @@ const { authenticateToken } = require("./auth");
 const requestImageUpload = require("../middleware/requestImageUpload");
 
 // Get all requests with basic pagination (simplified for MVP)
-router.get("/", authenticateToken, generalRateLimit, async (req, res) => {
-  try {
-    const { page, limit } = req.query;
-    const user = await User.findByPk(req.user.userId);
+router.get("/", authenticateToken, generalRateLimit, asyncHandler(async (req, res) => {
+  const { page, limit } = req.query;
+  const user = await User.findByPk(req.user.userId);
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    const pagination = {
-      page: page || 1,
-      limit: limit || 20,
-    };
-
-    // Import RequestController dynamically to avoid circular dependency issues
-    const RequestController = require("../controllers/requestController");
-    const result = await RequestController.getAllRequests(
-      {},  // No filters for MVP
-      user,
-      pagination
-    );
-
-    res.json({
-      message: "Requests retrieved successfully",
-      requests: result.requests,
-      pagination: result.pagination,
-    });
-  } catch (error) {
-    console.error("Get requests error:", error);
-    res.status(500).json({
-      message: "Failed to retrieve requests",
-      error: error.message,
-    });
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
   }
-});
+
+  const pagination = {
+    page: page || 1,
+    limit: limit || 20,
+  };
+
+  // Import RequestController dynamically to avoid circular dependency issues
+  const RequestController = require("../controllers/requestController");
+  const result = await RequestController.getAllRequests(
+    {},  // No filters for MVP
+    user,
+    pagination
+  );
+
+  res.json({
+    message: "Requests retrieved successfully",
+    requests: result.requests,
+    pagination: result.pagination,
+  });
+}));
 
 // Get request by ID
-router.get("/:id", authenticateToken, generalRateLimit, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const request = await Request.findByPk(id);
+router.get("/:id", authenticateToken, generalRateLimit, asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const request = await Request.findByPk(id);
 
     if (!request) {
       return res.status(404).json({
@@ -82,40 +74,25 @@ router.get("/:id", authenticateToken, generalRateLimit, async (req, res) => {
       message: "Request retrieved successfully",
       request,
     });
-  } catch (error) {
-    console.error("Get request error:", error);
-    res.status(500).json({
-      message: "Failed to retrieve request",
-      error: error.message,
-    });
-  }
-});
+}));
 
 // Get my requests as receiver
 router.get(
   "/receiver/my-requests",
   authenticateToken,
   generalRateLimit,
-  async (req, res) => {
-    try {
-      const requests = await Request.findAll({
-        where: { receiverId: req.user.userId },
-        order: [["createdAt", "DESC"]],
-      });
+  asyncHandler(async (req, res) => {
+    const requests = await Request.findAll({
+      where: { receiverId: req.user.userId },
+      order: [["createdAt", "DESC"]],
+    });
 
-      res.json({
-        message: "Your requests retrieved successfully",
-        requests,
-        total: requests.length,
-      });
-    } catch (error) {
-      console.error("Get my requests error:", error);
-      res.status(500).json({
-        message: "Failed to retrieve your requests",
-        error: error.message,
-      });
-    }
-  }
+    res.json({
+      message: "Your requests retrieved successfully",
+      requests,
+      total: requests.length,
+    });
+  })
 );
 
 // Get requests for my donations (as donor)
@@ -123,26 +100,18 @@ router.get(
   "/donor/incoming-requests",
   authenticateToken,
   generalRateLimit,
-  async (req, res) => {
-    try {
-      const requests = await Request.findAll({
-        where: { donorId: req.user.userId },
-        order: [["createdAt", "DESC"]],
-      });
+  asyncHandler(async (req, res) => {
+    const requests = await Request.findAll({
+      where: { donorId: req.user.userId },
+      order: [["createdAt", "DESC"]],
+    });
 
-      res.json({
-        message: "Incoming requests retrieved successfully",
-        requests,
-        total: requests.length,
-      });
-    } catch (error) {
-      console.error("Get incoming requests error:", error);
-      res.status(500).json({
-        message: "Failed to retrieve incoming requests",
-        error: error.message,
-      });
-    }
-  }
+    res.json({
+      message: "Incoming requests retrieved successfully",
+      requests,
+      total: requests.length,
+    });
+  })
 );
 
 // Create new request (receiver requests a donation)
@@ -438,10 +407,9 @@ router.put(
 );
 
 // Delete request (only by receiver or admin)
-router.delete("/:id", authenticateToken, generalRateLimit, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const request = await Request.findByPk(id);
+router.delete("/:id", authenticateToken, generalRateLimit, asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const request = await Request.findByPk(id);
 
     if (!request) {
       return res.status(404).json({
@@ -470,14 +438,7 @@ router.delete("/:id", authenticateToken, generalRateLimit, async (req, res) => {
     res.json({
       message: "Request deleted successfully",
     });
-  } catch (error) {
-    console.error("Delete request error:", error);
-    res.status(500).json({
-      message: "Failed to delete request",
-      error: error.message,
-    });
-  }
-});
+}));
 
 // Get request statistics (for admin dashboard)
 router.get(

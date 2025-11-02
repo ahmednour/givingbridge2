@@ -60,16 +60,20 @@ router.get(
   "/",
   generalRateLimit,
   asyncHandler(async (req, res) => {
-    const { page, limit } = req.query;
+    const { page, limit, approvalStatus } = req.query;
 
     const pagination = {
       page: page || 1,
       limit: limit || 20,
     };
 
+    // Get user role if authenticated
+    const userRole = req.user ? req.user.role : null;
+
     const result = await DonationController.getAllDonations(
-      {},  // No filters for MVP
-      pagination
+      { approvalStatus },  // Pass approval status filter
+      pagination,
+      userRole
     );
 
     res.json({
@@ -86,10 +90,18 @@ router.get(
   generalRateLimit, // Apply general rate limiting
   asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const donation = await DonationController.getDonationByIdWithViewCount(id);
+    
+    // Get user role if authenticated
+    const userRole = req.user ? req.user.role : null;
+    
+    const donation = await DonationController.getDonationByIdWithViewCount(id, userRole);
 
     if (!donation) {
-      return res.status(404).json({ message: "Donation not found" });
+      return res.status(404).json({ 
+        message: userRole === "admin" 
+          ? "Donation not found" 
+          : "Donation not found or not yet approved" 
+      });
     }
 
     res.json({
@@ -121,8 +133,9 @@ router.post(
     );
 
     res.status(201).json({
-      message: "Donation created successfully",
+      message: "Donation created successfully and pending admin approval",
       donation,
+      note: "Your donation will be visible to receivers once approved by an administrator",
     });
   })
 );
@@ -206,6 +219,74 @@ router.get(
     res.json({
       message: "Donation statistics retrieved successfully",
       stats,
+    });
+  })
+);
+
+// Get pending donations (admin only)
+router.get(
+  "/admin/pending",
+  authenticateToken,
+  requireAdmin,
+  generalRateLimit,
+  asyncHandler(async (req, res) => {
+    const { page, limit } = req.query;
+    
+    const pagination = {
+      page: page || 1,
+      limit: limit || 20,
+    };
+
+    const result = await DonationController.getPendingDonations(pagination);
+
+    res.json({
+      message: "Pending donations retrieved successfully",
+      donations: result.donations,
+      pagination: result.pagination,
+    });
+  })
+);
+
+// Approve donation (admin only)
+router.put(
+  "/:id/approve",
+  authenticateToken,
+  requireAdmin,
+  generalRateLimit,
+  asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    
+    const donation = await DonationController.approveDonation(
+      id,
+      req.user.id
+    );
+
+    res.json({
+      message: "Donation approved successfully",
+      donation,
+    });
+  })
+);
+
+// Reject donation (admin only)
+router.put(
+  "/:id/reject",
+  authenticateToken,
+  requireAdmin,
+  generalRateLimit,
+  asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { reason } = req.body;
+    
+    const donation = await DonationController.rejectDonation(
+      id,
+      req.user.id,
+      reason
+    );
+
+    res.json({
+      message: "Donation rejected successfully",
+      donation,
     });
   })
 );

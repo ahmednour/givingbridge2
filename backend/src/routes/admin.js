@@ -6,6 +6,7 @@ const RequestController = require("../controllers/requestController");
 const {
   generalRateLimit,
 } = require("../middleware/rateLimiting");
+const { asyncHandler } = require("../middleware");
 const router = express.Router();
 
 // Middleware to check admin role
@@ -19,98 +20,86 @@ const requireAdmin = (req, res, next) => {
 };
 
 // Get admin dashboard statistics
-router.get("/stats", authenticateToken, requireAdmin, generalRateLimit, async (req, res) => {
-  try {
-    const stats = await AdminController.getDashboardStats();
-    res.json(stats);
-  } catch (error) {
-    console.error("Get admin stats error:", error);
-    res.status(500).json({
-      message: "Failed to fetch admin statistics",
-      error: error.message,
-    });
-  }
-});
+router.get("/stats", authenticateToken, requireAdmin, generalRateLimit, asyncHandler(async (req, res) => {
+  const stats = await AdminController.getDashboardStats();
+  res.json(stats);
+}));
 
 // Get all users (admin only)
-router.get("/users", authenticateToken, requireAdmin, generalRateLimit, async (req, res) => {
-  try {
-    const { role, search, page, limit } = req.query;
-    const result = await AdminController.getAllUsers({
-      role,
-      search,
-      page,
-      limit,
-    });
-    res.json(result);
-  } catch (error) {
-    console.error("Get all users error:", error);
-    res.status(500).json({
-      message: "Failed to fetch users",
-      error: error.message,
-    });
-  }
-});
+router.get("/users", authenticateToken, requireAdmin, generalRateLimit, asyncHandler(async (req, res) => {
+  const { role, search, page, limit } = req.query;
+  const result = await AdminController.getAllUsers({
+    role,
+    search,
+    page,
+    limit,
+  });
+  res.json(result);
+}));
 
 // Delete user (admin only)
-router.delete("/users/:id", authenticateToken, requireAdmin, generalRateLimit, async (req, res) => {
-  try {
-    const userId = parseInt(req.params.id);
-    await AdminController.deleteUser(userId, req.user);
-    res.json({
-      message: "User deleted successfully",
-    });
-  } catch (error) {
-    console.error("Delete user error:", error);
-    const status = error.statusCode || 500;
-    res.status(status).json({
-      message: error.message || "Failed to delete user",
-    });
-  }
-});
+router.delete("/users/:id", authenticateToken, requireAdmin, generalRateLimit, asyncHandler(async (req, res) => {
+  const userId = parseInt(req.params.id);
+  await AdminController.deleteUser(userId, req.user);
+  res.json({
+    message: "User deleted successfully",
+  });
+}));
 
 // Get all requests (admin only)
-router.get("/requests", authenticateToken, requireAdmin, generalRateLimit, async (req, res) => {
-  try {
-    const { status, page, limit } = req.query;
-    const result = await AdminController.getAllRequests({
-      status,
-      page,
-      limit,
-    });
-    res.json(result);
-  } catch (error) {
-    console.error("Get all requests error:", error);
-    res.status(500).json({
-      message: "Failed to fetch requests",
-      error: error.message,
-    });
-  }
-});
+router.get("/requests", authenticateToken, requireAdmin, generalRateLimit, asyncHandler(async (req, res) => {
+  const { status, page, limit } = req.query;
+  const result = await AdminController.getAllRequests({
+    status,
+    page,
+    limit,
+  });
+  res.json(result);
+}));
 
 // Update request status (admin only)
-router.put("/requests/:id/status", authenticateToken, requireAdmin, generalRateLimit, async (req, res) => {
-  try {
-    const requestId = parseInt(req.params.id);
-    const { status } = req.body;
-    
-    const updatedRequest = await AdminController.updateRequestStatus(
-      requestId,
-      status,
-      req.user
-    );
-    
-    res.json({
-      message: "Request status updated successfully",
-      request: updatedRequest,
-    });
-  } catch (error) {
-    console.error("Update request status error:", error);
-    const status = error.statusCode || 500;
-    res.status(status).json({
-      message: error.message || "Failed to update request status",
-    });
-  }
-});
+router.put("/requests/:id/status", authenticateToken, requireAdmin, generalRateLimit, asyncHandler(async (req, res) => {
+  const requestId = parseInt(req.params.id);
+  const { status } = req.body;
+  
+  const updatedRequest = await AdminController.updateRequestStatus(
+    requestId,
+    status,
+    req.user
+  );
+  
+  res.json({
+    message: "Request status updated successfully",
+    request: updatedRequest,
+  });
+}));
+
+// Get all donations (admin only) - includes pending, approved, and rejected
+router.get("/donations", authenticateToken, requireAdmin, generalRateLimit, asyncHandler(async (req, res) => {
+  const { approvalStatus, page, limit } = req.query;
+  const DonationController = require("../controllers/donationController");
+  
+  const result = await DonationController.getAllDonations(
+    { approvalStatus },
+    { page, limit },
+    "admin" // Pass admin role to see all donations
+  );
+  
+  res.json(result);
+}));
+
+// Get pending donations count (for admin dashboard badge)
+router.get("/donations/pending/count", authenticateToken, requireAdmin, generalRateLimit, asyncHandler(async (req, res) => {
+  const Donation = require("../models/Donation");
+  
+  const count = await Donation.count({
+    where: { approvalStatus: "pending" },
+  });
+  
+  res.json({
+    count,
+    message: "Pending donations count retrieved successfully",
+  });
+}));
 
 module.exports = router;

@@ -271,6 +271,46 @@ class _CreateDonationScreenEnhancedState
     }
   }
 
+  String _getCategoryLocalizedName(DonationCategory category, AppLocalizations l10n) {
+    switch (category) {
+      case DonationCategory.food:
+        return l10n.food;
+      case DonationCategory.clothes:
+        return l10n.clothes;
+      case DonationCategory.books:
+        return l10n.books;
+      case DonationCategory.electronics:
+        return l10n.electronics;
+      case DonationCategory.furniture:
+        return l10n.furniture;
+      case DonationCategory.toys:
+        return l10n.toys;
+      case DonationCategory.other:
+        return l10n.other;
+      case DonationCategory.medical:
+        return 'Medical';
+      case DonationCategory.education:
+        return 'Education';
+      case DonationCategory.housing:
+        return 'Housing';
+      case DonationCategory.emergency:
+        return 'Emergency';
+    }
+  }
+
+  String _getConditionLocalizedName(DonationCondition condition) {
+    switch (condition) {
+      case DonationCondition.newCondition:
+        return 'New';
+      case DonationCondition.likeNew:
+        return 'Like New';
+      case DonationCondition.good:
+        return 'Good';
+      case DonationCondition.fair:
+        return 'Fair';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -380,7 +420,7 @@ class _CreateDonationScreenEnhancedState
           ),
           const SizedBox(height: 12),
           Text(
-            '${_currentStep + 1} of 4',
+            'Step ${_currentStep + 1} of 4',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: DesignSystem.neutral600,
                 ),
@@ -653,7 +693,7 @@ class _CreateDonationScreenEnhancedState
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              category.getDisplayName(false),
+                              _getCategoryLocalizedName(category, l10n),
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyMedium
@@ -726,7 +766,7 @@ class _CreateDonationScreenEnhancedState
                             ),
                           ),
                           child: Text(
-                            condition.getDisplayName(false),
+                            _getConditionLocalizedName(condition),
                             textAlign: TextAlign.center,
                             style:
                                 Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -858,13 +898,16 @@ class _CreateDonationScreenEnhancedState
                   [
                     _buildReviewItem(
                       l10n.donationCategory,
-                      DonationCategory.fromString(_selectedCategory)
-                          .getDisplayName(false),
+                      _getCategoryLocalizedName(
+                        DonationCategory.fromString(_selectedCategory),
+                        l10n,
+                      ),
                     ),
                     _buildReviewItem(
                       l10n.condition,
-                      DonationCondition.fromString(_selectedCondition)
-                          .getDisplayName(false),
+                      _getConditionLocalizedName(
+                        DonationCondition.fromString(_selectedCondition),
+                      ),
                     ),
                   ],
                 ),

@@ -6,11 +6,13 @@ A simplified donation platform connecting donors and receivers, built with Node.
 
 ### 🎯 Core Functionality
 - **Multi-role System**: Donors, Receivers, and Administrators with essential capabilities
+- **Donation Approval System**: Admin review and approval workflow for all donations
 - **Real-time Messaging**: Socket.io powered communication between users
 - **Secure Authentication**: JWT-based authentication with bcrypt password hashing
 - **Basic File Upload**: Simple image uploads for donation requests
 - **Basic Search**: Simple search across donations and requests
-- **Essential Admin Panel**: Basic user and request management
+- **Essential Admin Panel**: User management, donation approval, and system analytics
+- **Bilingual Support**: Full English and Arabic localization
 
 ### 🔒 Security & Performance
 - **Input Validation**: Express-validator for request validation
@@ -254,13 +256,16 @@ SOCKET_URL=http://localhost:3000
 
 ### Donor
 
-- Browse donation requests
-- Make donations
-- View donation history
+- Create and submit donations for admin review
+- Browse approved donation requests
+- View donation history with approval status
+- Track donation status (Pending, Approved, Rejected)
+- Receive notifications about donation approval/rejection
 - Manage profile
 
 ### Receiver
 
+- Browse approved donations
 - Create donation requests
 - Manage requests
 - View received donations
@@ -268,10 +273,80 @@ SOCKET_URL=http://localhost:3000
 
 ### Admin
 
-- Manage all users
-- Moderate requests
-- View system analytics
-- Administrative functions
+- **Donation Approval System**: Review and approve/reject pending donations
+- **User Management**: Manage all users and their roles
+- **Request Moderation**: Moderate donation requests
+- **System Analytics**: View system statistics and reports
+- **Administrative Functions**: Full system control and configuration
+
+## 🔍 Admin Approval System
+
+The platform includes a comprehensive donation approval workflow to ensure quality and safety:
+
+### How It Works
+
+1. **Donor Submits Donation**
+   - Donor creates a donation with title, description, images, etc.
+   - Donation is automatically set to "Pending" status
+   - Donor receives confirmation that donation is under review
+
+2. **Admin Reviews Donation**
+   - Admin accesses "Pending Donations" screen
+   - Reviews donation details, images, and donor information
+   - Can approve or reject with reason
+
+3. **Approval/Rejection**
+   - **Approved**: Donation becomes visible to all receivers
+   - **Rejected**: Donor is notified with rejection reason
+   - Email notifications sent automatically
+
+4. **Donor Tracking**
+   - Donors can see all their donations with status badges:
+     - 🟡 **Pending**: Under admin review
+     - 🟢 **Approved**: Visible to receivers
+     - 🔴 **Rejected**: Not approved (with reason)
+
+### Admin Tools
+
+#### Pending Donations Screen
+- View all donations awaiting review
+- Filter and search capabilities
+- Quick approve/reject actions
+- Bulk operations support
+
+#### Approval Actions
+- **Approve**: One-click approval with confirmation
+- **Reject**: Provide detailed rejection reason
+- **View Details**: Full donation information and donor history
+
+#### Notifications
+- Automatic email notifications to donors
+- Real-time status updates
+- Rejection reasons clearly communicated
+
+### Managing Admin Users
+
+To make a user an admin:
+
+```bash
+cd backend
+
+# List all users
+node scripts/list-users.js
+
+# Make a user admin
+node scripts/make-admin.js user@example.com
+```
+
+**Important**: After changing a user's role to admin, they must logout and login again to get a new JWT token with admin privileges.
+
+### Localization Support
+
+The admin approval system is fully localized in:
+- 🇬🇧 **English**: Complete interface
+- 🇸🇦 **Arabic**: Full RTL support with Arabic translations
+
+All admin screens, dialogs, messages, and notifications support both languages.
 
 ## 🧪 Testing
 
@@ -282,6 +357,8 @@ Donor:     demo@example.com / demo123
 Receiver:  receiver@example.com / receive123
 Admin:     admin@givingbridge.com / admin123
 ```
+
+**Note**: Admin users have access to the donation approval system where they can review, approve, or reject pending donations.
 
 ### Backend Testing
 
@@ -385,6 +462,32 @@ CREATE TABLE users (
   avatarUrl VARCHAR(255),
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL
+);
+```
+
+### Donations Table
+
+```sql
+CREATE TABLE donations (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  title VARCHAR(255) NOT NULL,
+  description TEXT,
+  category VARCHAR(100),
+  condition VARCHAR(50),
+  location VARCHAR(255),
+  imageUrl VARCHAR(255),
+  donorId INT NOT NULL,
+  donorName VARCHAR(255),
+  isAvailable BOOLEAN DEFAULT TRUE,
+  status VARCHAR(50) DEFAULT 'available',
+  approvalStatus ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+  approvedBy INT,
+  approvedAt DATETIME,
+  rejectionReason TEXT,
+  createdAt DATETIME NOT NULL,
+  updatedAt DATETIME NOT NULL,
+  FOREIGN KEY (donorId) REFERENCES users(id),
+  FOREIGN KEY (approvedBy) REFERENCES users(id)
 );
 ```
 
@@ -686,6 +789,39 @@ flutter run --debug
    flutter build web --analyze-size
    ```
 
+### Admin Approval System Issues
+
+1. **403 Forbidden on Approval Endpoints**:
+   ```bash
+   # Check if user is admin
+   cd backend
+   node scripts/list-users.js
+   
+   # Make user admin
+   node scripts/make-admin.js user@example.com
+   
+   # User must logout and login again after role change
+   ```
+
+2. **"Invalid JSON" Error on Approve**:
+   - This has been fixed in the latest version
+   - Ensure you're running the updated code
+   - Clear browser cache and reload
+
+3. **Donations Not Showing After Approval**:
+   - Check donation approval status in database
+   - Verify frontend is filtering correctly
+   - Check browser console for errors
+
+4. **Localization Not Working**:
+   ```bash
+   # Regenerate localization files
+   cd frontend
+   flutter gen-l10n
+   flutter clean
+   flutter pub get
+   ```
+
 ### Getting Help
 
 1. **Check Logs First**:
@@ -710,12 +846,17 @@ flutter run --debug
    
    # API status
    curl http://localhost:3000/api/status
+   
+   # Test admin approval endpoint
+   curl -X GET http://localhost:3000/api/donations/admin/pending \
+     -H "Authorization: Bearer YOUR_ADMIN_TOKEN"
    ```
 
 3. **Community Support**:
    - Check [GitHub Issues](https://github.com/your-org/givingbridge/issues)
    - Review [API Documentation](http://localhost:3000/api-docs)
    - Consult [Development Setup Guide](backend/DEVELOPMENT_SETUP.md)
+   - See [Admin Approval Troubleshooting](DEBUG_403_ERROR.md)
    - Join our developer Discord/Slack channel
 
 ## 🤝 Contributing
@@ -787,11 +928,14 @@ We welcome contributions from the community! Please read our [Contributing Guide
 ### Current Version: 1.0.0 MVP
 
 - ✅ **Backend API**: Essential endpoints for core functionality
+- ✅ **Admin Approval System**: Complete donation review and approval workflow
 - ✅ **Frontend Web App**: Simplified Flutter web application
-- ✅ **Authentication**: JWT-based secure authentication
+- ✅ **Authentication**: JWT-based secure authentication with role-based access
 - ✅ **Database**: MySQL with Sequelize ORM and migrations
 - ✅ **Real-time Features**: Socket.io messaging system
 - ✅ **File Uploads**: Basic file handling for images
+- ✅ **Localization**: Full English and Arabic support with RTL
+- ✅ **Email Notifications**: Automated approval/rejection notifications
 - ✅ **Documentation**: Essential API and development docs
 - ✅ **Docker Support**: Containerization for easy deployment
 - ✅ **Security**: Basic input validation and XSS protection
@@ -802,14 +946,16 @@ This is a simplified version designed for graduation project demonstration:
 
 #### Included Features
 - ✅ User registration and authentication
+- ✅ **Donation approval workflow** with admin review system
 - ✅ Basic donation request creation and browsing
 - ✅ Simple messaging between users
-- ✅ Essential admin panel for user and request management
-- ✅ English-only interface
-- ✅ Basic file uploads for request images
+- ✅ Essential admin panel for user and donation management
+- ✅ **Bilingual interface** (English and Arabic with RTL support)
+- ✅ Basic file uploads for donation images
+- ✅ Email notifications for approval/rejection
+- ✅ Donation status tracking (Pending, Approved, Rejected)
 
 #### Removed for Simplification
-- ❌ Multi-language support (Arabic removed)
 - ❌ Advanced analytics and reporting
 - ❌ Social features (ratings, comments, sharing)
 - ❌ Advanced notifications (Firebase push notifications)
@@ -890,6 +1036,90 @@ SOFTWARE.
 - **Contributors**: Thanks to all our amazing contributors
 - **Open Source**: Built with love using open source technologies
 - **Community**: Special thanks to our community for feedback and support
+
+---
+
+## 📋 Quick Reference
+
+### Admin Approval Workflow
+
+```
+Donor Creates Donation
+        ↓
+   Status: Pending (🟡)
+        ↓
+   Admin Reviews
+        ↓
+    ┌─────────┴─────────┐
+    ↓                   ↓
+Approve              Reject
+    ↓                   ↓
+Status: Approved    Status: Rejected (🔴)
+    (🟢)            + Rejection Reason
+    ↓                   ↓
+Visible to         Donor Notified
+Receivers          via Email
+```
+
+### Key API Endpoints
+
+```bash
+# Admin Endpoints (require admin token)
+GET    /api/donations/admin/pending          # Get pending donations
+PUT    /api/donations/:id/approve            # Approve donation
+PUT    /api/donations/:id/reject             # Reject donation
+GET    /api/admin/donations/pending/count    # Get pending count
+
+# Donor Endpoints
+GET    /api/donations/user/my-donations      # Get my donations
+POST   /api/donations                         # Create donation
+PUT    /api/donations/:id                     # Update donation
+DELETE /api/donations/:id                     # Delete donation
+
+# Public Endpoints
+GET    /api/donations                         # Get approved donations
+GET    /api/donations/:id                     # Get donation details
+```
+
+### Useful Scripts
+
+```bash
+# Backend
+cd backend
+node scripts/list-users.js              # List all users
+node scripts/make-admin.js EMAIL        # Make user admin
+npm run migrate                         # Run migrations
+npm run seed                            # Seed demo data
+
+# Frontend
+cd frontend
+flutter gen-l10n                        # Generate localizations
+flutter clean && flutter pub get        # Clean and reinstall
+flutter run -d chrome                   # Run in browser
+flutter build web                       # Build for production
+
+# Docker
+docker-compose up -d                    # Start all services
+docker-compose logs -f backend          # View backend logs
+docker-compose restart backend          # Restart backend
+docker-compose down -v                  # Stop and remove volumes
+```
+
+### Environment Variables Quick Reference
+
+```env
+# Backend (.env)
+NODE_ENV=development
+PORT=3000
+DB_HOST=localhost
+DB_PORT=3307
+DB_NAME=givingbridge
+JWT_SECRET=your_secret_key_min_32_chars
+JWT_EXPIRES_IN=7d
+
+# Frontend
+BACKEND_API_URL=http://localhost:3000/api
+```
 
 ---
 
