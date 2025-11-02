@@ -40,14 +40,14 @@ services:
     ports:
       - "3000:3000"
     environment:
-      NODE_ENV: production
+      NODE_ENV: development
       DB_HOST: db
       DB_PORT: 3306
       DB_USER: givingbridge_user
       DB_PASSWORD: secure_prod_password_2024
       DB_NAME: givingbridge
-      JWT_SECRET: prod_jwt_secret_key_2024_secure_random_string_min_32_chars_long
-      FRONTEND_URL: https://localhost:8080
+      JWT_SECRET: f26c017817f0398549091b643fa213fa8741887a02330a0da045faecbbfc537ab60f947d0b42fea8add9ef19af7540837e7e0ddaca7148febca83a05598bd840
+      FRONTEND_URL: http://localhost:8080
       PORT: 3000
     depends_on:
       db:

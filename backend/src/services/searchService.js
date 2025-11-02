@@ -15,39 +15,37 @@ class SearchService {
    */
   static async initializeSearchIndexes() {
     try {
-      // Create full-text indexes for donations
-      await sequelize.query(`
-        ALTER TABLE donations 
-        ADD FULLTEXT(title, description) 
-        WITH PARSER ngram
-      `).catch(() => {
-        // Index might already exist, ignore error
-        console.log("Donations full-text index already exists or failed to create");
-      });
+      // SECURITY: Using safe table names (no user input)
+      // These are hardcoded table names from our schema
+      const tables = [
+        { name: 'donations', columns: ['title', 'description'] },
+        { name: 'users', columns: ['name', 'location'] },
+        { name: 'requests', columns: ['message'] }
+      ];
 
-      // Create full-text indexes for users
-      await sequelize.query(`
-        ALTER TABLE users 
-        ADD FULLTEXT(name, location) 
-        WITH PARSER ngram
-      `).catch(() => {
-        // Index might already exist, ignore error
-        console.log("Users full-text index already exists or failed to create");
-      });
+      for (const table of tables) {
+        try {
+          // SECURITY: Table and column names are hardcoded, not from user input
+          // Using backticks to properly escape identifiers
+          const columnList = table.columns.map(col => `\`${col}\``).join(', ');
+          await sequelize.query(
+            `ALTER TABLE \`${table.name}\` ADD FULLTEXT(${columnList}) WITH PARSER ngram`,
+            { type: Sequelize.QueryTypes.RAW }
+          );
+          console.log(`✅ Full-text index created for ${table.name}`);
+        } catch (error) {
+          // Index might already exist, which is fine
+          if (error.message.includes('Duplicate key name')) {
+            console.log(`ℹ️  Full-text index already exists for ${table.name}`);
+          } else {
+            console.warn(`⚠️  Failed to create index for ${table.name}:`, error.message);
+          }
+        }
+      }
 
-      // Create full-text indexes for requests (via message field)
-      await sequelize.query(`
-        ALTER TABLE requests 
-        ADD FULLTEXT(message) 
-        WITH PARSER ngram
-      `).catch(() => {
-        // Index might already exist, ignore error
-        console.log("Requests full-text index already exists or failed to create");
-      });
-
-      console.log("Full-text search indexes initialized successfully");
+      console.log("✅ Full-text search indexes initialization completed");
     } catch (error) {
-      console.error("Error initializing search indexes:", error);
+      console.error("❌ Error initializing search indexes:", error);
     }
   }
 

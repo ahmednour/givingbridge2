@@ -6,23 +6,40 @@ class MigrationRunner {
   constructor(sequelize) {
     this.sequelize = sequelize;
     this.migrationsPath = path.join(__dirname, "..", "migrations");
+    // SECURITY: Hardcoded table names to prevent SQL injection
+    // These are system tables and should never come from user input
     this.migrationStatusTable = "SequelizeMeta";
     this.migrationHistoryTable = "MigrationHistory";
+    
+    // Validate table names are safe (alphanumeric only)
+    this._validateTableName(this.migrationStatusTable);
+    this._validateTableName(this.migrationHistoryTable);
+  }
+
+  /**
+   * SECURITY: Validate table names to prevent SQL injection
+   * Only allows alphanumeric characters and underscores
+   */
+  _validateTableName(tableName) {
+    if (!/^[a-zA-Z0-9_]+$/.test(tableName)) {
+      throw new Error(`Invalid table name: ${tableName}. Only alphanumeric characters and underscores allowed.`);
+    }
   }
 
   async init() {
     try {
-      // Create migrations status table if it doesn't exist
-      await this.sequelize.query(`
-        CREATE TABLE IF NOT EXISTS \`${this.migrationStatusTable}\` (
+      // SECURITY: Table names are validated and hardcoded
+      // Using backticks to properly escape identifiers
+      await this.sequelize.query(
+        `CREATE TABLE IF NOT EXISTS \`${this.migrationStatusTable}\` (
           \`name\` VARCHAR(255) NOT NULL PRIMARY KEY,
           \`executed_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-      `);
+        );`,
+        { type: Sequelize.QueryTypes.RAW }
+      );
 
-      // Create migration history table for tracking rollbacks and status
-      await this.sequelize.query(`
-        CREATE TABLE IF NOT EXISTS \`${this.migrationHistoryTable}\` (
+      await this.sequelize.query(
+        `CREATE TABLE IF NOT EXISTS \`${this.migrationHistoryTable}\` (
           \`id\` INT AUTO_INCREMENT PRIMARY KEY,
           \`migration_name\` VARCHAR(255) NOT NULL,
           \`action\` ENUM('up', 'down') NOT NULL,
@@ -32,8 +49,9 @@ class MigrationRunner {
           \`executed_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           INDEX \`idx_migration_name\` (\`migration_name\`),
           INDEX \`idx_executed_at\` (\`executed_at\`)
-        );
-      `);
+        );`,
+        { type: Sequelize.QueryTypes.RAW }
+      );
 
       console.log("✅ Migration tables initialized successfully");
       return true;
@@ -45,8 +63,10 @@ class MigrationRunner {
 
   async getExecutedMigrations() {
     try {
+      // SECURITY: Using parameterized query with validated table name
       const [results] = await this.sequelize.query(
-        `SELECT name, executed_at FROM \`${this.migrationStatusTable}\` ORDER BY name`
+        `SELECT name, executed_at FROM \`${this.migrationStatusTable}\` ORDER BY name`,
+        { type: Sequelize.QueryTypes.SELECT }
       );
       return results.map((row) => ({
         name: row.name,
@@ -60,9 +80,13 @@ class MigrationRunner {
 
   async markMigrationAsExecuted(name) {
     try {
+      // SECURITY: Using parameterized query with replacements
       await this.sequelize.query(
         `INSERT INTO \`${this.migrationStatusTable}\` (name, executed_at) VALUES (?, NOW())`,
-        { replacements: [name] }
+        { 
+          replacements: [name],
+          type: Sequelize.QueryTypes.INSERT
+        }
       );
       return true;
     } catch (error) {
@@ -76,9 +100,13 @@ class MigrationRunner {
 
   async removeMigrationFromExecuted(name) {
     try {
+      // SECURITY: Using parameterized query with replacements
       await this.sequelize.query(
         `DELETE FROM \`${this.migrationStatusTable}\` WHERE name = ?`,
-        { replacements: [name] }
+        { 
+          replacements: [name],
+          type: Sequelize.QueryTypes.DELETE
+        }
       );
       return true;
     } catch (error) {
@@ -92,12 +120,14 @@ class MigrationRunner {
 
   async logMigrationHistory(migrationName, action, status, errorMessage = null, executionTime = null) {
     try {
+      // SECURITY: Using parameterized query with replacements
       await this.sequelize.query(
         `INSERT INTO \`${this.migrationHistoryTable}\` 
          (migration_name, action, status, error_message, execution_time_ms, executed_at) 
          VALUES (?, ?, ?, ?, ?, NOW())`,
         { 
-          replacements: [migrationName, action, status, errorMessage, executionTime] 
+          replacements: [migrationName, action, status, errorMessage, executionTime],
+          type: Sequelize.QueryTypes.INSERT
         }
       );
     } catch (error) {
