@@ -619,5 +619,21 @@
   "submittedOn": "Submitted On",
   "actions": "Actions",
   "pendingReview": "Pending Review",
-  "approvalStatus": "Approval Status"
+  "approvalStatus": "Approval Status",
+  "approvalStatusPending": "Pending Review",
+  "approvalStatusApproved": "Approved",
+  "approvalStatusRejected": "Rejected",
+  "approvalStatusUnknown": "Unknown",
+  "donationPendingReview": "Your donation is pending review by an administrator",
+  "donationApprovedByAdmin": "Your donation has been approved by an administrator",
+  "donationRejectedByAdmin": "Your donation has been rejected by an administrator",
+  "rejectionReason": "Rejection Reason",
+  "waitingForApproval": "Waiting for Approval",
+  "visibleAfterApproval": "Your donation will be visible to receivers once approved by an administrator",
+  "donationCreatedPendingApproval": "Donation created successfully and is pending admin approval",
+  "statusAvailable": "Available",
+  "statusUnavailable": "Unavailable",
+  "statusPending": "Pending",
+  "statusCompleted": "Completed",
+  "statusCancelled": "Cancelled"
 }

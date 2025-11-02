@@ -64,6 +64,10 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
         setState(() {
           _requests = response.data!;
         });
+        // Debug: Print request statuses
+        for (var request in _requests) {
+          print('Request ${request.id}: status=${request.status}, isApproved=${request.isApproved}');
+        }
       } else {
         final l10n = AppLocalizations.of(context)!;
         _showErrorSnackbar(response.error ?? l10n.failedToLoadRequests);
@@ -512,9 +516,25 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
                       size: GBButtonSize.small,
                     ),
                   ),
+                ] else if (request.isDeclined) ...[
+                  Expanded(
+                    child: GBButton(
+                      text: 'Declined',
+                      onPressed: null,
+                      variant: GBButtonVariant.outline,
+                      size: GBButtonSize.small,
+                    ),
+                  ),
                 ] else ...[
-                  const Expanded(
-                    child: SizedBox(), // Empty space for alignment
+                  // Debug: Show status for unknown states
+                  Expanded(
+                    child: Text(
+                      'Status: ${request.status}',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: DesignSystem.textSecondary,
+                      ),
+                    ),
                   ),
                 ],
               ],

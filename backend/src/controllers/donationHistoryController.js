@@ -2,7 +2,7 @@ const { Op } = require("sequelize");
 const Donation = require("../models/Donation");
 const Request = require("../models/Request");
 const User = require("../models/User");
-const receiptService = require("../services/receiptService");
+// Receipt service removed for MVP simplification
 const { NotFoundError, ValidationError } = require("../utils/errorHandler");
 
 /**
@@ -307,15 +307,15 @@ class DonationHistoryController {
     const donor = donation.donor;
     const receiver = request ? request.receiver : null;
 
-    // Generate receipt
-    const receiptInfo = await receiptService.generateDonationReceipt(
+    // Receipt generation removed for MVP simplification
+    return {
+      success: true,
+      message: "Transaction completed successfully",
       donation,
       request,
       donor,
-      receiver
-    );
-
-    return receiptInfo;
+      receiver,
+    };
   }
 
   /**
@@ -339,23 +339,21 @@ class DonationHistoryController {
     // Get combined transaction history
     const history = await this.getCombinedTransactionHistory(userId, filters);
 
-    // Generate report
-    const reportInfo = await receiptService.generateTransactionHistory(
-      history.transactions,
-      user,
-      format
-    );
-
-    return reportInfo;
+    // Report generation removed for MVP simplification
+    return {
+      success: true,
+      message: "Transaction history retrieved successfully",
+      history,
+    };
   }
 
   /**
-   * Get receipt by ID
+   * Get receipt by ID - Removed for MVP simplification
    * @param {string} receiptId - Receipt ID
    * @returns {Promise<Buffer>} Receipt file buffer
    */
   static async getReceipt(receiptId) {
-    return await receiptService.getReceipt(receiptId);
+    throw new NotFoundError("Receipt generation feature is not available in this version");
   }
 }
 

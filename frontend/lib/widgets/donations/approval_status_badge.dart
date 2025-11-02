@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/donation.dart';
+import '../../l10n/app_localizations.dart';
 
 class ApprovalStatusBadge extends StatelessWidget {
   final Donation donation;
@@ -13,6 +14,7 @@ class ApprovalStatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     Color color;
     IconData icon;
     String text;
@@ -21,22 +23,22 @@ class ApprovalStatusBadge extends StatelessWidget {
       case 'pending':
         color = Colors.orange;
         icon = Icons.pending;
-        text = 'Pending Review';
+        text = l10n.approvalStatusPending ?? 'Pending Review';
         break;
       case 'approved':
         color = Colors.green;
         icon = Icons.check_circle;
-        text = 'Approved';
+        text = l10n.approvalStatusApproved ?? 'Approved';
         break;
       case 'rejected':
         color = Colors.red;
         icon = Icons.cancel;
-        text = 'Rejected';
+        text = l10n.approvalStatusRejected ?? 'Rejected';
         break;
       default:
         color = Colors.grey;
         icon = Icons.help;
-        text = 'Unknown';
+        text = l10n.approvalStatusUnknown ?? 'Unknown';
     }
 
     return Container(

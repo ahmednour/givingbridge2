@@ -1508,4 +1508,54 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get approvalStatus => 'Approval Status';
+
+  @override
+  String get approvalStatusPending => 'Pending Review';
+
+  @override
+  String get approvalStatusApproved => 'Approved';
+
+  @override
+  String get approvalStatusRejected => 'Rejected';
+
+  @override
+  String get approvalStatusUnknown => 'Unknown';
+
+  @override
+  String get donationPendingReview =>
+      'Your donation is pending review by an administrator';
+
+  @override
+  String get donationApprovedByAdmin =>
+      'Your donation has been approved by an administrator';
+
+  @override
+  String get donationRejectedByAdmin =>
+      'Your donation has been rejected by an administrator';
+
+  @override
+  String get waitingForApproval => 'Waiting for Approval';
+
+  @override
+  String get visibleAfterApproval =>
+      'Your donation will be visible to receivers once approved by an administrator';
+
+  @override
+  String get donationCreatedPendingApproval =>
+      'Donation created successfully and is pending admin approval';
+
+  @override
+  String get statusAvailable => 'Available';
+
+  @override
+  String get statusUnavailable => 'Unavailable';
+
+  @override
+  String get statusPending => 'Pending';
+
+  @override
+  String get statusCompleted => 'Completed';
+
+  @override
+  String get statusCancelled => 'Cancelled';
 }

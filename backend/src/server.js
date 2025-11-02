@@ -99,8 +99,9 @@ app.use(responseFormatter);
 app.use(addResponseHeaders);
 
 // Rate limiting middleware
-app.use(addRateLimitHeaders());
-app.use(generalRateLimit);
+// DISABLED FOR GRADUATION PROJECT DEMO
+// app.use(addRateLimitHeaders());
+// app.use(generalRateLimit);
 
 // Body parsing middleware with error handling
 app.use(express.json({ 

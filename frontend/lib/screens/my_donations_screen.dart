@@ -124,9 +124,10 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
       );
 
       if (response.success) {
+        final l10n = AppLocalizations.of(context)!;
         _showSuccessSnackbar(donation.isAvailable
-            ? 'Donation marked as unavailable'
-            : 'Donation marked as available');
+            ? (l10n.statusUnavailable ?? 'Donation marked as unavailable')
+            : (l10n.statusAvailable ?? 'Donation marked as available'));
         _loadDonations(); // Refresh the list
       } else {
         _showErrorSnackbar(response.error ?? 'Failed to update donation');
@@ -304,9 +305,9 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                             borderRadius:
                                 BorderRadius.circular(DesignSystem.radiusL),
                           ),
-                          child: const Text(
-                            'Unavailable',
-                            style: TextStyle(
+                          child: Text(
+                            AppLocalizations.of(context)!.statusUnavailable ?? 'Unavailable',
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
@@ -345,7 +346,9 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                               BorderRadius.circular(DesignSystem.radiusL),
                         ),
                         child: Text(
-                          donation.isAvailable ? 'Available' : 'Unavailable',
+                          donation.isAvailable 
+                              ? (AppLocalizations.of(context)!.statusAvailable ?? 'Available')
+                              : (AppLocalizations.of(context)!.statusUnavailable ?? 'Unavailable'),
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
@@ -414,8 +417,8 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                                 ),
                                 const SizedBox(width: 8),
                                 Text(donation.isAvailable
-                                    ? 'Mark Unavailable'
-                                    : 'Mark Available'),
+                                    ? (AppLocalizations.of(context)!.statusUnavailable ?? 'Mark Unavailable')
+                                    : (AppLocalizations.of(context)!.statusAvailable ?? 'Mark Available')),
                               ],
                             ),
                           ),

@@ -2935,6 +2935,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Approval Status'**
   String get approvalStatus;
+
+  /// No description provided for @approvalStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Review'**
+  String get approvalStatusPending;
+
+  /// No description provided for @approvalStatusApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get approvalStatusApproved;
+
+  /// No description provided for @approvalStatusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get approvalStatusRejected;
+
+  /// No description provided for @approvalStatusUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get approvalStatusUnknown;
+
+  /// No description provided for @donationPendingReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Your donation is pending review by an administrator'**
+  String get donationPendingReview;
+
+  /// No description provided for @donationApprovedByAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Your donation has been approved by an administrator'**
+  String get donationApprovedByAdmin;
+
+  /// No description provided for @donationRejectedByAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Your donation has been rejected by an administrator'**
+  String get donationRejectedByAdmin;
+
+  /// No description provided for @waitingForApproval.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for Approval'**
+  String get waitingForApproval;
+
+  /// No description provided for @visibleAfterApproval.
+  ///
+  /// In en, this message translates to:
+  /// **'Your donation will be visible to receivers once approved by an administrator'**
+  String get visibleAfterApproval;
+
+  /// No description provided for @donationCreatedPendingApproval.
+  ///
+  /// In en, this message translates to:
+  /// **'Donation created successfully and is pending admin approval'**
+  String get donationCreatedPendingApproval;
+
+  /// No description provided for @statusAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get statusAvailable;
+
+  /// No description provided for @statusUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable'**
+  String get statusUnavailable;
+
+  /// No description provided for @statusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get statusPending;
+
+  /// No description provided for @statusCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get statusCompleted;
+
+  /// No description provided for @statusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get statusCancelled;
 }
 
 class _AppLocalizationsDelegate

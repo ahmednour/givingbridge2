@@ -1483,4 +1483,51 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get approvalStatus => 'حالة الموافقة';
+
+  @override
+  String get approvalStatusPending => 'قيد المراجعة';
+
+  @override
+  String get approvalStatusApproved => 'تمت الموافقة';
+
+  @override
+  String get approvalStatusRejected => 'مرفوض';
+
+  @override
+  String get approvalStatusUnknown => 'غير معروف';
+
+  @override
+  String get donationPendingReview => 'تبرعك قيد المراجعة من قبل المسؤول';
+
+  @override
+  String get donationApprovedByAdmin => 'تمت الموافقة على تبرعك من قبل المسؤول';
+
+  @override
+  String get donationRejectedByAdmin => 'تم رفض تبرعك من قبل المسؤول';
+
+  @override
+  String get waitingForApproval => 'في انتظار الموافقة';
+
+  @override
+  String get visibleAfterApproval =>
+      'سيكون تبرعك مرئياً للمستقبلين بعد موافقة المسؤول';
+
+  @override
+  String get donationCreatedPendingApproval =>
+      'تم إنشاء التبرع بنجاح وهو في انتظار موافقة المسؤول';
+
+  @override
+  String get statusAvailable => 'متاح';
+
+  @override
+  String get statusUnavailable => 'غير متاح';
+
+  @override
+  String get statusPending => 'قيد الانتظار';
+
+  @override
+  String get statusCompleted => 'مكتمل';
+
+  @override
+  String get statusCancelled => 'ملغي';
 }

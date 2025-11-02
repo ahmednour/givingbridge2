@@ -77,19 +77,21 @@ const createRateLimiter = (options = {}) => {
 
 /**
  * General API rate limiter
+ * DISABLED FOR GRADUATION PROJECT DEMO
  */
 const generalRateLimit = createRateLimiter({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100,
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 999999, // Effectively disabled
   message: "Too many requests from this IP, please try again later"
 });
 
 /**
  * Strict rate limiter for authentication endpoints
+ * DISABLED FOR GRADUATION PROJECT DEMO
  */
 const authRateLimit = createRateLimiter({
   windowMs: parseInt(process.env.LOGIN_RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
-  max: parseInt(process.env.LOGIN_RATE_LIMIT_MAX_ATTEMPTS) || 5,
+  max: parseInt(process.env.LOGIN_RATE_LIMIT_MAX_ATTEMPTS) || 999999, // Effectively disabled
   message: "Too many authentication attempts, please try again later",
   skipSuccessfulRequests: true, // Don't count successful logins
   onLimitReached: (req, res) => {
@@ -105,19 +107,21 @@ const authRateLimit = createRateLimiter({
 
 /**
  * Lenient rate limiter for file uploads
+ * DISABLED FOR GRADUATION PROJECT DEMO
  */
 const uploadRateLimit = createRateLimiter({
   windowMs: 60 * 1000, // 1 minute
-  max: 10, // 10 uploads per minute
+  max: 999999, // Effectively disabled
   message: "Too many file uploads, please wait before uploading again"
 });
 
 /**
  * Strict rate limiter for password reset requests
+ * DISABLED FOR GRADUATION PROJECT DEMO
  */
 const passwordResetRateLimit = createRateLimiter({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 3, // 3 password reset requests per hour
+  max: 999999, // Effectively disabled
   message: "Too many password reset requests, please try again later",
   keyGenerator: (req) => {
     // Rate limit by email if provided, otherwise by IP
@@ -127,10 +131,11 @@ const passwordResetRateLimit = createRateLimiter({
 
 /**
  * Rate limiter for email verification requests
+ * DISABLED FOR GRADUATION PROJECT DEMO
  */
 const emailVerificationLimiter = createRateLimiter({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 5, // 5 email verification requests per hour
+  max: 999999, // Effectively disabled
   message: "Too many email verification requests, please try again later",
   keyGenerator: (req) => {
     // Rate limit by email if provided, otherwise by IP
@@ -140,19 +145,21 @@ const emailVerificationLimiter = createRateLimiter({
 
 /**
  * Rate limiter for search endpoints
+ * DISABLED FOR GRADUATION PROJECT DEMO
  */
 const searchRateLimit = createRateLimiter({
   windowMs: 60 * 1000, // 1 minute
-  max: 30, // 30 searches per minute
+  max: 999999, // Effectively disabled
   message: "Too many search requests, please slow down"
 });
 
 /**
  * Rate limiter for API endpoints that create resources
+ * DISABLED FOR GRADUATION PROJECT DEMO
  */
 const createResourceRateLimit = createRateLimiter({
   windowMs: 60 * 1000, // 1 minute
-  max: 20, // 20 resource creations per minute
+  max: 999999, // Effectively disabled
   message: "Too many resource creation requests, please slow down"
 });
 

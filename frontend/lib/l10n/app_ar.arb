@@ -844,5 +844,21 @@
   "submittedOn": "تم التقديم في",
   "actions": "الإجراءات",
   "pendingReview": "قيد المراجعة",
-  "approvalStatus": "حالة الموافقة"
+  "approvalStatus": "حالة الموافقة",
+  "approvalStatusPending": "قيد المراجعة",
+  "approvalStatusApproved": "تمت الموافقة",
+  "approvalStatusRejected": "مرفوض",
+  "approvalStatusUnknown": "غير معروف",
+  "donationPendingReview": "تبرعك قيد المراجعة من قبل المسؤول",
+  "donationApprovedByAdmin": "تمت الموافقة على تبرعك من قبل المسؤول",
+  "donationRejectedByAdmin": "تم رفض تبرعك من قبل المسؤول",
+  "rejectionReason": "سبب الرفض",
+  "waitingForApproval": "في انتظار الموافقة",
+  "visibleAfterApproval": "سيكون تبرعك مرئياً للمستقبلين بعد موافقة المسؤول",
+  "donationCreatedPendingApproval": "تم إنشاء التبرع بنجاح وهو في انتظار موافقة المسؤول",
+  "statusAvailable": "متاح",
+  "statusUnavailable": "غير متاح",
+  "statusPending": "قيد الانتظار",
+  "statusCompleted": "مكتمل",
+  "statusCancelled": "ملغي"
 }
