@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/design_system.dart';
 import '../../models/user_report.dart';
 import '../../services/api_service.dart';
+import '../../l10n/app_localizations.dart';
 import 'gb_button.dart';
 import 'gb_text_field.dart';
 
@@ -52,7 +53,7 @@ class _GBReportUserDialogState extends State<GBReportUserDialog> {
     if (_selectedReason == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Please select a reason for reporting'),
+          content: Text(AppLocalizations.of(context)!.pleaseSelectReason),
           backgroundColor: DesignSystem.warning,
           behavior: SnackBarBehavior.floating,
         ),
@@ -63,7 +64,7 @@ class _GBReportUserDialogState extends State<GBReportUserDialog> {
     if (_descriptionController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Please provide a description'),
+          content: Text(AppLocalizations.of(context)!.pleaseProvideDescription),
           backgroundColor: DesignSystem.warning,
           behavior: SnackBarBehavior.floating,
         ),
@@ -89,7 +90,7 @@ class _GBReportUserDialogState extends State<GBReportUserDialog> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Report submitted successfully'),
+          content: Text(AppLocalizations.of(context)!.reportSubmittedSuccess),
           backgroundColor: DesignSystem.success,
           behavior: SnackBarBehavior.floating,
         ),

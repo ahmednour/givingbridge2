@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/design_system.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Notification Card Component
 ///
@@ -177,7 +178,7 @@ class GBNotificationCard extends StatelessWidget {
                             color: DesignSystem.success,
                           ),
                           const SizedBox(width: DesignSystem.spaceS),
-                          const Text('Mark as read'),
+                          Text(AppLocalizations.of(context)!.markAsRead),
                         ],
                       ),
                     ),
@@ -192,7 +193,7 @@ class GBNotificationCard extends StatelessWidget {
                             color: DesignSystem.primaryBlue,
                           ),
                           const SizedBox(width: DesignSystem.spaceS),
-                          const Text('View details'),
+                          Text(AppLocalizations.of(context)!.viewDetails),
                         ],
                       ),
                     ),
@@ -207,7 +208,7 @@ class GBNotificationCard extends StatelessWidget {
                             color: DesignSystem.error,
                           ),
                           const SizedBox(width: DesignSystem.spaceS),
-                          const Text('Delete'),
+                          Text(AppLocalizations.of(context)!.delete),
                         ],
                       ),
                     ),
@@ -249,9 +250,9 @@ class GBNotificationCard extends StatelessWidget {
           return await showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: const Text('Delete Notification'),
-              content: const Text(
-                'Are you sure you want to delete this notification?',
+              title: Text(AppLocalizations.of(context)!.deleteNotification),
+              content: Text(
+                AppLocalizations.of(context)!.deleteNotificationConfirm,
               ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(DesignSystem.radiusM),
@@ -259,14 +260,14 @@ class GBNotificationCard extends StatelessWidget {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text('Cancel'),
+                  child: Text(AppLocalizations.of(context)!.cancel),
                 ),
                 ElevatedButton(
                   onPressed: () => Navigator.of(context).pop(true),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: DesignSystem.error,
                   ),
-                  child: const Text('Delete'),
+                  child: Text(AppLocalizations.of(context)!.delete),
                 ),
               ],
             ),

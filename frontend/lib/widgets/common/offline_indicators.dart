@@ -19,7 +19,7 @@ class OfflineBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<NetworkStatusService>(
       builder: (context, networkService, child) {
-        final isOnline = networkService.isConnected;
+        final isOnline = networkService.isOnline;
         final offlineService = OfflineService();
         final pendingCount = offlineService.pendingOperationsCount;
 
@@ -32,8 +32,10 @@ class OfflineBanner extends StatelessWidget {
           height: isOnline ? (pendingCount > 0 ? 40 : 0) : 40,
           child: Container(
             width: double.infinity,
-            color: isOnline 
-                ? (pendingCount > 0 ? DesignSystem.warning : DesignSystem.success)
+            color: isOnline
+                ? (pendingCount > 0
+                    ? DesignSystem.warning
+                    : DesignSystem.success)
                 : DesignSystem.error,
             child: SafeArea(
               bottom: false,
@@ -42,7 +44,7 @@ class OfflineBanner extends StatelessWidget {
                 child: Row(
                   children: [
                     Icon(
-                      isOnline 
+                      isOnline
                           ? (pendingCount > 0 ? Icons.sync : Icons.wifi)
                           : Icons.wifi_off,
                       color: Colors.white,
@@ -81,13 +83,13 @@ class OfflineBanner extends StatelessWidget {
 
   String _getBannerText(BuildContext context, bool isOnline, int pendingCount) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     if (!isOnline) {
-      return l10n.offlineMode ?? 'You\'re offline. Changes will sync when connected.';
+      return l10n.offlineMode;
     } else if (pendingCount > 0) {
       return 'Syncing $pendingCount pending changes...';
     } else {
-      return l10n.backOnline ?? 'Back online';
+      return 'Back online';
     }
   }
 
@@ -107,7 +109,7 @@ class OfflineFloatingIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<NetworkStatusService>(
       builder: (context, networkService, child) {
-        if (networkService.isConnected) {
+        if (networkService.isOnline) {
           return const SizedBox.shrink();
         }
 
@@ -175,7 +177,7 @@ class _OfflineSyncDialogState extends State<OfflineSyncDialog> {
         children: [
           const Icon(Icons.sync, color: DesignSystem.primaryBlue),
           const SizedBox(width: DesignSystem.spaceM),
-          Text(l10n.syncPendingChanges ?? 'Sync Pending Changes'),
+          const Text('Sync Pending Changes'),
         ],
       ),
       content: SizedBox(
@@ -234,11 +236,11 @@ class _OfflineSyncDialogState extends State<OfflineSyncDialog> {
       actions: [
         TextButton(
           onPressed: _isSyncing ? null : () => Navigator.pop(context),
-          child: Text(l10n.cancel ?? 'Cancel'),
+          child: Text(l10n.cancel),
         ),
         ElevatedButton(
           onPressed: _isSyncing ? null : _syncNow,
-          child: Text(l10n.syncNow ?? 'Sync Now'),
+          child: Text(l10n.syncNow),
         ),
       ],
     );
@@ -405,9 +407,9 @@ class OfflineStatusWidget extends StatelessWidget {
                 Row(
                   children: [
                     Icon(
-                      networkService.isConnected ? Icons.wifi : Icons.wifi_off,
-                      color: networkService.isConnected 
-                          ? DesignSystem.success 
+                      networkService.isOnline ? Icons.wifi : Icons.wifi_off,
+                      color: networkService.isOnline
+                          ? DesignSystem.success
                           : DesignSystem.error,
                     ),
                     const SizedBox(width: DesignSystem.spaceM),
@@ -419,16 +421,23 @@ class OfflineStatusWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: DesignSystem.spaceL),
                 _buildStatusRow(
+                  context,
                   'Connection',
-                  networkService.isConnected ? 'Online' : 'Offline',
-                  networkService.isConnected ? DesignSystem.success : DesignSystem.error,
+                  networkService.isOnline ? 'Online' : 'Offline',
+                  networkService.isOnline
+                      ? DesignSystem.success
+                      : DesignSystem.error,
                 ),
                 _buildStatusRow(
+                  context,
                   'Pending Operations',
                   '${status['pendingOperations']}',
-                  status['pendingOperations'] > 0 ? DesignSystem.warning : DesignSystem.textSecondary,
+                  status['pendingOperations'] > 0
+                      ? DesignSystem.warning
+                      : DesignSystem.textSecondary,
                 ),
                 _buildStatusRow(
+                  context,
                   'Cached Items',
                   '${status['cacheSize']}',
                   DesignSystem.textSecondary,
@@ -438,7 +447,7 @@ class OfflineStatusWidget extends StatelessWidget {
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: networkService.isConnected 
+                        onPressed: networkService.isOnline
                             ? () => offlineService.forceSync()
                             : null,
                         child: const Text('Force Sync'),
@@ -461,7 +470,8 @@ class OfflineStatusWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusRow(String label, String value, Color color) {
+  Widget _buildStatusRow(
+      BuildContext context, String label, String value, Color color) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: DesignSystem.spaceXS),
       child: Row(

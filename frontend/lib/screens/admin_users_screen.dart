@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../models/user.dart';
@@ -31,21 +32,30 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       final response = await ApiService.getAllUsers();
       if (response.success) {
         final users = (response.data?['users'] as List?)
-            ?.map((json) => User.fromJson(json))
-            .toList() ?? [];
+                ?.map((json) => User.fromJson(json))
+                .toList() ??
+            [];
         setState(() {
           _users = users;
           _filteredUsers = users;
         });
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${response.error}')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(
+                    '${AppLocalizations.of(context)!.error}: ${response.error}')),
+          );
+        }
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error loading users: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(AppLocalizations.of(context)!
+                  .errorLoadingUsers(e.toString()))),
+        );
+      }
     } finally {
       setState(() => _isLoading = false);
     }
@@ -54,9 +64,11 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   void _filterUsers() {
     setState(() {
       _filteredUsers = _users.where((user) {
-        final matchesSearch = user.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-            user.email.toLowerCase().contains(_searchQuery.toLowerCase());
-        final matchesRole = _selectedRole == 'all' || user.role == _selectedRole;
+        final matchesSearch =
+            user.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+                user.email.toLowerCase().contains(_searchQuery.toLowerCase());
+        final matchesRole =
+            _selectedRole == 'all' || user.role == _selectedRole;
         return matchesSearch && matchesRole;
       }).toList();
     });
@@ -66,17 +78,18 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete User'),
-        content: Text('Are you sure you want to delete ${user.name}?'),
+        title: Text(AppLocalizations.of(context)!.deleteUser),
+        content:
+            Text(AppLocalizations.of(context)!.confirmDeleteUser(user.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
+            child: Text(AppLocalizations.of(context)!.delete),
           ),
         ],
       ),
@@ -86,19 +99,31 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       try {
         final response = await ApiService.deleteUser(user.id.toString());
         if (response.success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('User deleted successfully')),
-          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text(
+                      AppLocalizations.of(context)!.userDeletedSuccessfully)),
+            );
+          }
           _loadUsers(); // Reload the list
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: ${response.error}')),
-          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text(
+                      '${AppLocalizations.of(context)!.error}: ${response.error}')),
+            );
+          }
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error deleting user: $e')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(AppLocalizations.of(context)!
+                    .errorDeletingUser(e.toString()))),
+          );
+        }
       }
     }
   }
@@ -115,14 +140,15 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
             _buildDetailRow('Email', user.email),
             _buildDetailRow('Role', user.role.toUpperCase()),
             if (user.phone != null) _buildDetailRow('Phone', user.phone!),
-            if (user.location != null) _buildDetailRow('Location', user.location!),
+            if (user.location != null)
+              _buildDetailRow('Location', user.location!),
             _buildDetailRow('Joined', _formatDate(user.createdAt)),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text(AppLocalizations.of(context)!.close),
           ),
         ],
       ),
@@ -151,20 +177,20 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-    
+
     // Check if user is admin
     if (authProvider.user?.role != 'admin') {
       return Scaffold(
-        appBar: AppBar(title: const Text('Access Denied')),
-        body: const Center(
-          child: Text('You do not have permission to access this page.'),
+        appBar: AppBar(title: Text(AppLocalizations.of(context)!.accessDenied)),
+        body: Center(
+          child: Text(AppLocalizations.of(context)!.noPermissionPage),
         ),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('User Management'),
+        title: Text(AppLocalizations.of(context)!.userManagement),
         backgroundColor: Colors.blue[600],
         foregroundColor: Colors.white,
       ),
@@ -190,17 +216,29 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    const Text('Filter by role: '),
+                    Text('${AppLocalizations.of(context)!.filterByRole} '),
                     const SizedBox(width: 8),
                     Expanded(
                       child: DropdownButton<String>(
                         value: _selectedRole,
                         isExpanded: true,
-                        items: const [
-                          DropdownMenuItem(value: 'all', child: Text('All Roles')),
-                          DropdownMenuItem(value: 'donor', child: Text('Donors')),
-                          DropdownMenuItem(value: 'receiver', child: Text('Receivers')),
-                          DropdownMenuItem(value: 'admin', child: Text('Admins')),
+                        items: [
+                          DropdownMenuItem(
+                              value: 'all',
+                              child:
+                                  Text(AppLocalizations.of(context)!.allRoles)),
+                          DropdownMenuItem(
+                              value: 'donor',
+                              child:
+                                  Text(AppLocalizations.of(context)!.donors)),
+                          DropdownMenuItem(
+                              value: 'receiver',
+                              child: Text(
+                                  AppLocalizations.of(context)!.receivers)),
+                          DropdownMenuItem(
+                              value: 'admin',
+                              child:
+                                  Text(AppLocalizations.of(context)!.admins)),
                         ],
                         onChanged: (value) {
                           setState(() => _selectedRole = value!);
@@ -220,13 +258,16 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                 : RefreshIndicator(
                     onRefresh: _loadUsers,
                     child: _filteredUsers.isEmpty
-                        ? const Center(child: Text('No users found'))
+                        ? Center(
+                            child: Text(
+                                AppLocalizations.of(context)!.noUsersFound))
                         : ListView.builder(
                             itemCount: _filteredUsers.length,
                             itemBuilder: (context, index) {
                               final user = _filteredUsers[index];
-                              final isCurrentUser = user.id == authProvider.user?.id;
-                              
+                              final isCurrentUser =
+                                  user.id == authProvider.user?.id;
+
                               return Card(
                                 margin: const EdgeInsets.symmetric(
                                   horizontal: 16,
@@ -245,23 +286,29 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                                     children: [
                                       Expanded(child: Text(user.name)),
                                       if (isCurrentUser)
-                                        const Chip(
-                                          label: Text('You'),
+                                        Chip(
+                                          label: Text(
+                                              AppLocalizations.of(context)!
+                                                  .you),
                                           backgroundColor: Colors.blue,
-                                          labelStyle: TextStyle(color: Colors.white),
+                                          labelStyle: const TextStyle(
+                                              color: Colors.white),
                                         ),
                                     ],
                                   ),
                                   subtitle: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(user.email),
                                       const SizedBox(height: 4),
                                       Row(
                                         children: [
                                           Chip(
-                                            label: Text(user.role.toUpperCase()),
-                                            backgroundColor: _getRoleColor(user.role),
+                                            label:
+                                                Text(user.role.toUpperCase()),
+                                            backgroundColor:
+                                                _getRoleColor(user.role),
                                             labelStyle: const TextStyle(
                                               color: Colors.white,
                                               fontSize: 12,
@@ -270,7 +317,8 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                                           const SizedBox(width: 8),
                                           Text(
                                             'Joined ${_formatDate(user.createdAt)}',
-                                            style: const TextStyle(fontSize: 12),
+                                            style:
+                                                const TextStyle(fontSize: 12),
                                           ),
                                         ],
                                       ),
@@ -290,24 +338,27 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                                       }
                                     },
                                     itemBuilder: (context) => [
-                                      const PopupMenuItem(
+                                      PopupMenuItem(
                                         value: 'view',
                                         child: Row(
                                           children: [
-                                            Icon(Icons.visibility),
-                                            SizedBox(width: 8),
-                                            Text('View Details'),
+                                            const Icon(Icons.visibility),
+                                            const SizedBox(width: 8),
+                                            Text(AppLocalizations.of(context)!
+                                                .viewDetails),
                                           ],
                                         ),
                                       ),
                                       if (!isCurrentUser)
-                                        const PopupMenuItem(
+                                        PopupMenuItem(
                                           value: 'delete',
                                           child: Row(
                                             children: [
-                                              Icon(Icons.delete, color: Colors.red),
-                                              SizedBox(width: 8),
-                                              Text('Delete User'),
+                                              const Icon(Icons.delete,
+                                                  color: Colors.red),
+                                              const SizedBox(width: 8),
+                                              Text(AppLocalizations.of(context)!
+                                                  .deleteUser),
                                             ],
                                           ),
                                         ),

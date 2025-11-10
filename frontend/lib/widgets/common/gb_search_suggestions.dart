@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/filter_provider.dart';
-import '../../services/search_service.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Widget that displays search suggestions, history, and popular terms
 class GBSearchSuggestions extends StatefulWidget {
@@ -35,10 +35,11 @@ class _GBSearchSuggestionsState extends State<GBSearchSuggestions> {
     super.initState();
     widget.searchController.addListener(_onSearchChanged);
     _focusNode.addListener(_onFocusChanged);
-    
+
     // Load initial data
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final filterProvider = Provider.of<FilterProvider>(context, listen: false);
+      final filterProvider =
+          Provider.of<FilterProvider>(context, listen: false);
       filterProvider.loadSearchHistory();
       filterProvider.loadPopularTerms();
     });
@@ -55,7 +56,7 @@ class _GBSearchSuggestionsState extends State<GBSearchSuggestions> {
   void _onSearchChanged() {
     final query = widget.searchController.text;
     final filterProvider = Provider.of<FilterProvider>(context, listen: false);
-    
+
     if (query.length >= 2) {
       filterProvider.getSearchSuggestions(query, type: widget.searchType);
       setState(() {
@@ -90,11 +91,11 @@ class _GBSearchSuggestionsState extends State<GBSearchSuggestions> {
     widget.searchController.text = text;
     final filterProvider = Provider.of<FilterProvider>(context, listen: false);
     filterProvider.setSearchQuery(text);
-    
+
     setState(() {
       _isExpanded = false;
     });
-    
+
     widget.onSuggestionSelected?.call();
     _focusNode.unfocus();
   }
@@ -116,7 +117,8 @@ class _GBSearchSuggestionsState extends State<GBSearchSuggestions> {
                     icon: const Icon(Icons.clear),
                     onPressed: () {
                       widget.searchController.clear();
-                      final filterProvider = Provider.of<FilterProvider>(context, listen: false);
+                      final filterProvider =
+                          Provider.of<FilterProvider>(context, listen: false);
                       filterProvider.clearSearch();
                       filterProvider.clearSearchSuggestions();
                     },
@@ -134,7 +136,7 @@ class _GBSearchSuggestionsState extends State<GBSearchSuggestions> {
             }
           },
         ),
-        
+
         // Suggestions dropdown
         if (_isExpanded)
           Container(
@@ -144,7 +146,10 @@ class _GBSearchSuggestionsState extends State<GBSearchSuggestions> {
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+                color: Theme.of(context)
+                    .colorScheme
+                    .outline
+                    .withValues(alpha: 0.2),
               ),
               boxShadow: [
                 BoxShadow(
@@ -172,7 +177,7 @@ class _GBSearchSuggestionsState extends State<GBSearchSuggestions> {
                           ),
                         ),
                       ],
-                      
+
                       // Loading indicator for suggestions
                       if (filterProvider.isLoadingSuggestions)
                         const Padding(
@@ -181,51 +186,56 @@ class _GBSearchSuggestionsState extends State<GBSearchSuggestions> {
                             child: CircularProgressIndicator(),
                           ),
                         ),
-                      
+
                       // Search history
-                      if (widget.showHistory && 
+                      if (widget.showHistory &&
                           filterProvider.searchHistory.isNotEmpty &&
                           widget.searchController.text.length < 2) ...[
-                        _buildSectionHeader('Recent Searches', 
+                        _buildSectionHeader(
+                          'Recent Searches',
                           action: TextButton(
                             onPressed: () async {
-                              final success = await filterProvider.clearSearchHistory();
+                              final success =
+                                  await filterProvider.clearSearchHistory();
                               if (success && mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Search history cleared'),
+                                  SnackBar(
+                                    content: Text(AppLocalizations.of(context)!
+                                        .searchHistoryCleared),
                                   ),
                                 );
                               }
                             },
-                            child: const Text('Clear'),
+                            child: Text(AppLocalizations.of(context)!.clear),
                           ),
                         ),
                         ...filterProvider.searchHistory.take(5).map(
-                          (historyItem) => _buildSuggestionItem(
-                            historyItem.term,
-                            icon: Icons.history,
-                            subtitle: _formatDate(historyItem.lastSearched),
-                            onTap: () => _selectSuggestion(historyItem.term),
-                          ),
-                        ),
+                              (historyItem) => _buildSuggestionItem(
+                                historyItem.term,
+                                icon: Icons.history,
+                                subtitle: _formatDate(historyItem.lastSearched),
+                                onTap: () =>
+                                    _selectSuggestion(historyItem.term),
+                              ),
+                            ),
                       ],
-                      
+
                       // Popular search terms
-                      if (widget.showPopular && 
+                      if (widget.showPopular &&
                           filterProvider.popularTerms.isNotEmpty &&
                           widget.searchController.text.length < 2) ...[
                         _buildSectionHeader('Popular Searches'),
                         ...filterProvider.popularTerms.take(5).map(
-                          (popularTerm) => _buildSuggestionItem(
-                            popularTerm.searchTerm,
-                            icon: Icons.trending_up,
-                            subtitle: '${popularTerm.searchCount} searches',
-                            onTap: () => _selectSuggestion(popularTerm.searchTerm),
-                          ),
-                        ),
+                              (popularTerm) => _buildSuggestionItem(
+                                popularTerm.searchTerm,
+                                icon: Icons.trending_up,
+                                subtitle: '${popularTerm.searchCount} searches',
+                                onTap: () =>
+                                    _selectSuggestion(popularTerm.searchTerm),
+                              ),
+                            ),
                       ],
-                      
+
                       // Empty state
                       if (filterProvider.searchSuggestions.isEmpty &&
                           filterProvider.searchHistory.isEmpty &&
@@ -269,9 +279,9 @@ class _GBSearchSuggestionsState extends State<GBSearchSuggestions> {
           Text(
             title,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
           ),
           if (action != null) action,
         ],
@@ -311,8 +321,9 @@ class _GBSearchSuggestionsState extends State<GBSearchSuggestions> {
                     Text(
                       subtitle,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -322,7 +333,10 @@ class _GBSearchSuggestionsState extends State<GBSearchSuggestions> {
             Icon(
               Icons.north_west,
               size: 16,
-              color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+              color: Theme.of(context)
+                  .colorScheme
+                  .onSurfaceVariant
+                  .withValues(alpha: 0.5),
             ),
           ],
         ),
@@ -346,7 +360,7 @@ class _GBSearchSuggestionsState extends State<GBSearchSuggestions> {
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);
-    
+
     if (difference.inDays > 0) {
       return '${difference.inDays}d ago';
     } else if (difference.inHours > 0) {

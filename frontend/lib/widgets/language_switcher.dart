@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../core/theme/app_theme.dart';
 import '../providers/locale_provider.dart';
+import '../l10n/app_localizations.dart';
 
 class LanguageSwitcher extends StatelessWidget {
   const LanguageSwitcher({Key? key}) : super(key: key);
@@ -27,14 +28,14 @@ class LanguageSwitcher extends StatelessWidget {
           ),
           const SizedBox(width: AppTheme.spacingS),
           Text(
-            'Language / اللغة',
+            AppLocalizations.of(context)!.languageLabel,
             style: AppTheme.bodyMedium.copyWith(
               fontWeight: FontWeight.w500,
             ),
           ),
           const SizedBox(width: AppTheme.spacingM),
           _LanguageButton(
-            language: 'English',
+            language: AppLocalizations.of(context)!.english,
             code: 'en',
             isSelected: localeProvider.isEnglish,
             onTap: () => localeProvider.setLocale(const Locale('en')),
@@ -76,14 +77,10 @@ class _LanguageButton extends StatelessWidget {
           vertical: AppTheme.spacingS,
         ),
         decoration: BoxDecoration(
-          color: isSelected
-              ? AppTheme.primaryColor
-              : AppTheme.surfaceColor,
+          color: isSelected ? AppTheme.primaryColor : AppTheme.surfaceColor,
           borderRadius: BorderRadius.circular(AppTheme.radiusM),
           border: Border.all(
-            color: isSelected
-                ? AppTheme.primaryColor
-                : AppTheme.borderColor,
+            color: isSelected ? AppTheme.primaryColor : AppTheme.borderColor,
           ),
         ),
         child: Text(

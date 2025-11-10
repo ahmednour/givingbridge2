@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/design_system.dart';
 import '../../services/error_handler.dart';
+import '../../l10n/app_localizations.dart';
 import 'gb_button.dart';
 
 /// Collection of reusable error widgets with retry mechanisms
@@ -208,7 +209,7 @@ class GBInlineError extends StatelessWidget {
             const SizedBox(width: DesignSystem.spaceM),
             TextButton(
               onPressed: onRetry,
-              child: const Text('Retry'),
+              child: Text(AppLocalizations.of(context)!.retry),
             ),
           ],
         ],

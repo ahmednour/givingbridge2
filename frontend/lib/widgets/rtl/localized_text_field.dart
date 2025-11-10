@@ -1,5 +1,8 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/gestures.dart';
 import '../../services/rtl_layout_service.dart';
 import '../../services/arabic_typography_service.dart';
 
@@ -126,15 +129,15 @@ class LocalizedTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isRTL = RTLLayoutService.isRTL(context);
-    
+
     // Get directional text alignment
-    TextAlign directionalTextAlign = textAlign ?? 
-        RTLLayoutService.getDirectionalTextAlign(context);
-    
+    TextAlign directionalTextAlign =
+        textAlign ?? RTLLayoutService.getDirectionalTextAlign(context);
+
     // Get directional text direction
-    TextDirection directionalTextDirection = textDirection ?? 
-        RTLLayoutService.getTextDirection(context);
-    
+    TextDirection directionalTextDirection =
+        textDirection ?? RTLLayoutService.getTextDirection(context);
+
     // Apply Arabic typography if RTL
     TextStyle? directionalStyle = style;
     if (isRTL && style != null) {
@@ -147,7 +150,8 @@ class LocalizedTextField extends StatelessWidget {
 
     // Convert decoration padding for RTL
     InputDecoration directionalDecoration = decoration;
-    if (decoration.contentPadding != null && decoration.contentPadding is EdgeInsets) {
+    if (decoration.contentPadding != null &&
+        decoration.contentPadding is EdgeInsets) {
       directionalDecoration = decoration.copyWith(
         contentPadding: RTLLayoutService.convertPaddingToRTL(
           decoration.contentPadding as EdgeInsets,
@@ -168,12 +172,10 @@ class LocalizedTextField extends StatelessWidget {
 
     // Convert scroll padding for RTL
     EdgeInsets directionalScrollPadding = scrollPadding;
-    if (scrollPadding is EdgeInsets) {
-      directionalScrollPadding = RTLLayoutService.convertPaddingToRTL(
-        scrollPadding,
-        isRTL,
-      );
-    }
+    directionalScrollPadding = RTLLayoutService.convertPaddingToRTL(
+      scrollPadding,
+      isRTL,
+    );
 
     return TextField(
       controller: controller,
@@ -346,15 +348,15 @@ class LocalizedTextFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isRTL = RTLLayoutService.isRTL(context);
-    
+
     // Get directional text alignment
-    TextAlign directionalTextAlign = textAlign ?? 
-        RTLLayoutService.getDirectionalTextAlign(context);
-    
+    TextAlign directionalTextAlign =
+        textAlign ?? RTLLayoutService.getDirectionalTextAlign(context);
+
     // Get directional text direction
-    TextDirection directionalTextDirection = textDirection ?? 
-        RTLLayoutService.getTextDirection(context);
-    
+    TextDirection directionalTextDirection =
+        textDirection ?? RTLLayoutService.getTextDirection(context);
+
     // Apply Arabic typography if RTL
     TextStyle? directionalStyle = style;
     if (isRTL && style != null) {
@@ -367,7 +369,8 @@ class LocalizedTextFormField extends StatelessWidget {
 
     // Convert decoration padding for RTL
     InputDecoration directionalDecoration = decoration;
-    if (decoration.contentPadding != null && decoration.contentPadding is EdgeInsets) {
+    if (decoration.contentPadding != null &&
+        decoration.contentPadding is EdgeInsets) {
       directionalDecoration = decoration.copyWith(
         contentPadding: RTLLayoutService.convertPaddingToRTL(
           decoration.contentPadding as EdgeInsets,
@@ -388,12 +391,10 @@ class LocalizedTextFormField extends StatelessWidget {
 
     // Convert scroll padding for RTL
     EdgeInsets directionalScrollPadding = scrollPadding;
-    if (scrollPadding is EdgeInsets) {
-      directionalScrollPadding = RTLLayoutService.convertPaddingToRTL(
-        scrollPadding,
-        isRTL,
-      );
-    }
+    directionalScrollPadding = RTLLayoutService.convertPaddingToRTL(
+      scrollPadding,
+      isRTL,
+    );
 
     return TextFormField(
       controller: controller,

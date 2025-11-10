@@ -41,8 +41,8 @@ void main() {
                 devicePixelRatio: 1.0,
               ),
               child: Directionality(
-                textDirection: locale?.languageCode == 'ar' 
-                    ? TextDirection.rtl 
+                textDirection: locale?.languageCode == 'ar'
+                    ? TextDirection.rtl
                     : TextDirection.ltr,
                 child: child ?? const SizedBox.shrink(),
               ),
@@ -54,9 +54,10 @@ void main() {
     }
 
     group('7.2 Cross-platform RTL layout validation', () {
-      testWidgets('Test RTL layouts on mobile screen size', (WidgetTester tester) async {
+      testWidgets('Test RTL layouts on mobile screen size',
+          (WidgetTester tester) async {
         const mobileSize = Size(375, 667); // iPhone SE size
-        
+
         await tester.pumpWidget(createTestApp(
           screenSize: mobileSize,
           locale: const Locale('ar'),
@@ -69,9 +70,9 @@ void main() {
                 Icon(Icons.notifications),
               ],
             ),
-            body: const Column(
+            body: Column(
               children: [
-                Row(
+                const Row(
                   children: [
                     Expanded(
                       child: Card(
@@ -103,7 +104,7 @@ void main() {
             ),
           ),
         ));
-        
+
         await tester.pumpAndSettle();
 
         // Verify mobile layout elements are present
@@ -114,21 +115,22 @@ void main() {
         // Verify RTL layout on mobile
         final firstCard = tester.getTopLeft(find.text('البطاقة الأولى'));
         final secondCard = tester.getTopLeft(find.text('البطاقة الثانية'));
-        
+
         // In RTL, first card should be to the right of second card
         expect(firstCard.dx > secondCard.dx, isTrue);
 
         // Verify app bar icons are positioned correctly for RTL
         final menuIcon = tester.getTopLeft(find.byIcon(Icons.menu));
         final searchIcon = tester.getTopLeft(find.byIcon(Icons.search));
-        
+
         // Menu should be on the right in RTL, search on the left
         expect(menuIcon.dx > searchIcon.dx, isTrue);
       });
 
-      testWidgets('Test RTL layouts on tablet screen size', (WidgetTester tester) async {
+      testWidgets('Test RTL layouts on tablet screen size',
+          (WidgetTester tester) async {
         const tabletSize = Size(768, 1024); // iPad size
-        
+
         await tester.pumpWidget(createTestApp(
           screenSize: tabletSize,
           locale: const Locale('ar'),
@@ -166,7 +168,8 @@ void main() {
                       children: [
                         const Text(
                           'المحتوى الرئيسي',
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 16),
                         Row(
@@ -196,7 +199,7 @@ void main() {
             ),
           ),
         ));
-        
+
         await tester.pumpAndSettle();
 
         // Verify tablet layout elements
@@ -208,21 +211,22 @@ void main() {
         // Verify sidebar is positioned correctly for RTL (should be on the right)
         final sidebar = tester.getTopLeft(find.text('الرئيسية'));
         final mainContent = tester.getTopLeft(find.text('المحتوى الرئيسي'));
-        
+
         // In RTL, sidebar should be to the right of main content
         expect(sidebar.dx > mainContent.dx, isTrue);
 
         // Verify content sections are laid out RTL
         final firstSection = tester.getCenter(find.text('قسم أول'));
         final secondSection = tester.getCenter(find.text('قسم ثاني'));
-        
+
         // First section should be to the right of second section in RTL
         expect(firstSection.dx > secondSection.dx, isTrue);
       });
 
-      testWidgets('Test RTL layouts on desktop screen size', (WidgetTester tester) async {
+      testWidgets('Test RTL layouts on desktop screen size',
+          (WidgetTester tester) async {
         const desktopSize = Size(1920, 1080); // Full HD desktop
-        
+
         await tester.pumpWidget(createTestApp(
           screenSize: desktopSize,
           locale: const Locale('ar'),
@@ -259,7 +263,8 @@ void main() {
                         children: [
                           Text(
                             'اللوحة الجانبية',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                           SizedBox(height: 16),
                           Text('عنصر قائمة 1'),
@@ -278,7 +283,8 @@ void main() {
                       children: [
                         const Text(
                           'المحتوى الرئيسي لسطح المكتب',
-                          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 28, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 24),
                         Row(
@@ -297,7 +303,8 @@ void main() {
                             Expanded(
                               child: Container(
                                 height: 150,
-                                margin: const EdgeInsets.symmetric(horizontal: 12),
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 12),
                                 decoration: BoxDecoration(
                                   color: Colors.green[100],
                                   borderRadius: BorderRadius.circular(8.0),
@@ -336,7 +343,8 @@ void main() {
                         children: [
                           Text(
                             'اللوحة الثانوية',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                           SizedBox(height: 16),
                           Text('معلومات إضافية'),
@@ -351,7 +359,7 @@ void main() {
             ),
           ),
         ));
-        
+
         await tester.pumpAndSettle();
 
         // Verify desktop layout elements
@@ -362,9 +370,10 @@ void main() {
 
         // Verify three-column layout positioning for RTL
         final leftPanel = tester.getCenter(find.text('اللوحة الجانبية'));
-        final mainContent = tester.getCenter(find.text('المحتوى الرئيسي لسطح المكتب'));
+        final mainContent =
+            tester.getCenter(find.text('المحتوى الرئيسي لسطح المكتب'));
         final rightPanel = tester.getCenter(find.text('اللوحة الثانوية'));
-        
+
         // In RTL: left panel should be rightmost, right panel should be leftmost
         expect(leftPanel.dx > mainContent.dx, isTrue);
         expect(mainContent.dx > rightPanel.dx, isTrue);
@@ -373,13 +382,14 @@ void main() {
         final card1 = tester.getCenter(find.text('بطاقة 1'));
         final card2 = tester.getCenter(find.text('بطاقة 2'));
         final card3 = tester.getCenter(find.text('بطاقة 3'));
-        
+
         // Cards should be ordered right to left: card1, card2, card3
         expect(card1.dx > card2.dx, isTrue);
         expect(card2.dx > card3.dx, isTrue);
       });
 
-      testWidgets('Verify Arabic text rendering on different screen densities', (WidgetTester tester) async {
+      testWidgets('Verify Arabic text rendering on different screen densities',
+          (WidgetTester tester) async {
         final testCases = [
           {'density': 1.0, 'name': 'MDPI'},
           {'density': 1.5, 'name': 'HDPI'},
@@ -437,7 +447,8 @@ void main() {
                         SizedBox(height: 8),
                         Text(
                           'نص عربي بخط عريض',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                         SizedBox(height: 16),
                         Text(
@@ -451,7 +462,7 @@ void main() {
               ),
             ),
           );
-          
+
           await tester.pumpAndSettle();
 
           // Verify Arabic text is rendered at different densities
@@ -459,11 +470,13 @@ void main() {
           expect(find.text('نص عربي بخط متوسط'), findsOneWidget);
           expect(find.text('نص عربي بخط كبير'), findsOneWidget);
           expect(find.text('نص عربي بخط عريض'), findsOneWidget);
-          expect(find.textContaining('هذا نص طويل باللغة العربية'), findsOneWidget);
+          expect(find.textContaining('هذا نص طويل باللغة العربية'),
+              findsOneWidget);
         }
       });
 
-      testWidgets('Validate performance of RTL layouts', (WidgetTester tester) async {
+      testWidgets('Validate performance of RTL layouts',
+          (WidgetTester tester) async {
         // Create a complex RTL layout to test performance
         await tester.pumpWidget(createTestApp(
           locale: const Locale('ar'),
@@ -526,7 +539,7 @@ void main() {
             ),
           ),
         ));
-        
+
         // Measure performance by timing the pump and settle
         final stopwatch = Stopwatch()..start();
         await tester.pumpAndSettle();
@@ -535,7 +548,7 @@ void main() {
         // Verify the layout rendered successfully
         expect(find.text('اختبار الأداء'), findsOneWidget);
         expect(find.text('عنصر رقم 1'), findsOneWidget);
-        
+
         // Performance should be reasonable (less than 5 seconds for 100 items)
         expect(stopwatch.elapsedMilliseconds, lessThan(5000));
 
@@ -549,17 +562,18 @@ void main() {
         expect(scrollStopwatch.elapsedMilliseconds, lessThan(1000));
       });
 
-      testWidgets('Test RTL layout consistency across different widgets', (WidgetTester tester) async {
+      testWidgets('Test RTL layout consistency across different widgets',
+          (WidgetTester tester) async {
         await tester.pumpWidget(createTestApp(
           locale: const Locale('ar'),
           child: Scaffold(
             appBar: AppBar(title: const Text('اختبار التناسق')),
-            body: const SingleChildScrollView(
-              padding: EdgeInsets.all(16.0),
+            body: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
                   // Test Card widget
-                  Card(
+                  const Card(
                     child: ListTile(
                       leading: Icon(Icons.person),
                       title: Text('اسم المستخدم'),
@@ -567,10 +581,10 @@ void main() {
                       trailing: Icon(Icons.arrow_back_ios),
                     ),
                   ),
-                  SizedBox(height: 16),
-                  
+                  const SizedBox(height: 16),
+
                   // Test ExpansionTile
-                  Card(
+                  const Card(
                     child: ExpansionTile(
                       leading: Icon(Icons.folder),
                       title: Text('مجلد قابل للتوسيع'),
@@ -586,19 +600,19 @@ void main() {
                       ],
                     ),
                   ),
-                  SizedBox(height: 16),
-                  
+                  const SizedBox(height: 16),
+
                   // Test DataTable
                   Card(
                     child: Padding(
-                      padding: EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.all(16.0),
                       child: DataTable(
-                        columns: [
+                        columns: const [
                           DataColumn(label: Text('الاسم')),
                           DataColumn(label: Text('العمر')),
                           DataColumn(label: Text('المدينة')),
                         ],
-                        rows: [
+                        rows: const [
                           DataRow(cells: [
                             DataCell(Text('أحمد')),
                             DataCell(Text('25')),
@@ -618,7 +632,7 @@ void main() {
             ),
           ),
         ));
-        
+
         await tester.pumpAndSettle();
 
         // Verify all widgets render correctly with Arabic text
@@ -632,15 +646,16 @@ void main() {
         // Test expansion functionality
         await tester.tap(find.text('مجلد قابل للتوسيع'));
         await tester.pumpAndSettle();
-        
+
         expect(find.text('عنصر فرعي 1'), findsOneWidget);
         expect(find.text('عنصر فرعي 2'), findsOneWidget);
 
         // Verify RTL layout in ListTile
         final leadingIcon = tester.getCenter(find.byIcon(Icons.person));
         final titleText = tester.getCenter(find.text('اسم المستخدم'));
-        final trailingIcon = tester.getCenter(find.byIcon(Icons.arrow_back_ios));
-        
+        final trailingIcon =
+            tester.getCenter(find.byIcon(Icons.arrow_back_ios));
+
         // In RTL: leading should be on right, trailing on left
         expect(leadingIcon.dx > titleText.dx, isTrue);
         expect(titleText.dx > trailingIcon.dx, isTrue);

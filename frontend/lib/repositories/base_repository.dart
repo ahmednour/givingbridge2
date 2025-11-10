@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:image_picker/image_picker.dart';
 import '../core/constants/api_constants.dart';
 import '../core/config/env_config.dart';
 import '../services/api_service.dart';
@@ -21,7 +22,7 @@ abstract class BaseRepository {
       if (token != null) {
         headers['Authorization'] = 'Bearer $token';
       }
-      
+
       // Add CSRF token for authenticated requests
       try {
         final csrfToken = await CsrfService.getToken();
@@ -76,7 +77,7 @@ abstract class BaseRepository {
       if (token != null) {
         request.headers['Authorization'] = 'Bearer $token';
       }
-      
+
       // Add CSRF token for authenticated requests
       try {
         final csrfToken = await CsrfService.getToken();
@@ -92,20 +93,82 @@ abstract class BaseRepository {
     // Add fields
     request.fields.addAll(fields);
 
-    // Add files with explicit MIME type
+    // Add files with explicit MIME type (web-compatible)
     if (files != null) {
       for (var entry in files.entries) {
-        final mimeType = lookupMimeType(entry.value) ?? 'application/octet-stream';
-        final file = await http.MultipartFile.fromPath(
+        final mimeType =
+            lookupMimeType(entry.value) ?? 'application/octet-stream';
+        // Use XFile and fromBytes for web compatibility
+        final xFile = XFile(entry.value);
+        final bytes = await xFile.readAsBytes();
+        final file = http.MultipartFile.fromBytes(
           entry.key,
-          entry.value,
+          bytes,
+          filename: entry.value.split('/').last.split('\\').last,
           contentType: MediaType.parse(mimeType),
         );
         request.files.add(file);
       }
     }
 
-    final streamedResponse = await request.send().timeout(APIConstants.sendTimeout);
+    final streamedResponse =
+        await request.send().timeout(APIConstants.sendTimeout);
+    return await http.Response.fromStream(streamedResponse);
+  }
+
+  /// Post multipart request with XFile objects (web-compatible)
+  Future<http.Response> postMultipartWithXFiles(
+    String endpoint,
+    Map<String, String> fields, {
+    Map<String, XFile>? xFiles,
+    bool includeAuth = false,
+  }) async {
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse('$baseUrl$endpoint'),
+    );
+
+    // Add headers
+    if (includeAuth) {
+      String? token = await ApiService.getToken();
+      if (token != null) {
+        request.headers['Authorization'] = 'Bearer $token';
+      }
+
+      // Add CSRF token for authenticated requests
+      try {
+        final csrfToken = await CsrfService.getToken();
+        if (csrfToken != null) {
+          request.headers['X-CSRF-Token'] = csrfToken;
+        }
+      } catch (e) {
+        print('⚠️ Warning: Could not get CSRF token: $e');
+        // Continue without CSRF token - server will reject if required
+      }
+    }
+
+    // Add fields
+    request.fields.addAll(fields);
+
+    // Add files with explicit MIME type (web-compatible using XFile)
+    if (xFiles != null) {
+      for (var entry in xFiles.entries) {
+        final xFile = entry.value;
+        final mimeType =
+            lookupMimeType(xFile.name) ?? 'application/octet-stream';
+        final bytes = await xFile.readAsBytes();
+        final file = http.MultipartFile.fromBytes(
+          entry.key,
+          bytes,
+          filename: xFile.name,
+          contentType: MediaType.parse(mimeType),
+        );
+        request.files.add(file);
+      }
+    }
+
+    final streamedResponse =
+        await request.send().timeout(APIConstants.sendTimeout);
     return await http.Response.fromStream(streamedResponse);
   }
 
@@ -138,7 +201,7 @@ abstract class BaseRepository {
       if (token != null) {
         request.headers['Authorization'] = 'Bearer $token';
       }
-      
+
       // Add CSRF token for authenticated requests
       try {
         final csrfToken = await CsrfService.getToken();
@@ -154,20 +217,82 @@ abstract class BaseRepository {
     // Add fields
     request.fields.addAll(fields);
 
-    // Add files with explicit MIME type
+    // Add files with explicit MIME type (web-compatible)
     if (files != null) {
       for (var entry in files.entries) {
-        final mimeType = lookupMimeType(entry.value) ?? 'application/octet-stream';
-        final file = await http.MultipartFile.fromPath(
+        final mimeType =
+            lookupMimeType(entry.value) ?? 'application/octet-stream';
+        // Use XFile and fromBytes for web compatibility
+        final xFile = XFile(entry.value);
+        final bytes = await xFile.readAsBytes();
+        final file = http.MultipartFile.fromBytes(
           entry.key,
-          entry.value,
+          bytes,
+          filename: entry.value.split('/').last.split('\\').last,
           contentType: MediaType.parse(mimeType),
         );
         request.files.add(file);
       }
     }
 
-    final streamedResponse = await request.send().timeout(APIConstants.sendTimeout);
+    final streamedResponse =
+        await request.send().timeout(APIConstants.sendTimeout);
+    return await http.Response.fromStream(streamedResponse);
+  }
+
+  /// Put multipart request with XFile objects (web-compatible)
+  Future<http.Response> putMultipartWithXFiles(
+    String endpoint,
+    Map<String, String> fields, {
+    Map<String, XFile>? xFiles,
+    bool includeAuth = false,
+  }) async {
+    final request = http.MultipartRequest(
+      'PUT',
+      Uri.parse('$baseUrl$endpoint'),
+    );
+
+    // Add headers
+    if (includeAuth) {
+      String? token = await ApiService.getToken();
+      if (token != null) {
+        request.headers['Authorization'] = 'Bearer $token';
+      }
+
+      // Add CSRF token for authenticated requests
+      try {
+        final csrfToken = await CsrfService.getToken();
+        if (csrfToken != null) {
+          request.headers['X-CSRF-Token'] = csrfToken;
+        }
+      } catch (e) {
+        print('⚠️ Warning: Could not get CSRF token: $e');
+        // Continue without CSRF token - server will reject if required
+      }
+    }
+
+    // Add fields
+    request.fields.addAll(fields);
+
+    // Add files with explicit MIME type (web-compatible using XFile)
+    if (xFiles != null) {
+      for (var entry in xFiles.entries) {
+        final xFile = entry.value;
+        final mimeType =
+            lookupMimeType(xFile.name) ?? 'application/octet-stream';
+        final bytes = await xFile.readAsBytes();
+        final file = http.MultipartFile.fromBytes(
+          entry.key,
+          bytes,
+          filename: xFile.name,
+          contentType: MediaType.parse(mimeType),
+        );
+        request.files.add(file);
+      }
+    }
+
+    final streamedResponse =
+        await request.send().timeout(APIConstants.sendTimeout);
     return await http.Response.fromStream(streamedResponse);
   }
 

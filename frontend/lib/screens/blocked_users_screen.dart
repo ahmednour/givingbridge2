@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class BlockedUsersScreen extends StatefulWidget {
   const BlockedUsersScreen({super.key});
@@ -35,7 +36,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Blocked Users'),
+        title: Text(AppLocalizations.of(context)!.blockedUsersTitle),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -58,7 +59,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
                       subtitle: Text(user['email'] ?? ''),
                       trailing: TextButton(
                         onPressed: () => _unblockUser(user['id']),
-                        child: const Text('Unblock'),
+                        child: Text(AppLocalizations.of(context)!.unblock),
                       ),
                     );
                   },

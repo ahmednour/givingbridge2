@@ -9,9 +9,7 @@ import '../widgets/common/gb_filter_chips.dart';
 import '../widgets/common/gb_empty_state.dart';
 import '../widgets/rtl/directional_row.dart';
 import '../widgets/rtl/directional_column.dart';
-import '../widgets/rtl/directional_container.dart';
 import '../widgets/rtl/directional_app_bar.dart';
-import '../services/rtl_layout_service.dart';
 import '../services/api_service.dart';
 import '../providers/locale_provider.dart';
 import '../l10n/app_localizations.dart';
@@ -66,7 +64,8 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
         });
         // Debug: Print request statuses
         for (var request in _requests) {
-          print('Request ${request.id}: status=${request.status}, isApproved=${request.isApproved}');
+          print(
+              'Request ${request.id}: status=${request.status}, isApproved=${request.isApproved}');
         }
       } else {
         final l10n = AppLocalizations.of(context)!;
@@ -208,14 +207,12 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     final filteredRequests = _filteredRequests;
 
     final localeProvider = Provider.of<LocaleProvider>(context);
-    
+
     return Directionality(
       textDirection: localeProvider.textDirection,
       child: Scaffold(
@@ -245,50 +242,51 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
         ),
         body: DirectionalColumn(
           children: [
-          // Filter Chips
-          Container(
-            color: DesignSystem.getSurfaceColor(context),
-            padding: const EdgeInsets.all(DesignSystem.spaceL),
-            child: GBFilterChips<String>(
-              options: _getFilters(context),
-              selectedValues: _selectedFilter == 'all' ? [] : [_selectedFilter],
-              onChanged: (selected) {
-                setState(() {
-                  _selectedFilter = selected.isEmpty ? 'all' : selected.first;
-                });
-              },
-              multiSelect: false,
-              scrollable: true,
+            // Filter Chips
+            Container(
+              color: DesignSystem.getSurfaceColor(context),
+              padding: const EdgeInsets.all(DesignSystem.spaceL),
+              child: GBFilterChips<String>(
+                options: _getFilters(context),
+                selectedValues:
+                    _selectedFilter == 'all' ? [] : [_selectedFilter],
+                onChanged: (selected) {
+                  setState(() {
+                    _selectedFilter = selected.isEmpty ? 'all' : selected.first;
+                  });
+                },
+                multiSelect: false,
+                scrollable: true,
+              ),
             ),
-          ),
 
-          // Requests List
-          Expanded(
-            child: _isLoading
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : filteredRequests.isEmpty
-                    ? _buildEmptyState()
-                    : RefreshIndicator(
-                        onRefresh: _loadRequests,
-                        child: ListView.builder(
-                          padding: const EdgeInsets.all(DesignSystem.spaceL),
-                          itemCount: filteredRequests.length,
-                          itemBuilder: (context, index) {
-                            final request = filteredRequests[index];
-                            return _buildRequestCard(request)
-                                .animate()
-                                .fadeIn(
-                                    duration: 300.ms, delay: (index * 50).ms)
-                                .slideY(begin: 0.1, end: 0);
-                          },
+            // Requests List
+            Expanded(
+              child: _isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : filteredRequests.isEmpty
+                      ? _buildEmptyState()
+                      : RefreshIndicator(
+                          onRefresh: _loadRequests,
+                          child: ListView.builder(
+                            padding: const EdgeInsets.all(DesignSystem.spaceL),
+                            itemCount: filteredRequests.length,
+                            itemBuilder: (context, index) {
+                              final request = filteredRequests[index];
+                              return _buildRequestCard(request)
+                                  .animate()
+                                  .fadeIn(
+                                      duration: 300.ms, delay: (index * 50).ms)
+                                  .slideY(begin: 0.1, end: 0);
+                            },
+                          ),
                         ),
-                      ),
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
-    ),
     );
   }
 
@@ -309,7 +307,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
 
   Widget _buildRequestCard(DonationRequest request) {
     final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: DesignSystem.spaceM),
       decoration: BoxDecoration(
@@ -326,8 +324,8 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
       child: Padding(
         padding: const EdgeInsets.all(DesignSystem.spaceM),
         child: DirectionalColumn(
-          crossAxisAlignment: localeProvider.isRTL 
-              ? CrossAxisAlignment.end 
+          crossAxisAlignment: localeProvider.isRTL
+              ? CrossAxisAlignment.end
               : CrossAxisAlignment.start,
           children: [
             // Status and Date

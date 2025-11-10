@@ -1319,13 +1319,13 @@ abstract class AppLocalizations {
   /// No description provided for @languageSettingsComingSoon.
   ///
   /// In en, this message translates to:
-  /// **'Language settings coming soon!'**
+  /// **'Language settings coming soon'**
   String get languageSettingsComingSoon;
 
   /// No description provided for @helpSupportComingSoon.
   ///
   /// In en, this message translates to:
-  /// **'Help & Support coming soon!'**
+  /// **'Help & Support - Coming Soon'**
   String get helpSupportComingSoon;
 
   /// No description provided for @selectLanguage.
@@ -1904,6 +1904,12 @@ abstract class AppLocalizations {
   /// **'New donation available'**
   String get newDonationAvailable;
 
+  /// No description provided for @clear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get clear;
+
   /// No description provided for @clearAll.
   ///
   /// In en, this message translates to:
@@ -2249,7 +2255,7 @@ abstract class AppLocalizations {
   /// No description provided for @viewDetails.
   ///
   /// In en, this message translates to:
-  /// **'View Details'**
+  /// **'View details'**
   String get viewDetails;
 
   /// No description provided for @noActivityYet.
@@ -2603,7 +2609,7 @@ abstract class AppLocalizations {
   /// No description provided for @noUsersFound.
   ///
   /// In en, this message translates to:
-  /// **'No Users'**
+  /// **'No Users Found'**
   String get noUsersFound;
 
   /// No description provided for @noUsersFoundMessage.
@@ -2843,7 +2849,7 @@ abstract class AppLocalizations {
   /// No description provided for @provideRejectionReason.
   ///
   /// In en, this message translates to:
-  /// **'Please provide a reason for rejection'**
+  /// **'Provide a reason for rejection'**
   String get provideRejectionReason;
 
   /// No description provided for @pleaseProvideRejectionReason.
@@ -3025,6 +3031,2724 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancelled'**
   String get statusCancelled;
+
+  /// No description provided for @deleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this user?'**
+  String get deleteConfirm;
+
+  /// No description provided for @receiveEmailUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive email updates about your activity'**
+  String get receiveEmailUpdates;
+
+  /// No description provided for @notifyOnNewRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Notify when your donations are requested'**
+  String get notifyOnNewRequests;
+
+  /// No description provided for @medical.
+  ///
+  /// In en, this message translates to:
+  /// **'Medical'**
+  String get medical;
+
+  /// No description provided for @education.
+  ///
+  /// In en, this message translates to:
+  /// **'Education'**
+  String get education;
+
+  /// No description provided for @housing.
+  ///
+  /// In en, this message translates to:
+  /// **'Housing'**
+  String get housing;
+
+  /// No description provided for @emergency.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency'**
+  String get emergency;
+
+  /// No description provided for @healthcare.
+  ///
+  /// In en, this message translates to:
+  /// **'Healthcare'**
+  String get healthcare;
+
+  /// No description provided for @childcare.
+  ///
+  /// In en, this message translates to:
+  /// **'Childcare'**
+  String get childcare;
+
+  /// No description provided for @eldercare.
+  ///
+  /// In en, this message translates to:
+  /// **'Eldercare'**
+  String get eldercare;
+
+  /// No description provided for @transportation.
+  ///
+  /// In en, this message translates to:
+  /// **'Transportation'**
+  String get transportation;
+
+  /// No description provided for @utilities.
+  ///
+  /// In en, this message translates to:
+  /// **'Utilities'**
+  String get utilities;
+
+  /// No description provided for @clothing.
+  ///
+  /// In en, this message translates to:
+  /// **'Clothing'**
+  String get clothing;
+
+  /// No description provided for @schoolSupplies.
+  ///
+  /// In en, this message translates to:
+  /// **'School Supplies'**
+  String get schoolSupplies;
+
+  /// No description provided for @medicalSupplies.
+  ///
+  /// In en, this message translates to:
+  /// **'Medical Supplies'**
+  String get medicalSupplies;
+
+  /// No description provided for @babyItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Baby Items'**
+  String get babyItems;
+
+  /// No description provided for @kitchenware.
+  ///
+  /// In en, this message translates to:
+  /// **'Kitchenware'**
+  String get kitchenware;
+
+  /// No description provided for @bedding.
+  ///
+  /// In en, this message translates to:
+  /// **'Bedding'**
+  String get bedding;
+
+  /// No description provided for @personalCare.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Care'**
+  String get personalCare;
+
+  /// No description provided for @cleaning.
+  ///
+  /// In en, this message translates to:
+  /// **'Cleaning'**
+  String get cleaning;
+
+  /// No description provided for @sports.
+  ///
+  /// In en, this message translates to:
+  /// **'Sports'**
+  String get sports;
+
+  /// No description provided for @hobbies.
+  ///
+  /// In en, this message translates to:
+  /// **'Hobbies'**
+  String get hobbies;
+
+  /// No description provided for @petSupplies.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet Supplies'**
+  String get petSupplies;
+
+  /// No description provided for @categoryMedical.
+  ///
+  /// In en, this message translates to:
+  /// **'Medical'**
+  String get categoryMedical;
+
+  /// No description provided for @categoryEducation.
+  ///
+  /// In en, this message translates to:
+  /// **'Education'**
+  String get categoryEducation;
+
+  /// No description provided for @categoryFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Food'**
+  String get categoryFood;
+
+  /// No description provided for @categoryHousing.
+  ///
+  /// In en, this message translates to:
+  /// **'Housing'**
+  String get categoryHousing;
+
+  /// No description provided for @categoryEmergency.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency'**
+  String get categoryEmergency;
+
+  /// No description provided for @categoryClothing.
+  ///
+  /// In en, this message translates to:
+  /// **'Clothing'**
+  String get categoryClothing;
+
+  /// No description provided for @categoryBooks.
+  ///
+  /// In en, this message translates to:
+  /// **'Books'**
+  String get categoryBooks;
+
+  /// No description provided for @categoryElectronics.
+  ///
+  /// In en, this message translates to:
+  /// **'Electronics'**
+  String get categoryElectronics;
+
+  /// No description provided for @categoryFurniture.
+  ///
+  /// In en, this message translates to:
+  /// **'Furniture'**
+  String get categoryFurniture;
+
+  /// No description provided for @categoryToys.
+  ///
+  /// In en, this message translates to:
+  /// **'Toys'**
+  String get categoryToys;
+
+  /// No description provided for @categoryOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get categoryOther;
+
+  /// No description provided for @medicalDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Medical supplies, medications, and health equipment'**
+  String get medicalDescription;
+
+  /// No description provided for @educationDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'School books, educational supplies, and study materials'**
+  String get educationDescription;
+
+  /// No description provided for @foodDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Food, groceries, and ready meals'**
+  String get foodDescription;
+
+  /// No description provided for @housingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Home furniture and housing supplies'**
+  String get housingDescription;
+
+  /// No description provided for @emergencyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Urgent aid and emergency supplies'**
+  String get emergencyDescription;
+
+  /// No description provided for @clothingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Clothes, shoes, and accessories'**
+  String get clothingDescription;
+
+  /// No description provided for @booksDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Books, magazines, and reading materials'**
+  String get booksDescription;
+
+  /// No description provided for @electronicsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Electronic devices and technology'**
+  String get electronicsDescription;
+
+  /// No description provided for @furnitureDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Home and office furniture'**
+  String get furnitureDescription;
+
+  /// No description provided for @toysDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Toys and entertainment for children'**
+  String get toysDescription;
+
+  /// No description provided for @otherDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Other miscellaneous items'**
+  String get otherDescription;
+
+  /// No description provided for @donationForMedical.
+  ///
+  /// In en, this message translates to:
+  /// **'Medical Donation'**
+  String get donationForMedical;
+
+  /// No description provided for @donationForEducation.
+  ///
+  /// In en, this message translates to:
+  /// **'Educational Donation'**
+  String get donationForEducation;
+
+  /// No description provided for @donationForFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Food Donation'**
+  String get donationForFood;
+
+  /// No description provided for @donationForHousing.
+  ///
+  /// In en, this message translates to:
+  /// **'Housing Donation'**
+  String get donationForHousing;
+
+  /// No description provided for @donationForEmergency.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency Donation'**
+  String get donationForEmergency;
+
+  /// No description provided for @urgentNeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Urgent Need'**
+  String get urgentNeed;
+
+  /// No description provided for @moderateNeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate Need'**
+  String get moderateNeed;
+
+  /// No description provided for @lowPriority.
+  ///
+  /// In en, this message translates to:
+  /// **'Low Priority'**
+  String get lowPriority;
+
+  /// No description provided for @criticalCondition.
+  ///
+  /// In en, this message translates to:
+  /// **'Critical Condition'**
+  String get criticalCondition;
+
+  /// No description provided for @goodCondition.
+  ///
+  /// In en, this message translates to:
+  /// **'Good Condition'**
+  String get goodCondition;
+
+  /// No description provided for @fairCondition.
+  ///
+  /// In en, this message translates to:
+  /// **'Fair Condition'**
+  String get fairCondition;
+
+  /// No description provided for @excellentCondition.
+  ///
+  /// In en, this message translates to:
+  /// **'Excellent Condition'**
+  String get excellentCondition;
+
+  /// No description provided for @newCondition.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get newCondition;
+
+  /// No description provided for @usedCondition.
+  ///
+  /// In en, this message translates to:
+  /// **'Used'**
+  String get usedCondition;
+
+  /// No description provided for @refurbishedCondition.
+  ///
+  /// In en, this message translates to:
+  /// **'Refurbished'**
+  String get refurbishedCondition;
+
+  /// No description provided for @donationTerminology.
+  ///
+  /// In en, this message translates to:
+  /// **'Donation Terminology'**
+  String get donationTerminology;
+
+  /// No description provided for @charitableGiving.
+  ///
+  /// In en, this message translates to:
+  /// **'Charitable Giving'**
+  String get charitableGiving;
+
+  /// No description provided for @socialResponsibility.
+  ///
+  /// In en, this message translates to:
+  /// **'Social Responsibility'**
+  String get socialResponsibility;
+
+  /// No description provided for @communitySupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Community Support'**
+  String get communitySupport;
+
+  /// No description provided for @helpingOthers.
+  ///
+  /// In en, this message translates to:
+  /// **'Helping Others'**
+  String get helpingOthers;
+
+  /// No description provided for @makingDifference.
+  ///
+  /// In en, this message translates to:
+  /// **'Making a Difference'**
+  String get makingDifference;
+
+  /// No description provided for @spreadingKindness.
+  ///
+  /// In en, this message translates to:
+  /// **'Spreading Kindness'**
+  String get spreadingKindness;
+
+  /// No description provided for @givingBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Giving Back'**
+  String get givingBack;
+
+  /// No description provided for @sharingIsCaring.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing is Caring'**
+  String get sharingIsCaring;
+
+  /// No description provided for @togetherWeCanHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Together We Can Help'**
+  String get togetherWeCanHelp;
+
+  /// No description provided for @everyDonationCounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Every Donation Counts'**
+  String get everyDonationCounts;
+
+  /// No description provided for @yourKindnessMatters.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Kindness Matters'**
+  String get yourKindnessMatters;
+
+  /// No description provided for @buildingBetterCommunity.
+  ///
+  /// In en, this message translates to:
+  /// **'Building a Better Community'**
+  String get buildingBetterCommunity;
+
+  /// No description provided for @connectingHeartsAndHands.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting Hearts and Hands'**
+  String get connectingHeartsAndHands;
+
+  /// No description provided for @bridgingTheGap.
+  ///
+  /// In en, this message translates to:
+  /// **'Bridging the Gap'**
+  String get bridgingTheGap;
+
+  /// No description provided for @unitedInGiving.
+  ///
+  /// In en, this message translates to:
+  /// **'United in Giving'**
+  String get unitedInGiving;
+
+  /// No description provided for @compassionInAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Compassion in Action'**
+  String get compassionInAction;
+
+  /// No description provided for @hopeForAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Hope for All'**
+  String get hopeForAll;
+
+  /// No description provided for @lendingAHand.
+  ///
+  /// In en, this message translates to:
+  /// **'Lending a Hand'**
+  String get lendingAHand;
+
+  /// No description provided for @caringCommunity.
+  ///
+  /// In en, this message translates to:
+  /// **'Caring Community'**
+  String get caringCommunity;
+
+  /// No description provided for @generousHearts.
+  ///
+  /// In en, this message translates to:
+  /// **'Generous Hearts'**
+  String get generousHearts;
+
+  /// No description provided for @kindnessRipples.
+  ///
+  /// In en, this message translates to:
+  /// **'Kindness Ripples'**
+  String get kindnessRipples;
+
+  /// No description provided for @sharingHope.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing Hope'**
+  String get sharingHope;
+
+  /// No description provided for @lightInDarkness.
+  ///
+  /// In en, this message translates to:
+  /// **'Light in Darkness'**
+  String get lightInDarkness;
+
+  /// No description provided for @warmthInColdness.
+  ///
+  /// In en, this message translates to:
+  /// **'Warmth in Coldness'**
+  String get warmthInColdness;
+
+  /// No description provided for @strengthInUnity.
+  ///
+  /// In en, this message translates to:
+  /// **'Strength in Unity'**
+  String get strengthInUnity;
+
+  /// No description provided for @loveInAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Love in Action'**
+  String get loveInAction;
+
+  /// No description provided for @gracefulGiving.
+  ///
+  /// In en, this message translates to:
+  /// **'Graceful Giving'**
+  String get gracefulGiving;
+
+  /// No description provided for @blessedToGive.
+  ///
+  /// In en, this message translates to:
+  /// **'Blessed to Give'**
+  String get blessedToGive;
+
+  /// No description provided for @gratefulToReceive.
+  ///
+  /// In en, this message translates to:
+  /// **'Grateful to Receive'**
+  String get gratefulToReceive;
+
+  /// No description provided for @humbleService.
+  ///
+  /// In en, this message translates to:
+  /// **'Humble Service'**
+  String get humbleService;
+
+  /// No description provided for @dignifiedHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Dignified Help'**
+  String get dignifiedHelp;
+
+  /// No description provided for @respectfulSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Respectful Support'**
+  String get respectfulSupport;
+
+  /// No description provided for @culturalSensitivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Cultural Sensitivity'**
+  String get culturalSensitivity;
+
+  /// No description provided for @islamicValues.
+  ///
+  /// In en, this message translates to:
+  /// **'Islamic Values'**
+  String get islamicValues;
+
+  /// No description provided for @zakat.
+  ///
+  /// In en, this message translates to:
+  /// **'Zakat'**
+  String get zakat;
+
+  /// No description provided for @sadaqah.
+  ///
+  /// In en, this message translates to:
+  /// **'Sadaqah'**
+  String get sadaqah;
+
+  /// No description provided for @khair.
+  ///
+  /// In en, this message translates to:
+  /// **'Khair'**
+  String get khair;
+
+  /// No description provided for @barakah.
+  ///
+  /// In en, this message translates to:
+  /// **'Barakah'**
+  String get barakah;
+
+  /// No description provided for @ajr.
+  ///
+  /// In en, this message translates to:
+  /// **'Ajr'**
+  String get ajr;
+
+  /// No description provided for @hasanat.
+  ///
+  /// In en, this message translates to:
+  /// **'Hasanat'**
+  String get hasanat;
+
+  /// No description provided for @birr.
+  ///
+  /// In en, this message translates to:
+  /// **'Birr'**
+  String get birr;
+
+  /// No description provided for @ihsan.
+  ///
+  /// In en, this message translates to:
+  /// **'Ihsan'**
+  String get ihsan;
+
+  /// No description provided for @takaful.
+  ///
+  /// In en, this message translates to:
+  /// **'Takaful'**
+  String get takaful;
+
+  /// No description provided for @silaturrahim.
+  ///
+  /// In en, this message translates to:
+  /// **'Silaturrahim'**
+  String get silaturrahim;
+
+  /// No description provided for @ukhuwah.
+  ///
+  /// In en, this message translates to:
+  /// **'Ukhuwah'**
+  String get ukhuwah;
+
+  /// No description provided for @taawun.
+  ///
+  /// In en, this message translates to:
+  /// **'Taawun'**
+  String get taawun;
+
+  /// No description provided for @rahma.
+  ///
+  /// In en, this message translates to:
+  /// **'Rahma'**
+  String get rahma;
+
+  /// No description provided for @hikmah.
+  ///
+  /// In en, this message translates to:
+  /// **'Hikmah'**
+  String get hikmah;
+
+  /// No description provided for @sabr.
+  ///
+  /// In en, this message translates to:
+  /// **'Sabr'**
+  String get sabr;
+
+  /// No description provided for @shukr.
+  ///
+  /// In en, this message translates to:
+  /// **'Shukr'**
+  String get shukr;
+
+  /// No description provided for @tawakkul.
+  ///
+  /// In en, this message translates to:
+  /// **'Tawakkul'**
+  String get tawakkul;
+
+  /// No description provided for @ikhlas.
+  ///
+  /// In en, this message translates to:
+  /// **'Ikhlas'**
+  String get ikhlas;
+
+  /// No description provided for @taqwa.
+  ///
+  /// In en, this message translates to:
+  /// **'Taqwa'**
+  String get taqwa;
+
+  /// No description provided for @iman.
+  ///
+  /// In en, this message translates to:
+  /// **'Iman'**
+  String get iman;
+
+  /// No description provided for @islam.
+  ///
+  /// In en, this message translates to:
+  /// **'Islam'**
+  String get islam;
+
+  /// No description provided for @fieldRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Field required'**
+  String get fieldRequired;
+
+  /// No description provided for @fieldTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Field too short'**
+  String get fieldTooShort;
+
+  /// No description provided for @fieldTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Field too long'**
+  String get fieldTooLong;
+
+  /// No description provided for @invalidFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid format'**
+  String get invalidFormat;
+
+  /// No description provided for @invalidInput.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid input'**
+  String get invalidInput;
+
+  /// No description provided for @pleaseEnterValidValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter valid value'**
+  String get pleaseEnterValidValue;
+
+  /// No description provided for @pleaseSelectOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select option'**
+  String get pleaseSelectOption;
+
+  /// No description provided for @pleaseEnterText.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter text'**
+  String get pleaseEnterText;
+
+  /// No description provided for @pleaseEnterNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter number'**
+  String get pleaseEnterNumber;
+
+  /// No description provided for @numberTooSmall.
+  ///
+  /// In en, this message translates to:
+  /// **'Number too small'**
+  String get numberTooSmall;
+
+  /// No description provided for @numberTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Number too large'**
+  String get numberTooLarge;
+
+  /// No description provided for @mustBePositiveNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Must be positive number'**
+  String get mustBePositiveNumber;
+
+  /// No description provided for @mustBeWholeNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Must be whole number'**
+  String get mustBeWholeNumber;
+
+  /// No description provided for @emailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required'**
+  String get emailRequired;
+
+  /// No description provided for @emailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is invalid'**
+  String get emailInvalid;
+
+  /// No description provided for @emailTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is too long'**
+  String get emailTooLong;
+
+  /// No description provided for @emailAlreadyExists.
+  ///
+  /// In en, this message translates to:
+  /// **'Email already exists'**
+  String get emailAlreadyExists;
+
+  /// No description provided for @passwordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is required'**
+  String get passwordRequired;
+
+  /// No description provided for @passwordTooWeak.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is too weak'**
+  String get passwordTooWeak;
+
+  /// No description provided for @passwordMustContainUppercase.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must contain an uppercase letter'**
+  String get passwordMustContainUppercase;
+
+  /// No description provided for @passwordMustContainLowercase.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must contain a lowercase letter'**
+  String get passwordMustContainLowercase;
+
+  /// No description provided for @passwordMustContainNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must contain a number'**
+  String get passwordMustContainNumber;
+
+  /// No description provided for @passwordMustContainSpecialChar.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must contain a special character'**
+  String get passwordMustContainSpecialChar;
+
+  /// No description provided for @nameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required'**
+  String get nameRequired;
+
+  /// No description provided for @nameTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is too short (minimum 2 characters)'**
+  String get nameTooShort;
+
+  /// No description provided for @nameTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is too long (maximum 50 characters)'**
+  String get nameTooLong;
+
+  /// No description provided for @nameInvalidCharacters.
+  ///
+  /// In en, this message translates to:
+  /// **'Name contains invalid characters'**
+  String get nameInvalidCharacters;
+
+  /// No description provided for @phoneRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number is required'**
+  String get phoneRequired;
+
+  /// No description provided for @phoneInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number is invalid'**
+  String get phoneInvalid;
+
+  /// No description provided for @phoneTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number is too short'**
+  String get phoneTooShort;
+
+  /// No description provided for @phoneTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number is too long'**
+  String get phoneTooLong;
+
+  /// No description provided for @phoneAlreadyExists.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number already exists'**
+  String get phoneAlreadyExists;
+
+  /// No description provided for @locationRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Location is required'**
+  String get locationRequired;
+
+  /// No description provided for @locationTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Location is too long (maximum 100 characters)'**
+  String get locationTooLong;
+
+  /// No description provided for @titleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Title is required'**
+  String get titleRequired;
+
+  /// No description provided for @titleTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Title is too long (maximum 100 characters)'**
+  String get titleTooLong;
+
+  /// No description provided for @descriptionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Description is required'**
+  String get descriptionRequired;
+
+  /// No description provided for @descriptionTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Description is too long (maximum 1000 characters)'**
+  String get descriptionTooLong;
+
+  /// No description provided for @categoryRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Category is required'**
+  String get categoryRequired;
+
+  /// No description provided for @categoryInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid category'**
+  String get categoryInvalid;
+
+  /// No description provided for @conditionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Condition is required'**
+  String get conditionRequired;
+
+  /// No description provided for @conditionInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid condition'**
+  String get conditionInvalid;
+
+  /// No description provided for @quantityRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity is required'**
+  String get quantityRequired;
+
+  /// No description provided for @quantityInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid quantity'**
+  String get quantityInvalid;
+
+  /// No description provided for @quantityTooSmall.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity is too small (minimum 1)'**
+  String get quantityTooSmall;
+
+  /// No description provided for @quantityTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity is too large (maximum 1000)'**
+  String get quantityTooLarge;
+
+  /// No description provided for @imageRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Image is required'**
+  String get imageRequired;
+
+  /// No description provided for @imageTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Image size is too large (maximum 5MB)'**
+  String get imageTooLarge;
+
+  /// No description provided for @imageFormatInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid image format'**
+  String get imageFormatInvalid;
+
+  /// No description provided for @tooManyImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many images (maximum 5)'**
+  String get tooManyImages;
+
+  /// No description provided for @messageRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Message is required'**
+  String get messageRequired;
+
+  /// No description provided for @messageTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Message is too short (minimum 5 characters)'**
+  String get messageTooShort;
+
+  /// No description provided for @messageTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Message is too long (maximum 500 characters)'**
+  String get messageTooLong;
+
+  /// No description provided for @dateRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Date is required'**
+  String get dateRequired;
+
+  /// No description provided for @dateInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid date'**
+  String get dateInvalid;
+
+  /// No description provided for @dateTooEarly.
+  ///
+  /// In en, this message translates to:
+  /// **'Date is too early'**
+  String get dateTooEarly;
+
+  /// No description provided for @dateTooLate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date is too late'**
+  String get dateTooLate;
+
+  /// No description provided for @timeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Time is required'**
+  String get timeRequired;
+
+  /// No description provided for @timeInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid time'**
+  String get timeInvalid;
+
+  /// No description provided for @connectionError.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection error'**
+  String get connectionError;
+
+  /// No description provided for @serverError.
+  ///
+  /// In en, this message translates to:
+  /// **'Server error'**
+  String get serverError;
+
+  /// No description provided for @timeoutError.
+  ///
+  /// In en, this message translates to:
+  /// **'Timeout error'**
+  String get timeoutError;
+
+  /// No description provided for @unknownError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown error'**
+  String get unknownError;
+
+  /// No description provided for @operationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Operation failed'**
+  String get operationFailed;
+
+  /// No description provided for @operationCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Operation cancelled'**
+  String get operationCancelled;
+
+  /// No description provided for @accessDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Access Denied'**
+  String get accessDenied;
+
+  /// No description provided for @unauthorized.
+  ///
+  /// In en, this message translates to:
+  /// **'Unauthorized'**
+  String get unauthorized;
+
+  /// No description provided for @forbidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Forbidden'**
+  String get forbidden;
+
+  /// No description provided for @notFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Not found'**
+  String get notFound;
+
+  /// No description provided for @alreadyExists.
+  ///
+  /// In en, this message translates to:
+  /// **'Already exists'**
+  String get alreadyExists;
+
+  /// No description provided for @conflictError.
+  ///
+  /// In en, this message translates to:
+  /// **'Conflict error'**
+  String get conflictError;
+
+  /// No description provided for @validationError.
+  ///
+  /// In en, this message translates to:
+  /// **'Validation error'**
+  String get validationError;
+
+  /// No description provided for @processingError.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing error'**
+  String get processingError;
+
+  /// No description provided for @uploadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload error'**
+  String get uploadError;
+
+  /// No description provided for @downloadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Download error'**
+  String get downloadError;
+
+  /// No description provided for @saveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Save error'**
+  String get saveError;
+
+  /// No description provided for @loadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Load error'**
+  String get loadError;
+
+  /// No description provided for @deleteError.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete error'**
+  String get deleteError;
+
+  /// No description provided for @updateError.
+  ///
+  /// In en, this message translates to:
+  /// **'Update error'**
+  String get updateError;
+
+  /// No description provided for @createError.
+  ///
+  /// In en, this message translates to:
+  /// **'Create error'**
+  String get createError;
+
+  /// No description provided for @loginError.
+  ///
+  /// In en, this message translates to:
+  /// **'Login error'**
+  String get loginError;
+
+  /// No description provided for @logoutError.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout error'**
+  String get logoutError;
+
+  /// No description provided for @registrationError.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration error'**
+  String get registrationError;
+
+  /// No description provided for @authenticationError.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication error'**
+  String get authenticationError;
+
+  /// No description provided for @sessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Session expired'**
+  String get sessionExpired;
+
+  /// No description provided for @accountLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Account locked'**
+  String get accountLocked;
+
+  /// No description provided for @accountDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Account disabled'**
+  String get accountDisabled;
+
+  /// No description provided for @accountNotVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Account not verified'**
+  String get accountNotVerified;
+
+  /// No description provided for @emailNotVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Email not verified'**
+  String get emailNotVerified;
+
+  /// No description provided for @phoneNotVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone not verified'**
+  String get phoneNotVerified;
+
+  /// No description provided for @verificationRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification required'**
+  String get verificationRequired;
+
+  /// No description provided for @verificationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification failed'**
+  String get verificationFailed;
+
+  /// No description provided for @verificationExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification expired'**
+  String get verificationExpired;
+
+  /// No description provided for @codeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Code required'**
+  String get codeRequired;
+
+  /// No description provided for @codeInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Code invalid'**
+  String get codeInvalid;
+
+  /// No description provided for @codeExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Code expired'**
+  String get codeExpired;
+
+  /// No description provided for @tooManyAttempts.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts'**
+  String get tooManyAttempts;
+
+  /// No description provided for @rateLimitExceeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate limit exceeded'**
+  String get rateLimitExceeded;
+
+  /// No description provided for @quotaExceeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Quota exceeded'**
+  String get quotaExceeded;
+
+  /// No description provided for @storageQuotaExceeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Storage quota exceeded'**
+  String get storageQuotaExceeded;
+
+  /// No description provided for @bandwidthExceeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Bandwidth exceeded'**
+  String get bandwidthExceeded;
+
+  /// No description provided for @serviceUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Service unavailable'**
+  String get serviceUnavailable;
+
+  /// No description provided for @maintenanceMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintenance mode'**
+  String get maintenanceMode;
+
+  /// No description provided for @featureDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Feature disabled'**
+  String get featureDisabled;
+
+  /// No description provided for @upgradeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade required'**
+  String get upgradeRequired;
+
+  /// No description provided for @subscriptionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription required'**
+  String get subscriptionRequired;
+
+  /// No description provided for @subscriptionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription expired'**
+  String get subscriptionExpired;
+
+  /// No description provided for @paymentRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment required'**
+  String get paymentRequired;
+
+  /// No description provided for @paymentFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment failed'**
+  String get paymentFailed;
+
+  /// No description provided for @insufficientFunds.
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient funds'**
+  String get insufficientFunds;
+
+  /// No description provided for @cardDeclined.
+  ///
+  /// In en, this message translates to:
+  /// **'Card declined'**
+  String get cardDeclined;
+
+  /// No description provided for @cardExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Card expired'**
+  String get cardExpired;
+
+  /// No description provided for @invalidCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid card'**
+  String get invalidCard;
+
+  /// No description provided for @operationSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Operation successful'**
+  String get operationSuccessful;
+
+  /// No description provided for @saveSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Save successful'**
+  String get saveSuccessful;
+
+  /// No description provided for @updateSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Update successful'**
+  String get updateSuccessful;
+
+  /// No description provided for @deleteSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete successful'**
+  String get deleteSuccessful;
+
+  /// No description provided for @createSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Create successful'**
+  String get createSuccessful;
+
+  /// No description provided for @uploadSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload successful'**
+  String get uploadSuccessful;
+
+  /// No description provided for @downloadSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Download successful'**
+  String get downloadSuccessful;
+
+  /// No description provided for @loginSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Login successful'**
+  String get loginSuccessful;
+
+  /// No description provided for @logoutSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout successful'**
+  String get logoutSuccessful;
+
+  /// No description provided for @registrationSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration successful'**
+  String get registrationSuccessful;
+
+  /// No description provided for @verificationSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification successful'**
+  String get verificationSuccessful;
+
+  /// No description provided for @passwordChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Password changed'**
+  String get passwordChanged;
+
+  /// No description provided for @profileUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated'**
+  String get profileUpdated;
+
+  /// No description provided for @settingsUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings updated'**
+  String get settingsUpdated;
+
+  /// No description provided for @preferencesUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences updated'**
+  String get preferencesUpdated;
+
+  /// No description provided for @notificationSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification sent'**
+  String get notificationSent;
+
+  /// No description provided for @messageSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Message sent successfully'**
+  String get messageSent;
+
+  /// No description provided for @failedToSendMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send message. Please try again.'**
+  String get failedToSendMessage;
+
+  /// No description provided for @you.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get you;
+
+  /// No description provided for @requestSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Request sent'**
+  String get requestSent;
+
+  /// No description provided for @invitationSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation sent'**
+  String get invitationSent;
+
+  /// No description provided for @confirmationSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmation sent'**
+  String get confirmationSent;
+
+  /// No description provided for @reminderSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder sent'**
+  String get reminderSent;
+
+  /// No description provided for @reportGenerated.
+  ///
+  /// In en, this message translates to:
+  /// **'Report generated'**
+  String get reportGenerated;
+
+  /// No description provided for @backupCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup created'**
+  String get backupCreated;
+
+  /// No description provided for @dataExported.
+  ///
+  /// In en, this message translates to:
+  /// **'Data exported'**
+  String get dataExported;
+
+  /// No description provided for @dataImported.
+  ///
+  /// In en, this message translates to:
+  /// **'Data imported'**
+  String get dataImported;
+
+  /// No description provided for @syncCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync completed'**
+  String get syncCompleted;
+
+  /// No description provided for @taskCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Task completed'**
+  String get taskCompleted;
+
+  /// No description provided for @processCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Process completed'**
+  String get processCompleted;
+
+  /// No description provided for @installationCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Installation completed'**
+  String get installationCompleted;
+
+  /// No description provided for @configurationCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Configuration completed'**
+  String get configurationCompleted;
+
+  /// No description provided for @setupCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Setup completed'**
+  String get setupCompleted;
+
+  /// No description provided for @migrationCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Migration completed'**
+  String get migrationCompleted;
+
+  /// No description provided for @optimizationCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Optimization completed'**
+  String get optimizationCompleted;
+
+  /// No description provided for @analysisCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis completed'**
+  String get analysisCompleted;
+
+  /// No description provided for @scanCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan completed'**
+  String get scanCompleted;
+
+  /// No description provided for @testCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Test completed'**
+  String get testCompleted;
+
+  /// No description provided for @validationCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Validation completed'**
+  String get validationCompleted;
+
+  /// No description provided for @processingCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing completed'**
+  String get processingCompleted;
+
+  /// No description provided for @calculationCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculation completed'**
+  String get calculationCompleted;
+
+  /// No description provided for @generationCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Generation completed'**
+  String get generationCompleted;
+
+  /// No description provided for @conversionCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversion completed'**
+  String get conversionCompleted;
+
+  /// No description provided for @compressionCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Compression completed'**
+  String get compressionCompleted;
+
+  /// No description provided for @decompressionCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Decompression completed'**
+  String get decompressionCompleted;
+
+  /// No description provided for @encryptionCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Encryption completed'**
+  String get encryptionCompleted;
+
+  /// No description provided for @decryptionCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Decryption completed'**
+  String get decryptionCompleted;
+
+  /// No description provided for @filterPresetSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter preset saved'**
+  String get filterPresetSaved;
+
+  /// No description provided for @basicFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic filters'**
+  String get basicFilters;
+
+  /// No description provided for @presets.
+  ///
+  /// In en, this message translates to:
+  /// **'Presets'**
+  String get presets;
+
+  /// No description provided for @advanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced'**
+  String get advanced;
+
+  /// No description provided for @saveCurrentFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Save current filters'**
+  String get saveCurrentFilters;
+
+  /// No description provided for @enterPresetName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter preset name'**
+  String get enterPresetName;
+
+  /// No description provided for @dateCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Date created'**
+  String get dateCreated;
+
+  /// No description provided for @lastUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Last updated'**
+  String get lastUpdated;
+
+  /// No description provided for @descending.
+  ///
+  /// In en, this message translates to:
+  /// **'Descending'**
+  String get descending;
+
+  /// No description provided for @ascending.
+  ///
+  /// In en, this message translates to:
+  /// **'Ascending'**
+  String get ascending;
+
+  /// No description provided for @verifiedOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified only'**
+  String get verifiedOnly;
+
+  /// No description provided for @showOnlyVerifiedItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Show only verified items'**
+  String get showOnlyVerifiedItems;
+
+  /// No description provided for @urgentOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Urgent only'**
+  String get urgentOnly;
+
+  /// No description provided for @showOnlyUrgentRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Show only urgent requests'**
+  String get showOnlyUrgentRequests;
+
+  /// No description provided for @newYork.
+  ///
+  /// In en, this message translates to:
+  /// **'New York'**
+  String get newYork;
+
+  /// No description provided for @losAngeles.
+  ///
+  /// In en, this message translates to:
+  /// **'Los Angeles'**
+  String get losAngeles;
+
+  /// No description provided for @chicago.
+  ///
+  /// In en, this message translates to:
+  /// **'Chicago'**
+  String get chicago;
+
+  /// No description provided for @houston.
+  ///
+  /// In en, this message translates to:
+  /// **'Houston'**
+  String get houston;
+
+  /// No description provided for @phoenix.
+  ///
+  /// In en, this message translates to:
+  /// **'Phoenix'**
+  String get phoenix;
+
+  /// No description provided for @philadelphia.
+  ///
+  /// In en, this message translates to:
+  /// **'Philadelphia'**
+  String get philadelphia;
+
+  /// No description provided for @myDonationsComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'My Donations - Coming Soon'**
+  String get myDonationsComingSoon;
+
+  /// No description provided for @browseDonationsComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse Donations - Coming Soon'**
+  String get browseDonationsComingSoon;
+
+  /// No description provided for @myRequestsComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'My Requests - Coming Soon'**
+  String get myRequestsComingSoon;
+
+  /// No description provided for @browseRequestsComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse Requests - Coming Soon'**
+  String get browseRequestsComingSoon;
+
+  /// No description provided for @createDonationComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Donation - Coming Soon'**
+  String get createDonationComingSoon;
+
+  /// No description provided for @createRequestComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Request - Coming Soon'**
+  String get createRequestComingSoon;
+
+  /// No description provided for @profileComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile - Coming Soon'**
+  String get profileComingSoon;
+
+  /// No description provided for @messagesComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages - Coming Soon'**
+  String get messagesComingSoon;
+
+  /// No description provided for @notificationsComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications - Coming Soon'**
+  String get notificationsComingSoon;
+
+  /// No description provided for @analyticsComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Analytics - Coming Soon'**
+  String get analyticsComingSoon;
+
+  /// No description provided for @userManagementComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'User Management - Coming Soon'**
+  String get userManagementComingSoon;
+
+  /// No description provided for @reportsComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports - Coming Soon'**
+  String get reportsComingSoon;
+
+  /// No description provided for @pageNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Page Not Found'**
+  String get pageNotFound;
+
+  /// No description provided for @noRouteDefinedForPath.
+  ///
+  /// In en, this message translates to:
+  /// **'No route defined for this path'**
+  String get noRouteDefinedForPath;
+
+  /// No description provided for @errorLoadingDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading dashboard: {error}'**
+  String errorLoadingDashboard(String error);
+
+  /// No description provided for @noPermissionAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to access this page.'**
+  String get noPermissionAccess;
+
+  /// No description provided for @errorLoadingRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading requests: {error}'**
+  String errorLoadingRequests(String error);
+
+  /// No description provided for @errorUpdatingRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Error updating request: {error}'**
+  String errorUpdatingRequest(String error);
+
+  /// No description provided for @errorLoadingUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading users: {error}'**
+  String errorLoadingUsers(String error);
+
+  /// No description provided for @errorDeletingUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Error deleting user: {error}'**
+  String errorDeletingUser(String error);
+
+  /// No description provided for @requestUpdatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Request {status} successfully'**
+  String requestUpdatedSuccessfully(String status);
+
+  /// No description provided for @userDeletedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'User deleted successfully'**
+  String get userDeletedSuccessfully;
+
+  /// Success message when a user is blocked
+  ///
+  /// In en, this message translates to:
+  /// **'{userName} has been blocked successfully'**
+  String userBlockedSuccess(String userName);
+
+  /// No description provided for @adminDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Dashboard'**
+  String get adminDashboard;
+
+  /// No description provided for @requestNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Request #{id}'**
+  String requestNumber(String id);
+
+  /// No description provided for @noInternetConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection'**
+  String get noInternetConnection;
+
+  /// No description provided for @switchToEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to English'**
+  String get switchToEnglish;
+
+  /// No description provided for @switchToArabic.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to Arabic'**
+  String get switchToArabic;
+
+  /// No description provided for @newConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'New Conversation'**
+  String get newConversation;
+
+  /// No description provided for @searchUserToChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for a user to start chatting'**
+  String get searchUserToChat;
+
+  /// No description provided for @startTypingToSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Start typing to search for users'**
+  String get startTypingToSearch;
+
+  /// No description provided for @conversationDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation Details'**
+  String get conversationDetails;
+
+  /// No description provided for @firstMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'First message'**
+  String get firstMessage;
+
+  /// No description provided for @archiveConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive Conversation'**
+  String get archiveConversation;
+
+  /// No description provided for @messageCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 message} other{{count} messages}}'**
+  String messageCount(int count);
+
+  /// No description provided for @searchByNameEmailLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name, email, or location...'**
+  String get searchByNameEmailLocation;
+
+  /// No description provided for @failedToSearchUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to search users'**
+  String get failedToSearchUsers;
+
+  /// No description provided for @noItemsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No items found'**
+  String get noItemsFound;
+
+  /// No description provided for @fiveMiles.
+  ///
+  /// In en, this message translates to:
+  /// **'5 miles'**
+  String get fiveMiles;
+
+  /// No description provided for @tenMiles.
+  ///
+  /// In en, this message translates to:
+  /// **'10 miles'**
+  String get tenMiles;
+
+  /// No description provided for @twentyFiveMiles.
+  ///
+  /// In en, this message translates to:
+  /// **'25 miles'**
+  String get twentyFiveMiles;
+
+  /// No description provided for @fiftyMiles.
+  ///
+  /// In en, this message translates to:
+  /// **'50 miles'**
+  String get fiftyMiles;
+
+  /// No description provided for @anyDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Any distance'**
+  String get anyDistance;
+
+  /// No description provided for @newItem.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get newItem;
+
+  /// No description provided for @likeNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Like New'**
+  String get likeNew;
+
+  /// No description provided for @good.
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get good;
+
+  /// No description provided for @fair.
+  ///
+  /// In en, this message translates to:
+  /// **'Fair'**
+  String get fair;
+
+  /// No description provided for @minAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Min Amount'**
+  String get minAmount;
+
+  /// No description provided for @maxAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Max Amount'**
+  String get maxAmount;
+
+  /// No description provided for @distance.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get distance;
+
+  /// No description provided for @itemCondition.
+  ///
+  /// In en, this message translates to:
+  /// **'Item Condition'**
+  String get itemCondition;
+
+  /// No description provided for @dateRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Date Range'**
+  String get dateRange;
+
+  /// No description provided for @amountRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount Range'**
+  String get amountRange;
+
+  /// No description provided for @sortOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort Options'**
+  String get sortOptions;
+
+  /// No description provided for @savedPresets.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved Presets'**
+  String get savedPresets;
+
+  /// No description provided for @noSavedPresets.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved presets'**
+  String get noSavedPresets;
+
+  /// No description provided for @applyPreset.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply preset'**
+  String get applyPreset;
+
+  /// No description provided for @deletePreset.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete preset'**
+  String get deletePreset;
+
+  /// No description provided for @fromDate.
+  ///
+  /// In en, this message translates to:
+  /// **'From: {date}'**
+  String fromDate(String date);
+
+  /// No description provided for @toDate.
+  ///
+  /// In en, this message translates to:
+  /// **'To: {date}'**
+  String toDate(String date);
+
+  /// No description provided for @startDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Date'**
+  String get startDate;
+
+  /// No description provided for @endDate.
+  ///
+  /// In en, this message translates to:
+  /// **'End Date'**
+  String get endDate;
+
+  /// No description provided for @advancedFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced Filters'**
+  String get advancedFilters;
+
+  /// No description provided for @activeFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} active'**
+  String activeFilters(int count);
+
+  /// No description provided for @reasonOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason (Optional)'**
+  String get reasonOptional;
+
+  /// No description provided for @whyBlockingUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Why are you blocking this user?'**
+  String get whyBlockingUser;
+
+  /// No description provided for @blockingUserWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocking this user will prevent them from contacting you and viewing your donations.'**
+  String get blockingUserWarning;
+
+  /// No description provided for @failedToBlockUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to block user'**
+  String get failedToBlockUser;
+
+  /// No description provided for @deleteItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {itemName}?'**
+  String deleteItem(String itemName);
+
+  /// No description provided for @actionCannotBeUndone.
+  ///
+  /// In en, this message translates to:
+  /// **'This action cannot be undone.'**
+  String get actionCannotBeUndone;
+
+  /// No description provided for @filterOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter Options'**
+  String get filterOptions;
+
+  /// No description provided for @reset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get reset;
+
+  /// No description provided for @apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get apply;
+
+  /// No description provided for @confirmAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Action'**
+  String get confirmAction;
+
+  /// No description provided for @areYouSureProceed.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to proceed?'**
+  String get areYouSureProceed;
+
+  /// No description provided for @selectCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Category'**
+  String get selectCategory;
+
+  /// No description provided for @startMakingDifferenceFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Start making a difference by creating your first donation'**
+  String get startMakingDifferenceFirst;
+
+  /// No description provided for @noRequestsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No requests yet'**
+  String get noRequestsYet;
+
+  /// No description provided for @browseAvailableDonations.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse available donations and request items you need'**
+  String get browseAvailableDonations;
+
+  /// No description provided for @noResultsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No results found'**
+  String get noResultsFound;
+
+  /// No description provided for @tryAdjustingFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Try adjusting your filters or search terms'**
+  String get tryAdjustingFilters;
+
+  /// No description provided for @noUsersMatchCriteria.
+  ///
+  /// In en, this message translates to:
+  /// **'No users match your search criteria'**
+  String get noUsersMatchCriteria;
+
+  /// No description provided for @noDonationsMatchCriteria.
+  ///
+  /// In en, this message translates to:
+  /// **'No donations match your search criteria'**
+  String get noDonationsMatchCriteria;
+
+  /// No description provided for @noPermissionPage.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to access this page.'**
+  String get noPermissionPage;
+
+  /// No description provided for @filterByStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by status: '**
+  String get filterByStatus;
+
+  /// No description provided for @allStatuses.
+  ///
+  /// In en, this message translates to:
+  /// **'All Statuses'**
+  String get allStatuses;
+
+  /// No description provided for @fromUser.
+  ///
+  /// In en, this message translates to:
+  /// **'From: {name}'**
+  String fromUser(String name);
+
+  /// No description provided for @toUser.
+  ///
+  /// In en, this message translates to:
+  /// **'To: {name}'**
+  String toUser(String name);
+
+  /// No description provided for @deleteUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete User'**
+  String get deleteUser;
+
+  /// No description provided for @confirmDeleteUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete {name}?'**
+  String confirmDeleteUser(String name);
+
+  /// No description provided for @filterByRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by role: '**
+  String get filterByRole;
+
+  /// No description provided for @allRoles.
+  ///
+  /// In en, this message translates to:
+  /// **'All Roles'**
+  String get allRoles;
+
+  /// No description provided for @admins.
+  ///
+  /// In en, this message translates to:
+  /// **'Admins'**
+  String get admins;
+
+  /// No description provided for @conversationUnarchived.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation unarchived'**
+  String get conversationUnarchived;
+
+  /// No description provided for @failedToChangeLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to change language'**
+  String get failedToChangeLanguage;
+
+  /// No description provided for @changingLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Changing language...'**
+  String get changingLanguage;
+
+  /// No description provided for @conversationInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation Info'**
+  String get conversationInfo;
+
+  /// No description provided for @noFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'No filters'**
+  String get noFilters;
+
+  /// No description provided for @categoriesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} categories'**
+  String categoriesCount(int count);
+
+  /// No description provided for @statusesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} statuses'**
+  String statusesCount(int count);
+
+  /// No description provided for @approvedByAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved by Admin'**
+  String get approvedByAdmin;
+
+  /// No description provided for @rejectedByAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected by Admin'**
+  String get rejectedByAdmin;
+
+  /// No description provided for @allDonationsReviewed.
+  ///
+  /// In en, this message translates to:
+  /// **'All donations have been reviewed'**
+  String get allDonationsReviewed;
+
+  /// No description provided for @messageSentSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Message sent successfully'**
+  String get messageSentSuccessfully;
+
+  /// No description provided for @requestsFilled.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests Filled'**
+  String get requestsFilled;
+
+  /// No description provided for @blockUserTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Block User'**
+  String get blockUserTitle;
+
+  /// No description provided for @blockUserWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocking this user will prevent them from contacting you and viewing your donations.'**
+  String get blockUserWarning;
+
+  /// No description provided for @blockUserReasonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason (Optional)'**
+  String get blockUserReasonLabel;
+
+  /// No description provided for @blockUserReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Why are you blocking this user?'**
+  String get blockUserReasonHint;
+
+  /// No description provided for @blockUserButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Block User'**
+  String get blockUserButton;
+
+  /// Shows pending operations count
+  ///
+  /// In en, this message translates to:
+  /// **'{count} pending operation{plural} will sync when online'**
+  String pendingOperationsText(int count, String plural);
+
+  /// No description provided for @languageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Language / اللغة'**
+  String get languageLabel;
+
+  /// Error message when user search fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to search users: {error}'**
+  String failedToSearchUsersError(String error);
+
+  /// No description provided for @unblock.
+  ///
+  /// In en, this message translates to:
+  /// **'Unblock'**
+  String get unblock;
+
+  /// No description provided for @blockedUsersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked Users'**
+  String get blockedUsersTitle;
+
+  /// No description provided for @noBlockedUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'No blocked users'**
+  String get noBlockedUsers;
+
+  /// No description provided for @noBlockedUsersDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Users you block will appear here'**
+  String get noBlockedUsersDescription;
+
+  /// No description provided for @donationsWithFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Donations with Filters'**
+  String get donationsWithFilters;
+
+  /// No description provided for @noFiltersApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'No filters applied. Showing all donations.'**
+  String get noFiltersApplied;
+
+  /// No description provided for @yourImpact.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Impact'**
+  String get yourImpact;
+
+  /// No description provided for @donationsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} donations'**
+  String donationsCount(int count);
+
+  /// No description provided for @fullActivityLogComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Full activity log coming soon'**
+  String get fullActivityLogComingSoon;
+
+  /// No description provided for @goalTracking.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal Tracking'**
+  String get goalTracking;
+
+  /// No description provided for @monthlyGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Goal'**
+  String get monthlyGoal;
+
+  /// No description provided for @archiveConversationConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive conversation with {name}?'**
+  String archiveConversationConfirm(String name);
+
+  /// No description provided for @archive.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive'**
+  String get archive;
+
+  /// No description provided for @conversationArchived.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation archived'**
+  String get conversationArchived;
+
+  /// No description provided for @resetNotificationSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Notification Settings'**
+  String get resetNotificationSettings;
+
+  /// No description provided for @resetNotificationConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'This will reset all notification settings to their default values. Are you sure?'**
+  String get resetNotificationConfirm;
+
+  /// No description provided for @notificationSettingsReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification settings reset to defaults'**
+  String get notificationSettingsReset;
+
+  /// No description provided for @pushNotificationsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive push notifications on your device'**
+  String get pushNotificationsDesc;
+
+  /// No description provided for @emailNotificationsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive notifications via email'**
+  String get emailNotificationsDesc;
+
+  /// No description provided for @messageNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Message Notifications'**
+  String get messageNotifications;
+
+  /// No description provided for @messageNotificationsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Get notified about new messages'**
+  String get messageNotificationsDesc;
+
+  /// No description provided for @donationUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Donation Updates'**
+  String get donationUpdates;
+
+  /// No description provided for @donationUpdatesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive updates about your donations'**
+  String get donationUpdatesDesc;
+
+  /// No description provided for @pleaseLoginAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Please log in again'**
+  String get pleaseLoginAgain;
+
+  /// No description provided for @darkMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark Mode'**
+  String get darkMode;
+
+  /// No description provided for @darkModeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle dark/light theme'**
+  String get darkModeDesc;
+
+  /// No description provided for @notificationsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage notification settings'**
+  String get notificationsDesc;
+
+  /// No description provided for @languageDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Change app language'**
+  String get languageDesc;
+
+  /// No description provided for @updateProfilePicture.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Profile Picture'**
+  String get updateProfilePicture;
+
+  /// No description provided for @upload.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload'**
+  String get upload;
+
+  /// No description provided for @uploadingAvatar.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading avatar...'**
+  String get uploadingAvatar;
+
+  /// No description provided for @avatarUploadedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Avatar uploaded successfully!'**
+  String get avatarUploadedSuccess;
+
+  /// No description provided for @deleteNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Notification'**
+  String get deleteNotification;
+
+  /// No description provided for @deleteNotificationConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this notification?'**
+  String get deleteNotificationConfirm;
+
+  /// No description provided for @syncCompletedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync completed successfully'**
+  String get syncCompletedSuccess;
+
+  /// No description provided for @syncFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync failed: {error}'**
+  String syncFailed(String error);
+
+  /// No description provided for @forceSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Force Sync'**
+  String get forceSync;
+
+  /// No description provided for @clearCache.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Cache'**
+  String get clearCache;
+
+  /// No description provided for @givingBridge.
+  ///
+  /// In en, this message translates to:
+  /// **'GivingBridge'**
+  String get givingBridge;
+
+  /// No description provided for @pleaseSelectReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a reason for reporting'**
+  String get pleaseSelectReason;
+
+  /// No description provided for @pleaseProvideDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Please provide a description'**
+  String get pleaseProvideDescription;
+
+  /// No description provided for @reportSubmittedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Report submitted successfully'**
+  String get reportSubmittedSuccess;
+
+  /// No description provided for @searchHistoryCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Search history cleared'**
+  String get searchHistoryCleared;
+
+  /// No description provided for @screenForRoute.
+  ///
+  /// In en, this message translates to:
+  /// **'Screen for route: {route}'**
+  String screenForRoute(String route);
 }
 
 class _AppLocalizationsDelegate

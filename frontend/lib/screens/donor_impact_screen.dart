@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class DonorImpactScreen extends StatefulWidget {
   const DonorImpactScreen({super.key});
@@ -34,7 +35,7 @@ class _DonorImpactScreenState extends State<DonorImpactScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Your Impact'),
+        title: Text(AppLocalizations.of(context)!.yourImpact),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -85,10 +86,10 @@ class _DonorImpactScreenState extends State<DonorImpactScreen> {
                   ),
                   const SizedBox(height: 8),
                   if (impactData['categories'].isEmpty)
-                    const Card(
+                    Card(
                       child: Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Text('No donations yet'),
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(AppLocalizations.of(context)!.noDonationsYet),
                       ),
                     )
                   else
@@ -96,7 +97,7 @@ class _DonorImpactScreenState extends State<DonorImpactScreen> {
                       (entry) => Card(
                         child: ListTile(
                           title: Text(entry.key),
-                          trailing: Text('${entry.value} donations'),
+                          trailing: Text(AppLocalizations.of(context)!.donationsCount(entry.value)),
                         ),
                       ),
                     ),

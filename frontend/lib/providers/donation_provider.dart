@@ -179,6 +179,7 @@ class DonationProvider extends ChangeNotifier {
     required String condition,
     required String location,
     String? imagePath,
+    required String imageUrl,
   }) async {
     _setLoading(true);
     _clearError();
@@ -219,6 +220,7 @@ class DonationProvider extends ChangeNotifier {
     String? location,
     String? imagePath,
     bool? isAvailable,
+    required String imageUrl,
   }) async {
     _setLoading(true);
     _clearError();

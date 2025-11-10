@@ -8,7 +8,6 @@ import '../widgets/rtl/directional_app_bar.dart';
 import '../widgets/rtl/directional_drawer.dart';
 import '../widgets/rtl/directional_bottom_navigation.dart';
 import '../widgets/language_selector.dart';
-import '../services/rtl_layout_service.dart';
 import '../l10n/app_localizations.dart';
 import 'login_screen.dart';
 import 'donor_dashboard_enhanced.dart';
@@ -64,9 +63,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildMobileLayout(user, AppLocalizations l10n, LocaleProvider localeProvider) {
+  Widget _buildMobileLayout(
+      user, AppLocalizations l10n, LocaleProvider localeProvider) {
     final navItems = _getNavigationItems(user, l10n);
-    
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: DirectionalAppBar(
@@ -89,11 +89,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
         children: [
           _getContentForRole(user),
           // Add other screens based on navigation items
-          ...navItems.skip(1).map((item) => _getScreenForRoute(item.route ?? '/')),
+          ...navItems
+              .skip(1)
+              .map((item) => _getScreenForRoute(item.route ?? '/')),
         ],
       ),
       bottomNavigationBar: _buildRTLBottomNavigation(navItems, localeProvider),
-      drawer: ResponsiveUtils.isMobile(context) 
+      drawer: ResponsiveUtils.isMobile(context)
           ? DirectionalDrawer(
               child: _buildRTLDrawerContent(user, l10n, localeProvider),
             )
@@ -230,11 +232,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
     // Return placeholder widgets for now
     // In a real app, you'd return the actual screens
     return Center(
-      child: Text('Screen for route: $route'),
+      child: Text(AppLocalizations.of(context)!.screenForRoute(route)),
     );
   }
 
-  Widget _buildDesktopLayout(user, AppLocalizations l10n, LocaleProvider localeProvider) {
+  Widget _buildDesktopLayout(
+      user, AppLocalizations l10n, LocaleProvider localeProvider) {
     return Scaffold(
       appBar: DirectionalAppBar(
         title: Text(l10n.appTitle),
@@ -258,13 +261,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildRTLBottomNavigation(List<MobileDrawerItem> navItems, LocaleProvider localeProvider) {
-    final bottomNavItems = navItems.take(4).map((item) => 
-      BottomNavigationBarItem(
-        icon: Icon(item.icon),
-        label: item.title,
-      )
-    ).toList();
+  Widget _buildRTLBottomNavigation(
+      List<MobileDrawerItem> navItems, LocaleProvider localeProvider) {
+    final bottomNavItems = navItems
+        .take(4)
+        .map((item) => BottomNavigationBarItem(
+              icon: Icon(item.icon),
+              label: item.title,
+            ))
+        .toList();
 
     return DirectionalBottomNavigationBar(
       items: bottomNavItems,
@@ -280,19 +285,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildRTLDrawerContent(user, AppLocalizations l10n, LocaleProvider localeProvider) {
+  Widget _buildRTLDrawerContent(
+      user, AppLocalizations l10n, LocaleProvider localeProvider) {
     final drawerItems = _getDrawerItems(user, l10n);
-    
+
     return Column(
       children: [
         DirectionalDrawerHeader(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Theme.of(context).primaryColor, Theme.of(context).primaryColor.withOpacity(0.8)],
+              colors: [
+                Theme.of(context).primaryColor,
+                Theme.of(context).primaryColor.withOpacity(0.8)
+              ],
             ),
           ),
           child: Column(
-            crossAxisAlignment: localeProvider.isRTL ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            crossAxisAlignment: localeProvider.isRTL
+                ? CrossAxisAlignment.end
+                : CrossAxisAlignment.start,
             children: [
               CircleAvatar(
                 radius: 30,
@@ -325,14 +336,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
         Expanded(
           child: ListView(
             padding: EdgeInsets.zero,
-            children: drawerItems.map((item) => 
-              DirectionalDrawerItem(
-                leading: Icon(item.icon),
-                title: Text(item.title),
-                subtitle: item.subtitle != null ? Text(item.subtitle!) : null,
-                onTap: item.onTap,
-              )
-            ).toList(),
+            children: drawerItems
+                .map((item) => DirectionalDrawerItem(
+                      leading: Icon(item.icon),
+                      title: Text(item.title),
+                      subtitle:
+                          item.subtitle != null ? Text(item.subtitle!) : null,
+                      onTap: item.onTap,
+                    ))
+                .toList(),
           ),
         ),
         const Divider(),

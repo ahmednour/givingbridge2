@@ -657,10 +657,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Notification settings coming soon!';
 
   @override
-  String get languageSettingsComingSoon => 'Language settings coming soon!';
+  String get languageSettingsComingSoon => 'Language settings coming soon';
 
   @override
-  String get helpSupportComingSoon => 'Help & Support coming soon!';
+  String get helpSupportComingSoon => 'Help & Support - Coming Soon';
 
   @override
   String get selectLanguage => 'Select Language / اختر اللغة';
@@ -976,6 +976,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newDonationAvailable => 'New donation available';
 
   @override
+  String get clear => 'Clear';
+
+  @override
   String get clearAll => 'Clear All';
 
   @override
@@ -1156,7 +1159,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recentActivity => 'Recent Activity';
 
   @override
-  String get viewDetails => 'View Details';
+  String get viewDetails => 'View details';
 
   @override
   String get noActivityYet => 'No activity yet';
@@ -1337,7 +1340,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recentUsers => 'Recent Users';
 
   @override
-  String get noUsersFound => 'No Users';
+  String get noUsersFound => 'No Users Found';
 
   @override
   String get noUsersFoundMessage => 'No users found in the system';
@@ -1461,7 +1464,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rejectionReason => 'Rejection Reason';
 
   @override
-  String get provideRejectionReason => 'Please provide a reason for rejection';
+  String get provideRejectionReason => 'Provide a reason for rejection';
 
   @override
   String get pleaseProvideRejectionReason =>
@@ -1558,4 +1561,1436 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get statusCancelled => 'Cancelled';
+
+  @override
+  String get deleteConfirm => 'Are you sure you want to delete this user?';
+
+  @override
+  String get receiveEmailUpdates => 'Receive email updates about your activity';
+
+  @override
+  String get notifyOnNewRequests => 'Notify when your donations are requested';
+
+  @override
+  String get medical => 'Medical';
+
+  @override
+  String get education => 'Education';
+
+  @override
+  String get housing => 'Housing';
+
+  @override
+  String get emergency => 'Emergency';
+
+  @override
+  String get healthcare => 'Healthcare';
+
+  @override
+  String get childcare => 'Childcare';
+
+  @override
+  String get eldercare => 'Eldercare';
+
+  @override
+  String get transportation => 'Transportation';
+
+  @override
+  String get utilities => 'Utilities';
+
+  @override
+  String get clothing => 'Clothing';
+
+  @override
+  String get schoolSupplies => 'School Supplies';
+
+  @override
+  String get medicalSupplies => 'Medical Supplies';
+
+  @override
+  String get babyItems => 'Baby Items';
+
+  @override
+  String get kitchenware => 'Kitchenware';
+
+  @override
+  String get bedding => 'Bedding';
+
+  @override
+  String get personalCare => 'Personal Care';
+
+  @override
+  String get cleaning => 'Cleaning';
+
+  @override
+  String get sports => 'Sports';
+
+  @override
+  String get hobbies => 'Hobbies';
+
+  @override
+  String get petSupplies => 'Pet Supplies';
+
+  @override
+  String get categoryMedical => 'Medical';
+
+  @override
+  String get categoryEducation => 'Education';
+
+  @override
+  String get categoryFood => 'Food';
+
+  @override
+  String get categoryHousing => 'Housing';
+
+  @override
+  String get categoryEmergency => 'Emergency';
+
+  @override
+  String get categoryClothing => 'Clothing';
+
+  @override
+  String get categoryBooks => 'Books';
+
+  @override
+  String get categoryElectronics => 'Electronics';
+
+  @override
+  String get categoryFurniture => 'Furniture';
+
+  @override
+  String get categoryToys => 'Toys';
+
+  @override
+  String get categoryOther => 'Other';
+
+  @override
+  String get medicalDescription =>
+      'Medical supplies, medications, and health equipment';
+
+  @override
+  String get educationDescription =>
+      'School books, educational supplies, and study materials';
+
+  @override
+  String get foodDescription => 'Food, groceries, and ready meals';
+
+  @override
+  String get housingDescription => 'Home furniture and housing supplies';
+
+  @override
+  String get emergencyDescription => 'Urgent aid and emergency supplies';
+
+  @override
+  String get clothingDescription => 'Clothes, shoes, and accessories';
+
+  @override
+  String get booksDescription => 'Books, magazines, and reading materials';
+
+  @override
+  String get electronicsDescription => 'Electronic devices and technology';
+
+  @override
+  String get furnitureDescription => 'Home and office furniture';
+
+  @override
+  String get toysDescription => 'Toys and entertainment for children';
+
+  @override
+  String get otherDescription => 'Other miscellaneous items';
+
+  @override
+  String get donationForMedical => 'Medical Donation';
+
+  @override
+  String get donationForEducation => 'Educational Donation';
+
+  @override
+  String get donationForFood => 'Food Donation';
+
+  @override
+  String get donationForHousing => 'Housing Donation';
+
+  @override
+  String get donationForEmergency => 'Emergency Donation';
+
+  @override
+  String get urgentNeed => 'Urgent Need';
+
+  @override
+  String get moderateNeed => 'Moderate Need';
+
+  @override
+  String get lowPriority => 'Low Priority';
+
+  @override
+  String get criticalCondition => 'Critical Condition';
+
+  @override
+  String get goodCondition => 'Good Condition';
+
+  @override
+  String get fairCondition => 'Fair Condition';
+
+  @override
+  String get excellentCondition => 'Excellent Condition';
+
+  @override
+  String get newCondition => 'New';
+
+  @override
+  String get usedCondition => 'Used';
+
+  @override
+  String get refurbishedCondition => 'Refurbished';
+
+  @override
+  String get donationTerminology => 'Donation Terminology';
+
+  @override
+  String get charitableGiving => 'Charitable Giving';
+
+  @override
+  String get socialResponsibility => 'Social Responsibility';
+
+  @override
+  String get communitySupport => 'Community Support';
+
+  @override
+  String get helpingOthers => 'Helping Others';
+
+  @override
+  String get makingDifference => 'Making a Difference';
+
+  @override
+  String get spreadingKindness => 'Spreading Kindness';
+
+  @override
+  String get givingBack => 'Giving Back';
+
+  @override
+  String get sharingIsCaring => 'Sharing is Caring';
+
+  @override
+  String get togetherWeCanHelp => 'Together We Can Help';
+
+  @override
+  String get everyDonationCounts => 'Every Donation Counts';
+
+  @override
+  String get yourKindnessMatters => 'Your Kindness Matters';
+
+  @override
+  String get buildingBetterCommunity => 'Building a Better Community';
+
+  @override
+  String get connectingHeartsAndHands => 'Connecting Hearts and Hands';
+
+  @override
+  String get bridgingTheGap => 'Bridging the Gap';
+
+  @override
+  String get unitedInGiving => 'United in Giving';
+
+  @override
+  String get compassionInAction => 'Compassion in Action';
+
+  @override
+  String get hopeForAll => 'Hope for All';
+
+  @override
+  String get lendingAHand => 'Lending a Hand';
+
+  @override
+  String get caringCommunity => 'Caring Community';
+
+  @override
+  String get generousHearts => 'Generous Hearts';
+
+  @override
+  String get kindnessRipples => 'Kindness Ripples';
+
+  @override
+  String get sharingHope => 'Sharing Hope';
+
+  @override
+  String get lightInDarkness => 'Light in Darkness';
+
+  @override
+  String get warmthInColdness => 'Warmth in Coldness';
+
+  @override
+  String get strengthInUnity => 'Strength in Unity';
+
+  @override
+  String get loveInAction => 'Love in Action';
+
+  @override
+  String get gracefulGiving => 'Graceful Giving';
+
+  @override
+  String get blessedToGive => 'Blessed to Give';
+
+  @override
+  String get gratefulToReceive => 'Grateful to Receive';
+
+  @override
+  String get humbleService => 'Humble Service';
+
+  @override
+  String get dignifiedHelp => 'Dignified Help';
+
+  @override
+  String get respectfulSupport => 'Respectful Support';
+
+  @override
+  String get culturalSensitivity => 'Cultural Sensitivity';
+
+  @override
+  String get islamicValues => 'Islamic Values';
+
+  @override
+  String get zakat => 'Zakat';
+
+  @override
+  String get sadaqah => 'Sadaqah';
+
+  @override
+  String get khair => 'Khair';
+
+  @override
+  String get barakah => 'Barakah';
+
+  @override
+  String get ajr => 'Ajr';
+
+  @override
+  String get hasanat => 'Hasanat';
+
+  @override
+  String get birr => 'Birr';
+
+  @override
+  String get ihsan => 'Ihsan';
+
+  @override
+  String get takaful => 'Takaful';
+
+  @override
+  String get silaturrahim => 'Silaturrahim';
+
+  @override
+  String get ukhuwah => 'Ukhuwah';
+
+  @override
+  String get taawun => 'Taawun';
+
+  @override
+  String get rahma => 'Rahma';
+
+  @override
+  String get hikmah => 'Hikmah';
+
+  @override
+  String get sabr => 'Sabr';
+
+  @override
+  String get shukr => 'Shukr';
+
+  @override
+  String get tawakkul => 'Tawakkul';
+
+  @override
+  String get ikhlas => 'Ikhlas';
+
+  @override
+  String get taqwa => 'Taqwa';
+
+  @override
+  String get iman => 'Iman';
+
+  @override
+  String get islam => 'Islam';
+
+  @override
+  String get fieldRequired => 'Field required';
+
+  @override
+  String get fieldTooShort => 'Field too short';
+
+  @override
+  String get fieldTooLong => 'Field too long';
+
+  @override
+  String get invalidFormat => 'Invalid format';
+
+  @override
+  String get invalidInput => 'Invalid input';
+
+  @override
+  String get pleaseEnterValidValue => 'Please enter valid value';
+
+  @override
+  String get pleaseSelectOption => 'Please select option';
+
+  @override
+  String get pleaseEnterText => 'Please enter text';
+
+  @override
+  String get pleaseEnterNumber => 'Please enter number';
+
+  @override
+  String get numberTooSmall => 'Number too small';
+
+  @override
+  String get numberTooLarge => 'Number too large';
+
+  @override
+  String get mustBePositiveNumber => 'Must be positive number';
+
+  @override
+  String get mustBeWholeNumber => 'Must be whole number';
+
+  @override
+  String get emailRequired => 'Email is required';
+
+  @override
+  String get emailInvalid => 'Email is invalid';
+
+  @override
+  String get emailTooLong => 'Email is too long';
+
+  @override
+  String get emailAlreadyExists => 'Email already exists';
+
+  @override
+  String get passwordRequired => 'Password is required';
+
+  @override
+  String get passwordTooWeak => 'Password is too weak';
+
+  @override
+  String get passwordMustContainUppercase =>
+      'Password must contain an uppercase letter';
+
+  @override
+  String get passwordMustContainLowercase =>
+      'Password must contain a lowercase letter';
+
+  @override
+  String get passwordMustContainNumber => 'Password must contain a number';
+
+  @override
+  String get passwordMustContainSpecialChar =>
+      'Password must contain a special character';
+
+  @override
+  String get nameRequired => 'Name is required';
+
+  @override
+  String get nameTooShort => 'Name is too short (minimum 2 characters)';
+
+  @override
+  String get nameTooLong => 'Name is too long (maximum 50 characters)';
+
+  @override
+  String get nameInvalidCharacters => 'Name contains invalid characters';
+
+  @override
+  String get phoneRequired => 'Phone number is required';
+
+  @override
+  String get phoneInvalid => 'Phone number is invalid';
+
+  @override
+  String get phoneTooShort => 'Phone number is too short';
+
+  @override
+  String get phoneTooLong => 'Phone number is too long';
+
+  @override
+  String get phoneAlreadyExists => 'Phone number already exists';
+
+  @override
+  String get locationRequired => 'Location is required';
+
+  @override
+  String get locationTooLong => 'Location is too long (maximum 100 characters)';
+
+  @override
+  String get titleRequired => 'Title is required';
+
+  @override
+  String get titleTooLong => 'Title is too long (maximum 100 characters)';
+
+  @override
+  String get descriptionRequired => 'Description is required';
+
+  @override
+  String get descriptionTooLong =>
+      'Description is too long (maximum 1000 characters)';
+
+  @override
+  String get categoryRequired => 'Category is required';
+
+  @override
+  String get categoryInvalid => 'Invalid category';
+
+  @override
+  String get conditionRequired => 'Condition is required';
+
+  @override
+  String get conditionInvalid => 'Invalid condition';
+
+  @override
+  String get quantityRequired => 'Quantity is required';
+
+  @override
+  String get quantityInvalid => 'Invalid quantity';
+
+  @override
+  String get quantityTooSmall => 'Quantity is too small (minimum 1)';
+
+  @override
+  String get quantityTooLarge => 'Quantity is too large (maximum 1000)';
+
+  @override
+  String get imageRequired => 'Image is required';
+
+  @override
+  String get imageTooLarge => 'Image size is too large (maximum 5MB)';
+
+  @override
+  String get imageFormatInvalid => 'Invalid image format';
+
+  @override
+  String get tooManyImages => 'Too many images (maximum 5)';
+
+  @override
+  String get messageRequired => 'Message is required';
+
+  @override
+  String get messageTooShort => 'Message is too short (minimum 5 characters)';
+
+  @override
+  String get messageTooLong => 'Message is too long (maximum 500 characters)';
+
+  @override
+  String get dateRequired => 'Date is required';
+
+  @override
+  String get dateInvalid => 'Invalid date';
+
+  @override
+  String get dateTooEarly => 'Date is too early';
+
+  @override
+  String get dateTooLate => 'Date is too late';
+
+  @override
+  String get timeRequired => 'Time is required';
+
+  @override
+  String get timeInvalid => 'Invalid time';
+
+  @override
+  String get connectionError => 'Connection error';
+
+  @override
+  String get serverError => 'Server error';
+
+  @override
+  String get timeoutError => 'Timeout error';
+
+  @override
+  String get unknownError => 'Unknown error';
+
+  @override
+  String get operationFailed => 'Operation failed';
+
+  @override
+  String get operationCancelled => 'Operation cancelled';
+
+  @override
+  String get accessDenied => 'Access Denied';
+
+  @override
+  String get unauthorized => 'Unauthorized';
+
+  @override
+  String get forbidden => 'Forbidden';
+
+  @override
+  String get notFound => 'Not found';
+
+  @override
+  String get alreadyExists => 'Already exists';
+
+  @override
+  String get conflictError => 'Conflict error';
+
+  @override
+  String get validationError => 'Validation error';
+
+  @override
+  String get processingError => 'Processing error';
+
+  @override
+  String get uploadError => 'Upload error';
+
+  @override
+  String get downloadError => 'Download error';
+
+  @override
+  String get saveError => 'Save error';
+
+  @override
+  String get loadError => 'Load error';
+
+  @override
+  String get deleteError => 'Delete error';
+
+  @override
+  String get updateError => 'Update error';
+
+  @override
+  String get createError => 'Create error';
+
+  @override
+  String get loginError => 'Login error';
+
+  @override
+  String get logoutError => 'Logout error';
+
+  @override
+  String get registrationError => 'Registration error';
+
+  @override
+  String get authenticationError => 'Authentication error';
+
+  @override
+  String get sessionExpired => 'Session expired';
+
+  @override
+  String get accountLocked => 'Account locked';
+
+  @override
+  String get accountDisabled => 'Account disabled';
+
+  @override
+  String get accountNotVerified => 'Account not verified';
+
+  @override
+  String get emailNotVerified => 'Email not verified';
+
+  @override
+  String get phoneNotVerified => 'Phone not verified';
+
+  @override
+  String get verificationRequired => 'Verification required';
+
+  @override
+  String get verificationFailed => 'Verification failed';
+
+  @override
+  String get verificationExpired => 'Verification expired';
+
+  @override
+  String get codeRequired => 'Code required';
+
+  @override
+  String get codeInvalid => 'Code invalid';
+
+  @override
+  String get codeExpired => 'Code expired';
+
+  @override
+  String get tooManyAttempts => 'Too many attempts';
+
+  @override
+  String get rateLimitExceeded => 'Rate limit exceeded';
+
+  @override
+  String get quotaExceeded => 'Quota exceeded';
+
+  @override
+  String get storageQuotaExceeded => 'Storage quota exceeded';
+
+  @override
+  String get bandwidthExceeded => 'Bandwidth exceeded';
+
+  @override
+  String get serviceUnavailable => 'Service unavailable';
+
+  @override
+  String get maintenanceMode => 'Maintenance mode';
+
+  @override
+  String get featureDisabled => 'Feature disabled';
+
+  @override
+  String get upgradeRequired => 'Upgrade required';
+
+  @override
+  String get subscriptionRequired => 'Subscription required';
+
+  @override
+  String get subscriptionExpired => 'Subscription expired';
+
+  @override
+  String get paymentRequired => 'Payment required';
+
+  @override
+  String get paymentFailed => 'Payment failed';
+
+  @override
+  String get insufficientFunds => 'Insufficient funds';
+
+  @override
+  String get cardDeclined => 'Card declined';
+
+  @override
+  String get cardExpired => 'Card expired';
+
+  @override
+  String get invalidCard => 'Invalid card';
+
+  @override
+  String get operationSuccessful => 'Operation successful';
+
+  @override
+  String get saveSuccessful => 'Save successful';
+
+  @override
+  String get updateSuccessful => 'Update successful';
+
+  @override
+  String get deleteSuccessful => 'Delete successful';
+
+  @override
+  String get createSuccessful => 'Create successful';
+
+  @override
+  String get uploadSuccessful => 'Upload successful';
+
+  @override
+  String get downloadSuccessful => 'Download successful';
+
+  @override
+  String get loginSuccessful => 'Login successful';
+
+  @override
+  String get logoutSuccessful => 'Logout successful';
+
+  @override
+  String get registrationSuccessful => 'Registration successful';
+
+  @override
+  String get verificationSuccessful => 'Verification successful';
+
+  @override
+  String get passwordChanged => 'Password changed';
+
+  @override
+  String get profileUpdated => 'Profile updated';
+
+  @override
+  String get settingsUpdated => 'Settings updated';
+
+  @override
+  String get preferencesUpdated => 'Preferences updated';
+
+  @override
+  String get notificationSent => 'Notification sent';
+
+  @override
+  String get messageSent => 'Message sent successfully';
+
+  @override
+  String get failedToSendMessage => 'Failed to send message. Please try again.';
+
+  @override
+  String get you => 'You';
+
+  @override
+  String get requestSent => 'Request sent';
+
+  @override
+  String get invitationSent => 'Invitation sent';
+
+  @override
+  String get confirmationSent => 'Confirmation sent';
+
+  @override
+  String get reminderSent => 'Reminder sent';
+
+  @override
+  String get reportGenerated => 'Report generated';
+
+  @override
+  String get backupCreated => 'Backup created';
+
+  @override
+  String get dataExported => 'Data exported';
+
+  @override
+  String get dataImported => 'Data imported';
+
+  @override
+  String get syncCompleted => 'Sync completed';
+
+  @override
+  String get taskCompleted => 'Task completed';
+
+  @override
+  String get processCompleted => 'Process completed';
+
+  @override
+  String get installationCompleted => 'Installation completed';
+
+  @override
+  String get configurationCompleted => 'Configuration completed';
+
+  @override
+  String get setupCompleted => 'Setup completed';
+
+  @override
+  String get migrationCompleted => 'Migration completed';
+
+  @override
+  String get optimizationCompleted => 'Optimization completed';
+
+  @override
+  String get analysisCompleted => 'Analysis completed';
+
+  @override
+  String get scanCompleted => 'Scan completed';
+
+  @override
+  String get testCompleted => 'Test completed';
+
+  @override
+  String get validationCompleted => 'Validation completed';
+
+  @override
+  String get processingCompleted => 'Processing completed';
+
+  @override
+  String get calculationCompleted => 'Calculation completed';
+
+  @override
+  String get generationCompleted => 'Generation completed';
+
+  @override
+  String get conversionCompleted => 'Conversion completed';
+
+  @override
+  String get compressionCompleted => 'Compression completed';
+
+  @override
+  String get decompressionCompleted => 'Decompression completed';
+
+  @override
+  String get encryptionCompleted => 'Encryption completed';
+
+  @override
+  String get decryptionCompleted => 'Decryption completed';
+
+  @override
+  String get filterPresetSaved => 'Filter preset saved';
+
+  @override
+  String get basicFilters => 'Basic filters';
+
+  @override
+  String get presets => 'Presets';
+
+  @override
+  String get advanced => 'Advanced';
+
+  @override
+  String get saveCurrentFilters => 'Save current filters';
+
+  @override
+  String get enterPresetName => 'Enter preset name';
+
+  @override
+  String get dateCreated => 'Date created';
+
+  @override
+  String get lastUpdated => 'Last updated';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get verifiedOnly => 'Verified only';
+
+  @override
+  String get showOnlyVerifiedItems => 'Show only verified items';
+
+  @override
+  String get urgentOnly => 'Urgent only';
+
+  @override
+  String get showOnlyUrgentRequests => 'Show only urgent requests';
+
+  @override
+  String get newYork => 'New York';
+
+  @override
+  String get losAngeles => 'Los Angeles';
+
+  @override
+  String get chicago => 'Chicago';
+
+  @override
+  String get houston => 'Houston';
+
+  @override
+  String get phoenix => 'Phoenix';
+
+  @override
+  String get philadelphia => 'Philadelphia';
+
+  @override
+  String get myDonationsComingSoon => 'My Donations - Coming Soon';
+
+  @override
+  String get browseDonationsComingSoon => 'Browse Donations - Coming Soon';
+
+  @override
+  String get myRequestsComingSoon => 'My Requests - Coming Soon';
+
+  @override
+  String get browseRequestsComingSoon => 'Browse Requests - Coming Soon';
+
+  @override
+  String get createDonationComingSoon => 'Create Donation - Coming Soon';
+
+  @override
+  String get createRequestComingSoon => 'Create Request - Coming Soon';
+
+  @override
+  String get profileComingSoon => 'Profile - Coming Soon';
+
+  @override
+  String get messagesComingSoon => 'Messages - Coming Soon';
+
+  @override
+  String get notificationsComingSoon => 'Notifications - Coming Soon';
+
+  @override
+  String get analyticsComingSoon => 'Analytics - Coming Soon';
+
+  @override
+  String get userManagementComingSoon => 'User Management - Coming Soon';
+
+  @override
+  String get reportsComingSoon => 'Reports - Coming Soon';
+
+  @override
+  String get pageNotFound => 'Page Not Found';
+
+  @override
+  String get noRouteDefinedForPath => 'No route defined for this path';
+
+  @override
+  String errorLoadingDashboard(String error) {
+    return 'Error loading dashboard: $error';
+  }
+
+  @override
+  String get noPermissionAccess =>
+      'You do not have permission to access this page.';
+
+  @override
+  String errorLoadingRequests(String error) {
+    return 'Error loading requests: $error';
+  }
+
+  @override
+  String errorUpdatingRequest(String error) {
+    return 'Error updating request: $error';
+  }
+
+  @override
+  String errorLoadingUsers(String error) {
+    return 'Error loading users: $error';
+  }
+
+  @override
+  String errorDeletingUser(String error) {
+    return 'Error deleting user: $error';
+  }
+
+  @override
+  String requestUpdatedSuccessfully(String status) {
+    return 'Request $status successfully';
+  }
+
+  @override
+  String get userDeletedSuccessfully => 'User deleted successfully';
+
+  @override
+  String userBlockedSuccess(String userName) {
+    return '$userName has been blocked successfully';
+  }
+
+  @override
+  String get adminDashboard => 'Admin Dashboard';
+
+  @override
+  String requestNumber(String id) {
+    return 'Request #$id';
+  }
+
+  @override
+  String get noInternetConnection => 'No internet connection';
+
+  @override
+  String get switchToEnglish => 'Switch to English';
+
+  @override
+  String get switchToArabic => 'Switch to Arabic';
+
+  @override
+  String get newConversation => 'New Conversation';
+
+  @override
+  String get searchUserToChat => 'Search for a user to start chatting';
+
+  @override
+  String get startTypingToSearch => 'Start typing to search for users';
+
+  @override
+  String get conversationDetails => 'Conversation Details';
+
+  @override
+  String get firstMessage => 'First message';
+
+  @override
+  String get archiveConversation => 'Archive Conversation';
+
+  @override
+  String messageCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count messages',
+      one: '1 message',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get searchByNameEmailLocation =>
+      'Search by name, email, or location...';
+
+  @override
+  String get failedToSearchUsers => 'Failed to search users';
+
+  @override
+  String get noItemsFound => 'No items found';
+
+  @override
+  String get fiveMiles => '5 miles';
+
+  @override
+  String get tenMiles => '10 miles';
+
+  @override
+  String get twentyFiveMiles => '25 miles';
+
+  @override
+  String get fiftyMiles => '50 miles';
+
+  @override
+  String get anyDistance => 'Any distance';
+
+  @override
+  String get newItem => 'New';
+
+  @override
+  String get likeNew => 'Like New';
+
+  @override
+  String get good => 'Good';
+
+  @override
+  String get fair => 'Fair';
+
+  @override
+  String get minAmount => 'Min Amount';
+
+  @override
+  String get maxAmount => 'Max Amount';
+
+  @override
+  String get distance => 'Distance';
+
+  @override
+  String get itemCondition => 'Item Condition';
+
+  @override
+  String get dateRange => 'Date Range';
+
+  @override
+  String get amountRange => 'Amount Range';
+
+  @override
+  String get sortOptions => 'Sort Options';
+
+  @override
+  String get savedPresets => 'Saved Presets';
+
+  @override
+  String get noSavedPresets => 'No saved presets';
+
+  @override
+  String get applyPreset => 'Apply preset';
+
+  @override
+  String get deletePreset => 'Delete preset';
+
+  @override
+  String fromDate(String date) {
+    return 'From: $date';
+  }
+
+  @override
+  String toDate(String date) {
+    return 'To: $date';
+  }
+
+  @override
+  String get startDate => 'Start Date';
+
+  @override
+  String get endDate => 'End Date';
+
+  @override
+  String get advancedFilters => 'Advanced Filters';
+
+  @override
+  String activeFilters(int count) {
+    return '$count active';
+  }
+
+  @override
+  String get reasonOptional => 'Reason (Optional)';
+
+  @override
+  String get whyBlockingUser => 'Why are you blocking this user?';
+
+  @override
+  String get blockingUserWarning =>
+      'Blocking this user will prevent them from contacting you and viewing your donations.';
+
+  @override
+  String get failedToBlockUser => 'Failed to block user';
+
+  @override
+  String deleteItem(String itemName) {
+    return 'Delete $itemName?';
+  }
+
+  @override
+  String get actionCannotBeUndone => 'This action cannot be undone.';
+
+  @override
+  String get filterOptions => 'Filter Options';
+
+  @override
+  String get reset => 'Reset';
+
+  @override
+  String get apply => 'Apply';
+
+  @override
+  String get confirmAction => 'Confirm Action';
+
+  @override
+  String get areYouSureProceed => 'Are you sure you want to proceed?';
+
+  @override
+  String get selectCategory => 'Select Category';
+
+  @override
+  String get startMakingDifferenceFirst =>
+      'Start making a difference by creating your first donation';
+
+  @override
+  String get noRequestsYet => 'No requests yet';
+
+  @override
+  String get browseAvailableDonations =>
+      'Browse available donations and request items you need';
+
+  @override
+  String get noResultsFound => 'No results found';
+
+  @override
+  String get tryAdjustingFilters =>
+      'Try adjusting your filters or search terms';
+
+  @override
+  String get noUsersMatchCriteria => 'No users match your search criteria';
+
+  @override
+  String get noDonationsMatchCriteria =>
+      'No donations match your search criteria';
+
+  @override
+  String get noPermissionPage =>
+      'You do not have permission to access this page.';
+
+  @override
+  String get filterByStatus => 'Filter by status: ';
+
+  @override
+  String get allStatuses => 'All Statuses';
+
+  @override
+  String fromUser(String name) {
+    return 'From: $name';
+  }
+
+  @override
+  String toUser(String name) {
+    return 'To: $name';
+  }
+
+  @override
+  String get deleteUser => 'Delete User';
+
+  @override
+  String confirmDeleteUser(String name) {
+    return 'Are you sure you want to delete $name?';
+  }
+
+  @override
+  String get filterByRole => 'Filter by role: ';
+
+  @override
+  String get allRoles => 'All Roles';
+
+  @override
+  String get admins => 'Admins';
+
+  @override
+  String get conversationUnarchived => 'Conversation unarchived';
+
+  @override
+  String get failedToChangeLanguage => 'Failed to change language';
+
+  @override
+  String get changingLanguage => 'Changing language...';
+
+  @override
+  String get conversationInfo => 'Conversation Info';
+
+  @override
+  String get noFilters => 'No filters';
+
+  @override
+  String categoriesCount(int count) {
+    return '$count categories';
+  }
+
+  @override
+  String statusesCount(int count) {
+    return '$count statuses';
+  }
+
+  @override
+  String get approvedByAdmin => 'Approved by Admin';
+
+  @override
+  String get rejectedByAdmin => 'Rejected by Admin';
+
+  @override
+  String get allDonationsReviewed => 'All donations have been reviewed';
+
+  @override
+  String get messageSentSuccessfully => 'Message sent successfully';
+
+  @override
+  String get requestsFilled => 'Requests Filled';
+
+  @override
+  String get blockUserTitle => 'Block User';
+
+  @override
+  String get blockUserWarning =>
+      'Blocking this user will prevent them from contacting you and viewing your donations.';
+
+  @override
+  String get blockUserReasonLabel => 'Reason (Optional)';
+
+  @override
+  String get blockUserReasonHint => 'Why are you blocking this user?';
+
+  @override
+  String get blockUserButton => 'Block User';
+
+  @override
+  String pendingOperationsText(int count, String plural) {
+    return '$count pending operation$plural will sync when online';
+  }
+
+  @override
+  String get languageLabel => 'Language / اللغة';
+
+  @override
+  String failedToSearchUsersError(String error) {
+    return 'Failed to search users: $error';
+  }
+
+  @override
+  String get unblock => 'Unblock';
+
+  @override
+  String get blockedUsersTitle => 'Blocked Users';
+
+  @override
+  String get noBlockedUsers => 'No blocked users';
+
+  @override
+  String get noBlockedUsersDescription => 'Users you block will appear here';
+
+  @override
+  String get donationsWithFilters => 'Donations with Filters';
+
+  @override
+  String get noFiltersApplied => 'No filters applied. Showing all donations.';
+
+  @override
+  String get yourImpact => 'Your Impact';
+
+  @override
+  String donationsCount(int count) {
+    return '$count donations';
+  }
+
+  @override
+  String get fullActivityLogComingSoon => 'Full activity log coming soon';
+
+  @override
+  String get goalTracking => 'Goal Tracking';
+
+  @override
+  String get monthlyGoal => 'Monthly Goal';
+
+  @override
+  String archiveConversationConfirm(String name) {
+    return 'Archive conversation with $name?';
+  }
+
+  @override
+  String get archive => 'Archive';
+
+  @override
+  String get conversationArchived => 'Conversation archived';
+
+  @override
+  String get resetNotificationSettings => 'Reset Notification Settings';
+
+  @override
+  String get resetNotificationConfirm =>
+      'This will reset all notification settings to their default values. Are you sure?';
+
+  @override
+  String get notificationSettingsReset =>
+      'Notification settings reset to defaults';
+
+  @override
+  String get pushNotificationsDesc =>
+      'Receive push notifications on your device';
+
+  @override
+  String get emailNotificationsDesc => 'Receive notifications via email';
+
+  @override
+  String get messageNotifications => 'Message Notifications';
+
+  @override
+  String get messageNotificationsDesc => 'Get notified about new messages';
+
+  @override
+  String get donationUpdates => 'Donation Updates';
+
+  @override
+  String get donationUpdatesDesc => 'Receive updates about your donations';
+
+  @override
+  String get pleaseLoginAgain => 'Please log in again';
+
+  @override
+  String get darkMode => 'Dark Mode';
+
+  @override
+  String get darkModeDesc => 'Toggle dark/light theme';
+
+  @override
+  String get notificationsDesc => 'Manage notification settings';
+
+  @override
+  String get languageDesc => 'Change app language';
+
+  @override
+  String get updateProfilePicture => 'Update Profile Picture';
+
+  @override
+  String get upload => 'Upload';
+
+  @override
+  String get uploadingAvatar => 'Uploading avatar...';
+
+  @override
+  String get avatarUploadedSuccess => 'Avatar uploaded successfully!';
+
+  @override
+  String get deleteNotification => 'Delete Notification';
+
+  @override
+  String get deleteNotificationConfirm =>
+      'Are you sure you want to delete this notification?';
+
+  @override
+  String get syncCompletedSuccess => 'Sync completed successfully';
+
+  @override
+  String syncFailed(String error) {
+    return 'Sync failed: $error';
+  }
+
+  @override
+  String get forceSync => 'Force Sync';
+
+  @override
+  String get clearCache => 'Clear Cache';
+
+  @override
+  String get givingBridge => 'GivingBridge';
+
+  @override
+  String get pleaseSelectReason => 'Please select a reason for reporting';
+
+  @override
+  String get pleaseProvideDescription => 'Please provide a description';
+
+  @override
+  String get reportSubmittedSuccess => 'Report submitted successfully';
+
+  @override
+  String get searchHistoryCleared => 'Search history cleared';
+
+  @override
+  String screenForRoute(String route) {
+    return 'Screen for route: $route';
+  }
 }

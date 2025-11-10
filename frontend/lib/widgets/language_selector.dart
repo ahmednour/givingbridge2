@@ -353,7 +353,7 @@ class LanguageToggleButton extends StatelessWidget {
               ),
             ),
           ),
-          tooltip: localeProvider.isArabic ? 'Switch to English' : 'التبديل إلى العربية',
+          tooltip: localeProvider.isArabic ? AppLocalizations.of(context)!.switchToEnglish : AppLocalizations.of(context)!.switchToArabic,
         );
       },
     );

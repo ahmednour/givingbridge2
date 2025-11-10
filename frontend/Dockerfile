@@ -3,6 +3,7 @@ WORKDIR /app
 COPY . .
 RUN flutter config --enable-web
 RUN flutter pub get
+RUN flutter gen-l10n
 RUN flutter build web
 FROM nginx:alpine
 COPY --from=build /app/build/web /usr/share/nginx/html

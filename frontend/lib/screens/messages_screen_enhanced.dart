@@ -12,7 +12,7 @@ import '../screens/archived_conversations_screen.dart';
 import '../screens/blocked_users_screen.dart';
 import '../providers/message_provider.dart';
 import '../providers/auth_provider.dart';
-import '../models/conversation.dart';
+import '../services/api_service.dart' show Conversation;
 import '../models/user.dart';
 import '../screens/chat_screen_enhanced.dart';
 import '../l10n/app_localizations.dart';
@@ -101,9 +101,11 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
                       return const GBConversationListSkeleton();
                     }
 
-                    final conversations = _filterConversations(
-                      messageProvider.conversations.cast<Conversation>(),
-                    );
+                    // Convert dynamic list to Conversation objects
+                    final conversationsList = messageProvider.conversations
+                        .map((c) => c is Conversation ? c : Conversation.fromJson(c))
+                        .toList();
+                    final conversations = _filterConversations(conversationsList);
 
                     if (conversations.isEmpty) {
                       return _buildEmptyState();
@@ -443,7 +445,7 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
                       children: [
                         Expanded(
                           child: Text(
-                            conversation.lastMessageContent ?? l10n.noMessages,
+                            conversation.lastMessageContent?.toString() ?? l10n.noMessages,
                             style:
                                 Theme.of(context).textTheme.bodySmall?.copyWith(
                                       color: conversation.hasUnreadMessages
@@ -575,8 +577,8 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
           otherUserId: conversation.otherParticipantId,
           otherUserName: conversation.otherParticipantName,
           conversationId: conversation.id,
-          donationId: conversation.donationId,
-          requestId: conversation.requestId,
+          donationId: conversation.donationId?.toString(),
+          requestId: conversation.requestId?.toString(),
         ),
       ),
     );
@@ -619,9 +621,9 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(DesignSystem.radiusM),
             ),
-            title: const Text('Archive Conversation'),
+            title: Text(l10n.archiveConversation),
             content:
-                Text('Archive conversation with ${conversation.displayTitle}?'),
+                Text(l10n.archiveConversationConfirm(conversation.displayTitle)),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
@@ -632,7 +634,7 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
                 style: TextButton.styleFrom(
                   foregroundColor: DesignSystem.warning,
                 ),
-                child: const Text('Archive'),
+                child: Text(l10n.archive),
               ),
             ],
           ),
@@ -643,6 +645,7 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
   Future<void> _archiveConversation(Conversation conversation) async {
     final messageProvider =
         Provider.of<MessageProvider>(context, listen: false);
+    final l10n = AppLocalizations.of(context)!;
     final success = await messageProvider.archiveConversation(
       int.parse(conversation.otherParticipantId),
     );
@@ -650,7 +653,7 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Conversation archived'),
+          content: Text(l10n.conversationArchived),
           backgroundColor: DesignSystem.success,
           action: SnackBarAction(
             label: 'Undo',

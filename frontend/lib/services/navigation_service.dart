@@ -2,24 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../core/constants/route_constants.dart';
 import '../providers/auth_provider.dart';
-import '../screens/login_screen.dart';
-import '../screens/register_screen.dart';
-import '../screens/dashboard_screen.dart';
-import '../screens/profile_screen.dart';
-import '../screens/browse_donations_screen.dart';
-import '../screens/create_donation_screen_enhanced.dart';
-import '../screens/my_donations_screen.dart';
-import '../screens/my_requests_screen.dart';
-import '../screens/incoming_requests_screen.dart';
-import '../screens/messages_screen_enhanced.dart';
-import '../screens/chat_screen_enhanced.dart';
-import '../screens/admin_dashboard_screen.dart';
-import '../screens/admin_users_screen.dart';
-import '../screens/admin_requests_screen.dart';
-import '../screens/donor_dashboard_enhanced.dart';
-import '../screens/receiver_dashboard_enhanced.dart';
-import '../screens/notifications_screen.dart';
-import '../screens/landing_screen.dart';
 
 /// Navigation service for managing app routing
 class NavigationService {
@@ -168,8 +150,6 @@ class NavigationService {
     return navigateAndClearStack(RouteConstants.home);
   }
 }
-
-
 
 /// Route guard for authentication
 class AuthGuard {

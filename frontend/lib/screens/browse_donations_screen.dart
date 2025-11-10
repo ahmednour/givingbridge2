@@ -16,7 +16,6 @@ import '../widgets/rtl/directional_row.dart';
 import '../widgets/rtl/directional_column.dart';
 import '../widgets/rtl/directional_container.dart';
 import '../widgets/rtl/directional_app_bar.dart';
-import '../services/rtl_layout_service.dart';
 import '../services/api_service.dart';
 import '../providers/auth_provider.dart';
 import '../providers/locale_provider.dart';
@@ -206,7 +205,7 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
             backgroundColor: DesignSystem.getBackgroundColor(context),
             appBar: ResponsiveUtils.isMobile(context)
                 ? MobileAppBar(
-                    title: l10n.browseDonations ?? 'Browse Donations',
+                    title: l10n.browseDonations,
                     showBackButton: true,
                   ) as PreferredSizeWidget
                 : DirectionalAppBar(
@@ -223,7 +222,7 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
                       onPressed: () => Navigator.pop(context),
                     ),
                     title: Text(
-                      l10n.browseDonations ?? 'Browse Donations',
+                      l10n.browseDonations,
                       style: TextStyle(
                         color: DesignSystem.textPrimary,
                         fontSize: 20,
@@ -242,7 +241,7 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
                     children: [
                       // Search Bar
                       GBSearchBar(
-                        hint: l10n.searchDonations ?? 'Search donations...',
+                        hint: l10n.searchDonations,
                         onSearch: (query) {
                           setState(() {
                             _searchQuery = query;
@@ -328,13 +327,13 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
 
   Widget _buildMobileDonationCard(Donation donation, User user) {
     final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
-    
+
     return TouchCard(
       onTap: () => _showDonationDetails(donation),
       margin: EdgeInsets.only(bottom: ResponsiveUtils.getSpacing(context)),
       child: DirectionalColumn(
-        crossAxisAlignment: localeProvider.isRTL 
-            ? CrossAxisAlignment.end 
+        crossAxisAlignment: localeProvider.isRTL
+            ? CrossAxisAlignment.end
             : CrossAxisAlignment.start,
         children: [
           // Image (if available)
@@ -368,8 +367,8 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
           Padding(
             padding: const EdgeInsets.all(DesignSystem.spaceL),
             child: DirectionalColumn(
-              crossAxisAlignment: localeProvider.isRTL 
-                  ? CrossAxisAlignment.end 
+              crossAxisAlignment: localeProvider.isRTL
+                  ? CrossAxisAlignment.end
                   : CrossAxisAlignment.start,
               children: [
                 // Category and Condition chips
@@ -428,7 +427,9 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
                         donation.donorName,
                         style: DesignSystem.bodySmall(context),
                         overflow: TextOverflow.ellipsis,
-                        textAlign: localeProvider.isRTL ? TextAlign.right : TextAlign.left,
+                        textAlign: localeProvider.isRTL
+                            ? TextAlign.right
+                            : TextAlign.left,
                       ),
                     ),
                   ],
@@ -449,7 +450,9 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
                         donation.location,
                         style: DesignSystem.bodySmall(context),
                         overflow: TextOverflow.ellipsis,
-                        textAlign: localeProvider.isRTL ? TextAlign.right : TextAlign.left,
+                        textAlign: localeProvider.isRTL
+                            ? TextAlign.right
+                            : TextAlign.left,
                       ),
                     ),
                   ],
@@ -475,14 +478,14 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
 
   Widget _buildDonationCard(Donation donation, User user) {
     final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: DesignSystem.spaceL),
       child: WebCard(
         padding: EdgeInsets.zero,
         child: DirectionalColumn(
-          crossAxisAlignment: localeProvider.isRTL 
-              ? CrossAxisAlignment.end 
+          crossAxisAlignment: localeProvider.isRTL
+              ? CrossAxisAlignment.end
               : CrossAxisAlignment.start,
           children: [
             // Image (if available)
@@ -515,8 +518,8 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
             Padding(
               padding: const EdgeInsets.all(DesignSystem.spaceL),
               child: DirectionalColumn(
-                crossAxisAlignment: localeProvider.isRTL 
-                    ? CrossAxisAlignment.end 
+                crossAxisAlignment: localeProvider.isRTL
+                    ? CrossAxisAlignment.end
                     : CrossAxisAlignment.start,
                 children: [
                   // Category and Condition
@@ -683,7 +686,7 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text(AppLocalizations.of(context)!.close),
           ),
         ],
       ),

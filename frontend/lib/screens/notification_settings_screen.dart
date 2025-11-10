@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({super.key});
@@ -17,14 +18,14 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notification Settings'),
+        title: Text(AppLocalizations.of(context)!.notificationSettings),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
           SwitchListTile(
-            title: const Text('Push Notifications'),
-            subtitle: const Text('Receive push notifications on your device'),
+            title: Text(AppLocalizations.of(context)!.pushNotifications),
+            subtitle: Text(AppLocalizations.of(context)!.pushNotificationsDesc),
             value: _pushNotifications,
             onChanged: (value) {
               setState(() {
@@ -33,8 +34,8 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
             },
           ),
           SwitchListTile(
-            title: const Text('Email Notifications'),
-            subtitle: const Text('Receive notifications via email'),
+            title: Text(AppLocalizations.of(context)!.emailNotifications),
+            subtitle: Text(AppLocalizations.of(context)!.emailNotificationsDesc),
             value: _emailNotifications,
             onChanged: (value) {
               setState(() {
@@ -43,8 +44,8 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
             },
           ),
           SwitchListTile(
-            title: const Text('Message Notifications'),
-            subtitle: const Text('Get notified about new messages'),
+            title: Text(AppLocalizations.of(context)!.messageNotifications),
+            subtitle: Text(AppLocalizations.of(context)!.messageNotificationsDesc),
             value: _messageNotifications,
             onChanged: (value) {
               setState(() {
@@ -53,8 +54,8 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
             },
           ),
           SwitchListTile(
-            title: const Text('Donation Updates'),
-            subtitle: const Text('Receive updates about your donations'),
+            title: Text(AppLocalizations.of(context)!.donationUpdates),
+            subtitle: Text(AppLocalizations.of(context)!.donationUpdatesDesc),
             value: _donationUpdates,
             onChanged: (value) {
               setState(() {

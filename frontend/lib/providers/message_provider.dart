@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import '../repositories/message_repository.dart';
 import '../core/constants/api_constants.dart';
 import '../services/api_service.dart';
@@ -43,8 +43,9 @@ class MessageProvider extends ChangeNotifier {
 
   /// Load all conversations
   Future<void> loadConversations() async {
-    _setLoadingConversations(true);
-    _clearError();
+    // Set loading state without notifying during build
+    _isLoadingConversations = true;
+    _error = null;
 
     try {
       // Load blocked users first
@@ -60,12 +61,15 @@ class MessageProvider extends ChangeNotifier {
         }).toList();
         notifyListeners();
       } else {
-        _setError(response.error ?? 'Failed to load conversations');
+        _error = response.error ?? 'Failed to load conversations';
+        notifyListeners();
       }
     } catch (e) {
-      _setError('Error loading conversations: ${e.toString()}');
+      _error = 'Error loading conversations: ${e.toString()}';
+      notifyListeners();
     } finally {
-      _setLoadingConversations(false);
+      _isLoadingConversations = false;
+      notifyListeners();
     }
   }
 
@@ -80,8 +84,10 @@ class MessageProvider extends ChangeNotifier {
     if (!_hasMoreMessages) return;
 
     _currentUserId = otherUserId; // Store the conversation partner ID
-    _setLoadingMessages(true);
-    _clearError();
+
+    // Set loading state without notifying during build
+    _isLoadingMessages = true;
+    _error = null;
 
     try {
       final response = await _repository.getMessages(
@@ -91,22 +97,33 @@ class MessageProvider extends ChangeNotifier {
       );
 
       if (response.success && response.data != null) {
+        debugPrint('=== loadMessages Success ===');
+        debugPrint('Loaded ${response.data!.length} messages');
+        debugPrint(
+            'First message sample: ${response.data!.isNotEmpty ? response.data!.first : "empty"}');
+
         if (refresh) {
           _messages = response.data!;
         } else {
           _messages.addAll(response.data!);
         }
 
+        debugPrint('Total messages in list: ${_messages.length}');
+        debugPrint('=== End loadMessages ===');
+
         _hasMoreMessages = response.data!.length == APIConstants.defaultLimit;
         _currentPage++;
         notifyListeners();
       } else {
-        _setError(response.error ?? 'Failed to load messages');
+        _error = response.error ?? 'Failed to load messages';
+        notifyListeners();
       }
     } catch (e) {
-      _setError('Error loading messages: ${e.toString()}');
+      _error = 'Error loading messages: ${e.toString()}';
+      notifyListeners();
     } finally {
-      _setLoadingMessages(false);
+      _isLoadingMessages = false;
+      notifyListeners();
     }
   }
 
@@ -144,7 +161,15 @@ class MessageProvider extends ChangeNotifier {
       );
 
       if (response.success && response.data != null) {
+        debugPrint('=== sendMessage Success ===');
+        debugPrint('Response data: ${response.data}');
+        debugPrint('Response data type: ${response.data.runtimeType}');
+
         _messages.add(response.data!);
+
+        debugPrint('Total messages after add: ${_messages.length}');
+        debugPrint('=== End sendMessage ===');
+
         notifyListeners();
         return true;
       } else {
@@ -221,6 +246,16 @@ class MessageProvider extends ChangeNotifier {
   }
 
   /// Delete message
+  /// Remove optimistic message locally (without API call)
+  void removeOptimisticMessage(int messageId) {
+    debugPrint('Removing optimistic message with ID: $messageId');
+    _messages.removeWhere((m) {
+      final id = m is ChatMessage ? m.id : m['id'];
+      return id == messageId;
+    });
+    notifyListeners();
+  }
+
   Future<bool> deleteMessage(String messageId) async {
     _setLoading(true);
     _clearError();
@@ -291,10 +326,11 @@ class MessageProvider extends ChangeNotifier {
   /// Get messages by user ID
   List<dynamic> getMessagesByUserId(String userId) {
     // Filter messages between current authenticated user and the specified user
-    return _messages.where((m) {
-      final senderId =
-          m is ChatMessage ? m.senderId.toString() : m['senderId'].toString();
-      final receiverId = m is ChatMessage
+    final filteredMessages = _messages.where((m) {
+      final senderId = m is models.ChatMessage
+          ? m.senderId.toString()
+          : m['senderId'].toString();
+      final receiverId = m is models.ChatMessage
           ? m.receiverId.toString()
           : m['receiverId'].toString();
 
@@ -302,6 +338,8 @@ class MessageProvider extends ChangeNotifier {
       return (senderId == userId && receiverId == _authenticatedUserId) ||
           (senderId == _authenticatedUserId && receiverId == userId);
     }).toList();
+
+    return filteredMessages;
   }
 
   /// Get unread messages count for a specific user
@@ -323,66 +361,116 @@ class MessageProvider extends ChangeNotifier {
 
   /// Add new message (for real-time updates)
   void addNewMessage(dynamic message) {
-    // Get message ID
-    final messageId = message is ChatMessage ? message.id : message['id'];
+    // Convert to Map if needed for consistency
+    Map<String, dynamic> messageMap;
+
+    if (message is Map<String, dynamic>) {
+      messageMap = message;
+    } else if (message is models.ChatMessage) {
+      // It's a ChatMessage object, convert to Map
+      messageMap = {
+        'id': message.id,
+        'senderId': message.senderId,
+        'receiverId': message.receiverId,
+        'senderName': message.senderName,
+        'receiverName': message.receiverName,
+        'content': message.content,
+        'isRead': message.isRead,
+        'createdAt': message.createdAt,
+        'updatedAt': message.updatedAt,
+        'donationId': message.donationId,
+        'requestId': message.requestId,
+      };
+    } else {
+      // Try to access properties dynamically
+      try {
+        messageMap = {
+          'id': (message as dynamic).id,
+          'senderId': (message as dynamic).senderId,
+          'receiverId': (message as dynamic).receiverId,
+          'senderName': (message as dynamic).senderName,
+          'receiverName': (message as dynamic).receiverName,
+          'content': (message as dynamic).content,
+          'isRead': (message as dynamic).isRead,
+          'createdAt': (message as dynamic).createdAt,
+          'updatedAt': (message as dynamic).updatedAt,
+          'donationId': (message as dynamic).donationId,
+          'requestId': (message as dynamic).requestId,
+        };
+      } catch (e) {
+        debugPrint('Error converting message to Map: $e');
+        return;
+      }
+    }
+
+    final messageId = messageMap['id'];
+
+    debugPrint('=== addNewMessage Debug ===');
+    debugPrint('Message ID: $messageId');
+    debugPrint('Message type: ${message.runtimeType}');
+    debugPrint('Converted to Map: ${messageMap.keys}');
 
     // Check if this is replacing an optimistic message (negative ID indicates optimistic)
     if (messageId is int && messageId > 0) {
       // This is a confirmed message, check if we have an optimistic version
       final optimisticIndex = _messages.indexWhere((m) {
-        final existingMessageId = m is ChatMessage ? m.id : m['id'];
+        final existingMessageId = m is models.ChatMessage ? m.id : m['id'];
         // Look for optimistic messages (negative IDs or temporary IDs)
         return existingMessageId is int && existingMessageId < 0;
       });
 
       if (optimisticIndex != -1) {
+        debugPrint('Replacing optimistic message at index $optimisticIndex');
         // Replace optimistic message with confirmed one
-        _messages[optimisticIndex] = message;
+        _messages[optimisticIndex] = messageMap;
       } else {
         // Check for exact duplicate
         final exists = _messages.any((m) {
-          final existingMessageId = m is ChatMessage ? m.id : m['id'];
+          final existingMessageId = m is models.ChatMessage ? m.id : m['id'];
           return existingMessageId == messageId;
         });
 
         if (!exists) {
-          _messages.add(message);
+          debugPrint('Adding new confirmed message');
+          _messages.add(messageMap);
+        } else {
+          debugPrint('Message already exists, skipping');
         }
       }
     } else {
       // This is either an optimistic message or a message without a proper ID
       // Check for exact duplicate
       final exists = _messages.any((m) {
-        final existingMessageId = m is ChatMessage ? m.id : m['id'];
+        final existingMessageId = m is models.ChatMessage ? m.id : m['id'];
         return existingMessageId == messageId;
       });
 
       if (!exists) {
-        _messages.add(message);
+        debugPrint('Adding optimistic message');
+        _messages.add(messageMap);
+      } else {
+        debugPrint('Optimistic message already exists, skipping');
       }
     }
 
+    debugPrint('Total messages after add: ${_messages.length}');
+    debugPrint('=== End addNewMessage ===');
+
     // Update or create conversation in list
-    _updateConversationWithNewMessage(message);
+    _updateConversationWithNewMessage(messageMap);
 
     notifyListeners();
   }
 
   /// Update conversation list with new message
-  void _updateConversationWithNewMessage(dynamic message) {
-    final senderId =
-        message is ChatMessage ? message.senderId : message['senderId'];
-    final receiverId =
-        message is ChatMessage ? message.receiverId : message['receiverId'];
-    final senderName =
-        message is ChatMessage ? message.senderName : message['senderName'];
-    final receiverName =
-        message is ChatMessage ? message.receiverName : message['receiverName'];
-    final content =
-        message is ChatMessage ? message.content : message['content'];
-    final createdAt =
-        message is ChatMessage ? message.createdAt : message['createdAt'];
-    final isRead = message is ChatMessage ? message.isRead : message['isRead'];
+  void _updateConversationWithNewMessage(Map<String, dynamic> message) {
+    final senderId = message['senderId'];
+    final receiverId = message['receiverId'];
+    final senderName = message['senderName'];
+    final receiverName = message['receiverName'];
+    final content = message['content'];
+    final createdAt = message['createdAt'];
+    final isRead = message['isRead'];
 
     // Determine the other user (conversation partner)
     int otherUserId;
@@ -445,10 +533,8 @@ class MessageProvider extends ChangeNotifier {
                 !isRead)
             ? 1
             : 0,
-        'donationId':
-            message is ChatMessage ? message.donationId : message['donationId'],
-        'requestId':
-            message is ChatMessage ? message.requestId : message['requestId'],
+        'donationId': message['donationId'],
+        'requestId': message['requestId'],
       };
 
       _conversations.insert(0, newConversation);
@@ -476,8 +562,15 @@ class MessageProvider extends ChangeNotifier {
       final response = await ApiService.getBlockedUsers();
       if (response.success && response.data != null) {
         _blockedUserIds = response.data!.map((bu) => bu.id).toSet();
+      } else {
+        // If blocked users endpoint fails (e.g., 403 for non-admin), just continue without blocking
+        _blockedUserIds = {};
+        debugPrint(
+            'Could not load blocked users (may require admin permissions), continuing without blocking');
       }
     } catch (e) {
+      // Silently fail and continue without blocking
+      _blockedUserIds = {};
       debugPrint('Error loading blocked users: ${e.toString()}');
     }
   }
@@ -583,16 +676,6 @@ class MessageProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _setLoadingMessages(bool loading) {
-    _isLoadingMessages = loading;
-    notifyListeners();
-  }
-
-  void _setLoadingConversations(bool loading) {
-    _isLoadingConversations = loading;
-    notifyListeners();
-  }
-
   void _setError(String error) {
     _error = error;
     notifyListeners();
@@ -602,8 +685,9 @@ class MessageProvider extends ChangeNotifier {
     _error = null;
   }
 
-  /// Upload image
-  Future<ApiResponse<Map<String, dynamic>>?> uploadImage(File imageFile) async {
+  /// Upload image (web-compatible using XFile)
+  Future<ApiResponse<Map<String, dynamic>>?> uploadImage(
+      XFile imageFile) async {
     try {
       _setLoading(true);
       final response = await ApiService.uploadImage(imageFile);

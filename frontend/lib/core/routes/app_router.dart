@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../screens/dashboard_screen.dart';
 import '../../screens/landing_screen.dart';
 import '../../screens/settings_screen.dart';
@@ -41,114 +42,114 @@ class AppRouter {
       // Placeholder routes for navigation items
       case '/my-donations':
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('My Donations - Coming Soon')),
+          builder: (context) => Scaffold(
+            body: Center(child: Text(AppLocalizations.of(context)!.myDonationsComingSoon)),
           ),
           settings: settings,
         );
       
       case '/browse-donations':
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('Browse Donations - Coming Soon')),
+          builder: (context) => Scaffold(
+            body: Center(child: Text(AppLocalizations.of(context)!.browseDonationsComingSoon)),
           ),
           settings: settings,
         );
       
       case '/my-requests':
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('My Requests - Coming Soon')),
+          builder: (context) => Scaffold(
+            body: Center(child: Text(AppLocalizations.of(context)!.myRequestsComingSoon)),
           ),
           settings: settings,
         );
       
       case '/browse-requests':
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('Browse Requests - Coming Soon')),
+          builder: (context) => Scaffold(
+            body: Center(child: Text(AppLocalizations.of(context)!.browseRequestsComingSoon)),
           ),
           settings: settings,
         );
       
       case '/create-donation':
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('Create Donation - Coming Soon')),
+          builder: (context) => Scaffold(
+            body: Center(child: Text(AppLocalizations.of(context)!.createDonationComingSoon)),
           ),
           settings: settings,
         );
       
       case '/create-request':
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('Create Request - Coming Soon')),
+          builder: (context) => Scaffold(
+            body: Center(child: Text(AppLocalizations.of(context)!.createRequestComingSoon)),
           ),
           settings: settings,
         );
       
       case '/profile':
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('Profile - Coming Soon')),
+          builder: (context) => Scaffold(
+            body: Center(child: Text(AppLocalizations.of(context)!.profileComingSoon)),
           ),
           settings: settings,
         );
       
       case '/messages':
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('Messages - Coming Soon')),
+          builder: (context) => Scaffold(
+            body: Center(child: Text(AppLocalizations.of(context)!.messagesComingSoon)),
           ),
           settings: settings,
         );
       
       case '/notifications':
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('Notifications - Coming Soon')),
+          builder: (context) => Scaffold(
+            body: Center(child: Text(AppLocalizations.of(context)!.notificationsComingSoon)),
           ),
           settings: settings,
         );
       
       case '/help':
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('Help & Support - Coming Soon')),
+          builder: (context) => Scaffold(
+            body: Center(child: Text(AppLocalizations.of(context)!.helpSupportComingSoon)),
           ),
           settings: settings,
         );
       
       case '/analytics':
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('Analytics - Coming Soon')),
+          builder: (context) => Scaffold(
+            body: Center(child: Text(AppLocalizations.of(context)!.analyticsComingSoon)),
           ),
           settings: settings,
         );
       
       case '/admin/users':
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('User Management - Coming Soon')),
+          builder: (context) => Scaffold(
+            body: Center(child: Text(AppLocalizations.of(context)!.userManagementComingSoon)),
           ),
           settings: settings,
         );
       
       case '/admin/reports':
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('Reports - Coming Soon')),
+          builder: (context) => Scaffold(
+            body: Center(child: Text(AppLocalizations.of(context)!.reportsComingSoon)),
           ),
           settings: settings,
         );
       
       default:
         return MaterialPageRoute(
-          builder: (_) => Scaffold(
-            appBar: AppBar(title: const Text('Page Not Found')),
-            body: const Center(
-              child: Text('No route defined for this path'),
+          builder: (context) => Scaffold(
+            appBar: AppBar(title: Text(AppLocalizations.of(context)!.pageNotFound)),
+            body: Center(
+              child: Text(AppLocalizations.of(context)!.noRouteDefinedForPath),
             ),
           ),
           settings: settings,

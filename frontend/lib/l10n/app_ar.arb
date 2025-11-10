@@ -392,6 +392,7 @@
   "pickupReminder": "تذكير بالاستلام",
   "donationCompleted": "اكتمل التبرع",
   "newDonationAvailable": "تبرع جديد متاح",
+  "clear": "مسح",
   "clearAll": "مسح الكل",
   "cancelRequest": "إلغاء الطلب",
   "cancelRequestConfirm": "هل أنت متأكد من أنك تريد إلغاء هذا الطلب؟",
@@ -738,7 +739,9 @@
   "settingsUpdated": "تم تحديث الإعدادات",
   "preferencesUpdated": "تم تحديث التفضيلات",
   "notificationSent": "تم إرسال الإشعار",
-  "messageSent": "تم إرسال الرسالة",
+  "messageSent": "تم إرسال الرسالة بنجاح",
+  "failedToSendMessage": "فشل إرسال الرسالة. يرجى المحاولة مرة أخرى.",
+  "you": "أنت",
   "requestSent": "تم إرسال الطلب",
   "invitationSent": "تم إرسال الدعوة",
   "confirmationSent": "تم إرسال التأكيد",
@@ -860,5 +863,554 @@
   "statusUnavailable": "غير متاح",
   "statusPending": "قيد الانتظار",
   "statusCompleted": "مكتمل",
-  "statusCancelled": "ملغي"
+  "statusCancelled": "ملغي",
+  "filterPresetSaved": "تم حفظ إعداد الفلتر!",
+  "basicFilters": "الفلاتر الأساسية",
+  "presets": "الإعدادات المسبقة",
+  "advanced": "متقدم",
+  "saveCurrentFilters": "حفظ الفلاتر الحالية",
+  "enterPresetName": "أدخل اسم الإعداد المسبق",
+  "dateCreated": "تاريخ الإنشاء",
+  "lastUpdated": "آخر تحديث",
+  "descending": "تنازلي",
+  "ascending": "تصاعدي",
+  "verifiedOnly": "موثق فقط",
+  "showOnlyVerifiedItems": "عرض العناصر الموثقة فقط",
+  "urgentOnly": "عاجل فقط",
+  "showOnlyUrgentRequests": "عرض الطلبات العاجلة فقط",
+  "newYork": "نيويورك",
+  "losAngeles": "لوس أنجلوس",
+  "chicago": "شيكاغو",
+  "houston": "هيوستن",
+  "phoenix": "فينيكس",
+  "philadelphia": "فيلادلفيا",
+  "myDonationsComingSoon": "تبرعاتي - قريباً",
+  "browseDonationsComingSoon": "تصفح التبرعات - قريباً",
+  "myRequestsComingSoon": "طلباتي - قريباً",
+  "browseRequestsComingSoon": "تصفح الطلبات - قريباً",
+  "createDonationComingSoon": "إنشاء تبرع - قريباً",
+  "createRequestComingSoon": "إنشاء طلب - قريباً",
+  "profileComingSoon": "الملف الشخصي - قريباً",
+  "messagesComingSoon": "الرسائل - قريباً",
+  "notificationsComingSoon": "الإشعارات - قريباً",
+  "helpSupportComingSoon": "المساعدة والدعم - قريباً",
+  "analyticsComingSoon": "التحليلات - قريباً",
+  "userManagementComingSoon": "إدارة المستخدمين - قريباً",
+  "reportsComingSoon": "التقارير - قريباً",
+  "pageNotFound": "الصفحة غير موجودة",
+  "noRouteDefinedForPath": "لم يتم تحديد مسار لهذا المسار",
+  "errorLoadingDashboard": "خطأ في تحميل لوحة التحكم: {error}",
+  "@errorLoadingDashboard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noPermissionAccess": "ليس لديك إذن للوصول إلى هذه الصفحة.",
+  "errorLoadingRequests": "خطأ في تحميل الطلبات: {error}",
+  "@errorLoadingRequests": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorUpdatingRequest": "خطأ في تحديث الطلب: {error}",
+  "@errorUpdatingRequest": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingUsers": "خطأ في تحميل المستخدمين: {error}",
+  "@errorLoadingUsers": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorDeletingUser": "خطأ في حذف المستخدم: {error}",
+  "@errorDeletingUser": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "requestUpdatedSuccessfully": "تم تحديث الطلب {status} بنجاح",
+  "@requestUpdatedSuccessfully": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "userDeletedSuccessfully": "تم حذف المستخدم بنجاح",
+  "userBlockedSuccess": "تم حظر {userName}",
+  "@userBlockedSuccess": {
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "adminDashboard": "لوحة تحكم المدير",
+  "requestNumber": "طلب #{id}",
+  "@requestNumber": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "noInternetConnection": "لا يوجد اتصال بالإنترنت",
+  "switchToEnglish": "التبديل إلى الإنجليزية",
+  "switchToArabic": "التبديل إلى العربية",
+  "newConversation": "محادثة جديدة",
+  "searchUserToChat": "ابحث عن مستخدم لبدء الدردشة",
+  "startTypingToSearch": "ابدأ الكتابة للبحث عن المستخدمين",
+  "conversationDetails": "تفاصيل المحادثة",
+  "firstMessage": "أول رسالة",
+  "archiveConversation": "أرشفة المحادثة",
+  "messageCount": "{count, plural, =1{رسالة واحدة} other{{count} رسائل}}",
+  "@messageCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchByNameEmailLocation": "البحث بالاسم أو البريد الإلكتروني أو الموقع...",
+  "failedToSearchUsers": "فشل البحث عن المستخدمين",
+  "donor": "متبرع",
+  "receiver": "مستقبل",
+  "admin": "مدير",
+  "retry": "إعادة المحاولة",
+  "loading": "جارٍ التحميل...",
+  "somethingWentWrong": "حدث خطأ ما",
+  "noItemsFound": "لم يتم العثور على عناصر",
+  "fiveMiles": "5 أميال",
+  "tenMiles": "10 أميال",
+  "twentyFiveMiles": "25 ميل",
+  "fiftyMiles": "50 ميل",
+  "anyDistance": "أي مسافة",
+  "newItem": "جديد",
+  "likeNew": "مثل الجديد",
+  "good": "جيد",
+  "fair": "مقبول",
+  "minAmount": "الحد الأدنى للمبلغ",
+  "maxAmount": "الحد الأقصى للمبلغ",
+  "distance": "المسافة",
+  "itemCondition": "حالة العنصر",
+  "dateRange": "نطاق التاريخ",
+  "amountRange": "نطاق المبلغ",
+  "sortOptions": "خيارات الترتيب",
+  "savedPresets": "الإعدادات المحفوظة",
+  "noSavedPresets": "لا توجد إعدادات محفوظة",
+  "applyPreset": "تطبيق الإعداد",
+  "deletePreset": "حذف الإعداد",
+  "fromDate": "من: {date}",
+  "@fromDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "toDate": "إلى: {date}",
+  "@toDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "startDate": "تاريخ البداية",
+  "endDate": "تاريخ النهاية",
+  "advancedFilters": "فلاتر متقدمة",
+  "activeFilters": "{count} نشط",
+  "@activeFilters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reasonOptional": "السبب (اختياري)",
+  "whyBlockingUser": "لماذا تحظر هذا المستخدم؟",
+  "blockingUserWarning": "حظر هذا المستخدم سيمنعه من الاتصال بك ومشاهدة تبرعاتك.",
+  "failedToBlockUser": "فشل حظر المستخدم",
+  "deleteItem": "حذف {itemName}؟",
+  "@deleteItem": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      }
+    }
+  },
+  "actionCannotBeUndone": "لا يمكن التراجع عن هذا الإجراء.",
+  "filterOptions": "خيارات التصفية",
+  "reset": "إعادة تعيين",
+  "apply": "تطبيق",
+  "confirmAction": "تأكيد الإجراء",
+  "areYouSureProceed": "هل أنت متأكد من أنك تريد المتابعة؟",
+  "selectCategory": "اختر الفئة",
+  "noDonationsYet": "لا توجد تبرعات بعد",
+  "startMakingDifferenceFirst": "ابدأ في إحداث فرق من خلال إنشاء تبرعك الأول",
+  "noRequestsYet": "لا توجد طلبات بعد",
+  "browseAvailableDonations": "تصفح التبرعات المتاحة واطلب العناصر التي تحتاجها",
+  "noResultsFound": "لم يتم العثور على نتائج",
+  "tryAdjustingFilters": "حاول تعديل الفلاتر أو مصطلحات البحث",
+  "noUsersFound": "لم يتم العثور على مستخدمين",
+  "noUsersMatchCriteria": "لا يوجد مستخدمون يطابقون معايير البحث",
+  "noDonationsFound": "لا توجد تبرعات",
+  "noDonationsMatchCriteria": "لا توجد تبرعات تطابق معايير البحث",
+  "activeUsers": "المستخدمون النشطون",
+  "successRate": "معدل النجاح",
+  "receivers": "المستقبلون",
+  "accessDenied": "تم رفض الوصول",
+  "noPermissionPage": "ليس لديك إذن للوصول إلى هذه الصفحة.",
+  "requestManagement": "إدارة الطلبات",
+  "filterByStatus": "تصفية حسب الحالة: ",
+  "allStatuses": "جميع الحالات",
+  "noRequestsFound": "لم يتم العثور على طلبات",
+  "requestNumber": "طلب #{id}",
+  "fromUser": "من: {name}",
+  "@fromUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "toUser": "إلى: {name}",
+  "@toUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteUser": "حذف المستخدم",
+  "confirmDeleteUser": "هل أنت متأكد من أنك تريد حذف {name}؟",
+  "@confirmDeleteUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "userManagement": "إدارة المستخدمين",
+  "filterByRole": "تصفية حسب الدور: ",
+  "allRoles": "جميع الأدوار",
+  "donors": "المتبرعون",
+  "admins": "المديرون",
+  "you": "أنت",
+  "viewDetails": "عرض التفاصيل",
+  "conversationUnarchived": "تم إلغاء أرشفة المحادثة",
+  "failedToChangeLanguage": "فشل تغيير اللغة",
+  "changingLanguage": "جارٍ تغيير اللغة...",
+  "conversationInfo": "معلومات المحادثة",
+  "basicFilters": "فلاتر أساسية",
+  "presets": "إعدادات مسبقة",
+  "advanced": "متقدم",
+  "saveCurrentFilters": "حفظ الفلاتر الحالية",
+  "enterPresetName": "أدخل اسم الإعداد",
+  "filterPresetSaved": "تم حفظ إعداد الفلتر",
+  "verifiedOnly": "موثق فقط",
+  "showOnlyVerifiedItems": "إظهار العناصر الموثقة فقط",
+  "urgentOnly": "عاجل فقط",
+  "showOnlyUrgentRequests": "إظهار الطلبات العاجلة فقط",
+  "dateCreated": "تاريخ الإنشاء",
+  "lastUpdated": "آخر تحديث",
+  "descending": "تنازلي",
+  "ascending": "تصاعدي",
+  "noFilters": "لا توجد فلاتر",
+  "categoriesCount": "{count} فئات",
+  "@categoriesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statusesCount": "{count} حالات",
+  "@statusesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "newYork": "نيويورك",
+  "losAngeles": "لوس أنجلوس",
+  "chicago": "شيكاغو",
+  "houston": "هيوستن",
+  "phoenix": "فينيكس",
+  "philadelphia": "فيلادلفيا",
+  "pendingReview": "قيد المراجعة",
+  "approvedByAdmin": "تمت الموافقة من قبل المدير",
+  "rejectedByAdmin": "تم الرفض من قبل المدير",
+  "platformInformation": "معلومات المنصة",
+  "systemSettings": "إعدادات النظام",
+  "platformName": "اسم المنصة",
+  "version": "الإصدار",
+  "supportEmail": "بريد الدعم",
+  "maxUploadSize": "الحد الأقصى لحجم الرفع",
+  "sessionTimeout": "انتهاء مهلة الجلسة",
+  "apiVersion": "إصدار API",
+  "databaseStatus": "حالة قاعدة البيانات",
+  "totalTransactions": "إجمالي المعاملات",
+  "availableDonations": "التبرعات المتاحة",
+  "pendingDonations": "التبرعات المعلقة",
+  "approveDonation": "الموافقة على التبرع",
+  "rejectDonation": "رفض التبرع",
+  "areYouSureApprove": "هل أنت متأكد من أنك تريد الموافقة على \"{title}\"؟",
+  "@areYouSureApprove": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "rejecting": "جارٍ الرفض: \"{title}\"",
+  "@rejecting": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "rejectionReason": "سبب الرفض",
+  "provideRejectionReason": "قدم سبباً للرفض",
+  "pleaseProvideRejectionReason": "يرجى تقديم سبب الرفض",
+  "reject": "رفض",
+  "rejected": "مرفوض",
+  "donationApprovedSuccessfully": "تمت الموافقة على التبرع بنجاح",
+  "failedToApproveDonation": "فشلت الموافقة على التبرع",
+  "donationRejectedSuccessfully": "تم رفض التبرع بنجاح",
+  "failedToRejectDonation": "فشل رفض التبرع",
+  "failedToLoadPendingDonations": "فشل تحميل التبرعات المعلقة",
+  "noPendingDonations": "لا توجد تبرعات معلقة",
+  "allDonationsReviewed": "تمت مراجعة جميع التبرعات",
+  "donorName": "اسم المتبرع",
+  "submittedOn": "تم التقديم في",
+  "actions": "الإجراءات",
+  "fieldRequired": "الحقل مطلوب",
+  "fieldTooShort": "الحقل قصير جداً",
+  "fieldTooLong": "الحقل طويل جداً",
+  "invalidFormat": "تنسيق غير صحيح",
+  "invalidInput": "إدخال غير صحيح",
+  "pleaseEnterValidValue": "يرجى إدخال قيمة صحيحة",
+  "pleaseSelectOption": "يرجى اختيار خيار",
+  "pleaseEnterText": "يرجى إدخال نص",
+  "pleaseEnterNumber": "يرجى إدخال رقم",
+  "numberTooSmall": "الرقم صغير جداً",
+  "numberTooLarge": "الرقم كبير جداً",
+  "mustBePositiveNumber": "يجب أن يكون رقماً موجباً",
+  "mustBeWholeNumber": "يجب أن يكون رقماً صحيحاً",
+  "connectionError": "خطأ في الاتصال",
+  "serverError": "خطأ في الخادم",
+  "timeoutError": "انتهت مهلة الاتصال",
+  "unknownError": "خطأ غير معروف",
+  "operationFailed": "فشلت العملية",
+  "operationCancelled": "تم إلغاء العملية",
+  "unauthorized": "غير مخول",
+  "forbidden": "محظور",
+  "notFound": "غير موجود",
+  "alreadyExists": "موجود بالفعل",
+  "conflictError": "خطأ في التضارب",
+  "validationError": "خطأ في التحقق",
+  "processingError": "خطأ في المعالجة",
+  "uploadError": "خطأ في الرفع",
+  "downloadError": "خطأ في التحميل",
+  "saveError": "خطأ في الحفظ",
+  "loadError": "خطأ في التحميل",
+  "deleteError": "خطأ في الحذف",
+  "updateError": "خطأ في التحديث",
+  "createError": "خطأ في الإنشاء",
+  "loginError": "خطأ في تسجيل الدخول",
+  "logoutError": "خطأ في تسجيل الخروج",
+  "registrationError": "خطأ في التسجيل",
+  "authenticationError": "خطأ في المصادقة",
+  "sessionExpired": "انتهت صلاحية الجلسة",
+  "accountLocked": "الحساب مقفل",
+  "accountDisabled": "الحساب معطل",
+  "accountNotVerified": "الحساب غير موثق",
+  "emailNotVerified": "البريد الإلكتروني غير موثق",
+  "phoneNotVerified": "رقم الهاتف غير موثق",
+  "verificationRequired": "التحقق مطلوب",
+  "verificationFailed": "فشل التحقق",
+  "verificationExpired": "انتهت صلاحية التحقق",
+  "codeRequired": "الرمز مطلوب",
+  "codeInvalid": "رمز غير صحيح",
+  "codeExpired": "انتهت صلاحية الرمز",
+  "tooManyAttempts": "محاولات كثيرة جداً",
+  "rateLimitExceeded": "تم تجاوز حد المعدل",
+  "quotaExceeded": "تم تجاوز الحصة",
+  "storageQuotaExceeded": "تم تجاوز حصة التخزين",
+  "bandwidthExceeded": "تم تجاوز عرض النطاق الترددي",
+  "serviceUnavailable": "الخدمة غير متاحة",
+  "maintenanceMode": "وضع الصيانة",
+  "featureDisabled": "الميزة معطلة",
+  "upgradeRequired": "الترقية مطلوبة",
+  "subscriptionRequired": "الاشتراك مطلوب",
+  "subscriptionExpired": "انتهت صلاحية الاشتراك",
+  "paymentRequired": "الدفع مطلوب",
+  "paymentFailed": "فشل الدفع",
+  "insufficientFunds": "أموال غير كافية",
+  "cardDeclined": "تم رفض البطاقة",
+  "cardExpired": "انتهت صلاحية البطاقة",
+  "invalidCard": "بطاقة غير صحيحة",
+  "operationSuccessful": "نجحت العملية",
+  "saveSuccessful": "نجح الحفظ",
+  "updateSuccessful": "نجح التحديث",
+  "deleteSuccessful": "نجح الحذف",
+  "createSuccessful": "نجح الإنشاء",
+  "uploadSuccessful": "نجح الرفع",
+  "downloadSuccessful": "نجح التحميل",
+  "loginSuccessful": "نجح تسجيل الدخول",
+  "logoutSuccessful": "نجح تسجيل الخروج",
+  "registrationSuccessful": "نجح التسجيل",
+  "verificationSuccessful": "نجح التحقق",
+  "passwordChanged": "تم تغيير كلمة المرور",
+  "profileUpdated": "تم تحديث الملف الشخصي",
+  "settingsUpdated": "تم تحديث الإعدادات",
+  "preferencesUpdated": "تم تحديث التفضيلات",
+  "notificationSent": "تم إرسال الإشعار",
+  "messageSentSuccessfully": "تم إرسال الرسالة بنجاح",
+  "failedToSendMessage": "فشل إرسال الرسالة. يرجى المحاولة مرة أخرى.",
+  "requestSent": "تم إرسال الطلب",
+  "invitationSent": "تم إرسال الدعوة",
+  "confirmationSent": "تم إرسال التأكيد",
+  "reminderSent": "تم إرسال التذكير",
+  "reportGenerated": "تم إنشاء التقرير",
+  "backupCreated": "تم إنشاء النسخة الاحتياطية",
+  "dataExported": "تم تصدير البيانات",
+  "dataImported": "تم استيراد البيانات",
+  "syncCompleted": "اكتملت المزامنة",
+  "taskCompleted": "اكتملت المهمة",
+  "processCompleted": "اكتملت العملية",
+  "installationCompleted": "اكتمل التثبيت",
+  "configurationCompleted": "اكتمل التكوين",
+  "setupCompleted": "اكتمل الإعداد",
+  "migrationCompleted": "اكتملت الهجرة",
+  "optimizationCompleted": "اكتمل التحسين",
+  "analysisCompleted": "اكتمل التحليل",
+  "scanCompleted": "اكتمل الفحص",
+  "testCompleted": "اكتمل الاختبار",
+  "validationCompleted": "اكتمل التحقق",
+  "processingCompleted": "اكتملت المعالجة",
+  "calculationCompleted": "اكتمل الحساب",
+  "requestsFilled": "الطلبات المكتملة",
+  "blockUserTitle": "حظر المستخدم",
+  "blockUserWarning": "حظر هذا المستخدم سيمنعه من الاتصال بك ومشاهدة تبرعاتك.",
+  "blockUserReasonLabel": "السبب (اختياري)",
+  "blockUserReasonHint": "لماذا تحظر هذا المستخدم؟",
+  "blockUserButton": "حظر المستخدم",
+  "failedToBlockUser": "فشل حظر المستخدم",
+  "userBlockedSuccess": "تم حظر {userName} بنجاح",
+  "@userBlockedSuccess": {
+    "description": "رسالة نجاح عند حظر مستخدم",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "searchByNameEmailLocation": "البحث بالاسم أو البريد الإلكتروني أو الموقع...",
+  "failedToSearchUsers": "فشل البحث عن المستخدمين",
+  "conversationUnarchived": "تم إلغاء أرشفة المحادثة",
+  "failedToChangeLanguage": "فشل تغيير اللغة",
+  "changingLanguage": "جارٍ تغيير اللغة...",
+  "conversationInfo": "معلومات المحادثة",
+  "noPendingDonationsMessage": "تمت مراجعة جميع التبرعات",
+  "allDonationsReviewed": "تمت مراجعة جميع التبرعات",
+  "likeNew": "مثل الجديد",
+  "pendingOperationsText": "{count} عملية معلقة{plural} سيتم مزامنتها عند الاتصال",
+  "@pendingOperationsText": {
+    "description": "يعرض عدد العمليات المعلقة",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "languageLabel": "اللغة / Language",
+  "failedToSearchUsersError": "فشل البحث عن المستخدمين: {error}",
+  "@failedToSearchUsersError": {
+    "description": "رسالة خطأ عند فشل البحث عن المستخدمين",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "conversationDetails": "تفاصيل المحادثة",
+  "firstMessage": "أول رسالة",
+  "archiveConversation": "أرشفة المحادثة",
+  "unblock": "إلغاء الحظر",
+  "blockedUsersTitle": "المستخدمون المحظورون",
+  "noBlockedUsers": "لا يوجد مستخدمون محظورون",
+  "noBlockedUsersDescription": "المستخدمون الذين تحظرهم سيظهرون هنا",
+  "donationsWithFilters": "التبرعات مع الفلاتر",
+  "noFiltersApplied": "لم يتم تطبيق فلاتر. عرض جميع التبرعات.",
+  "yourImpact": "تأثيرك",
+  "noDonationsYet": "لا توجد تبرعات بعد",
+  "donationsCount": "{count} تبرع",
+  "logout": "تسجيل الخروج",
+  "fullActivityLogComingSoon": "سجل النشاط الكامل قريباً",
+  "goalTracking": "تتبع الأهداف",
+  "monthlyGoal": "الهدف الشهري",
+  "archiveConversationConfirm": "أرشفة المحادثة مع {name}؟",
+  "archive": "أرشفة",
+  "conversationArchived": "تم أرشفة المحادثة",
+  "resetNotificationSettings": "إعادة تعيين إعدادات الإشعارات",
+  "resetNotificationConfirm": "سيؤدي هذا إلى إعادة تعيين جميع إعدادات الإشعارات إلى قيمها الافتراضية. هل أنت متأكد؟",
+  "notificationSettingsReset": "تم إعادة تعيين إعدادات الإشعارات إلى الافتراضية",
+  "notificationSettings": "إعدادات الإشعارات",
+  "pushNotifications": "الإشعارات الفورية",
+  "pushNotificationsDesc": "تلقي الإشعارات الفورية على جهازك",
+  "emailNotifications": "إشعارات البريد الإلكتروني",
+  "emailNotificationsDesc": "تلقي الإشعارات عبر البريد الإلكتروني",
+  "messageNotifications": "إشعارات الرسائل",
+  "messageNotificationsDesc": "احصل على إشعارات حول الرسائل الجديدة",
+  "donationUpdates": "تحديثات التبرعات",
+  "donationUpdatesDesc": "تلقي تحديثات حول تبرعاتك",
+  "profile": "الملف الشخصي",
+  "pleaseLoginAgain": "يرجى تسجيل الدخول مرة أخرى",
+  "darkMode": "الوضع الداكن",
+  "darkModeDesc": "التبديل بين الوضع الداكن والفاتح",
+  "notifications": "الإشعارات",
+  "notificationsDesc": "إدارة إعدادات الإشعارات",
+  "language": "اللغة",
+  "languageDesc": "تغيير لغة التطبيق",
+  "languageSettingsComingSoon": "إعدادات اللغة قريباً",
+  "profileUpdatedSuccess": "تم تحديث الملف الشخصي بنجاح!",
+  "failedToUpdateProfile": "فشل تحديث الملف الشخصي",
+  "logoutConfirm": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+  "updateProfilePicture": "تحديث صورة الملف الشخصي",
+  "upload": "رفع",
+  "uploadingAvatar": "جاري رفع الصورة الرمزية...",
+  "avatarUploadedSuccess": "تم رفع الصورة الرمزية بنجاح!",
+  "markAsRead": "وضع علامة كمقروء",
+  "viewDetails": "عرض التفاصيل",
+  "deleteNotification": "حذف الإشعار",
+  "deleteNotificationConfirm": "هل أنت متأكد أنك تريد حذف هذا الإشعار؟",
+  "syncCompletedSuccess": "تمت المزامنة بنجاح",
+  "syncFailed": "فشلت المزامنة: {error}",
+  "forceSync": "فرض المزامنة",
+  "clearCache": "مسح ذاكرة التخزين المؤقت",
+  "givingBridge": "جسر العطاء",
+  "pleaseSelectReason": "يرجى اختيار سبب للإبلاغ",
+  "pleaseProvideDescription": "يرجى تقديم وصف",
+  "reportSubmittedSuccess": "تم إرسال البلاغ بنجاح",
+  "searchHistoryCleared": "تم مسح سجل البحث",
+  "screenForRoute": "شاشة للمسار: {route}"
 }

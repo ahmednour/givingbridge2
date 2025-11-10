@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../lib/providers/donation_provider.dart';
 import '../lib/providers/request_provider.dart';
 import '../lib/providers/message_provider.dart';
@@ -6,6 +7,10 @@ import '../lib/providers/notification_provider.dart';
 import '../lib/providers/filter_provider.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  // Mock SharedPreferences for NotificationProvider tests
+  SharedPreferences.setMockInitialValues({});
   group('DonationProvider Tests', () {
     late DonationProvider donationProvider;
 
@@ -161,17 +166,33 @@ void main() {
     });
 
     test('should initialize with default settings', () {
-      expect(notificationProvider.pushNotifications, isTrue);
-      expect(notificationProvider.emailNotifications, isTrue);
-      expect(notificationProvider.donationRequests, isTrue);
-      expect(notificationProvider.donationApprovals, isTrue);
+      expect(notificationProvider.inAppNotifications, isTrue);
       expect(notificationProvider.messages, isTrue);
-      expect(notificationProvider.systemUpdates, isTrue);
+      expect(notificationProvider.allNotificationsEnabled, isTrue);
     });
 
-    test('should update push notifications setting', () async {
-      await notificationProvider.updatePushNotifications(false);
-      expect(notificationProvider.pushNotifications, isFalse);
+    test('should update in-app notifications setting', () async {
+      await notificationProvider.updateInAppNotifications(false);
+      expect(notificationProvider.inAppNotifications, isFalse);
+    });
+
+    test('should update messages setting', () async {
+      await notificationProvider.updateMessages(false);
+      expect(notificationProvider.messages, isFalse);
+    });
+
+    test('should toggle all notifications', () async {
+      await notificationProvider.toggleAllNotifications(false);
+      expect(notificationProvider.inAppNotifications, isFalse);
+      expect(notificationProvider.messages, isFalse);
+      expect(notificationProvider.allNotificationsEnabled, isFalse);
+    });
+
+    test('should reset to defaults', () async {
+      await notificationProvider.toggleAllNotifications(false);
+      await notificationProvider.resetToDefaults();
+      expect(notificationProvider.inAppNotifications, isTrue);
+      expect(notificationProvider.messages, isTrue);
     });
   });
 
@@ -183,29 +204,48 @@ void main() {
     });
 
     test('should initialize with default filters', () {
-      expect(filterProvider.selectedCategory, isNull);
-      expect(filterProvider.selectedLocation, isNull);
-      expect(filterProvider.selectedCondition, isNull);
+      expect(filterProvider.selectedCategories, isEmpty);
+      expect(filterProvider.selectedLocations, isEmpty);
+      expect(filterProvider.selectedConditions, isEmpty);
+      expect(filterProvider.hasActiveFilters, isFalse);
     });
 
-    test('should set category filter', () {
-      filterProvider.setCategory('food');
-      expect(filterProvider.selectedCategory, equals('food'));
+    test('should set categories filter', () {
+      filterProvider.setCategories(['food', 'clothes']);
+      expect(filterProvider.selectedCategories, equals(['food', 'clothes']));
+      expect(filterProvider.hasActiveFilters, isTrue);
     });
 
-    test('should set location filter', () {
-      filterProvider.setLocation('Cairo');
-      expect(filterProvider.selectedLocation, equals('Cairo'));
+    test('should set locations filter', () {
+      filterProvider.setLocations(['Cairo', 'Alexandria']);
+      expect(filterProvider.selectedLocations, equals(['Cairo', 'Alexandria']));
+      expect(filterProvider.hasActiveFilters, isTrue);
+    });
+
+    test('should set search query', () {
+      filterProvider.setSearchQuery('test query');
+      expect(filterProvider.searchQuery, equals('test query'));
+      expect(filterProvider.hasActiveFilters, isTrue);
     });
 
     test('should clear all filters', () {
-      filterProvider.setCategory('food');
-      filterProvider.setLocation('Cairo');
+      filterProvider.setCategories(['food']);
+      filterProvider.setLocations(['Cairo']);
+      filterProvider.setSearchQuery('test');
       filterProvider.clearFilters();
 
-      expect(filterProvider.selectedCategory, isNull);
-      expect(filterProvider.selectedLocation, isNull);
-      expect(filterProvider.selectedCondition, isNull);
+      expect(filterProvider.selectedCategories, isEmpty);
+      expect(filterProvider.selectedLocations, isEmpty);
+      expect(filterProvider.searchQuery, isEmpty);
+      expect(filterProvider.hasActiveFilters, isFalse);
+    });
+
+    test('should count active filters correctly', () {
+      filterProvider.setCategories(['food']);
+      filterProvider.setLocations(['Cairo']);
+      filterProvider.setSearchQuery('test');
+
+      expect(filterProvider.activeFiltersCount, equals(3));
     });
   });
 }

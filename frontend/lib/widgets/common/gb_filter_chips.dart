@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/design_system.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Filter Chips Component for GivingBridge
 /// Multi-select or single-select filtering with chips
@@ -98,7 +99,7 @@ class _GBFilterChipsState<T> extends State<GBFilterChips<T>> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: DesignSystem.spaceM),
                   ),
-                  child: const Text('Clear'),
+                  child: Text(AppLocalizations.of(context)!.clear),
                 ),
             ],
           ),

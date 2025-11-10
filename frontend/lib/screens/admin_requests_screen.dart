@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../models/request.dart';
@@ -30,21 +31,30 @@ class _AdminRequestsScreenState extends State<AdminRequestsScreen> {
       final response = await ApiService.getAllRequests();
       if (response.success) {
         final requests = (response.data?['requests'] as List?)
-            ?.map((json) => Request.fromJson(json))
-            .toList() ?? [];
+                ?.map((json) => Request.fromJson(json))
+                .toList() ??
+            [];
         setState(() {
           _requests = requests;
           _filteredRequests = requests;
         });
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${response.error}')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(
+                    '${AppLocalizations.of(context)!.error}: ${response.error}')),
+          );
+        }
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error loading requests: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(AppLocalizations.of(context)!
+                  .errorLoadingRequests(e.toString()))),
+        );
+      }
     } finally {
       setState(() => _isLoading = false);
     }
@@ -66,19 +76,31 @@ class _AdminRequestsScreenState extends State<AdminRequestsScreen> {
       );
 
       if (response.success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Request ${newStatus.toLowerCase()} successfully')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(AppLocalizations.of(context)!
+                    .requestUpdatedSuccessfully(newStatus.toLowerCase()))),
+          );
+        }
         _loadRequests(); // Reload the list
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${response.error}')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(
+                    '${AppLocalizations.of(context)!.error}: ${response.error}')),
+          );
+        }
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error updating request: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(AppLocalizations.of(context)!
+                  .errorUpdatingRequest(e.toString()))),
+        );
+      }
     }
   }
 
@@ -86,7 +108,8 @@ class _AdminRequestsScreenState extends State<AdminRequestsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Request #${request.id}'),
+        title: Text(
+            AppLocalizations.of(context)!.requestNumber(request.id.toString())),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -111,7 +134,7 @@ class _AdminRequestsScreenState extends State<AdminRequestsScreen> {
                 _updateRequestStatus(request, 'approved');
               },
               style: TextButton.styleFrom(foregroundColor: Colors.green),
-              child: const Text('Approve'),
+              child: Text(AppLocalizations.of(context)!.approve),
             ),
             TextButton(
               onPressed: () {
@@ -119,12 +142,12 @@ class _AdminRequestsScreenState extends State<AdminRequestsScreen> {
                 _updateRequestStatus(request, 'declined');
               },
               style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: const Text('Decline'),
+              child: Text(AppLocalizations.of(context)!.decline),
             ),
           ],
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text(AppLocalizations.of(context)!.close),
           ),
         ],
       ),
@@ -153,20 +176,20 @@ class _AdminRequestsScreenState extends State<AdminRequestsScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-    
+
     // Check if user is admin
     if (authProvider.user?.role != 'admin') {
       return Scaffold(
-        appBar: AppBar(title: const Text('Access Denied')),
-        body: const Center(
-          child: Text('You do not have permission to access this page.'),
+        appBar: AppBar(title: Text(AppLocalizations.of(context)!.accessDenied)),
+        body: Center(
+          child: Text(AppLocalizations.of(context)!.noPermissionPage),
         ),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Request Management'),
+        title: Text(AppLocalizations.of(context)!.requestManagement),
         backgroundColor: Colors.blue[600],
         foregroundColor: Colors.white,
       ),
@@ -178,19 +201,32 @@ class _AdminRequestsScreenState extends State<AdminRequestsScreen> {
             color: Colors.grey[50],
             child: Row(
               children: [
-                const Text('Filter by status: '),
+                Text('${AppLocalizations.of(context)!.filterByStatus} '),
                 const SizedBox(width: 8),
                 Expanded(
                   child: DropdownButton<String>(
                     value: _selectedStatus,
                     isExpanded: true,
-                    items: const [
-                      DropdownMenuItem(value: 'all', child: Text('All Statuses')),
-                      DropdownMenuItem(value: 'pending', child: Text('Pending')),
-                      DropdownMenuItem(value: 'approved', child: Text('Approved')),
-                      DropdownMenuItem(value: 'declined', child: Text('Declined')),
-                      DropdownMenuItem(value: 'completed', child: Text('Completed')),
-                      DropdownMenuItem(value: 'cancelled', child: Text('Cancelled')),
+                    items: [
+                      DropdownMenuItem(
+                          value: 'all',
+                          child:
+                              Text(AppLocalizations.of(context)!.allStatuses)),
+                      DropdownMenuItem(
+                          value: 'pending',
+                          child: Text(AppLocalizations.of(context)!.pending)),
+                      DropdownMenuItem(
+                          value: 'approved',
+                          child: Text(AppLocalizations.of(context)!.approved)),
+                      DropdownMenuItem(
+                          value: 'declined',
+                          child: Text(AppLocalizations.of(context)!.declined)),
+                      DropdownMenuItem(
+                          value: 'completed',
+                          child: Text(AppLocalizations.of(context)!.completed)),
+                      DropdownMenuItem(
+                          value: 'cancelled',
+                          child: Text(AppLocalizations.of(context)!.cancelled)),
                     ],
                     onChanged: (value) {
                       setState(() => _selectedStatus = value!);
@@ -208,25 +244,33 @@ class _AdminRequestsScreenState extends State<AdminRequestsScreen> {
                 : RefreshIndicator(
                     onRefresh: _loadRequests,
                     child: _filteredRequests.isEmpty
-                        ? const Center(child: Text('No requests found'))
+                        ? Center(
+                            child: Text(
+                                AppLocalizations.of(context)!.noRequestsFound))
                         : ListView.builder(
                             itemCount: _filteredRequests.length,
                             itemBuilder: (context, index) {
                               final request = _filteredRequests[index];
-                              
+
                               return Card(
                                 margin: const EdgeInsets.symmetric(
                                   horizontal: 16,
                                   vertical: 4,
                                 ),
                                 child: ListTile(
-                                  title: Text('Request #${request.id}'),
+                                  title: Text(AppLocalizations.of(context)!
+                                      .requestNumber(request.id.toString())),
                                   subtitle: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text('From: ${request.receiverName ?? 'Unknown'}'),
-                                      Text('To: ${request.donorName ?? 'Unknown'}'),
-                                      if (request.message != null && request.message!.isNotEmpty)
+                                      Text(AppLocalizations.of(context)!
+                                          .fromUser(request.receiverName ??
+                                              'Unknown')),
+                                      Text(AppLocalizations.of(context)!.toUser(
+                                          request.donorName ?? 'Unknown')),
+                                      if (request.message != null &&
+                                          request.message!.isNotEmpty)
                                         Text(
                                           request.message!,
                                           maxLines: 2,
@@ -243,8 +287,10 @@ class _AdminRequestsScreenState extends State<AdminRequestsScreen> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Chip(
-                                        label: Text(request.status.toUpperCase()),
-                                        backgroundColor: _getStatusColor(request.status),
+                                        label:
+                                            Text(request.status.toUpperCase()),
+                                        backgroundColor:
+                                            _getStatusColor(request.status),
                                         labelStyle: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 12,
@@ -253,26 +299,33 @@ class _AdminRequestsScreenState extends State<AdminRequestsScreen> {
                                       if (request.status == 'pending')
                                         PopupMenuButton<String>(
                                           onSelected: (value) {
-                                            _updateRequestStatus(request, value);
+                                            _updateRequestStatus(
+                                                request, value);
                                           },
                                           itemBuilder: (context) => [
-                                            const PopupMenuItem(
+                                            PopupMenuItem(
                                               value: 'approved',
                                               child: Row(
                                                 children: [
-                                                  Icon(Icons.check, color: Colors.green),
+                                                  Icon(Icons.check,
+                                                      color: Colors.green),
                                                   SizedBox(width: 8),
-                                                  Text('Approve'),
+                                                  Text(AppLocalizations.of(
+                                                          context)!
+                                                      .approve),
                                                 ],
                                               ),
                                             ),
-                                            const PopupMenuItem(
+                                            PopupMenuItem(
                                               value: 'declined',
                                               child: Row(
                                                 children: [
-                                                  Icon(Icons.close, color: Colors.red),
+                                                  Icon(Icons.close,
+                                                      color: Colors.red),
                                                   SizedBox(width: 8),
-                                                  Text('Decline'),
+                                                  Text(AppLocalizations.of(
+                                                          context)!
+                                                      .decline),
                                                 ],
                                               ),
                                             ),

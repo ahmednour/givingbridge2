@@ -85,7 +85,7 @@ class _ArchivedConversationsScreenState
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Conversation unarchived'),
+          content: Text(AppLocalizations.of(context)!.conversationUnarchived),
           backgroundColor: DesignSystem.success,
         ),
       );
@@ -242,7 +242,7 @@ class _ArchivedConversationsScreenState
                         Icons.unarchive_outlined,
                         size: 16,
                       ),
-                      label: const Text('Unarchive'),
+                      label: Text(AppLocalizations.of(context)!.unarchive),
                     ),
                   ),
                 ],

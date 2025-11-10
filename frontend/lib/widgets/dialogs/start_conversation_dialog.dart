@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/user.dart';
 import '../../services/api_service.dart';
 import '../../core/theme/design_system.dart';
@@ -56,7 +57,7 @@ class _StartConversationDialogState extends State<StartConversationDialog> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to search users: $error'),
+            content: Text(AppLocalizations.of(context)!.failedToSearchUsersError(error.toString())),
             backgroundColor: DesignSystem.error,
           ),
         );
@@ -100,22 +101,22 @@ class _StartConversationDialogState extends State<StartConversationDialog> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'New Conversation',
-                        style: TextStyle(
+                        AppLocalizations.of(context)!.newConversation,
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
                           color: DesignSystem.neutral900,
                         ),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
-                        'Search for a user to start chatting',
-                        style: TextStyle(
+                        AppLocalizations.of(context)!.searchUserToChat,
+                        style: const TextStyle(
                           fontSize: 14,
                           color: DesignSystem.neutral600,
                         ),
@@ -138,7 +139,7 @@ class _StartConversationDialogState extends State<StartConversationDialog> {
               onChanged: _onSearchChanged,
               autofocus: true,
               decoration: InputDecoration(
-                hintText: 'Search by name, email, or location...',
+                hintText: AppLocalizations.of(context)!.searchByNameEmailLocation,
                 prefixIcon:
                     const Icon(Icons.search, color: DesignSystem.neutral600),
                 filled: true,
@@ -182,8 +183,8 @@ class _StartConversationDialogState extends State<StartConversationDialog> {
                               const SizedBox(height: 16),
                               Text(
                                 _searchController.text.isEmpty
-                                    ? 'Start typing to search for users'
-                                    : 'No users found',
+                                    ? AppLocalizations.of(context)!.startTypingToSearch
+                                    : AppLocalizations.of(context)!.noUsersFound,
                                 style: const TextStyle(
                                   fontSize: 16,
                                   color: DesignSystem.neutral600,
@@ -308,13 +309,14 @@ class _StartConversationDialogState extends State<StartConversationDialog> {
   }
 
   String _getRoleLabel(String role) {
+    final l10n = AppLocalizations.of(context)!;
     switch (role.toLowerCase()) {
       case 'donor':
-        return 'Donor';
+        return l10n.donor;
       case 'receiver':
-        return 'Receiver';
+        return l10n.receiver;
       case 'admin':
-        return 'Admin';
+        return l10n.admin;
       default:
         return role;
     }

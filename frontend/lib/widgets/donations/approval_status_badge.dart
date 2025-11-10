@@ -23,22 +23,22 @@ class ApprovalStatusBadge extends StatelessWidget {
       case 'pending':
         color = Colors.orange;
         icon = Icons.pending;
-        text = l10n.approvalStatusPending ?? 'Pending Review';
+        text = l10n.approvalStatusPending;
         break;
       case 'approved':
         color = Colors.green;
         icon = Icons.check_circle;
-        text = l10n.approvalStatusApproved ?? 'Approved';
+        text = l10n.approvalStatusApproved;
         break;
       case 'rejected':
         color = Colors.red;
         icon = Icons.cancel;
-        text = l10n.approvalStatusRejected ?? 'Rejected';
+        text = l10n.approvalStatusRejected;
         break;
       default:
         color = Colors.grey;
         icon = Icons.help;
-        text = l10n.approvalStatusUnknown ?? 'Unknown';
+        text = l10n.approvalStatusUnknown;
     }
 
     return Container(

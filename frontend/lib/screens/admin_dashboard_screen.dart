@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../models/user.dart';
@@ -39,22 +40,28 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
       if (usersResponse.success) {
         final users = (usersResponse.data?['users'] as List?)
-            ?.map((json) => User.fromJson(json))
-            .toList() ?? [];
+                ?.map((json) => User.fromJson(json))
+                .toList() ??
+            [];
         _recentUsers = users.take(5).toList();
       }
 
       if (requestsResponse.success) {
         final requests = (requestsResponse.data?['requests'] as List?)
-            ?.map((json) => Request.fromJson(json))
-            .where((request) => request.status == 'pending')
-            .toList() ?? [];
+                ?.map((json) => Request.fromJson(json))
+                .where((request) => request.status == 'pending')
+                .toList() ??
+            [];
         _pendingRequests = requests.take(5).toList();
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error loading dashboard: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(AppLocalizations.of(context)!
+                  .errorLoadingDashboard(e.toString()))),
+        );
+      }
     } finally {
       setState(() => _isLoading = false);
     }
@@ -63,20 +70,22 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-    
+
     // Check if user is admin
+    final l10n = AppLocalizations.of(context)!;
+
     if (authProvider.user?.role != 'admin') {
       return Scaffold(
-        appBar: AppBar(title: const Text('Access Denied')),
-        body: const Center(
-          child: Text('You do not have permission to access this page.'),
+        appBar: AppBar(title: Text(l10n.accessDenied)),
+        body: Center(
+          child: Text(l10n.noPermissionAccess),
         ),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Admin Dashboard'),
+        title: Text(l10n.adminDashboard),
         backgroundColor: Colors.blue[600],
         foregroundColor: Colors.white,
       ),
@@ -93,9 +102,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     const SizedBox(height: 24),
                     _buildQuickActions(),
                     const SizedBox(height: 24),
-                    _buildRecentUsers(),
+                    _buildRecentUsers(l10n),
                     const SizedBox(height: 24),
-                    _buildPendingRequests(),
+                    _buildPendingRequests(l10n),
                   ],
                 ),
               ),
@@ -159,7 +168,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
+  Widget _buildStatCard(
+      String title, String value, IconData icon, Color color) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -250,7 +260,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
-  Widget _buildRecentUsers() {
+  Widget _buildRecentUsers(dynamic l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -263,16 +273,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             ),
             TextButton(
               onPressed: () => Navigator.pushNamed(context, '/admin/users'),
-              child: const Text('View All'),
+              child: Text(l10n.viewAll),
             ),
           ],
         ),
         const SizedBox(height: 8),
         Card(
           child: _recentUsers.isEmpty
-              ? const Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Text('No users found'),
+              ? Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(l10n.noUsersFound),
                 )
               : Column(
                   children: _recentUsers.map((user) {
@@ -299,7 +309,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
-  Widget _buildPendingRequests() {
+  Widget _buildPendingRequests(dynamic l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -312,22 +322,22 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             ),
             TextButton(
               onPressed: () => Navigator.pushNamed(context, '/admin/requests'),
-              child: const Text('View All'),
+              child: Text(l10n.viewAll),
             ),
           ],
         ),
         const SizedBox(height: 8),
         Card(
           child: _pendingRequests.isEmpty
-              ? const Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Text('No pending requests'),
+              ? Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(l10n.noPendingRequests),
                 )
               : Column(
                   children: _pendingRequests.map((request) {
                     return ListTile(
-                      title: Text('Request #${request.id}'),
-                      subtitle: Text(request.message ?? 'No message'),
+                      title: Text(l10n.requestNumber(request.id)),
+                      subtitle: Text(request.message ?? l10n.noMessage),
                       trailing: Chip(
                         label: Text(request.status.toUpperCase()),
                         backgroundColor: Colors.orange[100],

@@ -110,12 +110,14 @@ class GBEmptyState extends StatelessWidget {
             TweenAnimationBuilder<double>(
               tween: Tween(begin: 0.0, end: 1.0),
               duration: const Duration(milliseconds: 600),
-              curve: Curves.easeOutBack,
+              curve: Curves.easeOut,
               builder: (context, value, child) {
+                // Clamp value to ensure it stays within valid range
+                final clampedValue = value.clamp(0.0, 1.0);
                 return Transform.scale(
-                  scale: value,
+                  scale: clampedValue,
                   child: Opacity(
-                    opacity: value,
+                    opacity: clampedValue,
                     child: child,
                   ),
                 );

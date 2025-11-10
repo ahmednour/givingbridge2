@@ -1310,10 +1310,10 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced> {
                   child: Column(
                     children: pendingRequests.take(10).map((request) {
                       return _buildRequestRow(
-                        request['message'] ?? 'Request',
-                        request['requesterName'] ?? 'Anonymous',
+                        request.message ?? 'Request',
+                        request.receiverName,
                         'Request',
-                        request['status'] ?? 'Pending',
+                        request.status,
                       );
                     }).toList(),
                   ),

@@ -37,7 +37,7 @@ class LocalizedElevatedButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isRTL = RTLLayoutService.isRTL(context);
-    
+
     // Convert icon alignment for RTL
     IconAlignment directionalIconAlignment = iconAlignment;
     if (isRTL) {
@@ -48,8 +48,6 @@ class LocalizedElevatedButton extends StatelessWidget {
         case IconAlignment.end:
           directionalIconAlignment = IconAlignment.start;
           break;
-        default:
-          directionalIconAlignment = iconAlignment;
       }
     }
 
@@ -57,7 +55,8 @@ class LocalizedElevatedButton extends StatelessWidget {
     ButtonStyle? directionalStyle = style;
     if (isRTL && style?.textStyle?.resolve({}) != null) {
       final currentTextStyle = style!.textStyle!.resolve({})!;
-      final arabicTextStyle = ArabicTypographyService.getArabicTextStyle(currentTextStyle);
+      final arabicTextStyle =
+          ArabicTypographyService.getArabicTextStyle(currentTextStyle);
       directionalStyle = style!.copyWith(
         textStyle: MaterialStateProperty.all(arabicTextStyle),
       );
@@ -67,7 +66,8 @@ class LocalizedElevatedButton extends StatelessWidget {
     if (directionalStyle?.padding?.resolve({}) != null) {
       final currentPadding = directionalStyle!.padding!.resolve({})!;
       if (currentPadding is EdgeInsets) {
-        final rtlPadding = RTLLayoutService.convertPaddingToRTL(currentPadding, isRTL);
+        final rtlPadding =
+            RTLLayoutService.convertPaddingToRTL(currentPadding, isRTL);
         directionalStyle = directionalStyle.copyWith(
           padding: MaterialStateProperty.all(rtlPadding),
         );
@@ -140,7 +140,7 @@ class LocalizedTextButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isRTL = RTLLayoutService.isRTL(context);
-    
+
     // Convert icon alignment for RTL
     IconAlignment directionalIconAlignment = iconAlignment;
     if (isRTL) {
@@ -151,8 +151,6 @@ class LocalizedTextButton extends StatelessWidget {
         case IconAlignment.end:
           directionalIconAlignment = IconAlignment.start;
           break;
-        default:
-          directionalIconAlignment = iconAlignment;
       }
     }
 
@@ -160,7 +158,8 @@ class LocalizedTextButton extends StatelessWidget {
     ButtonStyle? directionalStyle = style;
     if (isRTL && style?.textStyle?.resolve({}) != null) {
       final currentTextStyle = style!.textStyle!.resolve({})!;
-      final arabicTextStyle = ArabicTypographyService.getArabicTextStyle(currentTextStyle);
+      final arabicTextStyle =
+          ArabicTypographyService.getArabicTextStyle(currentTextStyle);
       directionalStyle = style!.copyWith(
         textStyle: MaterialStateProperty.all(arabicTextStyle),
       );
@@ -170,7 +169,8 @@ class LocalizedTextButton extends StatelessWidget {
     if (directionalStyle?.padding?.resolve({}) != null) {
       final currentPadding = directionalStyle!.padding!.resolve({})!;
       if (currentPadding is EdgeInsets) {
-        final rtlPadding = RTLLayoutService.convertPaddingToRTL(currentPadding, isRTL);
+        final rtlPadding =
+            RTLLayoutService.convertPaddingToRTL(currentPadding, isRTL);
         directionalStyle = directionalStyle.copyWith(
           padding: MaterialStateProperty.all(rtlPadding),
         );
@@ -243,7 +243,7 @@ class LocalizedOutlinedButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isRTL = RTLLayoutService.isRTL(context);
-    
+
     // Convert icon alignment for RTL
     IconAlignment directionalIconAlignment = iconAlignment;
     if (isRTL) {
@@ -254,8 +254,6 @@ class LocalizedOutlinedButton extends StatelessWidget {
         case IconAlignment.end:
           directionalIconAlignment = IconAlignment.start;
           break;
-        default:
-          directionalIconAlignment = iconAlignment;
       }
     }
 
@@ -263,7 +261,8 @@ class LocalizedOutlinedButton extends StatelessWidget {
     ButtonStyle? directionalStyle = style;
     if (isRTL && style?.textStyle?.resolve({}) != null) {
       final currentTextStyle = style!.textStyle!.resolve({})!;
-      final arabicTextStyle = ArabicTypographyService.getArabicTextStyle(currentTextStyle);
+      final arabicTextStyle =
+          ArabicTypographyService.getArabicTextStyle(currentTextStyle);
       directionalStyle = style!.copyWith(
         textStyle: MaterialStateProperty.all(arabicTextStyle),
       );
@@ -273,7 +272,8 @@ class LocalizedOutlinedButton extends StatelessWidget {
     if (directionalStyle?.padding?.resolve({}) != null) {
       final currentPadding = directionalStyle!.padding!.resolve({})!;
       if (currentPadding is EdgeInsets) {
-        final rtlPadding = RTLLayoutService.convertPaddingToRTL(currentPadding, isRTL);
+        final rtlPadding =
+            RTLLayoutService.convertPaddingToRTL(currentPadding, isRTL);
         directionalStyle = directionalStyle.copyWith(
           padding: MaterialStateProperty.all(rtlPadding),
         );
@@ -366,7 +366,7 @@ class LocalizedIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isRTL = RTLLayoutService.isRTL(context);
-    
+
     // Convert padding for RTL
     EdgeInsetsGeometry? directionalPadding = padding;
     if (padding != null && padding is EdgeInsets) {

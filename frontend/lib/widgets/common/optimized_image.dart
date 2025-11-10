@@ -35,7 +35,7 @@ class OptimizedImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final optimizedUrl = _getOptimizedImageUrl(context);
-    
+
     Widget imageWidget = CachedNetworkImage(
       imageUrl: optimizedUrl,
       width: width,
@@ -44,7 +44,8 @@ class OptimizedImage extends StatelessWidget {
       memCacheWidth: _getMemoryCacheWidth(context),
       memCacheHeight: _getMemoryCacheHeight(context),
       placeholder: (context, url) => placeholder ?? _buildDefaultPlaceholder(),
-      errorWidget: (context, url, error) => errorWidget ?? _buildDefaultErrorWidget(),
+      errorWidget: (context, url, error) =>
+          errorWidget ?? _buildDefaultErrorWidget(),
       fadeInDuration: fadeInDuration ?? const Duration(milliseconds: 300),
       useOldImageOnUrlChange: true,
       cacheManager: enableDiskCache ? null : null, // Use default cache manager
@@ -71,11 +72,11 @@ class OptimizedImage extends StatelessWidget {
   String _getOptimizedImageUrl(BuildContext context) {
     final devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
     final screenSize = ResponsiveUtils.getScreenSize(context);
-    
+
     // Calculate optimal dimensions
     int? targetWidth;
     int? targetHeight;
-    
+
     if (width != null) {
       targetWidth = (width! * devicePixelRatio).round();
     }
@@ -115,19 +116,19 @@ class OptimizedImage extends StatelessWidget {
     // Example implementation for a generic image optimization service
     final uri = Uri.parse(originalUrl);
     final queryParams = Map<String, String>.from(uri.queryParameters);
-    
+
     if (width != null) {
       queryParams['w'] = width.toString();
     }
     if (height != null) {
       queryParams['h'] = height.toString();
     }
-    
+
     // Add quality and format optimization
     queryParams['q'] = '85'; // 85% quality for good balance
     queryParams['f'] = 'webp'; // Use WebP format when supported
     queryParams['auto'] = 'compress,format'; // Auto optimization
-    
+
     return uri.replace(queryParameters: queryParams).toString();
   }
 
@@ -170,7 +171,8 @@ class OptimizedImage extends StatelessWidget {
             const SizedBox(height: DesignSystem.spaceS),
             Text(
               'Loading...',
-              style: DesignSystem.bodySmall(context).copyWith(
+              style: TextStyle(
+                fontSize: 12,
                 color: DesignSystem.textSecondary,
               ),
             ),
@@ -200,7 +202,8 @@ class OptimizedImage extends StatelessWidget {
             const SizedBox(height: DesignSystem.spaceS),
             Text(
               'Image not available',
-              style: DesignSystem.bodySmall(context).copyWith(
+              style: TextStyle(
+                fontSize: 12,
                 color: DesignSystem.textSecondary,
               ),
               textAlign: TextAlign.center,
@@ -286,7 +289,7 @@ class OptimizedAvatar extends StatelessWidget {
 
   Widget _buildFallbackAvatar(BuildContext context) {
     final initials = _getInitials(name);
-    
+
     return Container(
       width: size,
       height: size,
@@ -309,14 +312,14 @@ class OptimizedAvatar extends StatelessWidget {
 
   String _getInitials(String? name) {
     if (name == null || name.isEmpty) return '?';
-    
+
     final words = name.trim().split(' ');
     if (words.length >= 2) {
       return '${words[0][0]}${words[1][0]}'.toUpperCase();
     } else if (words.isNotEmpty) {
       return words[0][0].toUpperCase();
     }
-    
+
     return '?';
   }
 }

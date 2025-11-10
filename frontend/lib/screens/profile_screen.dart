@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:image_picker/image_picker.dart';
 import '../core/theme/design_system.dart';
 import '../widgets/common/gb_image_upload.dart';
 import '../widgets/common/gb_button.dart';
@@ -11,6 +12,7 @@ import '../widgets/common/web_card.dart';
 import '../providers/auth_provider.dart';
 import '../providers/theme_provider.dart';
 import '../services/api_service.dart';
+import '../l10n/app_localizations.dart';
 import 'notification_settings_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -54,7 +56,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (user == null) {
           return Scaffold(
             appBar: AppBar(
-              title: const Text('Profile'),
+              title: Text(AppLocalizations.of(context)!.profile),
               centerTitle: true,
               backgroundColor: DesignSystem.getSurfaceColor(context),
             ),
@@ -76,7 +78,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Text('Please log in again'),
+                  Text(AppLocalizations.of(context)!.pleaseLoginAgain),
                   const SizedBox(height: 30),
                   GBButton(
                     text: 'Logout',
@@ -103,7 +105,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return Scaffold(
           backgroundColor: DesignSystem.getBackgroundColor(context),
           appBar: AppBar(
-            title: const Text('Profile'),
+            title: Text(AppLocalizations.of(context)!.profile),
             centerTitle: true,
             backgroundColor: DesignSystem.getSurfaceColor(context),
             foregroundColor: DesignSystem.textPrimary,
@@ -375,7 +377,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       _locationController.text = user.location ?? '';
                     });
                   },
-                  child: const Text('Cancel'),
+                  child: Text(AppLocalizations.of(context)!.cancel),
                 ),
               ),
               const SizedBox(width: 10),
@@ -413,8 +415,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     color: DesignSystem.primaryBlue,
                   ),
                 ),
-                title: const Text('Dark Mode'),
-                subtitle: const Text('Toggle dark/light theme'),
+                title: Text(AppLocalizations.of(context)!.darkMode),
+                subtitle: Text(AppLocalizations.of(context)!.darkModeDesc),
                 trailing: Switch(
                   value: themeProvider.isDarkMode,
                   onChanged: (value) => themeProvider.toggleTheme(),
@@ -435,8 +437,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 color: DesignSystem.primaryBlue,
               ),
             ),
-            title: const Text('Notifications'),
-            subtitle: const Text('Manage notification settings'),
+            title: Text(AppLocalizations.of(context)!.notifications),
+            subtitle: Text(AppLocalizations.of(context)!.notificationsDesc),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               Navigator.push(
@@ -460,13 +462,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 color: DesignSystem.primaryBlue,
               ),
             ),
-            title: const Text('Language'),
-            subtitle: const Text('Change app language'),
+            title: Text(AppLocalizations.of(context)!.language),
+            subtitle: Text(AppLocalizations.of(context)!.languageDesc),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Language settings coming soon'),
+                SnackBar(
+                  content: Text(
+                      AppLocalizations.of(context)!.languageSettingsComingSoon),
                 ),
               );
             },
@@ -482,7 +485,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: ElevatedButton.icon(
         onPressed: () => _showLogoutDialog(authProvider),
         icon: const Icon(Icons.logout),
-        label: const Text('Logout'),
+        label: Text(AppLocalizations.of(context)!.logout),
         style: ElevatedButton.styleFrom(
           backgroundColor: DesignSystem.error,
           padding: const EdgeInsets.symmetric(vertical: 15),
@@ -513,8 +516,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       setState(() => _isEditing = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profile updated successfully!'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.profileUpdatedSuccess),
             backgroundColor: DesignSystem.success,
           ),
         );
@@ -522,8 +525,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to update profile'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.failedToUpdateProfile),
             backgroundColor: DesignSystem.error,
           ),
         );
@@ -535,19 +538,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final shouldLogout = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
+        title: Text(AppLocalizations.of(context)!.logout),
+        content: Text(AppLocalizations.of(context)!.logoutConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: DesignSystem.error,
             ),
-            child: const Text('Logout'),
+            child: Text(AppLocalizations.of(context)!.logout),
           ),
         ],
       ),
@@ -573,7 +576,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: const Text('Update Profile Picture'),
+          title: Text(AppLocalizations.of(context)!.updateProfilePicture),
           content: SizedBox(
             width: 400,
             child: GBImageUpload(
@@ -593,7 +596,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
             ElevatedButton(
               onPressed: selectedImageData != null
@@ -605,7 +608,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: DesignSystem.primaryBlue,
               ),
-              child: const Text('Upload'),
+              child: Text(AppLocalizations.of(context)!.upload),
             ),
           ],
         ),
@@ -618,8 +621,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
-          children: const [
-            SizedBox(
+          children: [
+            const SizedBox(
               width: 20,
               height: 20,
               child: CircularProgressIndicator(
@@ -627,8 +630,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 color: Colors.white,
               ),
             ),
-            SizedBox(width: 12),
-            Text('Uploading avatar...'),
+            const SizedBox(width: 12),
+            Text(AppLocalizations.of(context)!.uploadingAvatar),
           ],
         ),
         duration: const Duration(seconds: 30),
@@ -637,13 +640,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
 
     try {
-      // Convert Uint8List to File
+      // Convert Uint8List to File then to XFile for web compatibility
       final tempDir = await getTemporaryDirectory();
       final file = File('${tempDir.path}/$imageName');
       await file.writeAsBytes(imageData);
 
+      // Convert File to XFile
+      final xFile = XFile(file.path);
+
       // Upload avatar to backend
-      final response = await ApiService.uploadAvatar(file);
+      final response = await ApiService.uploadAvatar(xFile);
 
       if (mounted) {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -662,12 +668,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           );
 
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Row(
                 children: [
-                  Icon(Icons.check_circle, color: Colors.white),
-                  SizedBox(width: 12),
-                  Text('Avatar uploaded successfully!'),
+                  const Icon(Icons.check_circle, color: Colors.white),
+                  const SizedBox(width: 12),
+                  Text(AppLocalizations.of(context)!.avatarUploadedSuccess),
                 ],
               ),
               backgroundColor: DesignSystem.success,

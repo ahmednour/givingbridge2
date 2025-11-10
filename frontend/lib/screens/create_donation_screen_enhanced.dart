@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../core/theme/design_system.dart';
-import '../core/utils/rtl_utils.dart';
 import '../core/constants/donation_constants.dart';
 import '../widgets/common/gb_button.dart';
 import '../widgets/common/gb_multiple_image_upload.dart';
@@ -10,9 +9,7 @@ import '../widgets/common/web_card.dart';
 import '../widgets/common/gb_text_field.dart';
 import '../widgets/rtl/directional_row.dart';
 import '../widgets/rtl/directional_column.dart';
-import '../widgets/rtl/directional_container.dart';
 import '../widgets/rtl/directional_app_bar.dart';
-import '../services/rtl_layout_service.dart';
 import '../providers/donation_provider.dart';
 import '../providers/locale_provider.dart';
 import '../models/donation.dart';
@@ -158,8 +155,10 @@ class _CreateDonationScreenEnhancedState
 
       // Get the first image path if available
       String? imagePath;
+      String imageUrl = '';
       if (_selectedImages.isNotEmpty) {
         imagePath = _selectedImages.first.path;
+        imageUrl = imagePath;
       }
 
       bool success;
@@ -171,6 +170,7 @@ class _CreateDonationScreenEnhancedState
           category: _selectedCategory,
           condition: _selectedCondition,
           location: _locationController.text.trim(),
+          imageUrl: imageUrl,
           imagePath: imagePath,
           isAvailable: true,
         );
@@ -181,6 +181,7 @@ class _CreateDonationScreenEnhancedState
           category: _selectedCategory,
           condition: _selectedCondition,
           location: _locationController.text.trim(),
+          imageUrl: imageUrl,
           imagePath: imagePath,
         );
       }
@@ -271,7 +272,8 @@ class _CreateDonationScreenEnhancedState
     }
   }
 
-  String _getCategoryLocalizedName(DonationCategory category, AppLocalizations l10n) {
+  String _getCategoryLocalizedName(
+      DonationCategory category, AppLocalizations l10n) {
     switch (category) {
       case DonationCategory.food:
         return l10n.food;
@@ -337,8 +339,9 @@ class _CreateDonationScreenEnhancedState
           title: Text(
             widget.donation != null ? l10n.editDonation : l10n.createDonation,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color:
-                      isDark ? DesignSystem.neutral200 : DesignSystem.neutral900,
+                  color: isDark
+                      ? DesignSystem.neutral200
+                      : DesignSystem.neutral900,
                   fontWeight: FontWeight.w600,
                 ),
           ),
@@ -356,32 +359,32 @@ class _CreateDonationScreenEnhancedState
         ),
         body: DirectionalColumn(
           children: [
-          // Progress Indicator
-          _buildProgressIndicator(),
+            // Progress Indicator
+            _buildProgressIndicator(),
 
-          // Step Content
-          Expanded(
-            child: PageView(
-              controller: _pageController,
-              onPageChanged: (index) {
-                setState(() {
-                  _currentStep = index;
-                });
-              },
-              children: [
-                _buildBasicInfoStep(),
-                _buildCategoryStep(),
-                _buildImagesStep(),
-                _buildReviewStep(),
-              ],
+            // Step Content
+            Expanded(
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentStep = index;
+                  });
+                },
+                children: [
+                  _buildBasicInfoStep(),
+                  _buildCategoryStep(),
+                  _buildImagesStep(),
+                  _buildReviewStep(),
+                ],
+              ),
             ),
-          ),
 
-          // Navigation Buttons
-          _buildNavigationButtons(),
-        ],
+            // Navigation Buttons
+            _buildNavigationButtons(),
+          ],
+        ),
       ),
-    ),
     );
   }
 

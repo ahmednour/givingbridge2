@@ -1123,6 +1123,7 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
 
   Widget _buildProgressTracking(
       BuildContext context, ThemeData theme, bool isDesktop) {
+    final l10n = AppLocalizations.of(context)!;
     final approvedRequests =
         _myRequests.where((r) => r.status == 'approved').length;
     final totalRequests = _myRequests.length;
@@ -1158,7 +1159,7 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
                       progress: totalRequests > 0
                           ? approvedRequests / requestGoal
                           : 0.0,
-                      label: 'Requests Filled',
+                      label: l10n.requestsFilled, 
                       color: DesignSystem.secondaryGreen,
                       size: 140,
                     ),
@@ -1177,7 +1178,7 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
                       progress: totalRequests > 0
                           ? approvedRequests / requestGoal
                           : 0.0,
-                      label: 'Requests Filled',
+                      label: l10n.requestsFilled,
                       color: DesignSystem.secondaryGreen,
                       size: 140,
                     ),

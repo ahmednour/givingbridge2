@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../../core/theme/design_system.dart';
 import '../../core/utils/responsive_utils.dart';
 import '../../providers/auth_provider.dart';
-import '../../providers/locale_provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../language_selector.dart';
 
@@ -69,8 +68,10 @@ class MobileBottomNavigation extends StatelessWidget {
                           padding: const EdgeInsets.all(DesignSystem.spaceXS),
                           decoration: isSelected
                               ? BoxDecoration(
-                                  color: DesignSystem.primaryBlue.withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(DesignSystem.radiusS),
+                                  color: DesignSystem.primaryBlue
+                                      .withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(
+                                      DesignSystem.radiusS),
                                 )
                               : null,
                           child: Icon(
@@ -88,7 +89,8 @@ class MobileBottomNavigation extends StatelessWidget {
                             color: isSelected
                                 ? DesignSystem.primaryBlue
                                 : DesignSystem.textSecondary,
-                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                            fontWeight:
+                                isSelected ? FontWeight.w600 : FontWeight.w400,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -144,7 +146,8 @@ class MobileDrawer extends StatelessWidget {
                         height: 48,
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(DesignSystem.radiusL),
+                          borderRadius:
+                              BorderRadius.circular(DesignSystem.radiusL),
                         ),
                         child: const Icon(
                           Icons.favorite,
@@ -185,10 +188,11 @@ class MobileDrawer extends StatelessWidget {
             // Navigation items
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(vertical: DesignSystem.spaceM),
+                padding:
+                    const EdgeInsets.symmetric(vertical: DesignSystem.spaceM),
                 children: items.map((item) {
                   final isSelected = currentRoute == item.route;
-                  
+
                   return Container(
                     margin: const EdgeInsets.symmetric(
                       horizontal: DesignSystem.spaceM,
@@ -202,7 +206,8 @@ class MobileDrawer extends StatelessWidget {
                           color: isSelected
                               ? DesignSystem.primaryBlue.withValues(alpha: 0.1)
                               : Colors.transparent,
-                          borderRadius: BorderRadius.circular(DesignSystem.radiusM),
+                          borderRadius:
+                              BorderRadius.circular(DesignSystem.radiusM),
                         ),
                         child: Icon(
                           item.icon,
@@ -218,7 +223,8 @@ class MobileDrawer extends StatelessWidget {
                           color: isSelected
                               ? DesignSystem.primaryBlue
                               : DesignSystem.textPrimary,
-                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                          fontWeight:
+                              isSelected ? FontWeight.w600 : FontWeight.w400,
                         ),
                       ),
                       subtitle: item.subtitle != null
@@ -235,11 +241,13 @@ class MobileDrawer extends StatelessWidget {
                               ),
                               decoration: BoxDecoration(
                                 color: DesignSystem.error,
-                                borderRadius: BorderRadius.circular(DesignSystem.radiusPill),
+                                borderRadius: BorderRadius.circular(
+                                    DesignSystem.radiusPill),
                               ),
                               child: Text(
                                 item.badge!,
-                                style: DesignSystem.labelSmall(context).copyWith(
+                                style:
+                                    DesignSystem.labelSmall(context).copyWith(
                                   color: Colors.white,
                                 ),
                               ),
@@ -254,10 +262,12 @@ class MobileDrawer extends StatelessWidget {
                         item.onTap();
                       },
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(DesignSystem.radiusM),
+                        borderRadius:
+                            BorderRadius.circular(DesignSystem.radiusM),
                       ),
                       selected: isSelected,
-                      selectedTileColor: DesignSystem.primaryBlue.withValues(alpha: 0.05),
+                      selectedTileColor:
+                          DesignSystem.primaryBlue.withValues(alpha: 0.05),
                     ),
                   );
                 }).toList(),
@@ -336,7 +346,8 @@ class MobileDrawer extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(DesignSystem.radiusL)),
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(DesignSystem.radiusL)),
       ),
       builder: (context) => const LanguageSelector(showAsButton: false),
     );

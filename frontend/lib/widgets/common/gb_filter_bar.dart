@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/design_system.dart';
 import '../../providers/filter_provider.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Compact filter bar for quick access to common filters
 class GBFilterBar extends StatelessWidget {
@@ -85,7 +86,7 @@ class GBFilterBar extends StatelessWidget {
           OutlinedButton.icon(
             onPressed: onAdvancedFiltersPressed,
             icon: const Icon(Icons.tune, size: 16),
-            label: const Text('Advanced'),
+            label: Text(AppLocalizations.of(context)!.advanced),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(
                 horizontal: DesignSystem.spaceM,
@@ -100,7 +101,7 @@ class GBFilterBar extends StatelessWidget {
               filterProvider.clearFilters();
               onFiltersChanged?.call();
             },
-            child: const Text('Clear All'),
+            child: Text(AppLocalizations.of(context)!.clearAll),
           ),
         ],
       ],

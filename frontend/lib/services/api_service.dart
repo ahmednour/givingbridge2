@@ -1,6 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart' as http_parser;
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import '../models/donation.dart';
@@ -322,7 +323,8 @@ class ApiService {
         return ApiResponse.success(data);
       } else {
         final error = jsonDecode(response.body);
-        return ApiResponse.error(error['message'] ?? 'Failed to load admin stats');
+        return ApiResponse.error(
+            error['message'] ?? 'Failed to load admin stats');
       }
     } catch (e) {
       return ApiResponse.error('Network error: ${e.toString()}');
@@ -1031,8 +1033,8 @@ class ApiService {
 
   // ========== AVATAR UPLOAD METHODS ==========
 
-  // Upload user avatar
-  static Future<ApiResponse<User>> uploadAvatar(File imageFile) async {
+  // Upload user avatar (web-compatible using XFile)
+  static Future<ApiResponse<User>> uploadAvatar(XFile imageFile) async {
     try {
       final token = await getToken();
       if (token == null) {
@@ -1045,10 +1047,16 @@ class ApiService {
       );
 
       request.headers['Authorization'] = 'Bearer $token';
+      // Use fromBytes for web compatibility with explicit MIME type
+      final bytes = await imageFile.readAsBytes();
+      final mimeType =
+          imageFile.mimeType ?? _getMimeTypeFromExtension(imageFile.name);
       request.files.add(
-        await http.MultipartFile.fromPath(
+        http.MultipartFile.fromBytes(
           'avatar',
-          imageFile.path,
+          bytes,
+          filename: imageFile.name,
+          contentType: http_parser.MediaType.parse(mimeType),
         ),
       );
 
@@ -1070,9 +1078,9 @@ class ApiService {
 
   // ========== IMAGE UPLOAD METHODS ==========
 
-  // Upload image
+  // Upload image (web-compatible using XFile)
   static Future<ApiResponse<Map<String, dynamic>>> uploadImage(
-      File imageFile) async {
+      XFile imageFile) async {
     try {
       final token = await getToken();
       if (token == null) {
@@ -1085,10 +1093,16 @@ class ApiService {
       );
 
       request.headers['Authorization'] = 'Bearer $token';
+      // Use fromBytes for web compatibility with explicit MIME type
+      final bytes = await imageFile.readAsBytes();
+      final mimeType =
+          imageFile.mimeType ?? _getMimeTypeFromExtension(imageFile.name);
       request.files.add(
-        await http.MultipartFile.fromPath(
+        http.MultipartFile.fromBytes(
           'image',
-          imageFile.path,
+          bytes,
+          filename: imageFile.name,
+          contentType: http_parser.MediaType.parse(mimeType),
         ),
       );
 
@@ -1168,13 +1182,13 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final users = (data['users'] as List)
-            .map((user) => User.fromJson(user))
-            .toList();
+        final users =
+            (data['users'] as List).map((user) => User.fromJson(user)).toList();
         return ApiResponse.success(users);
       } else {
         final error = json.decode(response.body);
-        return ApiResponse.error(error['message'] ?? 'Failed to get blocked users');
+        return ApiResponse.error(
+            error['message'] ?? 'Failed to get blocked users');
       }
     } catch (e) {
       return ApiResponse.error('Network error: ${e.toString()}');
@@ -1182,7 +1196,8 @@ class ApiService {
   }
 
   // Block user
-  static Future<ApiResponse<String>> blockUser(String userId, {String? reason}) async {
+  static Future<ApiResponse<String>> blockUser(String userId,
+      {String? reason}) async {
     try {
       final token = await getToken();
       final response = await http.post(
@@ -1342,6 +1357,24 @@ class ApiService {
       return ApiResponse.error('Network error: ${e.toString()}');
     }
   }
+
+  /// Helper method to get MIME type from file extension
+  static String _getMimeTypeFromExtension(String filename) {
+    final extension = filename.split('.').last.toLowerCase();
+    switch (extension) {
+      case 'jpg':
+      case 'jpeg':
+        return 'image/jpeg';
+      case 'png':
+        return 'image/png';
+      case 'gif':
+        return 'image/gif';
+      case 'webp':
+        return 'image/webp';
+      default:
+        return 'application/octet-stream';
+    }
+  }
 }
 
 // Data models
@@ -1372,7 +1405,7 @@ class AuthResult {
   factory AuthResult.fromJson(Map<String, dynamic> json) {
     // Handle both direct response and nested data structure
     final data = json['data'] ?? json;
-    
+
     return AuthResult(
       message: data['message'] ?? 'Success',
       user: User.fromJson(data['user']),
@@ -1556,28 +1589,33 @@ class ChatMessage {
 class Conversation {
   final int userId;
   final String userName;
-  final ChatMessage lastMessage;
+  final ChatMessage? lastMessage;
   final int unreadCount;
   final int? donationId;
   final int? requestId;
+  final String? avatarUrl;
 
   Conversation({
     required this.userId,
     required this.userName,
-    required this.lastMessage,
-    required this.unreadCount,
+    this.lastMessage,
+    this.unreadCount = 0,
     this.donationId,
     this.requestId,
+    this.avatarUrl,
   });
 
   factory Conversation.fromJson(Map<String, dynamic> json) {
     return Conversation(
       userId: json['userId'],
       userName: json['userName'],
-      lastMessage: ChatMessage.fromJson(json['lastMessage']),
-      unreadCount: json['unreadCount'],
+      lastMessage: json['lastMessage'] != null
+          ? ChatMessage.fromJson(json['lastMessage'])
+          : null,
+      unreadCount: json['unreadCount'] ?? 0,
       donationId: json['donationId'],
       requestId: json['requestId'],
+      avatarUrl: json['avatarUrl'],
     );
   }
 
@@ -1585,12 +1623,65 @@ class Conversation {
     return {
       'userId': userId,
       'userName': userName,
-      'lastMessage': lastMessage.toJson(),
+      'lastMessage': lastMessage?.toJson(),
       'unreadCount': unreadCount,
       'donationId': donationId,
       'requestId': requestId,
+      'avatarUrl': avatarUrl,
     };
   }
 
+  // Helper getters for UI
+  String get id => userId.toString();
+  String get displayTitle => userName;
   bool get hasUnreadMessages => unreadCount > 0;
+  String? get lastMessageContent {
+    try {
+      return lastMessage?.content.toString();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  int? get lastMessageSenderId => lastMessage?.senderId;
+  bool get isDonationRelated => donationId != null;
+  bool get isRequestRelated => requestId != null;
+
+  // Additional getters for compatibility
+  String get otherParticipantId => userId.toString();
+  String get otherParticipantName => userName;
+
+  DateTime? get lastMessageDateTime {
+    if (lastMessage == null) return null;
+    try {
+      return DateTime.parse(lastMessage!.createdAt);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  DateTime get updatedAtDateTime {
+    return lastMessageDateTime ?? DateTime.now();
+  }
+
+  String get timeAgo {
+    if (lastMessage == null) return '';
+    try {
+      final now = DateTime.now();
+      final messageTime = DateTime.parse(lastMessage!.createdAt);
+      final difference = now.difference(messageTime);
+
+      if (difference.inDays > 0) {
+        return '${difference.inDays}d ago';
+      } else if (difference.inHours > 0) {
+        return '${difference.inHours}h ago';
+      } else if (difference.inMinutes > 0) {
+        return '${difference.inMinutes}m ago';
+      } else {
+        return 'Just now';
+      }
+    } catch (e) {
+      return '';
+    }
+  }
 }

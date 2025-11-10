@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocaleProvider extends ChangeNotifier {
-  static const String _localeKey = 'app_locale';
   static const String _languageCodeKey = 'language_code';
   static const String _countryCodeKey = 'country_code';
-  
+
   Locale _locale = const Locale('ar'); // Default to Arabic
   bool _isInitialized = false;
   bool _isLoading = false;
@@ -18,7 +17,8 @@ class LocaleProvider extends ChangeNotifier {
   bool get isRTL => _locale.languageCode == 'ar';
 
   /// Get text direction based on current locale
-  TextDirection get textDirection => isRTL ? TextDirection.rtl : TextDirection.ltr;
+  TextDirection get textDirection =>
+      isRTL ? TextDirection.rtl : TextDirection.ltr;
 
   /// Supported locales
   static const List<Locale> supportedLocales = [
@@ -33,17 +33,17 @@ class LocaleProvider extends ChangeNotifier {
   /// Initialize locale from saved preferences or system locale
   Future<void> _initializeLocale() async {
     if (_isInitialized) return;
-    
+
     _isLoading = true;
     notifyListeners();
 
     try {
       final prefs = await SharedPreferences.getInstance();
-      
+
       // Try to load saved locale first
       final savedLanguageCode = prefs.getString(_languageCodeKey);
       final savedCountryCode = prefs.getString(_countryCodeKey);
-      
+
       if (savedLanguageCode != null) {
         final savedLocale = Locale(savedLanguageCode, savedCountryCode ?? '');
         if (_isSupportedLocale(savedLocale)) {
@@ -58,11 +58,11 @@ class LocaleProvider extends ChangeNotifier {
           // Fallback to Arabic as default
           _locale = const Locale('ar');
         }
-        
+
         // Save the determined locale
         await _persistLocale(_locale);
       }
-      
+
       _isInitialized = true;
     } catch (e) {
       // Handle errors gracefully
@@ -90,7 +90,7 @@ class LocaleProvider extends ChangeNotifier {
 
   /// Check if locale is supported
   bool _isSupportedLocale(Locale locale) {
-    return supportedLocales.any((supportedLocale) => 
+    return supportedLocales.any((supportedLocale) =>
         supportedLocale.languageCode == locale.languageCode);
   }
 
@@ -107,7 +107,7 @@ class LocaleProvider extends ChangeNotifier {
 
     final previousLocale = _locale;
     _locale = locale;
-    
+
     try {
       await _persistLocale(locale);
       notifyListeners();
@@ -136,9 +136,8 @@ class LocaleProvider extends ChangeNotifier {
 
   /// Toggle between supported languages
   Future<void> toggleLocale() async {
-    final newLocale = _locale.languageCode == 'en' 
-        ? const Locale('ar') 
-        : const Locale('en');
+    final newLocale =
+        _locale.languageCode == 'en' ? const Locale('ar') : const Locale('en');
     await setLocale(newLocale);
   }
 
@@ -199,7 +198,7 @@ class LocaleProvider extends ChangeNotifier {
         vertical: vertical ?? 0,
       );
     }
-    
+
     return EdgeInsets.only(
       left: isRTL ? (end ?? 0) : (start ?? 0),
       right: isRTL ? (start ?? 0) : (end ?? 0),
@@ -227,7 +226,7 @@ class LocaleProvider extends ChangeNotifier {
         vertical: vertical ?? 0,
       );
     }
-    
+
     return EdgeInsets.only(
       left: isRTL ? (end ?? 0) : (start ?? 0),
       right: isRTL ? (start ?? 0) : (end ?? 0),
@@ -275,8 +274,10 @@ class LocaleProvider extends ChangeNotifier {
     return BorderRadius.only(
       topLeft: Radius.circular(isRTL ? (topEnd ?? 0) : (topStart ?? 0)),
       topRight: Radius.circular(isRTL ? (topStart ?? 0) : (topEnd ?? 0)),
-      bottomLeft: Radius.circular(isRTL ? (bottomEnd ?? 0) : (bottomStart ?? 0)),
-      bottomRight: Radius.circular(isRTL ? (bottomStart ?? 0) : (bottomEnd ?? 0)),
+      bottomLeft:
+          Radius.circular(isRTL ? (bottomEnd ?? 0) : (bottomStart ?? 0)),
+      bottomRight:
+          Radius.circular(isRTL ? (bottomStart ?? 0) : (bottomEnd ?? 0)),
     );
   }
 

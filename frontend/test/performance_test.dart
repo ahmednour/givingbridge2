@@ -14,7 +14,8 @@ void main() {
   setUpAll(() {
     setupTestMocks();
     // Mock connectivity_plus for tests
-    TestWidgetsFlutterBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+    TestWidgetsFlutterBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
       const MethodChannel('dev.fluttercommunity.plus/connectivity_status'),
       (MethodCall methodCall) async {
         if (methodCall.method == 'listen') {
@@ -98,6 +99,7 @@ void main() {
           category: 'food',
           condition: 'good',
           location: 'Location $i',
+          imageUrl: 'https://example.com/image_$i.jpg',
         );
       }
 
@@ -180,8 +182,8 @@ void main() {
       final queueStopwatch = Stopwatch()..start();
 
       for (int i = 0; i < 100; i++) {
-        await offlineService.queueOperation(
-          type: OfflineOperationType.createDonation,
+        await offlineService.addOperation(
+          type: 'createDonation',
           data: {
             'title': 'Offline Donation $i',
             'description': 'Description $i',
@@ -194,29 +196,18 @@ void main() {
 
       queueStopwatch.stop();
 
-      // Test cache performance
-      final cacheStopwatch = Stopwatch()..start();
-
-      for (int i = 0; i < 100; i++) {
-        await offlineService.cacheData(
-          key: 'cache_key_$i',
-          data: {'data': 'value_$i'},
-        );
-      }
-
-      cacheStopwatch.stop();
+      // Get status to verify operations were queued
+      final status = offlineService.getStatus();
+      final pendingCount = status['pendingOperations'] as int;
 
       // Verify offline service performance (more lenient for test environment)
       expect(queueStopwatch.elapsedMilliseconds,
           lessThan(10000)); // Increased from 2000
-      expect(cacheStopwatch.elapsedMilliseconds,
-          lessThan(5000)); // Increased from 1000
-      // Note: pendingOperationsCount may be 0 in test environment due to mocked services
+      expect(pendingCount, greaterThan(0)); // Verify operations were queued
 
       print(
           'Offline queue performance: ${queueStopwatch.elapsedMilliseconds}ms for 100 operations');
-      print(
-          'Offline cache performance: ${cacheStopwatch.elapsedMilliseconds}ms for 100 items');
+      print('Pending operations: $pendingCount');
     });
 
     testWidgets('UI Rendering Performance', (WidgetTester tester) async {

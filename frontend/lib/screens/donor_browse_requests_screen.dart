@@ -7,9 +7,7 @@ import '../widgets/common/gb_empty_state.dart';
 import '../widgets/common/web_card.dart';
 import '../widgets/rtl/directional_row.dart';
 import '../widgets/rtl/directional_column.dart';
-import '../widgets/rtl/directional_container.dart';
 import '../widgets/rtl/directional_app_bar.dart';
-import '../services/rtl_layout_service.dart';
 import '../providers/locale_provider.dart';
 import '../l10n/app_localizations.dart';
 import '../services/api_service.dart';
@@ -194,50 +192,50 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
         backgroundColor: DesignSystem.getBackgroundColor(context),
         body: DirectionalColumn(
           children: [
-          // Filter Bar
-          Container(
-            padding: const EdgeInsets.all(16),
-            color: DesignSystem.getSurfaceColor(context),
-            child: GBFilterChips<String>(
-              options: _getFilters(l10n),
-              selectedValues: [_selectedFilter],
-              onChanged: (selected) {
-                setState(() {
-                  _selectedFilter = selected.first;
-                });
-              },
-              multiSelect: false,
-              scrollable: true,
+            // Filter Bar
+            Container(
+              padding: const EdgeInsets.all(16),
+              color: DesignSystem.getSurfaceColor(context),
+              child: GBFilterChips<String>(
+                options: _getFilters(l10n),
+                selectedValues: [_selectedFilter],
+                onChanged: (selected) {
+                  setState(() {
+                    _selectedFilter = selected.first;
+                  });
+                },
+                multiSelect: false,
+                scrollable: true,
+              ),
             ),
-          ),
 
-          // Content
-          Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _filteredRequests.isEmpty
-                    ? _buildEmptyState(l10n)
-                    : RefreshIndicator(
-                        onRefresh: _loadRequests,
-                        child: ListView.builder(
-                          padding: EdgeInsets.all(isDesktop ? 24.0 : 16.0),
-                          itemCount: _filteredRequests.length,
-                          itemBuilder: (context, index) {
-                            return _buildRequestCard(
-                              _filteredRequests[index],
-                              l10n,
-                              isDesktop,
-                            )
-                                .animate(delay: (index * 50).ms)
-                                .fadeIn(duration: 300.ms)
-                                .slideY(begin: 0.1, end: 0);
-                          },
+            // Content
+            Expanded(
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _filteredRequests.isEmpty
+                      ? _buildEmptyState(l10n)
+                      : RefreshIndicator(
+                          onRefresh: _loadRequests,
+                          child: ListView.builder(
+                            padding: EdgeInsets.all(isDesktop ? 24.0 : 16.0),
+                            itemCount: _filteredRequests.length,
+                            itemBuilder: (context, index) {
+                              return _buildRequestCard(
+                                _filteredRequests[index],
+                                l10n,
+                                isDesktop,
+                              )
+                                  .animate(delay: (index * 50).ms)
+                                  .fadeIn(duration: 300.ms)
+                                  .slideY(begin: 0.1, end: 0);
+                            },
+                          ),
                         ),
-                      ),
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
-    ),
     );
   }
 

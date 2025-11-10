@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/design_system.dart';
 import '../../providers/filter_provider.dart';
+import '../../l10n/app_localizations.dart';
 import 'gb_advanced_filter_panel.dart';
 
 /// Modal dialog for mobile-friendly filtering
@@ -125,7 +126,7 @@ class _GBFilterModalState extends State<GBFilterModal> {
                   filterProvider.clearFilters();
                   widget.onFiltersChanged?.call();
                 },
-                child: const Text('Clear All'),
+                child: Text(AppLocalizations.of(context)!.clearAll),
               ),
             ),
           if (filterProvider.hasActiveFilters) const SizedBox(width: DesignSystem.spaceM),

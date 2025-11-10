@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 import '../../core/theme/design_system.dart';
 import '../../providers/filter_provider.dart';
 import 'gb_filter_chips.dart';
@@ -31,7 +32,8 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: widget.showAdvancedOptions ? 3 : 2, vsync: this);
+    _tabController =
+        TabController(length: widget.showAdvancedOptions ? 3 : 2, vsync: this);
   }
 
   @override
@@ -115,7 +117,7 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
                 filterProvider.clearFilters();
                 widget.onFiltersChanged?.call();
               },
-              child: const Text('Clear All'),
+              child: Text(AppLocalizations.of(context)!.clearAll),
             ),
           ],
         ],
@@ -160,7 +162,7 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
           // Categories
           GBFilterChips<String>(
             label: 'Categories',
-            options: const [
+            options: [
               GBFilterOption(
                 value: 'food',
                 label: 'Food',
@@ -203,7 +205,7 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
           // Status
           GBFilterChips<String>(
             label: 'Status',
-            options: const [
+            options: [
               GBFilterOption(
                 value: 'available',
                 label: 'Available',
@@ -240,7 +242,7 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
           // Locations
           GBFilterChips<String>(
             label: 'Locations',
-            options: const [
+            options: [
               GBFilterOption(value: 'new_york', label: 'New York'),
               GBFilterOption(value: 'los_angeles', label: 'Los Angeles'),
               GBFilterOption(value: 'chicago', label: 'Chicago'),
@@ -268,6 +270,7 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
   }
 
   Widget _buildPresets(FilterProvider filterProvider) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.all(DesignSystem.spaceL),
       child: Column(
@@ -303,15 +306,19 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
                         onPressed: filterProvider.hasActiveFilters
                             ? () async {
                                 if (_presetNameController.text.isNotEmpty) {
-                                  await filterProvider.saveFilterPreset(_presetNameController.text);
+                                  await filterProvider.saveFilterPreset(
+                                      _presetNameController.text);
                                   _presetNameController.clear();
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Filter preset saved!')),
-                                  );
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text('Filter preset saved')),
+                                    );
+                                  }
                                 }
                               }
                             : null,
-                        child: const Text('Save'),
+                        child: Text(l10n.save),
                       ),
                     ],
                   ),
@@ -342,9 +349,11 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
                 : ListView.builder(
                     itemCount: filterProvider.savedFilterPresets.length,
                     itemBuilder: (context, index) {
-                      final presetName = filterProvider.savedFilterPresets.keys.elementAt(index);
-                      final preset = filterProvider.savedFilterPresets[presetName]!;
-                      
+                      final presetName = filterProvider.savedFilterPresets.keys
+                          .elementAt(index);
+                      final preset =
+                          filterProvider.savedFilterPresets[presetName]!;
+
                       return Card(
                         child: ListTile(
                           title: Text(presetName),
@@ -358,14 +367,15 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
                                   filterProvider.loadFilterPreset(presetName);
                                   widget.onFiltersChanged?.call();
                                 },
-                                tooltip: 'Apply preset',
+                                tooltip: 'Apply Preset',
                               ),
                               IconButton(
                                 icon: const Icon(Icons.delete),
                                 onPressed: () async {
-                                  await filterProvider.deleteFilterPreset(presetName);
+                                  await filterProvider
+                                      .deleteFilterPreset(presetName);
                                 },
-                                tooltip: 'Delete preset',
+                                tooltip: l10n.delete,
                               ),
                             ],
                           ),
@@ -424,16 +434,19 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
           const SizedBox(height: DesignSystem.spaceM),
           GBFilterChips<String>(
             multiSelect: false,
-            options: const [
+            options: [
               GBFilterOption(value: '5', label: '5 miles'),
               GBFilterOption(value: '10', label: '10 miles'),
               GBFilterOption(value: '25', label: '25 miles'),
               GBFilterOption(value: '50', label: '50 miles'),
               GBFilterOption(value: 'any', label: 'Any distance'),
             ],
-            selectedValues: filterProvider.selectedDistance != null ? [filterProvider.selectedDistance!] : [],
+            selectedValues: filterProvider.selectedDistance != null
+                ? [filterProvider.selectedDistance!]
+                : [],
             onChanged: (values) {
-              filterProvider.setDistance(values.isNotEmpty ? values.first : null);
+              filterProvider
+                  .setDistance(values.isNotEmpty ? values.first : null);
               widget.onFiltersChanged?.call();
             },
           ),
@@ -448,7 +461,7 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
           ),
           const SizedBox(height: DesignSystem.spaceM),
           GBFilterChips<String>(
-            options: const [
+            options: [
               GBFilterOption(
                 value: 'new',
                 label: 'New',
@@ -490,6 +503,7 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
   }
 
   Widget _buildDateRangeFilter(FilterProvider filterProvider) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -502,13 +516,14 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
               ),
             ),
             const Spacer(),
-            if (filterProvider.startDate != null || filterProvider.endDate != null)
+            if (filterProvider.startDate != null ||
+                filterProvider.endDate != null)
               TextButton(
                 onPressed: () {
                   filterProvider.clearDateRange();
                   widget.onFiltersChanged?.call();
                 },
-                child: const Text('Clear'),
+                child: Text(l10n.clear),
               ),
           ],
         ),
@@ -565,6 +580,7 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
   }
 
   Widget _buildAmountRangeFilter(FilterProvider filterProvider) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -577,7 +593,8 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
               ),
             ),
             const Spacer(),
-            if (filterProvider.minAmount != null || filterProvider.maxAmount != null)
+            if (filterProvider.minAmount != null ||
+                filterProvider.maxAmount != null)
               TextButton(
                 onPressed: () {
                   filterProvider.clearAmountRange();
@@ -585,7 +602,7 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
                   _maxAmountController.clear();
                   widget.onFiltersChanged?.call();
                 },
-                child: const Text('Clear'),
+                child: Text(l10n.clear),
               ),
           ],
         ),
@@ -603,7 +620,8 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
                 ),
                 onChanged: (value) {
                   final amount = double.tryParse(value);
-                  filterProvider.setAmountRange(amount, filterProvider.maxAmount);
+                  filterProvider.setAmountRange(
+                      amount, filterProvider.maxAmount);
                   widget.onFiltersChanged?.call();
                 },
               ),
@@ -620,7 +638,8 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
                 ),
                 onChanged: (value) {
                   final amount = double.tryParse(value);
-                  filterProvider.setAmountRange(filterProvider.minAmount, amount);
+                  filterProvider.setAmountRange(
+                      filterProvider.minAmount, amount);
                   widget.onFiltersChanged?.call();
                 },
               ),
@@ -632,6 +651,7 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
   }
 
   Widget _buildSortOptions(FilterProvider filterProvider) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -651,12 +671,15 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
                   labelText: 'Sort By',
                   border: OutlineInputBorder(),
                 ),
-                items: const [
-                  DropdownMenuItem(value: 'createdAt', child: Text('Date Created')),
-                  DropdownMenuItem(value: 'updatedAt', child: Text('Last Updated')),
-                  DropdownMenuItem(value: 'title', child: Text('Title')),
-                  DropdownMenuItem(value: 'amount', child: Text('Amount')),
-                  DropdownMenuItem(value: 'location', child: Text('Location')),
+                items: [
+                  const DropdownMenuItem(
+                      value: 'createdAt', child: Text('Date Created')),
+                  const DropdownMenuItem(
+                      value: 'updatedAt', child: Text('Last Updated')),
+                  DropdownMenuItem(value: 'title', child: Text(l10n.title)),
+                  DropdownMenuItem(value: 'amount', child: Text(l10n.quantity)),
+                  DropdownMenuItem(
+                      value: 'location', child: Text(l10n.location)),
                 ],
                 onChanged: (value) {
                   if (value != null) {
@@ -698,8 +721,9 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
 
   String _getPresetSummary(Map<String, dynamic> preset) {
     final List<String> parts = [];
-    
-    if (preset['categories'] != null && (preset['categories'] as List).isNotEmpty) {
+
+    if (preset['categories'] != null &&
+        (preset['categories'] as List).isNotEmpty) {
       parts.add('${(preset['categories'] as List).length} categories');
     }
     if (preset['statuses'] != null && (preset['statuses'] as List).isNotEmpty) {
@@ -711,7 +735,7 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
     if (preset['minAmount'] != null || preset['maxAmount'] != null) {
       parts.add('amount range');
     }
-    
+
     return parts.isEmpty ? 'No filters' : parts.join(', ');
   }
 }

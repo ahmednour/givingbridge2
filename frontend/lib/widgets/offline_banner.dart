@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../core/theme/app_theme.dart';
 import '../core/theme/design_system.dart';
 import '../services/network_status_service.dart';
@@ -37,16 +38,16 @@ class OfflineBanner extends StatelessWidget {
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Icon(
+              children: [
+                const Icon(
                   Icons.wifi_off,
                   color: Colors.white,
                   size: 16,
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Text(
-                  'No internet connection',
-                  style: TextStyle(
+                  AppLocalizations.of(context)!.noInternetConnection,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
@@ -117,9 +118,9 @@ class AnimatedOfflineBanner extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const Text(
-                            'No internet connection',
-                            style: TextStyle(
+                          Text(
+                            AppLocalizations.of(context)!.noInternetConnection,
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -127,7 +128,9 @@ class AnimatedOfflineBanner extends StatelessWidget {
                           ),
                           if (pendingCount > 0)
                             Text(
-                              '$pendingCount pending operation${pendingCount > 1 ? 's' : ''} will sync when online',
+                              AppLocalizations.of(context)!
+                                  .pendingOperationsText(pendingCount,
+                                      pendingCount > 1 ? 's' : ''),
                               style: TextStyle(
                                 color: Colors.white.withValues(alpha: 0.9),
                                 fontSize: 11,

@@ -6,7 +6,6 @@ import 'package:image_picker/image_picker.dart';
 import '../core/theme/design_system.dart';
 import '../core/utils/rtl_utils.dart';
 import '../widgets/common/gb_button.dart';
-import '../widgets/common/gb_empty_state.dart';
 import '../widgets/common/gb_block_user_dialog.dart';
 import '../widgets/common/gb_report_user_dialog.dart';
 import '../widgets/common/gb_user_avatar.dart';
@@ -212,15 +211,20 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
     final content = _messageController.text.trim();
     if (content.isEmpty) return;
 
+    final l10n = AppLocalizations.of(context)!;
     final messageProvider =
         Provider.of<MessageProvider>(context, listen: false);
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-    // Create optimistic message with negative ID to distinguish it from real messages
+    // Clear input immediately for better UX
+    _messageController.clear();
+    setState(() {}); // Update UI to disable send button
+
+    // Create optimistic message with negative ID
     final optimisticMessage = ChatMessage(
-      id: -DateTime.now().millisecondsSinceEpoch, // Negative temporary ID
+      id: -DateTime.now().millisecondsSinceEpoch,
       senderId: authProvider.user?.id ?? 0,
-      senderName: authProvider.user?.name ?? 'You',
+      senderName: authProvider.user?.name ?? l10n.you,
       receiverId: int.parse(widget.otherUserId),
       receiverName: widget.otherUserName,
       donationId:
@@ -232,63 +236,34 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
       updatedAt: DateTime.now().toIso8601String(),
     );
 
-    // Add optimistic message
+    // Add optimistic message immediately
     messageProvider.addNewMessage(optimisticMessage);
-    _messageController.clear();
     _scrollToBottom();
 
-    // Try to send message via Socket.IO first, then fallback to REST API
+    // Send message via API
     try {
-      if (SocketService().isConnected) {
-        // Send via Socket.IO
-        SocketService().sendMessage(
-          receiverId: widget.otherUserId,
-          content: content,
-          donationId: widget.donationId,
-          requestId: widget.requestId,
-        );
-        
-        // Wait a bit to see if Socket.IO succeeds, otherwise fallback to REST API
-        await Future.delayed(const Duration(milliseconds: 1000));
-        
-        // Check if the optimistic message is still there (not replaced by real message)
-        // If it's still there, it means Socket.IO didn't work, so use REST API
-        final messages = messageProvider.getMessagesByUserId(widget.otherUserId);
-        final stillOptimistic = messages.any((m) {
-          final messageId = m is ChatMessage ? m.id : m['id'];
-          return messageId == optimisticMessage.id;
-        });
-        
-        if (stillOptimistic) {
-          // Socket.IO didn't work, fallback to REST API
-          await _sendMessageViaAPI(content, optimisticMessage, messageProvider);
-        }
+      final success = await messageProvider.sendMessage(
+        receiverId: widget.otherUserId,
+        content: content,
+        donationId: widget.donationId,
+        requestId: widget.requestId,
+      );
+
+      if (success) {
+        // Remove optimistic message - real message was added by provider
+        messageProvider.removeOptimisticMessage(optimisticMessage.id);
+
+        // Show success feedback
+        _showSuccessSnackbar(l10n.messageSent);
       } else {
-        // Socket not connected, use REST API directly
-        await _sendMessageViaAPI(content, optimisticMessage, messageProvider);
+        // Remove optimistic message and show error
+        messageProvider.removeOptimisticMessage(optimisticMessage.id);
+        _showErrorSnackbar(l10n.failedToSendMessage);
       }
     } catch (e) {
       // Remove optimistic message on error
-      messageProvider.deleteMessage(optimisticMessage.id.toString());
-      _showErrorSnackbar('Failed to send message: ${e.toString()}');
-    }
-  }
-
-  Future<void> _sendMessageViaAPI(String content, ChatMessage optimisticMessage, MessageProvider messageProvider) async {
-    final success = await messageProvider.sendMessage(
-      receiverId: widget.otherUserId,
-      content: content,
-      donationId: widget.donationId,
-      requestId: widget.requestId,
-    );
-
-    if (success) {
-      // Remove the optimistic message since the real one was added by the provider
-      messageProvider.deleteMessage(optimisticMessage.id.toString());
-    } else {
-      // Remove optimistic message on error
-      messageProvider.deleteMessage(optimisticMessage.id.toString());
-      _showErrorSnackbar('Failed to send message via API');
+      messageProvider.removeOptimisticMessage(optimisticMessage.id);
+      _showErrorSnackbar('${l10n.error}: ${e.toString()}');
     }
   }
 
@@ -310,9 +285,14 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.error_outline, color: Colors.white),
+            const Icon(Icons.error_outline, color: Colors.white, size: 20),
             const SizedBox(width: 12),
-            Expanded(child: Text(message)),
+            Expanded(
+              child: Text(
+                message,
+                style: const TextStyle(fontSize: 14),
+              ),
+            ),
           ],
         ),
         backgroundColor: DesignSystem.error,
@@ -321,6 +301,34 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
           borderRadius: BorderRadius.circular(12),
         ),
         margin: const EdgeInsets.all(16),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  void _showSuccessSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle_outline,
+                color: Colors.white, size: 20),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                message,
+                style: const TextStyle(fontSize: 14),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: DesignSystem.success,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        margin: const EdgeInsets.all(16),
+        duration: const Duration(seconds: 2),
       ),
     );
   }
@@ -339,7 +347,12 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
               ),
             ),
             const SizedBox(width: 12),
-            Expanded(child: Text(message)),
+            Expanded(
+              child: Text(
+                message,
+                style: const TextStyle(fontSize: 14),
+              ),
+            ),
           ],
         ),
         backgroundColor: DesignSystem.primaryBlue,
@@ -521,7 +534,7 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                 children: [
                   const Icon(Icons.info_outline, size: 20),
                   const SizedBox(width: 12),
-                  const Text('Conversation Info'),
+                  Text(AppLocalizations.of(context)!.conversationInfo),
                 ],
               ),
             ),
@@ -575,17 +588,50 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
 
   Widget _buildEmptyState() {
     final l10n = AppLocalizations.of(context)!;
-    return GBEmptyState(
-      icon: Icons.chat_bubble_outline,
-      title: l10n.messages,
-      message: 'Send message to ${widget.otherUserName}',
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: DesignSystem.primaryBlue.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.chat_bubble_outline,
+              size: 64,
+              color: DesignSystem.primaryBlue,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            l10n.noMessages,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: DesignSystem.neutral900,
+                ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Start a conversation with ${widget.otherUserName}',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: DesignSystem.neutral600,
+                ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildMessageBubble(ChatMessage message, int index) {
+  Widget _buildMessageBubble(dynamic message, int index) {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final isFromCurrentUser =
-        message.senderId.toString() == authProvider.user?.id;
+
+    // Handle both Map and ChatMessage types
+    final senderId =
+        message is ChatMessage ? message.senderId : message['senderId'];
+    final isFromCurrentUser = senderId.toString() == authProvider.user?.id;
 
     return AnimatedBuilder(
       animation: _messageAnimation,
@@ -635,12 +681,20 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Message Content
-                        if (message.messageType == 'image' &&
-                            message.attachmentUrl != null)
+                        if ((message is ChatMessage
+                                    ? message.messageType
+                                    : message['messageType']) ==
+                                'image' &&
+                            (message is ChatMessage
+                                    ? message.attachmentUrl
+                                    : message['attachmentUrl']) !=
+                                null)
                           _buildImageMessage(message, isFromCurrentUser)
                         else
                           Text(
-                            message.content,
+                            message is ChatMessage
+                                ? message.content
+                                : message['content'],
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
@@ -659,25 +713,40 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              _formatMessageTime(message.createdAt),
+                              _formatMessageTime(message is ChatMessage
+                                  ? message.createdAt
+                                  : message['createdAt']),
                               style: Theme.of(context)
                                   .textTheme
                                   .bodySmall
                                   ?.copyWith(
                                     color: isFromCurrentUser
-                                        ? Colors.white.withOpacity(0.7)
+                                        ? Colors.white.withOpacity(0.8)
                                         : DesignSystem.neutral600,
                                     fontSize: 11,
                                   ),
                             ),
                             if (isFromCurrentUser) ...[
-                              const SizedBox(width: 8),
-                              Icon(
-                                message.isRead ? Icons.done_all : Icons.done,
-                                size: 14,
-                                color: message.isRead
-                                    ? Colors.white
-                                    : Colors.white.withOpacity(0.7),
+                              const SizedBox(width: 6),
+                              Tooltip(
+                                message: (message is ChatMessage
+                                        ? message.isRead
+                                        : message['isRead'])
+                                    ? 'Read'
+                                    : 'Sent',
+                                child: Icon(
+                                  (message is ChatMessage
+                                          ? message.isRead
+                                          : message['isRead'])
+                                      ? Icons.done_all
+                                      : Icons.done,
+                                  size: 16,
+                                  color: (message is ChatMessage
+                                          ? message.isRead
+                                          : message['isRead'])
+                                      ? DesignSystem.success
+                                      : Colors.white.withOpacity(0.8),
+                                ),
                               ),
                             ],
                           ],
@@ -698,10 +767,11 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
     );
   }
 
-  Widget _buildSenderAvatar(ChatMessage message) {
+  Widget _buildSenderAvatar(dynamic message) {
     return GBUserAvatar(
       avatarUrl: widget.otherUserAvatarUrl,
-      userName: message.senderName,
+      userName:
+          message is ChatMessage ? message.senderName : message['senderName'],
       size: 32,
     );
   }
@@ -837,7 +907,8 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
           const SizedBox(width: 12),
 
           // Send Button
-          Container(
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
             width: 48,
             height: 48,
             decoration: BoxDecoration(
@@ -845,6 +916,15 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                   ? DesignSystem.primaryBlue
                   : DesignSystem.neutral300,
               borderRadius: BorderRadius.circular(24),
+              boxShadow: _messageController.text.trim().isNotEmpty
+                  ? [
+                      BoxShadow(
+                        color: DesignSystem.primaryBlue.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ]
+                  : [],
             ),
             child: Material(
               color: Colors.transparent,
@@ -853,10 +933,12 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                     ? _sendMessage
                     : null,
                 borderRadius: BorderRadius.circular(24),
-                child: const Icon(
-                  Icons.send,
-                  color: Colors.white,
-                  size: 20,
+                child: Center(
+                  child: Icon(
+                    Icons.send_rounded,
+                    color: Colors.white,
+                    size: 22,
+                  ),
                 ),
               ),
             ),
@@ -961,11 +1043,8 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
       // Show loading indicator
       _showLoadingSnackbar('Sending image...');
 
-      // Convert XFile to File
-      final File imageFileObj = File(imageFile.path);
-
-      // Get file size
-      final int fileSizeInBytes = await imageFileObj.length();
+      // Get file size from XFile
+      final int fileSizeInBytes = await imageFile.length();
       final double fileSizeInMB = fileSizeInBytes / (1024 * 1024);
 
       // Check file size limit (5MB)
@@ -974,11 +1053,11 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
         return;
       }
 
-      // Upload image to server
+      // Upload image to server using XFile directly
       final messageProvider =
           Provider.of<MessageProvider>(context, listen: false);
 
-      final uploadResponse = await messageProvider.uploadImage(imageFileObj);
+      final uploadResponse = await messageProvider.uploadImage(imageFile);
 
       if (uploadResponse == null || !uploadResponse.success) {
         _showErrorSnackbar(
@@ -1043,8 +1122,8 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
 
       // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Image sent successfully'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.uploadSuccessful),
           backgroundColor: DesignSystem.success,
         ),
       );
@@ -1053,18 +1132,21 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
     }
   }
 
-  Widget _buildImageMessage(ChatMessage message, bool isFromCurrentUser) {
+  Widget _buildImageMessage(dynamic message, bool isFromCurrentUser) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final isRemoteImage = message.attachmentUrl != null &&
-        (message.attachmentUrl!.startsWith('http://') ||
-            message.attachmentUrl!.startsWith('https://'));
+    final attachmentUrl = message is ChatMessage
+        ? message.attachmentUrl
+        : message['attachmentUrl'];
+    final isRemoteImage = attachmentUrl != null &&
+        (attachmentUrl.startsWith('http://') ||
+            attachmentUrl.startsWith('https://'));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Image preview
         GestureDetector(
-          onTap: () => _showImagePreview(message.attachmentUrl!),
+          onTap: () => _showImagePreview(attachmentUrl!),
           child: Container(
             constraints: const BoxConstraints(
               maxWidth: 200,
@@ -1085,7 +1167,7 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
               borderRadius: BorderRadius.circular(8),
               child: isRemoteImage
                   ? Image.network(
-                      message.attachmentUrl!,
+                      attachmentUrl!,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
@@ -1100,7 +1182,7 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
                       },
                     )
                   : Image.file(
-                      File(message.attachmentUrl!),
+                      File(attachmentUrl!),
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
@@ -1255,8 +1337,8 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
 
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Conversation archived'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.archiveConversation),
           backgroundColor: DesignSystem.success,
         ),
       );

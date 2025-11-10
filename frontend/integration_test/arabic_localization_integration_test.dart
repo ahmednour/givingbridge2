@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:provider/provider.dart';
 import 'package:giving_bridge_frontend/main.dart';
 import 'package:giving_bridge_frontend/providers/locale_provider.dart';
-import 'package:giving_bridge_frontend/providers/auth_provider.dart';
-import 'package:giving_bridge_frontend/providers/donation_provider.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +19,7 @@ void main() {
       final localeProvider = Provider.of<LocaleProvider>(
           tester.element(find.byType(MaterialApp)),
           listen: false);
-      
+
       await localeProvider.setLocale(const Locale('ar'));
       await tester.pumpAndSettle();
 
@@ -74,7 +71,7 @@ void main() {
       final localeProvider = Provider.of<LocaleProvider>(
           tester.element(find.byType(MaterialApp)),
           listen: false);
-      
+
       await localeProvider.setLocale(const Locale('ar'));
       await tester.pumpAndSettle();
 
@@ -95,11 +92,10 @@ void main() {
       // Fill donation form with Arabic content
       await tester.enterText(
           find.byKey(const Key('title_field')), 'تبرع بملابس شتوية');
-      await tester.enterText(
-          find.byKey(const Key('description_field')),
+      await tester.enterText(find.byKey(const Key('description_field')),
           'ملابس شتوية نظيفة ومناسبة للأطفال والكبار');
-      await tester.enterText(
-          find.byKey(const Key('location_field')), 'الرياض، المملكة العربية السعودية');
+      await tester.enterText(find.byKey(const Key('location_field')),
+          'الرياض، المملكة العربية السعودية');
 
       // Select Arabic category
       await tester.tap(find.text('ملابس'));
@@ -138,7 +134,7 @@ void main() {
       final localeProvider = Provider.of<LocaleProvider>(
           tester.element(find.byType(MaterialApp)),
           listen: false);
-      
+
       await localeProvider.setLocale(const Locale('ar'));
       await tester.pumpAndSettle();
 
@@ -171,17 +167,16 @@ void main() {
 
         // Verify Arabic donation details
         expect(find.text('تفاصيل التبرع'), findsOneWidget);
-        
+
         // Test request donation in Arabic
         if (find.text('طلب تبرع').evaluate().isNotEmpty) {
           await tester.tap(find.text('طلب تبرع'));
           await tester.pumpAndSettle();
 
           // Fill request message in Arabic
-          await tester.enterText(
-              find.byKey(const Key('message_field')),
+          await tester.enterText(find.byKey(const Key('message_field')),
               'أحتاج هذا التبرع لعائلتي، شكراً لكم');
-          
+
           await tester.tap(find.text('إرسال الطلب'));
           await tester.pumpAndSettle();
 
@@ -208,7 +203,7 @@ void main() {
       final localeProvider = Provider.of<LocaleProvider>(
           tester.element(find.byType(MaterialApp)),
           listen: false);
-      
+
       await localeProvider.setLocale(const Locale('en'));
       await tester.pumpAndSettle();
 
@@ -261,7 +256,7 @@ void main() {
       final localeProvider = Provider.of<LocaleProvider>(
           tester.element(find.byType(MaterialApp)),
           listen: false);
-      
+
       await localeProvider.setLocale(const Locale('ar'));
       await tester.pumpAndSettle();
 
@@ -284,10 +279,10 @@ void main() {
           'password_field',
           'confirm_password_field'
         ];
-        
-        if (i < 1) { // Only test name field with Arabic
-          await tester.enterText(
-              find.byKey(Key(fieldKeys[i])), arabicTexts[i]);
+
+        if (i < 1) {
+          // Only test name field with Arabic
+          await tester.enterText(find.byKey(Key(fieldKeys[i])), arabicTexts[i]);
           await tester.pumpAndSettle();
 
           // Verify Arabic text is displayed correctly
@@ -313,7 +308,7 @@ void main() {
       final localeProvider = Provider.of<LocaleProvider>(
           tester.element(find.byType(MaterialApp)),
           listen: false);
-      
+
       await localeProvider.setLocale(const Locale('ar'));
       await tester.pumpAndSettle();
 
@@ -328,20 +323,18 @@ void main() {
         // Verify Arabic number formatting in statistics
         // Look for Arabic numerals or properly formatted numbers
         final numberWidgets = find.byType(Text);
-        bool foundArabicNumbers = false;
-        
+
         for (final widget in numberWidgets.evaluate()) {
           final textWidget = widget.widget as Text;
           final text = textWidget.data ?? '';
-          
+
           // Check for Arabic numerals or number formatting
-          if (text.contains(RegExp(r'[٠-٩]')) || 
+          if (text.contains(RegExp(r'[٠-٩]')) ||
               text.contains(RegExp(r'\d+')) && text.isNotEmpty) {
-            foundArabicNumbers = true;
             break;
           }
         }
-        
+
         // At least verify the page loaded in Arabic
         expect(find.text('التحليلات'), findsOneWidget);
       }
@@ -360,8 +353,8 @@ void main() {
 Future<void> _quickRegisterUser(WidgetTester tester, String role) async {
   // Fill basic registration info
   await tester.enterText(find.byKey(const Key('name_field')), 'Test User');
-  await tester.enterText(
-      find.byKey(const Key('email_field')), 'test${DateTime.now().millisecondsSinceEpoch}@test.com');
+  await tester.enterText(find.byKey(const Key('email_field')),
+      'test${DateTime.now().millisecondsSinceEpoch}@test.com');
   await tester.enterText(
       find.byKey(const Key('password_field')), 'password123');
   await tester.enterText(
@@ -372,6 +365,7 @@ Future<void> _quickRegisterUser(WidgetTester tester, String role) async {
   await tester.pumpAndSettle();
 
   // Submit registration
-  await tester.tap(find.text(role == 'متبرع' ? 'إنشاء حساب' : 'Create Account'));
+  await tester
+      .tap(find.text(role == 'متبرع' ? 'إنشاء حساب' : 'Create Account'));
   await tester.pumpAndSettle();
 }

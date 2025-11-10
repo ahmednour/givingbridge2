@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:provider/provider.dart';
 import '../core/theme/design_system.dart';
 import '../widgets/common/gb_button.dart';
 import '../widgets/common/gb_filter_chips.dart';
 import '../widgets/common/gb_empty_state.dart';
 import '../widgets/common/web_card.dart';
 import '../widgets/rtl/directional_row.dart';
-import '../widgets/rtl/directional_column.dart';
-import '../widgets/rtl/directional_container.dart';
-import '../widgets/rtl/directional_app_bar.dart';
-import '../services/rtl_layout_service.dart';
 import '../services/api_service.dart';
-import '../providers/locale_provider.dart';
 import 'chat_screen_enhanced.dart';
 import '../l10n/app_localizations.dart';
 
@@ -51,7 +45,7 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
 
   Future<void> _loadRequests() async {
     if (!mounted) return;
-    
+
     setState(() {
       _isLoading = true;
     });
@@ -59,7 +53,7 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
     try {
       final response = await ApiService.getIncomingRequests();
       if (!mounted) return;
-      
+
       if (response.success && response.data != null) {
         setState(() {
           _requests = response.data!;
@@ -93,7 +87,7 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
 
   void _showErrorSnackbar(String message) {
     if (!mounted) return;
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: DirectionalRow(

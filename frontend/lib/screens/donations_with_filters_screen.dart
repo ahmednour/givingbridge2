@@ -7,6 +7,7 @@ import '../widgets/common/gb_advanced_filter_panel.dart';
 import '../widgets/common/gb_filter_modal.dart';
 import '../widgets/common/gb_search_suggestions.dart';
 import '../screens/search_history_screen.dart';
+import '../l10n/app_localizations.dart';
 
 /// Example screen demonstrating the enhanced filtering system
 class DonationsWithFiltersScreen extends StatefulWidget {
@@ -39,7 +40,7 @@ class _DonationsWithFiltersScreenState extends State<DonationsWithFiltersScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Donations with Filters'),
+        title: Text(AppLocalizations.of(context)!.donationsWithFilters),
         backgroundColor: DesignSystem.primaryBlue,
         foregroundColor: Colors.white,
       ),
@@ -140,8 +141,8 @@ class _DonationsWithFiltersScreenState extends State<DonationsWithFiltersScreen>
           const SizedBox(height: DesignSystem.spaceM),
           
           if (!filterProvider.hasActiveFilters)
-            const Center(
-              child: Text('No filters applied. Showing all donations.'),
+            Center(
+              child: Text(AppLocalizations.of(context)!.noFiltersApplied),
             )
           else ...[
             Text(

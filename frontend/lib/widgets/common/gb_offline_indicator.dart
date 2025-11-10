@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../core/theme/design_system.dart';
 import '../../services/network_status_service.dart';
 import '../../services/offline_service.dart';
+import '../../l10n/app_localizations.dart';
 import 'gb_button.dart';
 
 /// Comprehensive offline mode indicator with status information
@@ -327,8 +328,8 @@ class GBOfflineStatusSheet extends StatelessWidget {
                             if (context.mounted) {
                               Navigator.pop(context);
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Sync completed!'),
+                                SnackBar(
+                                  content: Text(AppLocalizations.of(context)!.syncCompleted),
                                   backgroundColor: DesignSystem.success,
                                 ),
                               );

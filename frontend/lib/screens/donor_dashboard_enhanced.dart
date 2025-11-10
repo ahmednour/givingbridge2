@@ -663,7 +663,7 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
             const Divider(),
             ListTile(
               leading: Icon(Icons.logout, color: DesignSystem.error),
-              title: Text('Logout'),
+              title: Text(AppLocalizations.of(context)!.logout),
               onTap: () {
                 Navigator.pop(context);
                 authProvider.logout();
@@ -944,8 +944,8 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
             TextButton.icon(
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Full activity log coming soon')),
+                  SnackBar(
+                      content: Text(AppLocalizations.of(context)!.fullActivityLogComingSoon)),
                 );
               },
               icon: const Icon(Icons.arrow_forward, size: 16),
@@ -1066,6 +1066,7 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
 
   Widget _buildProgressTracking(
       BuildContext context, ThemeData theme, bool isDesktop) {
+    final l10n = AppLocalizations.of(context)!;
     final totalDonations = _donations.length;
     final monthlyGoal = 10;
     final impactScore = totalDonations * 10;
@@ -1075,7 +1076,7 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Goal Tracking',
+          l10n.goalTracking, 
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w700,
@@ -1096,14 +1097,14 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
                   children: [
                     GBProgressRing(
                       progress: totalDonations / monthlyGoal,
-                      label: 'Monthly Goal',
+                      label: l10n.monthlyGoal,
                       color: DesignSystem.primaryBlue,
                       size: 140,
                     ),
                     const SizedBox(width: AppTheme.spacingXL),
                     GBProgressRing(
                       progress: impactScore / impactGoal,
-                      label: 'Impact Score',
+                      label: l10n.impactScore,
                       color: DesignSystem.accentAmber,
                       size: 140,
                     ),
@@ -1113,14 +1114,14 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
                   children: [
                     GBProgressRing(
                       progress: totalDonations / monthlyGoal,
-                      label: 'Monthly Goal',
+                      label: l10n.monthlyGoal,
                       color: DesignSystem.primaryBlue,
                       size: 140,
                     ),
                     const SizedBox(height: AppTheme.spacingXL),
                     GBProgressRing(
                       progress: impactScore / impactGoal,
-                      label: 'Impact Score',
+                      label: l10n.impactScore,
                       color: DesignSystem.accentAmber,
                       size: 140,
                     ),

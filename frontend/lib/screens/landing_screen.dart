@@ -8,8 +8,6 @@ import '../widgets/common/web_button.dart';
 import '../widgets/common/web_card.dart';
 import '../widgets/rtl/directional_row.dart';
 import '../widgets/rtl/directional_column.dart';
-import '../widgets/rtl/directional_container.dart';
-import '../services/rtl_layout_service.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/locale_provider.dart';
 import '../providers/theme_provider.dart';
@@ -594,10 +592,12 @@ class _LandingScreenState extends State<LandingScreen>
   Widget _buildHeroContent(
       ThemeData theme, bool isDesktop, AppLocalizations l10n) {
     final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
-    
+
     return DirectionalColumn(
-      crossAxisAlignment: isDesktop 
-          ? (localeProvider.isRTL ? CrossAxisAlignment.end : CrossAxisAlignment.start)
+      crossAxisAlignment: isDesktop
+          ? (localeProvider.isRTL
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.start)
           : CrossAxisAlignment.center,
       children: [
         // Main headline
@@ -700,10 +700,11 @@ class _LandingScreenState extends State<LandingScreen>
         // Trust indicators
         const SizedBox(height: DesignSystem.spaceXXL),
         DirectionalRow(
-          mainAxisAlignment:
-              isDesktop 
-                ? (localeProvider.isRTL ? MainAxisAlignment.end : MainAxisAlignment.start)
-                : MainAxisAlignment.center,
+          mainAxisAlignment: isDesktop
+              ? (localeProvider.isRTL
+                  ? MainAxisAlignment.end
+                  : MainAxisAlignment.start)
+              : MainAxisAlignment.center,
           children: [
             _buildHeroFeature(
               icon: Icons.people_outline,

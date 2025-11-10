@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/design_system.dart';
 import '../../core/theme/web_theme.dart';
+import '../../l10n/app_localizations.dart';
 
 class WebSidebarNav extends StatefulWidget {
   final String currentRoute;
@@ -146,7 +147,7 @@ class _WebSidebarNavState extends State<WebSidebarNav> {
             ),
             const SizedBox(width: DesignSystem.spaceM),
             Expanded(
-              child: Text('GivingBridge',
+              child: Text(AppLocalizations.of(context)!.givingBridge,
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,

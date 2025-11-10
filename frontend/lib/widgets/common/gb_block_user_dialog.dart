@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../core/theme/design_system.dart';
 import '../../services/api_service.dart';
 import 'gb_button.dart';
@@ -66,7 +67,7 @@ class _GBBlockUserDialogState extends State<GBBlockUserDialog> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${widget.userName} has been blocked'),
+          content: Text(AppLocalizations.of(context)!.userBlockedSuccess(widget.userName)),
           backgroundColor: DesignSystem.success,
           behavior: SnackBarBehavior.floating,
         ),
@@ -74,7 +75,7 @@ class _GBBlockUserDialogState extends State<GBBlockUserDialog> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(response.error ?? 'Failed to block user'),
+          content: Text(response.error ?? AppLocalizations.of(context)!.failedToBlockUser),
           backgroundColor: DesignSystem.error,
           behavior: SnackBarBehavior.floating,
         ),
@@ -120,7 +121,7 @@ class _GBBlockUserDialogState extends State<GBBlockUserDialog> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Block User',
+                          AppLocalizations.of(context)!.blockUserTitle,
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -176,7 +177,7 @@ class _GBBlockUserDialogState extends State<GBBlockUserDialog> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Blocking this user will prevent them from contacting you and viewing your donations.',
+                        AppLocalizations.of(context)!.blockUserWarning,
                         style: TextStyle(
                           fontSize: 14,
                           color: isDark
@@ -194,8 +195,8 @@ class _GBBlockUserDialogState extends State<GBBlockUserDialog> {
               // Reason field (optional)
               GBTextField(
                 controller: _reasonController,
-                label: 'Reason (Optional)',
-                hint: 'Why are you blocking this user?',
+                label: AppLocalizations.of(context)!.blockUserReasonLabel,
+                hint: AppLocalizations.of(context)!.blockUserReasonHint,
                 maxLines: 3,
                 enabled: !_isLoading,
               ),
@@ -207,7 +208,7 @@ class _GBBlockUserDialogState extends State<GBBlockUserDialog> {
                 children: [
                   Expanded(
                     child: GBButton(
-                      text: 'Cancel',
+                      text: AppLocalizations.of(context)!.cancel,
                       variant: GBButtonVariant.secondary,
                       onPressed: _isLoading
                           ? null
@@ -217,7 +218,7 @@ class _GBBlockUserDialogState extends State<GBBlockUserDialog> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: GBButton(
-                      text: 'Block User',
+                      text: AppLocalizations.of(context)!.blockUserButton,
                       variant: GBButtonVariant.danger,
                       isLoading: _isLoading,
                       onPressed: _isLoading ? null : _handleBlock,

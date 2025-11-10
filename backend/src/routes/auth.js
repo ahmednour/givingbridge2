@@ -140,7 +140,7 @@ require("dotenv").config();
  */
 router.post(
   "/register",
-  authRateLimit,
+  // authRateLimit, // TEMPORARILY DISABLED FOR DEVELOPMENT
   sanitizeInput(['name', 'email', 'phone', 'location']),
   validateRequiredFields(['name', 'email', 'password']),
   validateEmail('email'),
@@ -205,7 +205,7 @@ router.post(
  */
 router.post(
   "/login",
-  authRateLimit,
+  // authRateLimit, // TEMPORARILY DISABLED FOR DEVELOPMENT
   sanitizeInput(['email']),
   validateRequiredFields(['email', 'password']),
   validateEmail('email'),
@@ -297,7 +297,7 @@ router.get("/me", authenticateToken, asyncHandler(async (req, res) => {
 // Basic password reset functionality (simplified)
 router.post(
   "/forgot-password",
-  authRateLimit,
+  // authRateLimit, // TEMPORARILY DISABLED FOR DEVELOPMENT
   sanitizeInput(['email']),
   validateRequiredFields(['email']),
   validateEmail('email'),

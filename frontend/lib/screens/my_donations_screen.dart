@@ -7,10 +7,8 @@ import '../widgets/common/gb_empty_state.dart';
 import '../widgets/common/web_card.dart';
 import '../widgets/rtl/directional_row.dart';
 import '../widgets/rtl/directional_column.dart';
-import '../widgets/rtl/directional_container.dart';
 import '../widgets/rtl/directional_app_bar.dart';
 import '../widgets/donations/approval_status_badge.dart';
-import '../services/rtl_layout_service.dart';
 import '../services/api_service.dart';
 import '../providers/locale_provider.dart';
 import '../models/donation.dart';
@@ -126,8 +124,8 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
       if (response.success) {
         final l10n = AppLocalizations.of(context)!;
         _showSuccessSnackbar(donation.isAvailable
-            ? (l10n.statusUnavailable ?? 'Donation marked as unavailable')
-            : (l10n.statusAvailable ?? 'Donation marked as available'));
+            ? (l10n.statusUnavailable)
+            : (l10n.statusAvailable));
         _loadDonations(); // Refresh the list
       } else {
         _showErrorSnackbar(response.error ?? 'Failed to update donation');
@@ -179,7 +177,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
   Widget build(BuildContext context) {
     final localeProvider = Provider.of<LocaleProvider>(context);
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Directionality(
       textDirection: localeProvider.textDirection,
       child: Scaffold(
@@ -198,7 +196,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
             onPressed: () => Navigator.pop(context),
           ),
           title: Text(
-            l10n.myDonations ?? 'My Donations',
+            l10n.myDonations,
             style: const TextStyle(
               color: DesignSystem.textPrimary,
               fontSize: 20,
@@ -211,34 +209,34 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
               icon: const Icon(Icons.add, color: DesignSystem.primaryBlue),
               onPressed: _createDonation,
             ),
-        ],
-      ),
-      body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : _donations.isEmpty
-              ? _buildEmptyState()
-              : RefreshIndicator(
-                  onRefresh: _loadDonations,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(DesignSystem.spaceL),
-                    itemCount: _donations.length,
-                    itemBuilder: (context, index) {
-                      final donation = _donations[index];
-                      return _buildDonationCard(donation)
-                          .animate()
-                          .fadeIn(duration: 300.ms, delay: (index * 50).ms)
-                          .slideY(begin: 0.1, end: 0);
-                    },
+          ],
+        ),
+        body: _isLoading
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : _donations.isEmpty
+                ? _buildEmptyState()
+                : RefreshIndicator(
+                    onRefresh: _loadDonations,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(DesignSystem.spaceL),
+                      itemCount: _donations.length,
+                      itemBuilder: (context, index) {
+                        final donation = _donations[index];
+                        return _buildDonationCard(donation)
+                            .animate()
+                            .fadeIn(duration: 300.ms, delay: (index * 50).ms)
+                            .slideY(begin: 0.1, end: 0);
+                      },
+                    ),
                   ),
-                ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _createDonation,
-        backgroundColor: DesignSystem.primaryBlue,
-        child: const Icon(Icons.add, color: Colors.white),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _createDonation,
+          backgroundColor: DesignSystem.primaryBlue,
+          child: const Icon(Icons.add, color: Colors.white),
+        ),
       ),
-    ),
     );
   }
 
@@ -254,14 +252,14 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
 
   Widget _buildDonationCard(Donation donation) {
     final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: DesignSystem.spaceL),
       child: WebCard(
         padding: EdgeInsets.zero,
         child: DirectionalColumn(
-          crossAxisAlignment: localeProvider.isRTL 
-              ? CrossAxisAlignment.end 
+          crossAxisAlignment: localeProvider.isRTL
+              ? CrossAxisAlignment.end
               : CrossAxisAlignment.start,
           children: [
             // Image (if available)
@@ -306,7 +304,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                                 BorderRadius.circular(DesignSystem.radiusL),
                           ),
                           child: Text(
-                            AppLocalizations.of(context)!.statusUnavailable ?? 'Unavailable',
+                            AppLocalizations.of(context)!.statusUnavailable,
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 12,
@@ -322,8 +320,8 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
             Padding(
               padding: const EdgeInsets.all(DesignSystem.spaceL),
               child: DirectionalColumn(
-                crossAxisAlignment: localeProvider.isRTL 
-                    ? CrossAxisAlignment.end 
+                crossAxisAlignment: localeProvider.isRTL
+                    ? CrossAxisAlignment.end
                     : CrossAxisAlignment.start,
                 children: [
                   // Status, Approval Status, and Category
@@ -346,9 +344,10 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                               BorderRadius.circular(DesignSystem.radiusL),
                         ),
                         child: Text(
-                          donation.isAvailable 
-                              ? (AppLocalizations.of(context)!.statusAvailable ?? 'Available')
-                              : (AppLocalizations.of(context)!.statusUnavailable ?? 'Unavailable'),
+                          donation.isAvailable
+                              ? (AppLocalizations.of(context)!.statusAvailable)
+                              : (AppLocalizations.of(context)!
+                                  .statusUnavailable),
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
@@ -417,8 +416,10 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                                 ),
                                 const SizedBox(width: 8),
                                 Text(donation.isAvailable
-                                    ? (AppLocalizations.of(context)!.statusUnavailable ?? 'Mark Unavailable')
-                                    : (AppLocalizations.of(context)!.statusAvailable ?? 'Mark Available')),
+                                    ? (AppLocalizations.of(context)!
+                                        .statusUnavailable)
+                                    : (AppLocalizations.of(context)!
+                                        .statusAvailable)),
                               ],
                             ),
                           ),
@@ -473,19 +474,22 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                   ),
 
                   // Rejection Reason (if rejected)
-                  if (donation.isRejected && donation.rejectionReason != null) ...[
+                  if (donation.isRejected &&
+                      donation.rejectionReason != null) ...[
                     const SizedBox(height: DesignSystem.spaceM),
                     Container(
                       padding: const EdgeInsets.all(DesignSystem.spaceM),
                       decoration: BoxDecoration(
                         color: Colors.red.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(DesignSystem.radiusM),
+                        borderRadius:
+                            BorderRadius.circular(DesignSystem.radiusM),
                         border: Border.all(color: Colors.red.withOpacity(0.3)),
                       ),
                       child: DirectionalRow(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(Icons.info_outline, size: 16, color: Colors.red),
+                          const Icon(Icons.info_outline,
+                              size: 16, color: Colors.red),
                           const SizedBox(width: DesignSystem.spaceS),
                           Expanded(
                             child: DirectionalColumn(
@@ -534,7 +538,9 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
                             color: DesignSystem.textSecondary,
                           ),
                           overflow: TextOverflow.ellipsis,
-                          textAlign: localeProvider.isRTL ? TextAlign.right : TextAlign.left,
+                          textAlign: localeProvider.isRTL
+                              ? TextAlign.right
+                              : TextAlign.left,
                         ),
                       ),
                       const SizedBox(width: DesignSystem.spaceM),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/user.dart';
 import '../../core/theme/design_system.dart';
 
@@ -36,9 +37,9 @@ class ConversationInfoDialog extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Conversation Details',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.conversationDetails,
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
                     color: DesignSystem.neutral900,
@@ -94,7 +95,7 @@ class ConversationInfoDialog extends StatelessWidget {
                 borderRadius: BorderRadius.circular(DesignSystem.radiusS),
               ),
               child: Text(
-                _getRoleLabel(otherUser.role),
+                _getRoleLabel(context, otherUser.role),
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -116,7 +117,7 @@ class ConversationInfoDialog extends StatelessWidget {
                   if (otherUser.email.isNotEmpty)
                     _buildInfoRow(
                       Icons.email_outlined,
-                      'Email',
+                      AppLocalizations.of(context)!.email,
                       otherUser.email,
                     ),
                   if (otherUser.phone != null &&
@@ -124,7 +125,7 @@ class ConversationInfoDialog extends StatelessWidget {
                     const SizedBox(height: 12),
                     _buildInfoRow(
                       Icons.phone_outlined,
-                      'Phone',
+                      AppLocalizations.of(context)!.phone,
                       otherUser.phone!,
                     ),
                   ],
@@ -133,21 +134,21 @@ class ConversationInfoDialog extends StatelessWidget {
                     const SizedBox(height: 12),
                     _buildInfoRow(
                       Icons.location_on_outlined,
-                      'Location',
+                      AppLocalizations.of(context)!.location,
                       otherUser.location!,
                     ),
                   ],
                   const SizedBox(height: 12),
                   _buildInfoRow(
                     Icons.chat_outlined,
-                    'Messages',
-                    '$messageCount message${messageCount != 1 ? 's' : ''}',
+                    AppLocalizations.of(context)!.messages,
+                    AppLocalizations.of(context)!.messageCount(messageCount),
                   ),
                   if (firstMessageDate != null) ...[
                     const SizedBox(height: 12),
                     _buildInfoRow(
                       Icons.calendar_today_outlined,
-                      'First message',
+                      AppLocalizations.of(context)!.firstMessage,
                       _formatDate(firstMessageDate!),
                     ),
                   ],
@@ -162,7 +163,7 @@ class ConversationInfoDialog extends StatelessWidget {
                 if (onArchive != null)
                   _buildActionButton(
                     icon: Icons.archive_outlined,
-                    label: 'Archive Conversation',
+                    label: AppLocalizations.of(context)!.archiveConversation,
                     color: DesignSystem.warning,
                     onTap: () {
                       Navigator.of(context).pop();
@@ -173,7 +174,7 @@ class ConversationInfoDialog extends StatelessWidget {
                   const SizedBox(height: 12),
                   _buildActionButton(
                     icon: Icons.block_outlined,
-                    label: 'Block User',
+                    label: AppLocalizations.of(context)!.blockUser,
                     color: DesignSystem.error,
                     onTap: () {
                       Navigator.of(context).pop();
@@ -185,7 +186,7 @@ class ConversationInfoDialog extends StatelessWidget {
                   const SizedBox(height: 12),
                   _buildActionButton(
                     icon: Icons.flag_outlined,
-                    label: 'Report User',
+                    label: AppLocalizations.of(context)!.reportUser,
                     color: DesignSystem.accentPink,
                     onTap: () {
                       Navigator.of(context).pop();
@@ -281,14 +282,15 @@ class ConversationInfoDialog extends StatelessWidget {
     }
   }
 
-  String _getRoleLabel(String role) {
+  String _getRoleLabel(BuildContext context, String role) {
+    final l10n = AppLocalizations.of(context)!;
     switch (role.toLowerCase()) {
       case 'donor':
-        return 'Donor';
+        return l10n.donor;
       case 'receiver':
-        return 'Receiver';
+        return l10n.receiver;
       case 'admin':
-        return 'Admin';
+        return l10n.admin;
       default:
         return role;
     }

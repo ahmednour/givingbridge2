@@ -18,7 +18,6 @@ class _AdminPendingDonationsScreenState
   bool _isLoading = true;
   String? _error;
   int _currentPage = 1;
-  bool _hasMore = true;
 
   @override
   void initState() {
@@ -40,7 +39,6 @@ class _AdminPendingDonationsScreenState
     if (response.success && response.data != null) {
       setState(() {
         _donations = response.data!.items;
-        _hasMore = response.data!.hasMore;
         _isLoading = false;
       });
     } else {
@@ -53,7 +51,7 @@ class _AdminPendingDonationsScreenState
 
   Future<void> _approveDonation(Donation donation) async {
     final l10n = AppLocalizations.of(context)!;
-    
+
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -177,7 +175,7 @@ class _AdminPendingDonationsScreenState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.pendingDonations),
@@ -305,8 +303,8 @@ class _AdminPendingDonationsScreenState
                                         return Container(
                                           height: 200,
                                           color: Colors.grey[300],
-                                          child: const Icon(Icons.image,
-                                              size: 64),
+                                          child:
+                                              const Icon(Icons.image, size: 64),
                                         );
                                       },
                                     ),

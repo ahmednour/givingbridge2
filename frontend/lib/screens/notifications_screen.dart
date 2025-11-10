@@ -173,14 +173,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Reset Notification Settings'),
-        content: const Text(
-          'This will reset all notification settings to their default values. Are you sure?',
+        title: Text(AppLocalizations.of(context)!.resetNotificationSettings),
+        content: Text(
+          AppLocalizations.of(context)!.resetNotificationConfirm,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           GBButton(
             text: 'Reset',
@@ -188,8 +188,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               provider.resetToDefaults();
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Notification settings reset to defaults'),
+                SnackBar(
+                  content: Text(AppLocalizations.of(context)!.notificationSettingsReset),
                   backgroundColor: DesignSystem.success,
                 ),
               );
