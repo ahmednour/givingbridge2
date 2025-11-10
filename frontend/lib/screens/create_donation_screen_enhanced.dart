@@ -323,40 +323,6 @@ class _CreateDonationScreenEnhancedState
       textDirection: localeProvider.textDirection,
       child: Scaffold(
         backgroundColor: DesignSystem.getBackgroundColor(context),
-        appBar: DirectionalAppBar(
-          backgroundColor: DesignSystem.getSurfaceColor(context),
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(
-              localeProvider.getDirectionalIcon(
-                start: Icons.arrow_back,
-                end: Icons.arrow_forward,
-              ),
-              color: isDark ? DesignSystem.neutral200 : DesignSystem.neutral900,
-            ),
-            onPressed: () => Navigator.pop(context),
-          ),
-          title: Text(
-            widget.donation != null ? l10n.editDonation : l10n.createDonation,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: isDark
-                      ? DesignSystem.neutral200
-                      : DesignSystem.neutral900,
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-          centerTitle: localeProvider.isRTL,
-          actions: [
-            if (_currentStep > 0)
-              TextButton(
-                onPressed: _previousStep,
-                child: Text(
-                  l10n.previous,
-                  style: TextStyle(color: DesignSystem.primaryBlue),
-                ),
-              ),
-          ],
-        ),
         body: DirectionalColumn(
           children: [
             // Progress Indicator

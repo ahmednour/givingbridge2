@@ -82,7 +82,6 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: DesignSystem.getBackgroundColor(context),
-      appBar: _buildAppBar(),
       body: FadeTransition(
         opacity: _fadeAnimation,
         child: SlideTransition(
@@ -103,9 +102,11 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
 
                     // Convert dynamic list to Conversation objects
                     final conversationsList = messageProvider.conversations
-                        .map((c) => c is Conversation ? c : Conversation.fromJson(c))
+                        .map((c) =>
+                            c is Conversation ? c : Conversation.fromJson(c))
                         .toList();
-                    final conversations = _filterConversations(conversationsList);
+                    final conversations =
+                        _filterConversations(conversationsList);
 
                     if (conversations.isEmpty) {
                       return _buildEmptyState();
@@ -139,95 +140,6 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
           color: Colors.white,
         ),
       ),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    final l10n = AppLocalizations.of(context)!;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return AppBar(
-      backgroundColor: DesignSystem.getSurfaceColor(context),
-      elevation: 0,
-      title: Text(
-        l10n.messages,
-        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: isDark ? DesignSystem.neutral200 : DesignSystem.neutral900,
-              fontWeight: FontWeight.w600,
-            ),
-      ),
-      centerTitle: true,
-      actions: [
-        // Mark All as Read
-        Consumer<MessageProvider>(
-          builder: (context, messageProvider, child) {
-            if (messageProvider.unreadCount > 0) {
-              return IconButton(
-                onPressed: () => messageProvider.loadUnreadCount(),
-                icon: Icon(
-                  Icons.done_all,
-                  color: DesignSystem.primaryBlue,
-                ),
-                tooltip: l10n.markAllAsRead,
-              );
-            }
-            return const SizedBox.shrink();
-          },
-        ),
-
-        // More Options
-        PopupMenuButton<String>(
-          icon: Icon(
-            Icons.more_vert,
-            color: isDark ? DesignSystem.neutral200 : DesignSystem.neutral900,
-          ),
-          onSelected: (value) {
-            switch (value) {
-              case 'settings':
-                _showMessageSettings();
-                break;
-              case 'archived':
-                _showArchivedConversations();
-                break;
-              case 'blocked':
-                _showBlockedUsers();
-                break;
-            }
-          },
-          itemBuilder: (context) => [
-            PopupMenuItem(
-              value: 'settings',
-              child: Row(
-                children: [
-                  const Icon(Icons.settings, size: 20),
-                  const SizedBox(width: 12),
-                  Text(l10n.messageSettings),
-                ],
-              ),
-            ),
-            PopupMenuItem(
-              value: 'archived',
-              child: Row(
-                children: [
-                  const Icon(Icons.archive, size: 20),
-                  const SizedBox(width: 12),
-                  Text(l10n.archivedConversations),
-                ],
-              ),
-            ),
-            PopupMenuItem(
-              value: 'blocked',
-              child: Row(
-                children: [
-                  const Icon(Icons.block, size: 20),
-                  const SizedBox(width: 12),
-                  Text(l10n.blockedUsers),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ],
     );
   }
 
@@ -445,7 +357,8 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
                       children: [
                         Expanded(
                           child: Text(
-                            conversation.lastMessageContent?.toString() ?? l10n.noMessages,
+                            conversation.lastMessageContent?.toString() ??
+                                l10n.noMessages,
                             style:
                                 Theme.of(context).textTheme.bodySmall?.copyWith(
                                       color: conversation.hasUnreadMessages
@@ -622,8 +535,8 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
               borderRadius: BorderRadius.circular(DesignSystem.radiusM),
             ),
             title: Text(l10n.archiveConversation),
-            content:
-                Text(l10n.archiveConversationConfirm(conversation.displayTitle)),
+            content: Text(
+                l10n.archiveConversationConfirm(conversation.displayTitle)),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),

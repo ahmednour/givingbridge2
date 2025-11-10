@@ -34,9 +34,6 @@ class _DonorImpactScreenState extends State<DonorImpactScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.yourImpact),
-      ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -89,18 +86,20 @@ class _DonorImpactScreenState extends State<DonorImpactScreen> {
                     Card(
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
-                        child: Text(AppLocalizations.of(context)!.noDonationsYet),
+                        child:
+                            Text(AppLocalizations.of(context)!.noDonationsYet),
                       ),
                     )
                   else
                     ...impactData['categories'].entries.map(
-                      (entry) => Card(
-                        child: ListTile(
-                          title: Text(entry.key),
-                          trailing: Text(AppLocalizations.of(context)!.donationsCount(entry.value)),
+                          (entry) => Card(
+                            child: ListTile(
+                              title: Text(entry.key),
+                              trailing: Text(AppLocalizations.of(context)!
+                                  .donationsCount(entry.value)),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
                 ],
               ),
             ),

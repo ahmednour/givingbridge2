@@ -27,26 +27,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: DesignSystem.getBackgroundColor(context),
-      appBar: AppBar(
-        backgroundColor: DesignSystem.getSurfaceColor(context),
-        elevation: 0,
-        title: Text(
-          l10n.notificationSettings,
-          style: const TextStyle(
-            color: DesignSystem.textPrimary,
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: DesignSystem.textPrimary),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
       body: Consumer<NotificationProvider>(
         builder: (context, provider, child) {
           return Padding(
@@ -90,7 +73,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         ),
                       ),
                       const SizedBox(height: DesignSystem.spaceM),
-                      
+
                       // Enable In-App Notifications
                       _buildSettingToggle(
                         'Enable Notifications',
@@ -99,9 +82,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         (value) => provider.updateInAppNotifications(value),
                         theme,
                       ),
-                      
+
                       const SizedBox(height: DesignSystem.spaceM),
-                      
+
                       // Message Notifications
                       _buildSettingToggle(
                         'Message Notifications',
@@ -189,7 +172,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(AppLocalizations.of(context)!.notificationSettingsReset),
+                  content: Text(
+                      AppLocalizations.of(context)!.notificationSettingsReset),
                   backgroundColor: DesignSystem.success,
                 ),
               );

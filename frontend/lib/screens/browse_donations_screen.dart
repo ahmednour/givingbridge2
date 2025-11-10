@@ -10,12 +10,10 @@ import '../widgets/common/gb_filter_chips.dart';
 import '../widgets/common/gb_empty_state.dart';
 import '../widgets/common/gb_skeleton_widgets.dart';
 import '../widgets/common/web_card.dart';
-import '../widgets/common/mobile_navigation.dart';
 import '../widgets/common/touch_friendly_widgets.dart';
 import '../widgets/rtl/directional_row.dart';
 import '../widgets/rtl/directional_column.dart';
 import '../widgets/rtl/directional_container.dart';
-import '../widgets/rtl/directional_app_bar.dart';
 import '../services/api_service.dart';
 import '../providers/auth_provider.dart';
 import '../providers/locale_provider.dart';
@@ -203,34 +201,6 @@ class _BrowseDonationsScreenState extends State<BrowseDonationsScreen> {
         builder: (context, screenSize) {
           return Scaffold(
             backgroundColor: DesignSystem.getBackgroundColor(context),
-            appBar: ResponsiveUtils.isMobile(context)
-                ? MobileAppBar(
-                    title: l10n.browseDonations,
-                    showBackButton: true,
-                  ) as PreferredSizeWidget
-                : DirectionalAppBar(
-                    backgroundColor: DesignSystem.getSurfaceColor(context),
-                    elevation: 0,
-                    leading: IconButton(
-                      icon: Icon(
-                        localeProvider.getDirectionalIcon(
-                          start: Icons.arrow_back,
-                          end: Icons.arrow_forward,
-                        ),
-                        color: DesignSystem.textPrimary,
-                      ),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                    title: Text(
-                      l10n.browseDonations,
-                      style: TextStyle(
-                        color: DesignSystem.textPrimary,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    centerTitle: localeProvider.isRTL,
-                  ),
             body: DirectionalColumn(
               children: [
                 // Search and Filters

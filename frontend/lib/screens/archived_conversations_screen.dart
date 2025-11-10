@@ -99,26 +99,6 @@ class _ArchivedConversationsScreenState
 
     return Scaffold(
       backgroundColor: DesignSystem.getBackgroundColor(context),
-      appBar: AppBar(
-        backgroundColor: DesignSystem.getSurfaceColor(context),
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: isDark ? DesignSystem.neutral200 : DesignSystem.neutral900,
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          l10n.archivedConversations,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color:
-                    isDark ? DesignSystem.neutral200 : DesignSystem.neutral900,
-                fontWeight: FontWeight.w600,
-              ),
-        ),
-        centerTitle: true,
-      ),
       body: _isLoading
           ? const Center(
               child: CircularProgressIndicator(),

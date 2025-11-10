@@ -55,11 +55,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         // If no user, show error screen
         if (user == null) {
           return Scaffold(
-            appBar: AppBar(
-              title: Text(AppLocalizations.of(context)!.profile),
-              centerTitle: true,
-              backgroundColor: DesignSystem.getSurfaceColor(context),
-            ),
             body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -104,13 +99,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         // Normal profile screen
         return Scaffold(
           backgroundColor: DesignSystem.getBackgroundColor(context),
-          appBar: AppBar(
-            title: Text(AppLocalizations.of(context)!.profile),
-            centerTitle: true,
-            backgroundColor: DesignSystem.getSurfaceColor(context),
-            foregroundColor: DesignSystem.textPrimary,
-            elevation: 0,
-          ),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(DesignSystem.spaceXL),
             child: Column(

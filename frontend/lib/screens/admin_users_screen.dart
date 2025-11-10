@@ -181,7 +181,6 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     // Check if user is admin
     if (authProvider.user?.role != 'admin') {
       return Scaffold(
-        appBar: AppBar(title: Text(AppLocalizations.of(context)!.accessDenied)),
         body: Center(
           child: Text(AppLocalizations.of(context)!.noPermissionPage),
         ),
@@ -189,11 +188,6 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.userManagement),
-        backgroundColor: Colors.blue[600],
-        foregroundColor: Colors.white,
-      ),
       body: Column(
         children: [
           // Search and filter section

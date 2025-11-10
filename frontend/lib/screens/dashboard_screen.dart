@@ -4,10 +4,8 @@ import '../providers/auth_provider.dart';
 import '../providers/locale_provider.dart';
 import '../core/utils/responsive_utils.dart';
 import '../widgets/common/mobile_navigation.dart';
-import '../widgets/rtl/directional_app_bar.dart';
 import '../widgets/rtl/directional_drawer.dart';
 import '../widgets/rtl/directional_bottom_navigation.dart';
-import '../widgets/language_selector.dart';
 import '../l10n/app_localizations.dart';
 import 'login_screen.dart';
 import 'donor_dashboard_enhanced.dart';
@@ -69,21 +67,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Scaffold(
       key: _scaffoldKey,
-      appBar: DirectionalAppBar(
-        title: Text(l10n.appTitle),
-        centerTitle: localeProvider.isRTL,
-        actions: [
-          const LanguageToggleButton(),
-          IconButton(
-            icon: Icon(localeProvider.getDirectionalIcon(
-              start: Icons.more_vert,
-              end: Icons.more_vert,
-            )),
-            onPressed: () => _showLanguageSelector(context),
-            tooltip: l10n.selectLanguage,
-          ),
-        ],
-      ),
       body: IndexedStack(
         index: _currentIndex,
         children: [
@@ -239,21 +222,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildDesktopLayout(
       user, AppLocalizations l10n, LocaleProvider localeProvider) {
     return Scaffold(
-      appBar: DirectionalAppBar(
-        title: Text(l10n.appTitle),
-        centerTitle: localeProvider.isRTL,
-        actions: [
-          const LanguageToggleButton(),
-          IconButton(
-            icon: Icon(localeProvider.getDirectionalIcon(
-              start: Icons.more_vert,
-              end: Icons.more_vert,
-            )),
-            onPressed: () => _showLanguageSelector(context),
-            tooltip: l10n.selectLanguage,
-          ),
-        ],
-      ),
       body: _getContentForRole(user),
       drawer: DirectionalDrawer(
         child: _buildRTLDrawerContent(user, l10n, localeProvider),
@@ -357,16 +325,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           },
         ),
       ],
-    );
-  }
-
-  void _showLanguageSelector(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) => const LanguageSelector(showAsButton: false),
     );
   }
 }

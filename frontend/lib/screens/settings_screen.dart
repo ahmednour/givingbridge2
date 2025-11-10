@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../providers/locale_provider.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/language_selector.dart';
-import '../widgets/rtl/directional_app_bar.dart';
 import '../core/theme/app_theme.dart';
 import '../l10n/app_localizations.dart';
 
@@ -15,14 +14,10 @@ class SettingsScreen extends StatelessWidget {
     return Consumer2<LocaleProvider, AuthProvider>(
       builder: (context, localeProvider, authProvider, child) {
         final l10n = AppLocalizations.of(context)!;
-        
+
         return Directionality(
           textDirection: localeProvider.textDirection,
           child: Scaffold(
-            appBar: DirectionalAppBar(
-              title: Text(l10n.settings),
-              centerTitle: localeProvider.isRTL,
-            ),
             body: ListView(
               padding: const EdgeInsets.all(AppTheme.spacingL),
               children: [
@@ -30,23 +25,23 @@ class SettingsScreen extends StatelessWidget {
                 _buildSectionHeader(l10n.language, Icons.language),
                 const SizedBox(height: AppTheme.spacingM),
                 _buildLanguageSettingsCard(context, localeProvider, l10n),
-                
+
                 const SizedBox(height: AppTheme.spacingXL),
-                
+
                 // Account Settings Section
                 _buildSectionHeader(l10n.profile, Icons.person),
                 const SizedBox(height: AppTheme.spacingM),
                 _buildAccountSettingsCard(context, authProvider, l10n),
-                
+
                 const SizedBox(height: AppTheme.spacingXL),
-                
+
                 // App Settings Section
                 _buildSectionHeader(l10n.settings, Icons.settings),
                 const SizedBox(height: AppTheme.spacingM),
                 _buildAppSettingsCard(context, l10n),
-                
+
                 const SizedBox(height: AppTheme.spacingXL),
-                
+
                 // About Section
                 _buildSectionHeader('About', Icons.info),
                 const SizedBox(height: AppTheme.spacingM),
@@ -79,7 +74,8 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLanguageSettingsCard(BuildContext context, LocaleProvider localeProvider, AppLocalizations l10n) {
+  Widget _buildLanguageSettingsCard(BuildContext context,
+      LocaleProvider localeProvider, AppLocalizations l10n) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -104,7 +100,7 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppTheme.spacingL),
-            
+
             // Current Language Display
             Container(
               padding: const EdgeInsets.all(AppTheme.spacingM),
@@ -133,14 +129,14 @@ class SettingsScreen extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: AppTheme.spacingL),
-            
+
             // Language Selector
             const LanguageSelector(showAsButton: false),
-            
+
             const SizedBox(height: AppTheme.spacingM),
-            
+
             // Quick Toggle Button
             Row(
               children: [
@@ -151,8 +147,8 @@ class SettingsScreen extends StatelessWidget {
                     },
                     icon: const Icon(Icons.swap_horiz),
                     label: Text(
-                      localeProvider.isArabic 
-                          ? 'Switch to English' 
+                      localeProvider.isArabic
+                          ? 'Switch to English'
                           : 'التبديل إلى العربية',
                     ),
                     style: OutlinedButton.styleFrom(
@@ -173,7 +169,8 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAccountSettingsCard(BuildContext context, AuthProvider authProvider, AppLocalizations l10n) {
+  Widget _buildAccountSettingsCard(
+      BuildContext context, AuthProvider authProvider, AppLocalizations l10n) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(

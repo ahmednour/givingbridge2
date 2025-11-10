@@ -76,7 +76,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
     if (authProvider.user?.role != 'admin') {
       return Scaffold(
-        appBar: AppBar(title: Text(l10n.accessDenied)),
         body: Center(
           child: Text(l10n.noPermissionAccess),
         ),
@@ -84,11 +83,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.adminDashboard),
-        backgroundColor: Colors.blue[600],
-        foregroundColor: Colors.white,
-      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(

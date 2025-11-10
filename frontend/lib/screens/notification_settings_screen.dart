@@ -5,10 +5,12 @@ class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({super.key});
 
   @override
-  State<NotificationSettingsScreen> createState() => _NotificationSettingsScreenState();
+  State<NotificationSettingsScreen> createState() =>
+      _NotificationSettingsScreenState();
 }
 
-class _NotificationSettingsScreenState extends State<NotificationSettingsScreen> {
+class _NotificationSettingsScreenState
+    extends State<NotificationSettingsScreen> {
   bool _pushNotifications = true;
   bool _emailNotifications = true;
   bool _messageNotifications = true;
@@ -17,9 +19,6 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.notificationSettings),
-      ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
@@ -35,7 +34,8 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
           ),
           SwitchListTile(
             title: Text(AppLocalizations.of(context)!.emailNotifications),
-            subtitle: Text(AppLocalizations.of(context)!.emailNotificationsDesc),
+            subtitle:
+                Text(AppLocalizations.of(context)!.emailNotificationsDesc),
             value: _emailNotifications,
             onChanged: (value) {
               setState(() {
@@ -45,7 +45,8 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
           ),
           SwitchListTile(
             title: Text(AppLocalizations.of(context)!.messageNotifications),
-            subtitle: Text(AppLocalizations.of(context)!.messageNotificationsDesc),
+            subtitle:
+                Text(AppLocalizations.of(context)!.messageNotificationsDesc),
             value: _messageNotifications,
             onChanged: (value) {
               setState(() {

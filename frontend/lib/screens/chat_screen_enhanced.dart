@@ -388,7 +388,6 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: DesignSystem.getBackgroundColor(context),
-      appBar: _buildAppBar(),
       body: Column(
         children: [
           // Messages List
@@ -451,118 +450,6 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
           _buildMessageInput(),
         ],
       ),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    final l10n = AppLocalizations.of(context)!;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return AppBar(
-      backgroundColor: DesignSystem.getSurfaceColor(context),
-      elevation: 0,
-      leading: IconButton(
-        icon: Icon(
-          RTLUtils.getDirectionalIcon(context, Icons.arrow_back,
-              start: Icons.arrow_back, end: Icons.arrow_forward),
-          color: isDark ? DesignSystem.neutral200 : DesignSystem.neutral900,
-        ),
-        onPressed: () => Navigator.pop(context, true),
-      ),
-      title: Row(
-        children: [
-          // Avatar
-          GBUserAvatar(
-            avatarUrl: widget.otherUserAvatarUrl,
-            userName: widget.otherUserName,
-            size: 40,
-          ),
-
-          const SizedBox(width: 16),
-
-          // User Info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.otherUserName,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: isDark
-                            ? DesignSystem.neutral200
-                            : DesignSystem.neutral900,
-                      ),
-                ),
-                if (widget.donationId != null || widget.requestId != null)
-                  Text(
-                    widget.donationId != null
-                        ? 'Donation #${widget.donationId}'
-                        : '${l10n.request} #${widget.requestId}',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: DesignSystem.primaryBlue,
-                        ),
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
-      actions: [
-        // More Options
-        PopupMenuButton<String>(
-          icon: Icon(
-            Icons.more_vert,
-            color: isDark ? DesignSystem.neutral200 : DesignSystem.neutral900,
-          ),
-          onSelected: (value) {
-            switch (value) {
-              case 'info':
-                _showConversationInfo();
-                break;
-              case 'block':
-                _showBlockConfirmation();
-                break;
-              case 'report':
-                _showReportDialog();
-                break;
-            }
-          },
-          itemBuilder: (context) => [
-            PopupMenuItem(
-              value: 'info',
-              child: Row(
-                children: [
-                  const Icon(Icons.info_outline, size: 20),
-                  const SizedBox(width: 12),
-                  Text(AppLocalizations.of(context)!.conversationInfo),
-                ],
-              ),
-            ),
-            PopupMenuItem(
-              value: 'block',
-              child: Row(
-                children: [
-                  Icon(Icons.block, size: 20, color: DesignSystem.error),
-                  const SizedBox(width: 12),
-                  Text(AppLocalizations.of(context)!.blockUser,
-                      style: TextStyle(color: DesignSystem.error)),
-                ],
-              ),
-            ),
-            PopupMenuItem(
-              value: 'report',
-              child: Row(
-                children: [
-                  Icon(Icons.report, size: 20, color: DesignSystem.warning),
-                  const SizedBox(width: 12),
-                  Text(AppLocalizations.of(context)!.reportUser,
-                      style: TextStyle(color: DesignSystem.warning)),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ],
     );
   }
 

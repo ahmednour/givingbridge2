@@ -182,13 +182,6 @@ class _DonorBrowseRequestsScreenState extends State<DonorBrowseRequestsScreen> {
     return Directionality(
       textDirection: localeProvider.textDirection,
       child: Scaffold(
-        appBar: DirectionalAppBar(
-          title: Text(l10n.incomingRequests),
-          backgroundColor: DesignSystem.primaryBlue,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          centerTitle: localeProvider.isRTL,
-        ),
         backgroundColor: DesignSystem.getBackgroundColor(context),
         body: DirectionalColumn(
           children: [

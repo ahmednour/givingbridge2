@@ -7,7 +7,6 @@ import '../widgets/common/gb_empty_state.dart';
 import '../widgets/common/web_card.dart';
 import '../widgets/rtl/directional_row.dart';
 import '../widgets/rtl/directional_column.dart';
-import '../widgets/rtl/directional_app_bar.dart';
 import '../widgets/donations/approval_status_badge.dart';
 import '../services/api_service.dart';
 import '../providers/locale_provider.dart';
@@ -176,41 +175,11 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
   @override
   Widget build(BuildContext context) {
     final localeProvider = Provider.of<LocaleProvider>(context);
-    final l10n = AppLocalizations.of(context)!;
 
     return Directionality(
       textDirection: localeProvider.textDirection,
       child: Scaffold(
         backgroundColor: DesignSystem.getBackgroundColor(context),
-        appBar: DirectionalAppBar(
-          backgroundColor: DesignSystem.getSurfaceColor(context),
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(
-              localeProvider.getDirectionalIcon(
-                start: Icons.arrow_back,
-                end: Icons.arrow_forward,
-              ),
-              color: DesignSystem.textPrimary,
-            ),
-            onPressed: () => Navigator.pop(context),
-          ),
-          title: Text(
-            l10n.myDonations,
-            style: const TextStyle(
-              color: DesignSystem.textPrimary,
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          centerTitle: localeProvider.isRTL,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.add, color: DesignSystem.primaryBlue),
-              onPressed: _createDonation,
-            ),
-          ],
-        ),
         body: _isLoading
             ? const Center(
                 child: CircularProgressIndicator(),

@@ -15,19 +15,6 @@ class _SearchHistoryScreenState extends State<SearchHistoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Search History'),
-        backgroundColor: DesignSystem.primaryBlue,
-        foregroundColor: Colors.white,
-        actions: [
-          if (_searchHistory.isNotEmpty)
-            IconButton(
-              icon: const Icon(Icons.delete_sweep),
-              tooltip: 'Clear All',
-              onPressed: _clearAllHistory,
-            ),
-        ],
-      ),
       body: _searchHistory.isEmpty
           ? Center(
               child: Column(

@@ -180,7 +180,6 @@ class _AdminRequestsScreenState extends State<AdminRequestsScreen> {
     // Check if user is admin
     if (authProvider.user?.role != 'admin') {
       return Scaffold(
-        appBar: AppBar(title: Text(AppLocalizations.of(context)!.accessDenied)),
         body: Center(
           child: Text(AppLocalizations.of(context)!.noPermissionPage),
         ),
@@ -188,11 +187,6 @@ class _AdminRequestsScreenState extends State<AdminRequestsScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.requestManagement),
-        backgroundColor: Colors.blue[600],
-        foregroundColor: Colors.white,
-      ),
       body: Column(
         children: [
           // Filter section

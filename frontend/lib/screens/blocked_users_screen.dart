@@ -35,9 +35,6 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.blockedUsersTitle),
-      ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : blockedUsers.isEmpty

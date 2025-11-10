@@ -14,10 +14,12 @@ class DonationsWithFiltersScreen extends StatefulWidget {
   const DonationsWithFiltersScreen({Key? key}) : super(key: key);
 
   @override
-  State<DonationsWithFiltersScreen> createState() => _DonationsWithFiltersScreenState();
+  State<DonationsWithFiltersScreen> createState() =>
+      _DonationsWithFiltersScreenState();
 }
 
-class _DonationsWithFiltersScreenState extends State<DonationsWithFiltersScreen> {
+class _DonationsWithFiltersScreenState
+    extends State<DonationsWithFiltersScreen> {
   bool _showAdvancedFilters = false;
   final TextEditingController _searchController = TextEditingController();
 
@@ -39,18 +41,13 @@ class _DonationsWithFiltersScreenState extends State<DonationsWithFiltersScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.donationsWithFilters),
-        backgroundColor: DesignSystem.primaryBlue,
-        foregroundColor: Colors.white,
-      ),
       body: Consumer<FilterProvider>(
         builder: (context, filterProvider, child) {
           return Column(
             children: [
               // Search bar
               _buildSearchBar(filterProvider),
-              
+
               // Filter bar
               Padding(
                 padding: const EdgeInsets.all(DesignSystem.spaceM),
@@ -58,7 +55,8 @@ class _DonationsWithFiltersScreenState extends State<DonationsWithFiltersScreen>
                   onAdvancedFiltersPressed: () {
                     if (MediaQuery.of(context).size.width < 768) {
                       // Mobile: Show modal
-                      GBFilterModal.show(context, onFiltersChanged: _onFiltersChanged);
+                      GBFilterModal.show(context,
+                          onFiltersChanged: _onFiltersChanged);
                     } else {
                       // Desktop: Toggle panel
                       setState(() {
@@ -71,9 +69,11 @@ class _DonationsWithFiltersScreenState extends State<DonationsWithFiltersScreen>
               ),
 
               // Advanced filters panel (desktop only)
-              if (_showAdvancedFilters && MediaQuery.of(context).size.width >= 768)
+              if (_showAdvancedFilters &&
+                  MediaQuery.of(context).size.width >= 768)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: DesignSystem.spaceM),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: DesignSystem.spaceM),
                   child: GBAdvancedFilterPanel(
                     onFiltersChanged: _onFiltersChanged,
                   ),
@@ -104,9 +104,9 @@ class _DonationsWithFiltersScreenState extends State<DonationsWithFiltersScreen>
               onSuggestionSelected: _onFiltersChanged,
             ),
           ),
-          
+
           const SizedBox(width: DesignSystem.spaceS),
-          
+
           // Search history button
           IconButton(
             icon: const Icon(Icons.history),
@@ -139,7 +139,6 @@ class _DonationsWithFiltersScreenState extends State<DonationsWithFiltersScreen>
             ),
           ),
           const SizedBox(height: DesignSystem.spaceM),
-          
           if (!filterProvider.hasActiveFilters)
             Center(
               child: Text(AppLocalizations.of(context)!.noFiltersApplied),
@@ -153,7 +152,6 @@ class _DonationsWithFiltersScreenState extends State<DonationsWithFiltersScreen>
               ),
             ),
             const SizedBox(height: DesignSystem.spaceM),
-            
             Expanded(
               child: SingleChildScrollView(
                 child: Card(
@@ -184,40 +182,33 @@ class _DonationsWithFiltersScreenState extends State<DonationsWithFiltersScreen>
 
   Widget _buildFilterSummary(FilterProvider filterProvider) {
     final summary = filterProvider.filterSummary;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (summary['searchQuery'].isNotEmpty)
           _buildSummaryItem('Search Query', summary['searchQuery']),
-        
         if ((summary['categories'] as List).isNotEmpty)
-          _buildSummaryItem('Categories', (summary['categories'] as List).join(', ')),
-        
+          _buildSummaryItem(
+              'Categories', (summary['categories'] as List).join(', ')),
         if ((summary['statuses'] as List).isNotEmpty)
-          _buildSummaryItem('Statuses', (summary['statuses'] as List).join(', ')),
-        
+          _buildSummaryItem(
+              'Statuses', (summary['statuses'] as List).join(', ')),
         if ((summary['locations'] as List).isNotEmpty)
-          _buildSummaryItem('Locations', (summary['locations'] as List).join(', ')),
-        
+          _buildSummaryItem(
+              'Locations', (summary['locations'] as List).join(', ')),
         if (summary['startDate'] != null || summary['endDate'] != null)
-          _buildSummaryItem('Date Range', 
-            '${summary['startDate'] ?? 'Any'} to ${summary['endDate'] ?? 'Any'}'),
-        
+          _buildSummaryItem('Date Range',
+              '${summary['startDate'] ?? 'Any'} to ${summary['endDate'] ?? 'Any'}'),
         if (summary['minAmount'] != null || summary['maxAmount'] != null)
-          _buildSummaryItem('Amount Range', 
-            '\$${summary['minAmount'] ?? 0} - \$${summary['maxAmount'] ?? '∞'}'),
-        
-        if (summary['verifiedOnly'])
-          _buildSummaryItem('Verified Only', 'Yes'),
-        
-        if (summary['urgentOnly'])
-          _buildSummaryItem('Urgent Only', 'Yes'),
-        
+          _buildSummaryItem('Amount Range',
+              '\$${summary['minAmount'] ?? 0} - \$${summary['maxAmount'] ?? '∞'}'),
+        if (summary['verifiedOnly']) _buildSummaryItem('Verified Only', 'Yes'),
+        if (summary['urgentOnly']) _buildSummaryItem('Urgent Only', 'Yes'),
         if (summary['distance'] != null)
           _buildSummaryItem('Distance', '${summary['distance']} miles'),
-        
-        _buildSummaryItem('Sort By', '${summary['sortBy']} (${summary['sortOrder']})'),
+        _buildSummaryItem(
+            'Sort By', '${summary['sortBy']} (${summary['sortOrder']})'),
         _buildSummaryItem('Page Size', summary['pageSize'].toString()),
       ],
     );

@@ -127,7 +127,7 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
       // Ask for decline reason
       final result = await showDialog<String?>(
         context: context,
-        builder: (context) => _ResponseDialog(
+        builder: (dialogContext) => _ResponseDialog(
           title: l10n.declineRequest,
           hint: l10n.provideDeclineReason,
           action: l10n.decline,
@@ -140,7 +140,7 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
       // Ask for approval message
       final result = await showDialog<String?>(
         context: context,
-        builder: (context) => _ResponseDialog(
+        builder: (dialogContext) => _ResponseDialog(
           title: l10n.approveRequest,
           hint: l10n.provideApprovalMessage,
           action: l10n.approve,
@@ -189,23 +189,6 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
 
     return Scaffold(
       backgroundColor: DesignSystem.getBackgroundColor(context),
-      appBar: AppBar(
-        backgroundColor: DesignSystem.getSurfaceColor(context),
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: DesignSystem.textPrimary),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          'Incoming Requests',
-          style: TextStyle(
-            color: DesignSystem.textPrimary,
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
-      ),
       body: Column(
         children: [
           // Filter Chips
@@ -257,13 +240,14 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
   }
 
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context)!;
     return GBEmptyState(
       icon: Icons.inbox,
       title: _selectedFilter == 'all'
-          ? 'No requests yet'
+          ? l10n.noIncomingRequests
           : 'No ${_selectedFilter} requests',
       message: _selectedFilter == 'all'
-          ? 'When people request your donations,\nthey\'ll appear here'
+          ? l10n.whenReceiversRequest
           : 'Try adjusting your filter',
     );
   }
@@ -277,7 +261,7 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Status and Date
-            Row(
+            DirectionalRow(
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -311,7 +295,7 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
             const SizedBox(height: DesignSystem.spaceS),
 
             // Receiver Info
-            Row(
+            DirectionalRow(
               children: [
                 CircleAvatar(
                   radius: 20,
@@ -373,7 +357,7 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Donation ID: ${request.donationId}',
+                    'رقم التبرع: ${request.donationId}',
                     style: const TextStyle(
                       fontWeight: FontWeight.w500,
                     ),
@@ -385,7 +369,7 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
             if (request.message != null && request.message!.isNotEmpty) ...[
               const SizedBox(height: DesignSystem.spaceS),
               Text(
-                'Receiver\'s message:',
+                'رسالة المستقبل:',
                 style: TextStyle(
                   fontSize: 12,
                   color: DesignSystem.textSecondary,
@@ -416,7 +400,7 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
                 request.responseMessage!.isNotEmpty) ...[
               const SizedBox(height: DesignSystem.spaceS),
               Text(
-                'Your response:',
+                'ردك:',
                 style: TextStyle(
                   fontSize: 12,
                   color: DesignSystem.textSecondary,
@@ -444,11 +428,11 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
 
             // Action Buttons
             if (request.isPending) ...[
-              Row(
+              DirectionalRow(
                 children: [
                   Expanded(
                     child: GBOutlineButton(
-                      text: 'Message',
+                      text: 'رسالة',
                       onPressed: () => _contactReceiver(request),
                       size: GBButtonSize.small,
                       leftIcon: const Icon(Icons.message_outlined, size: 16),
@@ -457,7 +441,7 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
                   const SizedBox(width: DesignSystem.spaceS),
                   Expanded(
                     child: GBOutlineButton(
-                      text: 'Decline',
+                      text: 'رفض',
                       onPressed: () => _respondToRequest(request, 'declined'),
                       size: GBButtonSize.small,
                     ),
@@ -465,7 +449,7 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
                   const SizedBox(width: DesignSystem.spaceS),
                   Expanded(
                     child: GBPrimaryButton(
-                      text: 'Approve',
+                      text: 'قبول',
                       onPressed: () => _respondToRequest(request, 'approved'),
                       size: GBButtonSize.small,
                     ),
@@ -473,7 +457,7 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
                 ],
               ),
             ] else if (request.isApproved) ...[
-              Row(
+              DirectionalRow(
                 children: [
                   const Icon(
                     Icons.check_circle,
@@ -483,7 +467,7 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
                   const SizedBox(width: DesignSystem.spaceXS),
                   Expanded(
                     child: Text(
-                      'Approved - Waiting for receiver to confirm receipt',
+                      'تم القبول - في انتظار تأكيد المستقبل للاستلام',
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.green,
@@ -492,7 +476,7 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
                     ),
                   ),
                   GBOutlineButton(
-                    text: 'Message',
+                    text: 'رسالة',
                     onPressed: () => _contactReceiver(request),
                     size: GBButtonSize.small,
                     leftIcon: const Icon(Icons.message_outlined, size: 16),
@@ -500,7 +484,7 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
                 ],
               ),
             ] else if (request.isCompleted) ...[
-              Row(
+              DirectionalRow(
                 children: [
                   const Icon(
                     Icons.done_all,
@@ -509,7 +493,7 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
                   ),
                   const SizedBox(width: DesignSystem.spaceXS),
                   Text(
-                    'Completed - Donation successfully received!',
+                    'مكتمل - تم استلام التبرع بنجاح!',
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.blue,
@@ -531,13 +515,13 @@ class _IncomingRequestsScreenState extends State<IncomingRequestsScreen> {
     final difference = now.difference(date);
 
     if (difference.inDays > 0) {
-      return '${difference.inDays}d ago';
+      return 'منذ ${difference.inDays} يوم';
     } else if (difference.inHours > 0) {
-      return '${difference.inHours}h ago';
+      return 'منذ ${difference.inHours} ساعة';
     } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes}m ago';
+      return 'منذ ${difference.inMinutes} دقيقة';
     } else {
-      return 'Just now';
+      return 'الآن';
     }
   }
 }
@@ -603,7 +587,7 @@ class _ResponseDialogState extends State<_ResponseDialog> {
                     : _messageController.text.trim());
           },
           size: GBButtonSize.small,
-          variant: widget.action == 'Decline'
+          variant: widget.action == AppLocalizations.of(context)!.decline
               ? GBButtonVariant.outline
               : GBButtonVariant.primary,
         ),

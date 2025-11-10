@@ -9,7 +9,6 @@ import '../widgets/common/gb_filter_chips.dart';
 import '../widgets/common/gb_empty_state.dart';
 import '../widgets/rtl/directional_row.dart';
 import '../widgets/rtl/directional_column.dart';
-import '../widgets/rtl/directional_app_bar.dart';
 import '../services/api_service.dart';
 import '../providers/locale_provider.dart';
 import '../l10n/app_localizations.dart';
@@ -217,29 +216,6 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
       textDirection: localeProvider.textDirection,
       child: Scaffold(
         backgroundColor: DesignSystem.getBackgroundColor(context),
-        appBar: DirectionalAppBar(
-          backgroundColor: DesignSystem.getSurfaceColor(context),
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(
-              localeProvider.getDirectionalIcon(
-                start: Icons.arrow_back,
-                end: Icons.arrow_forward,
-              ),
-              color: DesignSystem.textPrimary,
-            ),
-            onPressed: () => Navigator.pop(context),
-          ),
-          title: Text(
-            AppLocalizations.of(context)!.myRequests,
-            style: const TextStyle(
-              color: DesignSystem.textPrimary,
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          centerTitle: localeProvider.isRTL,
-        ),
         body: DirectionalColumn(
           children: [
             // Filter Chips

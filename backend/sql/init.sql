@@ -1,5 +1,9 @@
-﻿-- GivingBridge Database Initialization Script
--- This script creates the necessary tables for the GivingBridge application
+﻿-- ================================================
+-- GivingBridge Database Initialization Script
+-- Version: 1.0.1 (Arabic Sample Data)
+-- Created by: Ahmed Hussein Nour
+-- Description: Schema + Sample Data for Testing
+-- ================================================
 
 -- Create users table
 CREATE TABLE IF NOT EXISTS users (
@@ -72,25 +76,48 @@ CREATE TABLE IF NOT EXISTS messages (
     FOREIGN KEY (requestId) REFERENCES requests(id) ON DELETE SET NULL
 );
 
--- Insert default admin user (password: admin123)
+-- ================================================
+-- Sample Data Section
+-- ================================================
+
+-- إدراج مستخدم المدير الافتراضي (كلمة المرور: admin123)
 INSERT IGNORE INTO users (name, email, password, role) VALUES 
-('Admin User', 'admin@givingbridge.com', '$2a$12$oRJ0mn3mo9u..50fz1l.5eeCjCmh379MLWR2kxBdMkAU54EwxAiH6', 'admin');
+('المشرف العام', 'admin@givingbridge.com', '$2a$12$oRJ0mn3mo9u..50fz1l.5eeCjCmh379MLWR2kxBdMkAU54EwxAiH6', 'admin');
 
--- Insert sample donor user (password: demo123)
+-- إدراج مستخدم متبرع فردي (كلمة المرور: demo123)
 INSERT IGNORE INTO users (name, email, password, role, phone, location) VALUES 
-('Demo Donor', 'demo@example.com', '$2a$12$/01zymVuTo..zNB4.BM7xuSn0LlZuZQ6T0bLCDS9rwuGL2X6MCAdW', 'donor', '+1234567890', 'New York, NY');
+('المتبرع أحمد', 'ahmed.donor@example.com', '$2a$12$/01zymVuTo..zNB4.BM7xuSn0LlZuZQ6T0bLCDS9rwuGL2X6MCAdW', 'donor', '+966505111111', 'نجران، المملكة العربية السعودية');
 
--- Insert sample receiver user (password: receive123)
+-- إدراج مستخدم مستفيد فردي (كلمة المرور: receive123)
 INSERT IGNORE INTO users (name, email, password, role, phone, location) VALUES 
-('Demo Receiver', 'receiver@example.com', '$2a$12$liwuo1PLf3FjvKcwdpAoAuiRfTmtFkmmN1vbyywBuOy5tM//R6e4e', 'receiver', '+1234567892', 'Los Angeles, CA');
+('المستفيد فاطمة', 'fatimah.receiver@example.com', '$2a$12$liwuo1PLf3FjvKcwdpAoAuiRfTmtFkmmN1vbyywBuOy5tM//R6e4e', 'receiver', '+966506222222', 'أبها، المملكة العربية السعودية');
 
--- Insert sample donations
+-- إدراج منظمات خيرية كمستفيدين مؤسسيين (كلمة المرور: charity123)
+INSERT IGNORE INTO users (name, email, password, role, phone, location) VALUES 
+('جمعية البر بنجران', 'najran.charity@example.com', '$2a$12$UuKxUE0PZ8Hq6s5rE6tv/egB4A8R6bK2Yb3i0LrLprP6JtH0g6vW2', 'receiver', '+966507333333', 'نجران، المملكة العربية السعودية'),
+('جمعية الوفاء الخيرية', 'alwafa.charity@example.com', '$2a$12$UuKxUE0PZ8Hq6s5rE6tv/egB4A8R6bK2Yb3i0LrLprP6JtH0g6vW2', 'receiver', '+966508444444', 'جدة، المملكة العربية السعودية');
+
+-- إدراج تبرعات تجريبية
 INSERT IGNORE INTO donations (title, description, category, `condition`, location, donorId, donorName) VALUES 
-('Old Books Collection', 'A collection of classic novels and textbooks in good condition', 'books', 'good', 'New York, NY', 2, 'Demo Donor'),
-('Winter Clothes', 'Warm winter jackets and sweaters for adults', 'clothes', 'excellent', 'New York, NY', 2, 'Demo Donor'),
-('Kitchen Appliances', 'Various kitchen appliances including blender and toaster', 'electronics', 'good', 'Los Angeles, CA', 2, 'Demo Donor');
+('كتب دراسية قديمة', 'مجموعة من الكتب الدراسية والقصص الأدبية بحالة ممتازة تصلح للطلاب.', 'كتب', 'جيدة', 'نجران، المملكة العربية السعودية', 2, 'المتبرع أحمد'),
+('ملابس شتوية دافئة', 'مجموعة من المعاطف والكنزات الشتوية بحالة جديدة تقريبًا.', 'ملابس', 'ممتازة', 'نجران، المملكة العربية السعودية', 2, 'المتبرع أحمد'),
+('أجهزة منزلية صغيرة', 'خلاط كهربائي ومحماصة خبز ومكواة بحالة جيدة.', 'أجهزة منزلية', 'جيدة', 'أبها، المملكة العربية السعودية', 2, 'المتبرع أحمد'),
+('بطانيات وأغطية', 'عدد من البطانيات الجديدة لتوزيعها على الأسر المحتاجة في الشتاء.', 'مساعدات', 'ممتازة', 'نجران، المملكة العربية السعودية', 2, 'المتبرع أحمد');
 
--- Insert sample requests
+-- إدراج طلبات تجريبية من الأفراد والمنظمات
 INSERT IGNORE INTO requests (donationId, donorId, donorName, receiverId, receiverName, receiverEmail, receiverPhone, message, status) VALUES 
-(1, 2, 'John Doe', 3, 'Jane Smith', 'jane@example.com', '+0987654321', 'I would love to have these books for my children. They are studying literature.', 'pending'),
-(2, 2, 'John Doe', 3, 'Jane Smith', 'jane@example.com', '+0987654321', 'These clothes would be perfect for my family during winter.', 'pending');
+(1, 2, 'المتبرع أحمد', 3, 'المستفيد فاطمة', 'fatimah.receiver@example.com', '+966506222222', 'أحتاج هذه الكتب لدعم أطفالي في دراستهم، جزاكم الله خيرًا.', 'pending'),
+(2, 2, 'المتبرع أحمد', 3, 'المستفيد فاطمة', 'fatimah.receiver@example.com', '+966506222222', 'هذه الملابس ستكون مفيدة جدًا لعائلتي مع اقتراب الشتاء.', 'pending'),
+(4, 2, 'المتبرع أحمد', 4, 'جمعية البر بنجران', 'najran.charity@example.com', '+966507333333', 'نرغب في استلام هذه البطانيات لتوزيعها على الأسر المحتاجة في القرى المجاورة.', 'pending'),
+(3, 2, 'المتبرع أحمد', 5, 'جمعية الوفاء الخيرية', 'alwafa.charity@example.com', '+966508444444', 'هذه الأجهزة مناسبة للأسر التي يتم تجهيز مساكنها ضمن مبادرة “بيت الخير”.', 'pending');
+
+-- إدراج رسائل تجريبية بين المستخدمين
+INSERT IGNORE INTO messages (senderId, receiverId, donationId, requestId, content, messageType) VALUES
+(2, 3, 1, 1, 'مرحبًا أخت فاطمة، يمكننا ترتيب موعد لتسليم الكتب غدًا إن شاء الله.', 'text'),
+(3, 2, 1, 1, 'شكرًا جزيلًا، الموعد مناسب جدًا، جزاكم الله خيرًا.', 'text'),
+(2, 4, 4, 3, 'نحن جاهزون لتسليم البطانيات للجمعية الأسبوع القادم.', 'text'),
+(4, 2, 4, 3, 'شكرًا لكم، سنرسل فريقنا للاستلام يوم الاثنين القادم بإذن الله.', 'text');
+
+-- ================================================
+-- End of Initialization Script
+-- ================================================
