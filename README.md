@@ -60,6 +60,132 @@ docker-compose logs -f
 docker-compose down
 ```
 
+#### 📱 الوصول من أجهزة أخرى على الشبكة | Network Access
+
+**الإعداد الافتراضي**: المشروع يعمل على `localhost` فقط.
+
+**للوصول من أجهزة أخرى على نفس الشبكة** (مثل الموبايل أو جهاز آخر):
+
+1. **اعرف IP جهازك**:
+   ```bash
+   # Windows
+   ipconfig
+   
+   # Linux/Mac
+   ifconfig
+   ```
+
+2. **عدّل ملف `frontend/web/config.js`**:
+   
+   **الطريقة السريعة (باستخدام Script)**:
+   ```bash
+   # Windows PowerShell
+   .\scripts\set-network-ip.ps1 192.168.1.100
+   
+   # أو Node.js
+   node scripts/set-network-ip.js 192.168.1.100
+   ```
+   
+   **أو يدوياً**:
+   ```javascript
+   window.ENV_CONFIG = {
+     API_BASE_URL: "http://YOUR_IP:3000/api",  // مثال: http://192.168.1.100:3000/api
+     SOCKET_URL: "http://YOUR_IP:3000",
+     ENVIRONMENT: "development",
+   };
+   ```
+
+3. **أعد بناء Frontend**:
+   ```bash
+   docker-compose build frontend
+   docker-compose up -d frontend
+   ```
+
+4. **افتح Firewall** (Windows):
+   
+   **الطريقة السريعة (باستخدام Script)**:
+   ```powershell
+   # Run PowerShell as Administrator
+   .\scripts\setup-firewall.ps1 add
+   ```
+   
+   **أو يدوياً**:
+   ```powershell
+   # Run as Administrator
+   netsh advfirewall firewall add rule name="GivingBridge Backend" dir=in action=allow protocol=TCP localport=3000
+   netsh advfirewall firewall add rule name="GivingBridge Frontend" dir=in action=allow protocol=TCP localport=8080
+   ```
+
+5. **افتح من الجهاز الآخر**: `http://YOUR_IP:8080`
+
+⚠️ **ملاحظة**: لا تنسى إرجاع `localhost` قبل مشاركة الكود مع الآخرين!
+
+---
+
+## 📋 مرجع سريع | Quick Reference
+
+### أوامر Docker الأساسية | Basic Docker Commands
+
+```bash
+# تشغيل المشروع | Start project
+docker-compose up -d
+
+# إيقاف المشروع | Stop project
+docker-compose down
+
+# عرض حالة الخدمات | View services status
+docker-compose ps
+
+# عرض السجلات | View logs
+docker-compose logs -f
+
+# إعادة بناء خدمة معينة | Rebuild specific service
+docker-compose build frontend
+docker-compose build backend
+
+# إعادة تشغيل خدمة | Restart service
+docker-compose restart frontend
+```
+
+### تغيير إعدادات الشبكة | Network Configuration
+
+```powershell
+# تغيير IP للوصول من أجهزة أخرى | Change IP for network access
+.\scripts\set-network-ip.ps1 192.168.1.100
+
+# العودة للإعداد الافتراضي | Return to default
+.\scripts\set-network-ip.ps1 localhost
+
+# إعداد Firewall (Run as Admin) | Setup Firewall
+.\scripts\setup-firewall.ps1 add
+.\scripts\setup-firewall.ps1 remove
+```
+
+### روابط الوصول | Access URLs
+
+- **Frontend**: http://localhost:8080
+- **Backend API**: http://localhost:3000
+- **API Documentation**: http://localhost:3000/api-docs
+- **Health Check**: http://localhost:3000/health
+
+### حسابات تجريبية | Demo Accounts
+
+```
+Donor:     demo@example.com / Demo1234
+Receiver:  receiver@example.com / Receive1234
+Admin:     admin@givingbridge.com / Admin1234
+```
+
+### مستندات إضافية | Additional Documentation
+
+- 🚀 [Quick Start Guide (Arabic)](QUICK_START_AR.md) - دليل البدء السريع بالعربية
+- 📖 [Network Setup Guide](frontend/NETWORK_SETUP.md) - دليل إعداد الشبكة
+- 📖 [Scripts Documentation](scripts/README.md) - توثيق الـ Scripts
+- 📖 [API Documentation](backend/API_DOCUMENTATION.md) - توثيق الـ API
+- 📖 [Contributing Guide](CONTRIBUTING.md) - دليل المساهمة
+
+---
+
 ### Option 2: Development Setup
 
 1. **Database Setup**:
