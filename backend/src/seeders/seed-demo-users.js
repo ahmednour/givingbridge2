@@ -16,7 +16,7 @@ async function seedDemoUsers() {
     console.log('🌱 Seeding demo users...');
 
     // Create demo donor
-    const donorHash = await bcrypt.hash('demo123', 12);
+    const donorHash = await bcrypt.hash('Demo1234', 12);
     await User.create({
       name: 'Demo Donor',
       email: 'demo@example.com',
@@ -25,10 +25,10 @@ async function seedDemoUsers() {
       phone: '+1234567890',
       location: 'New York, NY'
     });
-    console.log('✅ Created demo donor: demo@example.com / demo123');
+    console.log('✅ Created demo donor: demo@example.com / Demo1234');
 
     // Create demo admin
-    const adminHash = await bcrypt.hash('admin123', 12);
+    const adminHash = await bcrypt.hash('Admin1234', 12);
     await User.create({
       name: 'Admin User',
       email: 'admin@givingbridge.com',
@@ -37,10 +37,10 @@ async function seedDemoUsers() {
       phone: '+1234567891',
       location: 'San Francisco, CA'
     });
-    console.log('✅ Created demo admin: admin@givingbridge.com / admin123');
+    console.log('✅ Created demo admin: admin@givingbridge.com / Admin1234');
 
     // Create demo receiver
-    const receiverHash = await bcrypt.hash('receive123', 12);
+    const receiverHash = await bcrypt.hash('Receive1234', 12);
     await User.create({
       name: 'Demo Receiver',
       email: 'receiver@example.com',
@@ -49,7 +49,7 @@ async function seedDemoUsers() {
       phone: '+1234567892',
       location: 'Los Angeles, CA'
     });
-    console.log('✅ Created demo receiver: receiver@example.com / receive123');
+    console.log('✅ Created demo receiver: receiver@example.com / Receive1234');
 
     console.log('🎉 Demo users seeded successfully!');
     process.exit(0);

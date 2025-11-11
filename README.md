@@ -1,18 +1,20 @@
-# GivingBridge - MVP Donation Platform
+# GivingBridge - منصة التبرعات
 
-A simplified donation platform connecting donors and receivers, built with Node.js/Express backend and Flutter web frontend. This MVP version focuses on core functionality for a graduation project demonstration.
+منصة تبرعات شاملة تربط بين المتبرعين والمستفيدين، مبنية بتقنية Node.js/Express للخادم وFlutter للواجهة الأمامية. هذا الإصدار يركز على الوظائف الأساسية لمشروع التخرج.
 
-## ✨ MVP Features
+A comprehensive donation platform connecting donors and receivers, built with Node.js/Express backend and Flutter web frontend. This MVP version focuses on core functionality for a graduation project demonstration.
 
-### 🎯 Core Functionality
-- **Multi-role System**: Donors, Receivers, and Administrators with essential capabilities
-- **Donation Approval System**: Admin review and approval workflow for all donations
-- **Real-time Messaging**: Socket.io powered communication between users
-- **Secure Authentication**: JWT-based authentication with bcrypt password hashing
-- **Basic File Upload**: Simple image uploads for donation requests
-- **Basic Search**: Simple search across donations and requests
-- **Essential Admin Panel**: User management, donation approval, and system analytics
-- **Bilingual Support**: Full English and Arabic localization
+## ✨ الميزات الرئيسية | Key Features
+
+### 🎯 الوظائف الأساسية | Core Functionality
+- **نظام متعدد الأدوار**: متبرعين، مستفيدين، ومسؤولين بصلاحيات محددة
+- **نظام الموافقة على التبرعات**: مراجعة وموافقة المسؤولين على جميع التبرعات
+- **المراسلة الفورية**: تواصل مباشر بين المستخدمين عبر Socket.io
+- **مصادقة آمنة**: نظام JWT مع تشفير كلمات المرور
+- **رفع الملفات**: رفع الصور للتبرعات والطلبات
+- **البحث**: بحث بسيط عبر التبرعات والطلبات
+- **لوحة تحكم المسؤول**: إدارة المستخدمين والتبرعات والإحصائيات
+- **دعم لغتين**: واجهة كاملة بالعربية والإنجليزية مع دعم RTL
 
 ### 🔒 Security & Performance
 - **Input Validation**: Express-validator for request validation
@@ -27,34 +29,34 @@ A simplified donation platform connecting donors and receivers, built with Node.
 - **Database Migrations**: Sequelize ORM with version-controlled schema changes
 - **English-only Interface**: Simplified single-language interface
 
-## 🚀 Quick Start
+## 🚀 البدء السريع | Quick Start
 
-### Prerequisites
+### المتطلبات الأساسية | Prerequisites
 
-- **Docker & Docker Compose** (recommended for quick setup)
-- **Node.js 16+** (for development)
-- **Flutter SDK 3.0+** (for frontend development)
-- **MySQL 8.0+** (if running without Docker)
+- **Docker & Docker Compose** (موصى به للإعداد السريع | recommended for quick setup)
+- **Node.js 16+** (للتطوير | for development)
+- **Flutter SDK 3.0+** (لتطوير الواجهة الأمامية | for frontend development)
+- **MySQL 8.0+** (إذا كنت تعمل بدون Docker | if running without Docker)
 
-### Option 1: Docker Setup (Recommended)
+### الخيار 1: إعداد Docker (موصى به) | Option 1: Docker Setup (Recommended)
 
 ```bash
-# Clone the repository
+# استنساخ المشروع | Clone the repository
 git clone https://github.com/your-org/givingbridge.git
 cd givingbridge
 
-# Start all services
+# تشغيل جميع الخدمات | Start all services
 docker-compose up -d
 
-# View logs
+# عرض السجلات | View logs
 docker-compose logs -f
 
-# Access the application
-# Frontend: http://localhost:8080
-# Backend API: http://localhost:3000
-# API Documentation: http://localhost:3000/api-docs
+# الوصول للتطبيق | Access the application
+# الواجهة الأمامية | Frontend: http://localhost:8080
+# واجهة برمجة التطبيقات | Backend API: http://localhost:3000
+# توثيق API | API Documentation: http://localhost:3000/api-docs
 
-# Stop services
+# إيقاف الخدمات | Stop services
 docker-compose down
 ```
 

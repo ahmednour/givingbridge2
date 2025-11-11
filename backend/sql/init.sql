@@ -1,8 +1,18 @@
 ﻿-- ================================================
 -- GivingBridge Database Initialization Script
--- Version: 1.0.1 (Arabic Sample Data)
+-- Version: 1.0.2 (Updated Password Requirements)
 -- Created by: Ahmed Hussein Nour
 -- Description: Schema + Sample Data for Testing
+-- 
+-- Demo User Credentials:
+-- - Admin: admin@givingbridge.com / Admin1234
+-- - Donor: demo@example.com / Demo1234
+-- - Receiver: receiver@example.com / Receive1234
+-- - Arabic Donor: ahmed.donor@example.com / Demo1234
+-- - Arabic Receiver: fatimah.receiver@example.com / Receive1234
+-- - Charities: najran.charity@example.com, alwafa.charity@example.com / Charity1234
+--
+-- Password Requirements: 8+ characters, at least 1 uppercase letter
 -- ================================================
 
 -- Create users table
@@ -80,22 +90,30 @@ CREATE TABLE IF NOT EXISTS messages (
 -- Sample Data Section
 -- ================================================
 
--- إدراج مستخدم المدير الافتراضي (كلمة المرور: admin123)
+-- إدراج مستخدم المدير الافتراضي (كلمة المرور: Admin1234)
 INSERT IGNORE INTO users (name, email, password, role) VALUES 
-('المشرف العام', 'admin@givingbridge.com', '$2a$12$oRJ0mn3mo9u..50fz1l.5eeCjCmh379MLWR2kxBdMkAU54EwxAiH6', 'admin');
+('المشرف العام', 'admin@givingbridge.com', '$2a$12$UFHbTU8jM4PF17KczDt8Yu1OzUn.LirtfWsGZQTI4rsN1GSqensqi', 'admin');
 
--- إدراج مستخدم متبرع فردي (كلمة المرور: demo123)
+-- إدراج مستخدم متبرع تجريبي (كلمة المرور: Demo1234)
 INSERT IGNORE INTO users (name, email, password, role, phone, location) VALUES 
-('المتبرع أحمد', 'ahmed.donor@example.com', '$2a$12$/01zymVuTo..zNB4.BM7xuSn0LlZuZQ6T0bLCDS9rwuGL2X6MCAdW', 'donor', '+966505111111', 'نجران، المملكة العربية السعودية');
+('Demo Donor', 'demo@example.com', '$2a$12$yAbUH55D4URG0BFM8ZDpy.QxrVstYO1MAGCxnTd9dNAB9bEdI7gRO', 'donor', '+1234567890', 'New York, NY');
 
--- إدراج مستخدم مستفيد فردي (كلمة المرور: receive123)
+-- إدراج مستخدم مستفيد تجريبي (كلمة المرور: Receive1234)
 INSERT IGNORE INTO users (name, email, password, role, phone, location) VALUES 
-('المستفيد فاطمة', 'fatimah.receiver@example.com', '$2a$12$liwuo1PLf3FjvKcwdpAoAuiRfTmtFkmmN1vbyywBuOy5tM//R6e4e', 'receiver', '+966506222222', 'أبها، المملكة العربية السعودية');
+('Demo Receiver', 'receiver@example.com', '$2a$12$s32sOrjNTAOcO195J8yJZu0.mj0mxNdC6JIATs7ef0qZx9SHxQ5S.', 'receiver', '+1234567892', 'Los Angeles, CA');
 
--- إدراج منظمات خيرية كمستفيدين مؤسسيين (كلمة المرور: charity123)
+-- إدراج مستخدم متبرع فردي (كلمة المرور: Demo1234)
 INSERT IGNORE INTO users (name, email, password, role, phone, location) VALUES 
-('جمعية البر بنجران', 'najran.charity@example.com', '$2a$12$UuKxUE0PZ8Hq6s5rE6tv/egB4A8R6bK2Yb3i0LrLprP6JtH0g6vW2', 'receiver', '+966507333333', 'نجران، المملكة العربية السعودية'),
-('جمعية الوفاء الخيرية', 'alwafa.charity@example.com', '$2a$12$UuKxUE0PZ8Hq6s5rE6tv/egB4A8R6bK2Yb3i0LrLprP6JtH0g6vW2', 'receiver', '+966508444444', 'جدة، المملكة العربية السعودية');
+('المتبرع أحمد', 'ahmed.donor@example.com', '$2a$12$yAbUH55D4URG0BFM8ZDpy.QxrVstYO1MAGCxnTd9dNAB9bEdI7gRO', 'donor', '+966505111111', 'نجران، المملكة العربية السعودية');
+
+-- إدراج مستخدم مستفيد فردي (كلمة المرور: Receive1234)
+INSERT IGNORE INTO users (name, email, password, role, phone, location) VALUES 
+('المستفيد فاطمة', 'fatimah.receiver@example.com', '$2a$12$s32sOrjNTAOcO195J8yJZu0.mj0mxNdC6JIATs7ef0qZx9SHxQ5S.', 'receiver', '+966506222222', 'أبها، المملكة العربية السعودية');
+
+-- إدراج منظمات خيرية كمستفيدين مؤسسيين (كلمة المرور: Charity1234)
+INSERT IGNORE INTO users (name, email, password, role, phone, location) VALUES 
+('جمعية البر بنجران', 'najran.charity@example.com', '$2a$12$L7qg.Ubw9e8O8L.OjOMHu.0lyDNQhDSB1.jmrFpnMalPV7kz1Ao36', 'receiver', '+966507333333', 'نجران، المملكة العربية السعودية'),
+('جمعية الوفاء الخيرية', 'alwafa.charity@example.com', '$2a$12$L7qg.Ubw9e8O8L.OjOMHu.0lyDNQhDSB1.jmrFpnMalPV7kz1Ao36', 'receiver', '+966508444444', 'جدة، المملكة العربية السعودية');
 
 -- إدراج تبرعات تجريبية
 INSERT IGNORE INTO donations (title, description, category, `condition`, location, donorId, donorName) VALUES 

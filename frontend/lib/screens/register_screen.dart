@@ -102,8 +102,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (value == null || value.isEmpty) {
       return l10n.requiredField;
     }
-    if (value.length < 6) {
-      return l10n.passwordTooShort;
+    if (value.length < 8) {
+      return 'Password must be at least 8 characters';
+    }
+    if (!RegExp(r'[A-Z]').hasMatch(value)) {
+      return 'Password must contain at least one uppercase letter';
     }
     return null;
   }

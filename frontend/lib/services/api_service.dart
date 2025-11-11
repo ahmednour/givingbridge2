@@ -196,7 +196,7 @@ class ApiService {
 
       if (response.statusCode == 201) {
         final data = jsonDecode(response.body);
-        final authResult = AuthResult.fromJson(data);
+        final authResult = AuthResult.fromJson(data['data']);
         await saveToken(authResult.token);
 
         return ApiResponse.success(authResult);
@@ -1405,9 +1405,10 @@ class AuthResult {
   factory AuthResult.fromJson(Map<String, dynamic> json) {
     // Handle both direct response and nested data structure
     final data = json['data'] ?? json;
+    final message = json['message'] ?? data['message'] ?? 'Success';
 
     return AuthResult(
-      message: data['message'] ?? 'Success',
+      message: message,
       user: User.fromJson(data['user']),
       token: data['token'],
     );

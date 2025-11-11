@@ -9,7 +9,6 @@ import '../widgets/common/web_card.dart';
 import '../widgets/common/gb_text_field.dart';
 import '../widgets/rtl/directional_row.dart';
 import '../widgets/rtl/directional_column.dart';
-import '../widgets/rtl/directional_app_bar.dart';
 import '../providers/donation_provider.dart';
 import '../providers/locale_provider.dart';
 import '../models/donation.dart';
@@ -315,9 +314,7 @@ class _CreateDonationScreenEnhancedState
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final localeProvider = Provider.of<LocaleProvider>(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Directionality(
       textDirection: localeProvider.textDirection,

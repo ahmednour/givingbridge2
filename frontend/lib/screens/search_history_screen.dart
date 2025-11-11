@@ -60,19 +60,6 @@ class _SearchHistoryScreenState extends State<SearchHistoryScreen> {
     );
   }
 
-  void _clearAllHistory() {
-    setState(() {
-      _searchHistory.clear();
-    });
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Search history cleared'),
-        ),
-      );
-    }
-  }
-
   void _removeHistoryItem(int index) {
     setState(() {
       _searchHistory.removeAt(index);

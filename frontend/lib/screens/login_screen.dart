@@ -86,8 +86,11 @@ class _LoginScreenState extends State<LoginScreen> {
     if (value == null || value.isEmpty) {
       return l10n.requiredField;
     }
-    if (value.length < 6) {
-      return l10n.passwordTooShort;
+    if (value.length < 8) {
+      return 'Password must be at least 8 characters';
+    }
+    if (!RegExp(r'[A-Z]').hasMatch(value)) {
+      return 'Password must contain at least one uppercase letter';
     }
     return null;
   }
@@ -437,7 +440,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         size: WebButtonSize.small,
                         onPressed: () {
                           _emailController.text = 'demo@example.com';
-                          _passwordController.text = 'demo123';
+                          _passwordController.text = 'Demo1234';
                           _handleLogin();
                         },
                       ),
@@ -447,7 +450,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         size: WebButtonSize.small,
                         onPressed: () {
                           _emailController.text = 'admin@givingbridge.com';
-                          _passwordController.text = 'admin123';
+                          _passwordController.text = 'Admin1234';
                           _handleLogin();
                         },
                       ),
@@ -457,7 +460,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         size: WebButtonSize.small,
                         onPressed: () {
                           _emailController.text = 'receiver@example.com';
-                          _passwordController.text = 'receive123';
+                          _passwordController.text = 'Receive1234';
                           _handleLogin();
                         },
                       ),

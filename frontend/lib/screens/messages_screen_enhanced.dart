@@ -7,9 +7,6 @@ import '../widgets/common/gb_empty_state.dart';
 import '../widgets/common/gb_user_avatar.dart';
 import '../widgets/common/gb_skeleton_widgets.dart';
 import '../widgets/dialogs/start_conversation_dialog.dart';
-import '../widgets/dialogs/message_settings_dialog.dart';
-import '../screens/archived_conversations_screen.dart';
-import '../screens/blocked_users_screen.dart';
 import '../providers/message_provider.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart' show Conversation;
@@ -579,53 +576,5 @@ class _MessagesScreenEnhancedState extends State<MessagesScreenEnhanced>
         ),
       );
     }
-  }
-
-  void _showMessageSettings() {
-    // Show message settings dialog
-    showDialog(
-      context: context,
-      builder: (context) => MessageSettingsDialog(
-        currentSettings: {
-          'messageNotifications': true,
-          'messageSound': true,
-          'messageVibration': true,
-          'readReceipts': true,
-          'typingIndicators': true,
-          'autoDeleteMessages': false,
-        },
-        onSettingChanged: (key, value) {
-          // In a real implementation, this would update user preferences
-          // For now, we'll just show a snackbar
-          final l10n = AppLocalizations.of(context)!;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('${l10n.settingUpdated}: $key'),
-              backgroundColor: DesignSystem.success,
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  void _showArchivedConversations() {
-    // Navigate to archived conversations screen
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const ArchivedConversationsScreen(),
-      ),
-    );
-  }
-
-  void _showBlockedUsers() {
-    // Navigate to blocked users screen
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const BlockedUsersScreen(),
-      ),
-    );
   }
 }

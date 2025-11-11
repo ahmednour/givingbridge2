@@ -6,15 +6,11 @@ import 'package:image_picker/image_picker.dart';
 import '../core/theme/design_system.dart';
 import '../core/utils/rtl_utils.dart';
 import '../widgets/common/gb_button.dart';
-import '../widgets/common/gb_block_user_dialog.dart';
-import '../widgets/common/gb_report_user_dialog.dart';
 import '../widgets/common/gb_user_avatar.dart';
-import '../widgets/dialogs/conversation_info_dialog.dart';
 import '../providers/auth_provider.dart';
 import '../providers/message_provider.dart';
 import '../services/socket_service.dart';
 import '../models/chat_message.dart';
-import '../models/user.dart';
 import '../l10n/app_localizations.dart';
 
 class ChatScreenEnhanced extends StatefulWidget {
@@ -1174,82 +1170,6 @@ class _ChatScreenEnhancedState extends State<ChatScreenEnhanced>
           ),
         );
       },
-    );
-  }
-
-  Future<void> _showConversationInfo() async {
-    final messageProvider =
-        Provider.of<MessageProvider>(context, listen: false);
-    final messages = messageProvider.messages;
-    final firstMessage = messages.isNotEmpty ? messages.first : null;
-
-    // Create User object for the other user
-    final otherUser = User(
-      id: int.parse(widget.otherUserId),
-      name: widget.otherUserName,
-      email: '',
-      role: 'donor',
-      avatarUrl: widget.otherUserAvatarUrl,
-      createdAt: DateTime.now().toIso8601String(),
-      updatedAt: DateTime.now().toIso8601String(),
-    );
-
-    await showDialog(
-      context: context,
-      builder: (context) => ConversationInfoDialog(
-        otherUser: otherUser,
-        messageCount: messages.length,
-        firstMessageDate: firstMessage != null
-            ? DateTime.tryParse(firstMessage['createdAt'] ?? '')
-            : null,
-        onArchive: () {
-          _archiveConversation();
-        },
-        onBlock: () {
-          _showBlockConfirmation();
-        },
-        onReport: () {
-          _showReportDialog();
-        },
-      ),
-    );
-  }
-
-  Future<void> _archiveConversation() async {
-    final messageProvider =
-        Provider.of<MessageProvider>(context, listen: false);
-    final success = await messageProvider.archiveConversation(
-      int.parse(widget.otherUserId),
-    );
-
-    if (success && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.archiveConversation),
-          backgroundColor: DesignSystem.success,
-        ),
-      );
-      Navigator.of(context).pop();
-    }
-  }
-
-  void _showBlockConfirmation() {
-    GBBlockUserDialog.show(
-      context: context,
-      userId: int.parse(widget.otherUserId),
-      userName: widget.otherUserName,
-      onBlocked: () {
-        // Navigate back after blocking
-        Navigator.of(context).pop();
-      },
-    );
-  }
-
-  void _showReportDialog() {
-    GBReportUserDialog.show(
-      context: context,
-      userId: int.parse(widget.otherUserId),
-      userName: widget.otherUserName,
     );
   }
 
