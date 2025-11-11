@@ -15,6 +15,10 @@
 -- Password Requirements: 8+ characters, at least 1 uppercase letter
 -- ================================================
 
+-- Set character set and collation for the connection
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+
 -- Create users table
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -28,7 +32,7 @@ CREATE TABLE IF NOT EXISTS users (
     fcmToken VARCHAR(500),
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Create donations table
 CREATE TABLE IF NOT EXISTS donations (
@@ -46,7 +50,7 @@ CREATE TABLE IF NOT EXISTS donations (
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (donorId) REFERENCES users(id) ON DELETE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Create requests table
 CREATE TABLE IF NOT EXISTS requests (
@@ -66,7 +70,7 @@ CREATE TABLE IF NOT EXISTS requests (
     FOREIGN KEY (donationId) REFERENCES donations(id) ON DELETE CASCADE,
     FOREIGN KEY (donorId) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (receiverId) REFERENCES users(id) ON DELETE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Create messages table
 CREATE TABLE IF NOT EXISTS messages (
@@ -84,7 +88,7 @@ CREATE TABLE IF NOT EXISTS messages (
     FOREIGN KEY (receiverId) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (donationId) REFERENCES donations(id) ON DELETE SET NULL,
     FOREIGN KEY (requestId) REFERENCES requests(id) ON DELETE SET NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ================================================
 -- Sample Data Section
