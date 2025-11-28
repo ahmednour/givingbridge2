@@ -43,7 +43,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
           _donations = response.data!;
         });
       } else {
-        _showErrorSnackbar(response.error ?? 'Failed to load donations');
+        _showErrorSnackbar(response.error ?? AppLocalizations.of(context)!.failedToLoadDonations);
       }
     } catch (e) {
       _showErrorSnackbar('Network error: ${e.toString()}');
@@ -127,7 +127,7 @@ class _MyDonationsScreenState extends State<MyDonationsScreen> {
             : (l10n.statusAvailable));
         _loadDonations(); // Refresh the list
       } else {
-        _showErrorSnackbar(response.error ?? 'Failed to update donation');
+        _showErrorSnackbar(response.error ?? AppLocalizations.of(context)!.failedToUpdateDonation);
       }
     } catch (e) {
       _showErrorSnackbar('Network error: ${e.toString()}');

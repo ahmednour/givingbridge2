@@ -531,7 +531,7 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced> {
       },
       {
         'route': 'pending_donations',
-        'label': 'Pending Donations',
+        'label': l10n.pendingDonations,
         'icon': Icons.pending_actions,
         'color': Colors.orange,
         'badge': _stats['pendingDonations'] ?? 0,
@@ -963,10 +963,10 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced> {
           _getFilteredUsers().isEmpty
               ? GBEmptyState(
                   icon: Icons.people,
-                  title: 'No Users Found',
+                  title: l10n.noUsersFound,
                   message: _userSearchQuery.isNotEmpty || _selectedUserRole != 'all'
-                      ? 'No users match your search criteria'
-                      : 'No users found in the system',
+                      ? l10n.noUsersMatchCriteria
+                      : l10n.noUsersFoundInSystem,
                 )
               : Container(
                   decoration: BoxDecoration(
@@ -1517,10 +1517,10 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced> {
           _getFilteredDonations().isEmpty
               ? GBEmptyState(
                   icon: Icons.volunteer_activism,
-                  title: 'No Donations',
+                  title: l10n.noDonations,
                   message: _donationSearchQuery.isNotEmpty || _selectedDonationCategory != 'all'
-                      ? 'No donations match your search criteria'
-                      : 'No donations found in the system',
+                      ? l10n.noDonationsMatchCriteria
+                      : l10n.noDonationsFoundInSystem,
                 )
               : Container(
                   decoration: BoxDecoration(
@@ -1666,13 +1666,13 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced> {
                 color: DesignSystem.success,
               ),
               GBStatCard(
-                title: 'Active Users',
+                title: l10n.activeUsers,
                 value: activeUsers.toString(),
                 icon: Icons.people_alt,
                 color: DesignSystem.primaryBlue,
               ),
               GBStatCard(
-                title: 'Success Rate',
+                title: l10n.successRate,
                 value: '$successRate%',
                 icon: Icons.check_circle,
                 color: DesignSystem.success,
@@ -1693,7 +1693,7 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Platform Statistics',
+                l10n.platformStatistics,
                 style: DesignSystem.headlineSmall(context).copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -1718,13 +1718,13 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced> {
             ),
             child: Column(
               children: [
-                _buildStatRow('Total Transactions', totalTransactions.toString(), Icons.swap_horiz, DesignSystem.primaryBlue),
+                _buildStatRow(l10n.totalTransactions, totalTransactions.toString(), Icons.swap_horiz, DesignSystem.primaryBlue),
                 const SizedBox(height: DesignSystem.spaceL),
-                _buildStatRow('Available Donations', (_stats['availableDonations'] ?? 0).toString(), Icons.volunteer_activism, DesignSystem.success),
+                _buildStatRow(l10n.availableDonations, (_stats['availableDonations'] ?? 0).toString(), Icons.volunteer_activism, DesignSystem.success),
                 const SizedBox(height: DesignSystem.spaceL),
-                _buildStatRow('Pending Requests', _stats['pendingRequests'].toString(), Icons.pending_actions, DesignSystem.warning),
+                _buildStatRow(l10n.pendingRequests, _stats['pendingRequests'].toString(), Icons.pending_actions, DesignSystem.warning),
                 const SizedBox(height: DesignSystem.spaceL),
-                _buildStatRow('Total Users', _stats['totalUsers'].toString(), Icons.people, DesignSystem.primaryBlue),
+                _buildStatRow(l10n.totalUsers, _stats['totalUsers'].toString(), Icons.people, DesignSystem.primaryBlue),
               ],
             ),
           ),
@@ -1904,7 +1904,7 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced> {
           
           // Platform Information
           Text(
-            'Platform Information',
+            l10n.platformInformation,
             style: DesignSystem.headlineSmall(context).copyWith(
               fontWeight: FontWeight.w600,
             ),
@@ -1920,11 +1920,11 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced> {
             ),
             child: Column(
               children: [
-                _buildInfoRow('Platform Name', 'GivingBridge', Icons.business),
-                _buildInfoRow('Version', '1.0.0', Icons.info),
-                _buildInfoRow('Support Email', 'support@givingbridge.com', Icons.email),
-                _buildInfoRow('Total Users', _stats['totalUsers'].toString(), Icons.people),
-                _buildInfoRow('Total Donations', _stats['totalDonations'].toString(), Icons.volunteer_activism),
+                _buildInfoRow(l10n.platformName, l10n.givingBridge, Icons.business),
+                _buildInfoRow(l10n.version, '1.0.0', Icons.info),
+                _buildInfoRow(l10n.supportEmail, 'support@givingbridge.com', Icons.email),
+                _buildInfoRow(l10n.totalUsers, _stats['totalUsers'].toString(), Icons.people),
+                _buildInfoRow(l10n.totalDonations, _stats['totalDonations'].toString(), Icons.volunteer_activism),
               ],
             ),
           ),
@@ -1933,7 +1933,7 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced> {
           
           // System Settings
           Text(
-            'System Settings',
+            l10n.systemSettings,
             style: DesignSystem.headlineSmall(context).copyWith(
               fontWeight: FontWeight.w600,
             ),
@@ -1949,10 +1949,10 @@ class _AdminDashboardEnhancedState extends State<AdminDashboardEnhanced> {
             ),
             child: Column(
               children: [
-                _buildInfoRow('Max Upload Size', '10 MB', Icons.cloud_upload),
-                _buildInfoRow('Session Timeout', '30 minutes', Icons.timer),
-                _buildInfoRow('API Version', 'v1.0', Icons.api),
-                _buildInfoRow('Database Status', l10n.active, Icons.storage),
+                _buildInfoRow(l10n.maxUploadSize, '10 MB', Icons.cloud_upload),
+                _buildInfoRow(l10n.sessionTimeout, '30 minutes', Icons.timer),
+                _buildInfoRow(l10n.apiVersion, 'v1.0', Icons.api),
+                _buildInfoRow(l10n.databaseStatus, l10n.active, Icons.storage),
               ],
             ),
           ),

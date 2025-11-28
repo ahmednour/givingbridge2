@@ -414,8 +414,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get noArchivedConversations => 'لا توجد محادثات مؤرشفة';
 
   @override
-  String get noArchivedConversationsDescription =>
-      'ستظهر محادثاتك المؤرشفة هنا';
+  String get noArchivedConversationsDescription => 'ستظهر محادثاتك المؤرشفة هنا';
 
   @override
   String get unarchive => 'إلغاء الأرشفة';
@@ -475,6 +474,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String pendingOperations(int count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
+      
     );
     final String countString = countNumberFormat.format(count);
 
@@ -495,11 +495,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get getStarted => 'ابدأ الآن';
 
   @override
-  String get connectHeartsShareHope => 'نربط القلوب،نشارك الأمل';
+  String get connectHeartsShareHope => 'نربط القلوب، نشارك الأمل';
 
   @override
-  String get landingHeroDescription =>
-      'جسر العطاء يربط المتبرعين السخيين بالمحتاجين، مما يخلق مجتمعاً حيث يتدفق اللطف بحرية وكل تبرع يُحدث فرقاً حقيقياً.';
+  String get landingHeroDescription => 'جسر العطاء يربط المتبرعين السخيين بالمحتاجين، مما يخلق مجتمعاً حيث يتدفق اللطف بحرية وكل تبرع يُحدث فرقاً حقيقياً.';
 
   @override
   String get startDonating => 'ابدأ التبرع';
@@ -514,36 +513,31 @@ class AppLocalizationsAr extends AppLocalizations {
   String get whyChooseGivingBridge => 'لماذا تختار جسر العطاء؟';
 
   @override
-  String get platformDescription =>
-      'منصتنا تجعل العطاء والاستلام بسيطاً وآمناً وذا معنى.';
+  String get platformDescription => 'منصتنا تجعل العطاء والاستلام بسيطاً وآمناً وذا معنى.';
 
   @override
   String get easyDonations => 'تبرعات سهلة';
 
   @override
-  String get easyDonationsDesc =>
-      'طريقة بسيطة وآمنة للتبرع بالأشياء لمن يحتاجها أكثر.';
+  String get easyDonationsDesc => 'طريقة بسيطة وآمنة للتبرع بالأشياء لمن يحتاجها أكثر.';
 
   @override
   String get smartMatching => 'مطابقة ذكية';
 
   @override
-  String get smartMatchingDesc =>
-      'منصتنا تربط المتبرعين بالمستقبلين بذكاء بناءً على الموقع والاحتياجات.';
+  String get smartMatchingDesc => 'منصتنا تربط المتبرعين بالمستقبلين بذكاء بناءً على الموقع والاحتياجات.';
 
   @override
   String get verifiedUsers => 'مستخدمون موثقون';
 
   @override
-  String get verifiedUsersDesc =>
-      'جميع المستخدمين موثقون لضمان معاملات آمنة وموثوقة.';
+  String get verifiedUsersDesc => 'جميع المستخدمين موثقون لضمان معاملات آمنة وموثوقة.';
 
   @override
   String get impactTracking => 'تتبع التأثير';
 
   @override
-  String get impactTrackingDesc =>
-      'تتبع تبرعاتك وشاهد التأثير الحقيقي الذي تحدثه في مجتمعك.';
+  String get impactTrackingDesc => 'تتبع تبرعاتك وشاهد التأثير الحقيقي الذي تحدثه في مجتمعك.';
 
   @override
   String get howItWorks => 'كيف يعمل';
@@ -558,8 +552,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get stepBrowseOrPost => 'تصفح أو انشر';
 
   @override
-  String get stepBrowseOrPostDesc =>
-      'ينشر المتبرعون العناصر، ويتصفح المستقبلون التبرعات المتاحة.';
+  String get stepBrowseOrPostDesc => 'ينشر المتبرعون العناصر، ويتصفح المستقبلون التبرعات المتاحة.';
 
   @override
   String get stepConnect => 'تواصل';
@@ -592,8 +585,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get readyToMakeADifference => 'هل أنت مستعد لإحداث فرق؟';
 
   @override
-  String get joinThousands =>
-      'انضم إلى الآلاف من الأشخاص الذين يجعلون مجتمعاتهم أفضل، تبرع واحد في كل مرة.';
+  String get joinThousands => 'انضم إلى الآلاف من الأشخاص الذين يجعلون مجتمعاتهم أفضل، تبرع واحد في كل مرة.';
 
   @override
   String get browseDonationsAction => 'تصفح التبرعات';
@@ -608,8 +600,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get errorOccurred => 'حدث خطأ';
 
   @override
-  String get pleaseCheckConnection =>
-      'يرجى التحقق من اتصالك والمحاولة مرة أخرى';
+  String get pleaseCheckConnection => 'يرجى التحقق من اتصالك والمحاولة مرة أخرى';
 
   @override
   String get confirm => 'تأكيد';
@@ -701,8 +692,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get noDonationsYet => 'لا توجد تبرعات بعد';
 
   @override
-  String get startMakingDifference =>
-      'ابدأ في إحداث فرق من خلال إنشاء تبرعك الأول';
+  String get startMakingDifference => 'ابدأ في إحداث فرق من خلال إنشاء تبرعك الأول';
 
   @override
   String get createFirstDonation => 'إنشاء أول تبرع';
@@ -711,8 +701,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get deleteDonation => 'حذف التبرع';
 
   @override
-  String get deleteDonationConfirm =>
-      'هل أنت متأكد من أنك تريد حذف هذا التبرع؟';
+  String get deleteDonationConfirm => 'هل أنت متأكد من أنك تريد حذف هذا التبرع؟';
 
   @override
   String get donationDeletedSuccess => 'تم حذف التبرع بنجاح!';
@@ -753,7 +742,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get requestStatus => 'حالة الطلب';
 
   @override
-  String get noDonations => 'لا توجد تبرعات بعد';
+  String get noDonations => 'لا توجد تبرعات';
 
   @override
   String get noRequests => 'لا توجد طلبات بعد';
@@ -873,15 +862,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get donationRequests => 'طلبات التبرع';
 
   @override
-  String get notifyDonationRequests =>
-      'احصل على إشعار عندما يطلب شخص ما تبرعاتك';
+  String get notifyDonationRequests => 'احصل على إشعار عندما يطلب شخص ما تبرعاتك';
 
   @override
   String get newDonations => 'تبرعات جديدة';
 
   @override
-  String get notifyNewDonations =>
-      'احصل على إشعار حول التبرعات الجديدة في منطقتك';
+  String get notifyNewDonations => 'احصل على إشعار حول التبرعات الجديدة في منطقتك';
 
   @override
   String get statusUpdates => 'تحديثات الحالة';
@@ -893,8 +880,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get reminders => 'التذكيرات';
 
   @override
-  String get notifyReminders =>
-      'احصل على تذكير بأوقات الاستلام والمواعيد النهائية';
+  String get notifyReminders => 'احصل على تذكير بأوقات الاستلام والمواعيد النهائية';
 
   @override
   String get emailNotifications => 'إشعارات البريد الإلكتروني';
@@ -933,8 +919,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get notificationDeleted => 'تم حذف الإشعار';
 
   @override
-  String get clearAllConfirm =>
-      'هل أنت متأكد من أنك تريد مسح جميع الإشعارات؟ لا يمكن التراجع عن هذا الإجراء.';
+  String get clearAllConfirm => 'هل أنت متأكد من أنك تريد مسح جميع الإشعارات؟ لا يمكن التراجع عن هذا الإجراء.';
 
   @override
   String get allNotificationsCleared => 'تم مسح جميع الإشعارات';
@@ -967,8 +952,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get cancelRequest => 'إلغاء الطلب';
 
   @override
-  String get cancelRequestConfirm =>
-      'هل أنت متأكد من أنك تريد إلغاء هذا الطلب؟';
+  String get cancelRequestConfirm => 'هل أنت متأكد من أنك تريد إلغاء هذا الطلب؟';
 
   @override
   String get yesCancelRequest => 'نعم، إلغاء';
@@ -1034,8 +1018,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get support247 => 'دعم على مدار الساعة';
 
   @override
-  String get support247Desc =>
-      'فريق الدعم المخصص لدينا جاهز دائمًا لمساعدتك في إحداث فرق.';
+  String get support247Desc => 'فريق الدعم المخصص لدينا جاهز دائمًا لمساعدتك في إحداث فرق.';
 
   @override
   String get simpleSteps => 'خطوات بسيطة لإحداث فرق';
@@ -1044,20 +1027,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get whatCommunitySays => 'ماذا يقول مجتمعنا';
 
   @override
-  String get realStories =>
-      'قصص حقيقية من المتبرعين والمستقبلين الذين يحدثون فرقًا كل يوم';
+  String get realStories => 'قصص حقيقية من المتبرعين والمستقبلين الذين يحدثون فرقًا كل يوم';
 
   @override
-  String get testimonial1Text =>
-      'بعد خسارة عملي بسبب الوباء، وجدت نفسي بحاجة للمساعدة. في غضون يومين، قدم متبرع البقالة لعائلتي. الآن بعد أن عدت إلى قدمي، أتبرع بانتظام لرد الجميل. هذه المنصة أنقذتنا.';
+  String get testimonial1Text => 'بعد خسارة عملي بسبب الوباء، وجدت نفسي بحاجة للمساعدة. في غضون يومين، قدم متبرع البقالة لعائلتي. الآن بعد أن عدت إلى قدمي، أتبرع بانتظام لرد الجميل. هذه المنصة أنقذتنا.';
 
   @override
-  String get testimonial2Text =>
-      'أنسق التبرعات لحيي. جعلت جيفينج بريدج كل شيء أبسط - من نشر الطلبات إلى تتبع التسليمات. ساعدنا 23 عائلة هذا العام وحده. التأثير حقيقي وقابل للقياس.';
+  String get testimonial2Text => 'أنسق التبرعات لحيي. جعلت جيفينج بريدج كل شيء أبسط - من نشر الطلبات إلى تتبع التسليمات. ساعدنا 23 عائلة هذا العام وحده. التأثير حقيقي وقابل للقياس.';
 
   @override
-  String get testimonial3Text =>
-      'كأم عزباء تعمل في وظيفتين، كان تحمل تكاليف اللوازم المدرسية صعبًا. من خلال جيفينج بريدج، حصل أطفالي على الكتب وجهاز كمبيوتر محمول وملابس. كان المتبرعون محترمين ولطفاء. هذه المنصة نعمة.';
+  String get testimonial3Text => 'كأم عزباء تعمل في وظيفتين، كان تحمل تكاليف اللوازم المدرسية صعبًا. من خلال جيفينج بريدج، حصل أطفالي على الكتب وجهاز كمبيوتر محمول وملابس. كان المتبرعون محترمين ولطفاء. هذه المنصة نعمة.';
 
   @override
   String get enterYourName => 'أدخل اسمك';
@@ -1081,8 +1060,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get pleaseEnterYourName => 'يرجى إدخال اسمك';
 
   @override
-  String get pleaseFillRequiredFields =>
-      'يرجى ملء جميع الحقول المطلوبة بشكل صحيح';
+  String get pleaseFillRequiredFields => 'يرجى ملء جميع الحقول المطلوبة بشكل صحيح';
 
   @override
   String get requestsForMyDonations => 'طلبات تبرعاتي';
@@ -1157,7 +1135,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get statistics => 'الإحصائيات';
 
   @override
-  String get requestApproved => 'تم قبول الطلب بنجاح';
+  String get requestApproved => 'تمت الموافقة على الطلب';
 
   @override
   String get requestDeclined => 'تم رفض الطلب';
@@ -1322,7 +1300,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get noUsersFoundMessage => 'لم يتم العثور على مستخدمين في النظام';
 
   @override
-  String get noDonationsFound => 'لا توجد تبرعات';
+  String get noDonationsFound => 'لم يتم العثور على تبرعات';
 
   @override
   String get noDonationsFoundMessage => 'لم يتم العثور على تبرعات في النظام';
@@ -1385,13 +1363,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get version => 'الإصدار';
 
   @override
-  String get supportEmail => 'بريد الدعم';
+  String get supportEmail => 'البريد الإلكتروني للدعم';
 
   @override
-  String get maxUploadSize => 'الحد الأقصى لحجم الرفع';
+  String get maxUploadSize => 'الحد الأقصى لحجم التحميل';
 
   @override
-  String get sessionTimeout => 'انتهاء مهلة الجلسة';
+  String get sessionTimeout => 'مهلة الجلسة';
 
   @override
   String get apiVersion => 'إصدار API';
@@ -1512,12 +1490,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get waitingForApproval => 'في انتظار الموافقة';
 
   @override
-  String get visibleAfterApproval =>
-      'سيكون تبرعك مرئياً للمستقبلين بعد موافقة المسؤول';
+  String get visibleAfterApproval => 'سيكون تبرعك مرئياً للمستقبلين بعد موافقة المسؤول';
 
   @override
-  String get donationCreatedPendingApproval =>
-      'تم إنشاء التبرع بنجاح وهو في انتظار موافقة المسؤول';
+  String get donationCreatedPendingApproval => 'تم إنشاء التبرع بنجاح وهو في انتظار موافقة المسؤول';
 
   @override
   String get statusAvailable => 'متاح';
@@ -1859,6 +1835,428 @@ class AppLocalizationsAr extends AppLocalizations {
   String get rahma => 'رحمة';
 
   @override
+  String get donorsCountStatic => '1000+ متبرع';
+
+  @override
+  String get donationsCountStatic => '5000+ تبرع';
+
+  @override
+  String get menu => 'القائمة';
+
+  @override
+  String get navigationMenu => 'قائمة التنقل';
+
+  @override
+  String get closeMenu => 'إغلاق القائمة';
+
+  @override
+  String get darkMode => 'الوضع الداكن';
+
+  @override
+  String get lightMode => 'الوضع الفاتح';
+
+  @override
+  String get themeSetting => 'إعداد المظهر';
+
+  @override
+  String get switchTheme => 'تبديل المظهر';
+
+  @override
+  String get toggleTheme => 'تبديل المظهر';
+
+  @override
+  String get languageSetting => 'إعداد اللغة';
+
+  @override
+  String get navigateToLoginPage => 'الانتقال إلى صفحة تسجيل الدخول';
+
+  @override
+  String get navigateToRegistrationPage => 'الانتقال إلى صفحة التسجيل';
+
+  @override
+  String get switchToLightMode => 'التبديل إلى الوضع الفاتح';
+
+  @override
+  String get switchToDarkMode => 'التبديل إلى الوضع الداكن';
+
+  @override
+  String get tapToToggleTheme => 'اضغط لتبديل المظهر';
+
+  @override
+  String get changeLanguageCurrent => 'تغيير اللغة، الحالية';
+
+  @override
+  String get tapToSwitchLanguage => 'اضغط لتبديل اللغة';
+
+  @override
+  String get openNavigationMenu => 'فتح قائمة التنقل';
+
+  @override
+  String get mainHeading => 'العنوان الرئيسي';
+
+  @override
+  String get sectionHeading => 'عنوان القسم';
+
+  @override
+  String get winterClothesKids => 'ملابس شتوية - مقاس الأطفال 6-10';
+
+  @override
+  String get calculusPhysicsTextbooks => 'كتب حساب التفاضل والتكامل والفيزياء';
+
+  @override
+  String get riceCannedGoods => 'أرز ومعلبات (15 كجم)';
+
+  @override
+  String get dellLaptop => 'لابتوب ديل - Core i5، 8GB RAM';
+
+  @override
+  String get communityCenter => 'مركز المجتمع';
+
+  @override
+  String get universityGraduate => 'خريج جامعي';
+
+  @override
+  String get localBusiness => 'عمل محلي';
+
+  @override
+  String get itProfessional => 'محترف تقنية المعلومات';
+
+  @override
+  String get downtownCairo => 'وسط البلد، القاهرة';
+
+  @override
+  String get maadiCairo => 'المعادي، القاهرة';
+
+  @override
+  String get nasrCity => 'مدينة نصر';
+
+  @override
+  String get newCairo => 'القاهرة الجديدة';
+
+  @override
+  String get likeNew => 'مثل الجديد';
+
+  @override
+  String get good => 'جيد';
+
+  @override
+  String get new => 'جديد';
+
+  @override
+  String get eightDonationsToday => '8 تبرعات اليوم';
+
+  @override
+  String get sixtySevenPeopleHelped => '67 شخصاً تمت مساعدتهم';
+
+  @override
+  String get errorUploadingAvatar => 'خطأ في رفع الصورة الرمزية';
+
+  @override
+  String get fullActivityLogComingSoon => 'سجل النشاط الكامل قريباً';
+
+  @override
+  String get switchBetweenLightDark => 'التبديل بين الوضع الفاتح والداكن';
+
+  @override
+  String get privacySecurity => 'الخصوصية والأمان';
+
+  @override
+  String get helpAndSupport => 'المساعدة والدعم';
+
+  @override
+  String get getHelpContactSupport => 'احصل على المساعدة واتصل بالدعم';
+
+  @override
+  String get termsAndConditions => 'الشروط والأحكام';
+
+  @override
+  String get readTermsConditions => 'اقرأ شروطنا وأحكامنا';
+
+  @override
+  String get privacyPolicy => 'سياسة الخصوصية';
+
+  @override
+  String get readPrivacyPolicy => 'اقرأ سياسة الخصوصية الخاصة بنا';
+
+  @override
+  String get register => 'تسجيل';
+
+  @override
+  String get getStartedToday => 'ابدأ اليوم';
+
+  @override
+  String get filterPresetSaved => 'تم حفظ إعداد الفلتر';
+
+  @override
+  String get verifiedOnly => 'موثق فقط';
+
+  @override
+  String get showOnlyVerifiedItems => 'إظهار العناصر الموثقة فقط';
+
+  @override
+  String get urgentOnly => 'عاجل فقط';
+
+  @override
+  String get showOnlyUrgentRequests => 'إظهار الطلبات العاجلة فقط';
+
+  @override
+  String get dateCreated => 'تاريخ الإنشاء';
+
+  @override
+  String get lastUpdated => 'آخر تحديث';
+
+  @override
+  String get descending => 'تنازلي';
+
+  @override
+  String get ascending => 'تصاعدي';
+
+  @override
+  String get syncPendingChanges => 'مزامنة التغييرات المعلقة';
+
+  @override
+  String get syncCompletedSuccessfully => 'تمت المزامنة بنجاح';
+
+  @override
+  String syncFailed(String error) {
+    return 'فشلت المزامنة: $error';
+  }
+
+  @override
+  String get forceSync => 'فرض المزامنة';
+
+  @override
+  String get clearCache => 'مسح ذاكرة التخزين المؤقت';
+
+  @override
+  String get basicFilters => 'فلاتر أساسية';
+
+  @override
+  String get presets => 'إعدادات مسبقة';
+
+  @override
+  String get advanced => 'متقدم';
+
+  @override
+  String get saveCurrentFilters => 'حفظ الفلاتر الحالية';
+
+  @override
+  String get enterPresetName => 'أدخل اسم الإعداد';
+
+  @override
+  String get minAmount => 'الحد الأدنى للمبلغ';
+
+  @override
+  String get maxAmount => 'الحد الأقصى للمبلغ';
+
+  @override
+  String get sortBy => 'ترتيب حسب';
+
+  @override
+  String get order => 'الترتيب';
+
+  @override
+  String get searchDonationsCategoriesLocations => 'البحث في التبرعات والفئات والمواقع...';
+
+  @override
+  String get tellDonorWhyYouNeed => 'أخبر المتبرع لماذا تحتاج هذا...';
+
+  @override
+  String get messageOptional => 'رسالة (اختياري)';
+
+  @override
+  String get tellDonorWhyYouNeedDonation => 'أخبر المتبرع لماذا تحتاج هذا التبرع...';
+
+  @override
+  String get searchUsers => 'البحث عن المستخدمين...';
+
+  @override
+  String get givingBridgeTitle => 'جسر العطاء';
+
+  @override
+  String get connectHeartsShareHopeTitle => 'نربط القلوب، نشارك الأمل';
+
+  @override
+  String get joinCommunityDescription => 'انضم إلى مجتمعنا من المتبرعين السخيين والمحتاجين. أحدث فرقاً مع كل تبرع، وأنشئ علاقات دائمة، وابنِ عالماً أفضل معاً.';
+
+  @override
+  String get easyDonationsTitle => 'تبرعات سهلة';
+
+  @override
+  String get easyDonationsDescription => 'عملية تبرع بسيطة وآمنة ببضع نقرات فقط.';
+
+  @override
+  String get smartMatchingTitle => 'مطابقة ذكية';
+
+  @override
+  String get smartMatchingDescription => 'اعثر على طلبات التبرع المثالية التي تتناسب مع اهتماماتك.';
+
+  @override
+  String get verifiedUsersTitle => 'مستخدمون موثقون';
+
+  @override
+  String get verifiedUsersDescription => 'جميع المستخدمون موثقون لضمان تبرعات آمنة وموثوقة.';
+
+  @override
+  String get impactTrackingTitle => 'تتبع التأثير';
+
+  @override
+  String get impactTrackingDescription => 'تتبع تأثير تبرعك وشاهد الفرق الذي تحدثه.';
+
+  @override
+  String get whyChooseGivingBridgeTitle => 'لماذا تختار جسر العطاء؟';
+
+  @override
+  String get platformMakesEasyDescription => 'منصتنا تسهل ربط المتبرعين بالمحتاجين، مما يخلق علاقات ذات معنى وتأثير دائم.';
+
+  @override
+  String get readyToMakeDifferenceTitle => 'هل أنت مستعد لإحداث فرق؟';
+
+  @override
+  String get joinThousandsDescription => 'انضم إلى آلاف المستخدمين الذين يحدثون بالفعل تأثيراً إيجابياً في مجتمعاتهم.';
+
+  @override
+  String get connectingHeartsChangingLives => 'نربط القلوب، نغير الحياة، تبرع واحد في كل مرة.';
+
+  @override
+  String get switchToEnglish => 'Switch to English';
+
+  @override
+  String get switchToArabic => 'التبديل إلى العربية';
+
+  @override
+  String get noSearchHistory => 'لا يوجد سجل بحث';
+
+  @override
+  String get nameIsRequired => 'الاسم مطلوب';
+
+  @override
+  String get nameTooShortValidation => 'يجب أن يكون الاسم حرفين على الأقل';
+
+  @override
+  String get passwordTooShortValidation => 'يجب أن تكون كلمة المرور 8 أحرف على الأقل';
+
+  @override
+  String get passwordMustContainUppercase => 'يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل';
+
+  @override
+  String get makeDifferenceToday => 'أحدث فرقاً اليوم';
+
+  @override
+  String get verifiedPlatform => 'منصة موثقة';
+
+  @override
+  String get directImpact => 'تأثير مباشر';
+
+  @override
+  String get securePrivate => 'آمن وخاص';
+
+  @override
+  String get createAccount => 'إنشاء حساب';
+
+  @override
+  String get accountType => 'نوع الحساب';
+
+  @override
+  String get helpOthersByDonating => 'ساعد الآخرين بالتبرع';
+
+  @override
+  String get requestWhatYouNeed => 'اطلب ما تحتاجه';
+
+  @override
+  String get clearFilters => 'مسح الفلاتر';
+
+  @override
+  String get inYourArea => 'في منطقتك';
+
+  @override
+  String get awaitingApproval => 'في انتظار الموافقة';
+
+  @override
+  String get findItemsYouNeed => 'ابحث عن العناصر التي تحتاجها';
+
+  @override
+  String get viewRequestStatus => 'عرض حالة الطلب';
+
+  @override
+  String get contactDonors => 'الاتصال بالمتبرعين';
+
+  @override
+  String get categories => 'الفئات';
+
+  @override
+  String get filterByCategory => 'تصفية حسب الفئة';
+
+  @override
+  String get requestApprovedDescription => 'وافقت سارة على طلبك للملابس الشتوية';
+
+  @override
+  String get newDonationAvailableTitle => 'تبرع جديد متاح';
+
+  @override
+  String get newDonationAvailableDescription => 'تم نشر مواد غذائية في منطقتك';
+
+  @override
+  String get messageFromDonor => 'رسالة من المتبرع';
+
+  @override
+  String get messageFromDonorDescription => 'أرسل لك مايك تعليمات الاستلام';
+
+  @override
+  String get requestPendingTitle => 'طلب معلق';
+
+  @override
+  String get requestPendingDescription => 'طلب الكتاب الخاص بك في انتظار الموافقة';
+
+  @override
+  String get recentActivityTitle => 'النشاط الأخير';
+
+  @override
+  String get searchDonationsByTitle => 'البحث في التبرعات حسب العنوان أو الوصف أو الموقع...';
+
+  @override
+  String get yourProgress => 'تقدمك';
+
+  @override
+  String get profileComplete => 'الملف الشخصي مكتمل';
+
+  @override
+  String get pendingReviewStatus => 'قيد المراجعة';
+
+  @override
+  String get likeNewCondition => 'مثل الجديد';
+
+  @override
+  String get availableStatus => 'متاح';
+
+  @override
+  String get spam => 'بريد مزعج';
+
+  @override
+  String get harassment => 'مضايقة';
+
+  @override
+  String get inappropriateContent => 'محتوى غير لائق';
+
+  @override
+  String get scam => 'احتيال';
+
+  @override
+  String get fakeProfile => 'ملف شخصي مزيف';
+
+  @override
+  String get otherReason => 'أخرى';
+
+  @override
+  String get reviewedStatus => 'تمت المراجعة';
+
+  @override
+  String get resolvedStatus => 'تم الحل';
+
+  @override
+  String get dismissedStatus => 'تم الرفض';
+
+  @override
   String get hikmah => 'حكمة';
 
   @override
@@ -1940,19 +2338,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get passwordTooWeak => 'كلمة المرور ضعيفة';
 
   @override
-  String get passwordMustContainUppercase =>
-      'يجب أن تحتوي كلمة المرور على حرف كبير';
-
-  @override
-  String get passwordMustContainLowercase =>
-      'يجب أن تحتوي كلمة المرور على حرف صغير';
+  String get passwordMustContainLowercase => 'يجب أن تحتوي كلمة المرور على حرف صغير';
 
   @override
   String get passwordMustContainNumber => 'يجب أن تحتوي كلمة المرور على رقم';
 
   @override
-  String get passwordMustContainSpecialChar =>
-      'يجب أن تحتوي كلمة المرور على رمز خاص';
+  String get passwordMustContainSpecialChar => 'يجب أن تحتوي كلمة المرور على رمز خاص';
 
   @override
   String get nameRequired => 'الاسم مطلوب';
@@ -2276,8 +2668,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get messageSent => 'تم إرسال الرسالة بنجاح';
 
   @override
-  String get failedToSendMessage =>
-      'فشل إرسال الرسالة. يرجى المحاولة مرة أخرى.';
+  String get failedToSendMessage => 'فشل إرسال الرسالة. يرجى المحاولة مرة أخرى.';
 
   @override
   String get you => 'أنت';
@@ -2365,48 +2756,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get decryptionCompleted => 'اكتمل فك التشفير';
-
-  @override
-  String get filterPresetSaved => 'تم حفظ إعداد الفلتر';
-
-  @override
-  String get basicFilters => 'فلاتر أساسية';
-
-  @override
-  String get presets => 'إعدادات مسبقة';
-
-  @override
-  String get advanced => 'متقدم';
-
-  @override
-  String get saveCurrentFilters => 'حفظ الفلاتر الحالية';
-
-  @override
-  String get enterPresetName => 'أدخل اسم الإعداد';
-
-  @override
-  String get dateCreated => 'تاريخ الإنشاء';
-
-  @override
-  String get lastUpdated => 'آخر تحديث';
-
-  @override
-  String get descending => 'تنازلي';
-
-  @override
-  String get ascending => 'تصاعدي';
-
-  @override
-  String get verifiedOnly => 'موثق فقط';
-
-  @override
-  String get showOnlyVerifiedItems => 'إظهار العناصر الموثقة فقط';
-
-  @override
-  String get urgentOnly => 'عاجل فقط';
-
-  @override
-  String get showOnlyUrgentRequests => 'إظهار الطلبات العاجلة فقط';
 
   @override
   String get newYork => 'نيويورك';
@@ -2521,12 +2870,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get noInternetConnection => 'لا يوجد اتصال بالإنترنت';
 
   @override
-  String get switchToEnglish => 'التبديل إلى الإنجليزية';
-
-  @override
-  String get switchToArabic => 'التبديل إلى العربية';
-
-  @override
   String get newConversation => 'محادثة جديدة';
 
   @override
@@ -2556,8 +2899,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get searchByNameEmailLocation =>
-      'البحث بالاسم أو البريد الإلكتروني أو الموقع...';
+  String get searchByNameEmailLocation => 'البحث بالاسم أو البريد الإلكتروني أو الموقع...';
 
   @override
   String get failedToSearchUsers => 'فشل البحث عن المستخدمين';
@@ -2584,19 +2926,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get newItem => 'جديد';
 
   @override
-  String get likeNew => 'مثل الجديد';
-
-  @override
-  String get good => 'جيد';
-
-  @override
   String get fair => 'مقبول';
-
-  @override
-  String get minAmount => 'الحد الأدنى للمبلغ';
-
-  @override
-  String get maxAmount => 'الحد الأقصى للمبلغ';
 
   @override
   String get distance => 'المسافة';
@@ -2656,8 +2986,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get whyBlockingUser => 'لماذا تحظر هذا المستخدم؟';
 
   @override
-  String get blockingUserWarning =>
-      'حظر هذا المستخدم سيمنعه من الاتصال بك ومشاهدة تبرعاتك.';
+  String get blockingUserWarning => 'حظر هذا المستخدم سيمنعه من الاتصال بك ومشاهدة تبرعاتك.';
 
   @override
   String get failedToBlockUser => 'فشل حظر المستخدم';
@@ -2689,15 +3018,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get selectCategory => 'اختر الفئة';
 
   @override
-  String get startMakingDifferenceFirst =>
-      'ابدأ في إحداث فرق من خلال إنشاء تبرعك الأول';
+  String get startMakingDifferenceFirst => 'ابدأ في إحداث فرق من خلال إنشاء تبرعك الأول';
 
   @override
   String get noRequestsYet => 'لا توجد طلبات بعد';
 
   @override
-  String get browseAvailableDonations =>
-      'تصفح التبرعات المتاحة واطلب العناصر التي تحتاجها';
+  String get browseAvailableDonations => 'تصفح التبرعات المتاحة واطلب العناصر التي تحتاجها';
 
   @override
   String get noResultsFound => 'لم يتم العثور على نتائج';
@@ -2791,8 +3118,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get blockUserTitle => 'حظر المستخدم';
 
   @override
-  String get blockUserWarning =>
-      'حظر هذا المستخدم سيمنعه من الاتصال بك ومشاهدة تبرعاتك.';
+  String get blockUserWarning => 'حظر هذا المستخدم سيمنعه من الاتصال بك ومشاهدة تبرعاتك.';
 
   @override
   String get blockUserReasonLabel => 'السبب (اختياري)';
@@ -2843,9 +3169,6 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get fullActivityLogComingSoon => 'سجل النشاط الكامل قريباً';
-
-  @override
   String get goalTracking => 'تتبع الأهداف';
 
   @override
@@ -2866,12 +3189,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get resetNotificationSettings => 'إعادة تعيين إعدادات الإشعارات';
 
   @override
-  String get resetNotificationConfirm =>
-      'سيؤدي هذا إلى إعادة تعيين جميع إعدادات الإشعارات إلى قيمها الافتراضية. هل أنت متأكد؟';
+  String get resetNotificationConfirm => 'سيؤدي هذا إلى إعادة تعيين جميع إعدادات الإشعارات إلى قيمها الافتراضية. هل أنت متأكد؟';
 
   @override
-  String get notificationSettingsReset =>
-      'تم إعادة تعيين إعدادات الإشعارات إلى الافتراضية';
+  String get notificationSettingsReset => 'تم إعادة تعيين إعدادات الإشعارات إلى الافتراضية';
 
   @override
   String get pushNotificationsDesc => 'تلقي الإشعارات الفورية على جهازك';
@@ -2893,9 +3214,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get pleaseLoginAgain => 'يرجى تسجيل الدخول مرة أخرى';
-
-  @override
-  String get darkMode => 'الوضع الداكن';
 
   @override
   String get darkModeDesc => 'التبديل بين الوضع الداكن والفاتح';
@@ -2922,22 +3240,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get deleteNotification => 'حذف الإشعار';
 
   @override
-  String get deleteNotificationConfirm =>
-      'هل أنت متأكد أنك تريد حذف هذا الإشعار؟';
+  String get deleteNotificationConfirm => 'هل أنت متأكد أنك تريد حذف هذا الإشعار؟';
 
   @override
   String get syncCompletedSuccess => 'تمت المزامنة بنجاح';
-
-  @override
-  String syncFailed(String error) {
-    return 'فشلت المزامنة: $error';
-  }
-
-  @override
-  String get forceSync => 'فرض المزامنة';
-
-  @override
-  String get clearCache => 'مسح ذاكرة التخزين المؤقت';
 
   @override
   String get givingBridge => 'جسر العطاء';
@@ -2958,4 +3264,82 @@ class AppLocalizationsAr extends AppLocalizations {
   String screenForRoute(String route) {
     return 'شاشة للمسار: $route';
   }
+
+  @override
+  String get nameMustBeAtLeast2Characters => 'يجب أن يكون الاسم حرفين على الأقل';
+
+  @override
+  String get passwordMustBeAtLeast8Characters => 'يجب أن تكون كلمة المرور 8 أحرف على الأقل';
+
+  @override
+  String get requestApprovedTitle => 'تمت الموافقة على الطلب';
+
+  @override
+  String get noUsersFoundInSystem => 'لم يتم العثور على مستخدمين في النظام';
+
+  @override
+  String get noDonationsFoundInSystem => 'لم يتم العثور على تبرعات في النظام';
+
+  @override
+  String get allDonations => 'جميع التبرعات';
+
+  @override
+  String get availableNow => 'متاح الآن';
+
+  @override
+  String get successfullyDelivered => 'تم التسليم بنجاح';
+
+  @override
+  String get communityImpact => 'تأثير المجتمع';
+
+  @override
+  String get newRequestReceived => 'تم استلام طلب جديد';
+
+  @override
+  String get newRequestDescription => 'طلب جون سترتك الشتوية';
+
+  @override
+  String get donationMarkedComplete => 'تم وضع علامة مكتمل على التبرع';
+
+  @override
+  String get donationMarkedCompleteDescription => 'تم تسليم تبرع الكتاب الخاص بك بنجاح';
+
+  @override
+  String get itemViewed => 'تم عرض العنصر';
+
+  @override
+  String get itemViewedDescription => 'شاهد 12 شخصاً تبرع الكمبيوتر المحمول الخاص بك';
+
+  @override
+  String get messageReceived => 'تم استلام رسالة';
+
+  @override
+  String get messageReceivedDescription => 'أرسلت لك سارة رسالة شكر';
+
+  @override
+  String get chatWithRecipients => 'الدردشة مع المستلمين';
+
+  @override
+  String get searchDonationsByTitleDescription => 'البحث في التبرعات حسب العنوان أو الوصف أو الفئة...';
+
+  @override
+  String get tryAdjustingSearchFilters => 'حاول تعديل البحث أو الفلاتر';
+
+  @override
+  String get clearAllFilters => 'مسح جميع الفلاتر';
+
+  @override
+  String get demoDonor => 'متبرع تجريبي';
+
+  @override
+  String get demoAdmin => 'مدير تجريبي';
+
+  @override
+  String get demoReceiver => 'مستقبل تجريبي';
+
+  @override
+  String get failedToLoadDonations => 'فشل تحميل التبرعات';
+
+  @override
+  String get failedToUpdateDonation => 'فشل تحديث التبرع';
 }

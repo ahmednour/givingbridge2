@@ -852,7 +852,7 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
           value: totalDonations.toString(),
           icon: Icons.volunteer_activism,
           color: DesignSystem.primaryBlue,
-          subtitle: 'All donations',
+          subtitle: l10n.allDonations,
           isLoading: _isLoading,
         ),
         GBStatCard(
@@ -860,7 +860,7 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
           value: activeDonations.toString(),
           icon: Icons.check_circle_outline,
           color: DesignSystem.success,
-          subtitle: 'Available now',
+          subtitle: l10n.availableNow,
           isLoading: _isLoading,
         ),
         GBStatCard(
@@ -868,7 +868,7 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
           value: completedDonations.toString(),
           icon: Icons.handshake_outlined,
           color: DesignSystem.accentPurple,
-          subtitle: 'Successfully delivered',
+          subtitle: l10n.successfullyDelivered,
           isLoading: _isLoading,
         ),
         GBStatCard(
@@ -876,7 +876,7 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
           value: impactScore.toString(),
           icon: Icons.trending_up,
           color: DesignSystem.accentAmber,
-          subtitle: 'Community impact',
+          subtitle: l10n.communityImpact,
           isLoading: _isLoading,
         ),
       ],
@@ -898,29 +898,29 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
     // Sample activity data - replace with real data from API
     final activities = [
       {
-        'title': 'New request received',
-        'description': 'John requested your winter jacket',
+        'title': l10n.newRequestReceived,
+        'description': l10n.newRequestDescription,
         'time': '5 min ago',
         'icon': Icons.inbox,
         'color': DesignSystem.primaryBlue,
       },
       {
-        'title': 'Donation marked complete',
-        'description': 'Your book donation was successfully delivered',
+        'title': l10n.donationMarkedComplete,
+        'description': l10n.donationMarkedCompleteDescription,
         'time': '2 hours ago',
         'icon': Icons.check_circle,
         'color': DesignSystem.success,
       },
       {
-        'title': 'Item viewed',
-        'description': '12 people viewed your laptop donation',
+        'title': l10n.itemViewed,
+        'description': l10n.itemViewedDescription,
         'time': '1 day ago',
         'icon': Icons.visibility,
         'color': DesignSystem.accentPurple,
       },
       {
-        'title': 'Message received',
-        'description': 'Sarah sent you a thank you message',
+        'title': l10n.messageReceived,
+        'description': l10n.messageReceivedDescription,
         'time': '2 days ago',
         'icon': Icons.message,
         'color': DesignSystem.accentPink,
@@ -934,7 +934,7 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Recent Activity',
+              l10n.recentActivity,
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
@@ -1045,7 +1045,7 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
             ),
             GBQuickActionCard(
               title: l10n.messages,
-              description: 'Chat with recipients',
+              description: l10n.chatWithRecipients,
               icon: Icons.message_outlined,
               color: DesignSystem.accentPink,
               onTap: () {
@@ -1181,7 +1181,7 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
                 if (_donations.isNotEmpty && !_isLoading) ...[
                   GBSearchBar<Donation>(
                     hint:
-                        'Search donations by title, description, or category...',
+                        l10n.searchDonationsByTitleDescription,
                     onSearch: (query) => _onSearchChanged(query),
                     onChanged: (query) => _onSearchChanged(query),
                   )
@@ -1247,7 +1247,7 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
                                 _applyFiltersAndSearch();
                               },
                               child: Text(
-                                'Clear filters',
+                                l10n.clearFilters,
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: DesignSystem.primaryBlue,
@@ -1352,6 +1352,7 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
   }
 
   Widget _buildNoResultsState() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(AppTheme.spacingXXL),
       decoration: BoxDecoration(
@@ -1377,7 +1378,7 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
             ),
             const SizedBox(height: AppTheme.spacingXL),
             Text(
-              'No donations found',
+              l10n.noDonationsFound,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
@@ -1386,7 +1387,7 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
             ),
             const SizedBox(height: AppTheme.spacingS),
             Text(
-              'Try adjusting your search or filters',
+              l10n.tryAdjustingSearchFilters,
               style: TextStyle(
                 fontSize: 14,
                 color: DesignSystem.neutral600,
@@ -1403,7 +1404,7 @@ class _DonorDashboardEnhancedState extends State<DonorDashboardEnhanced> {
                 _applyFiltersAndSearch();
               },
               child: Text(
-                'Clear all filters',
+                l10n.clearAllFilters,
                 style: TextStyle(
                   fontSize: 16,
                   color: DesignSystem.primaryBlue,

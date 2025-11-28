@@ -197,10 +197,10 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
             child: Column(
               children: [
                 TextField(
-                  decoration: const InputDecoration(
-                    hintText: 'Search users...',
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    hintText: AppLocalizations.of(context)!.searchUsers,
+                    prefixIcon: const Icon(Icons.search),
+                    border: const OutlineInputBorder(),
                   ),
                   onChanged: (value) {
                     _searchQuery = value;

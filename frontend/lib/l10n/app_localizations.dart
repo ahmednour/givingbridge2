@@ -62,8 +62,7 @@ import 'app_localizations_en.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale)
-      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -71,8 +70,7 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate =
-      _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -84,8 +82,7 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
-      <LocalizationsDelegate<dynamic>>[
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
     delegate,
     GlobalMaterialLocalizations.delegate,
     GlobalCupertinoLocalizations.delegate,
@@ -965,7 +962,7 @@ abstract class AppLocalizations {
   /// No description provided for @totalRequests.
   ///
   /// In en, this message translates to:
-  /// **'Total Requests'**
+  /// **'Total requests'**
   String get totalRequests;
 
   /// No description provided for @activeUsers.
@@ -1043,7 +1040,7 @@ abstract class AppLocalizations {
   /// No description provided for @connectHeartsShareHope.
   ///
   /// In en, this message translates to:
-  /// **'Connect Hearts,\nShare Hope'**
+  /// **'Connect Hearts, Share Hope'**
   String get connectHeartsShareHope;
 
   /// No description provided for @landingHeroDescription.
@@ -1529,7 +1526,7 @@ abstract class AppLocalizations {
   /// No description provided for @noDonations.
   ///
   /// In en, this message translates to:
-  /// **'No donations yet'**
+  /// **'No Donations'**
   String get noDonations;
 
   /// No description provided for @noRequests.
@@ -2291,7 +2288,7 @@ abstract class AppLocalizations {
   /// No description provided for @requestApproved.
   ///
   /// In en, this message translates to:
-  /// **'Request approved successfully'**
+  /// **'Request approved'**
   String get requestApproved;
 
   /// No description provided for @requestDeclined.
@@ -2621,7 +2618,7 @@ abstract class AppLocalizations {
   /// No description provided for @noDonationsFound.
   ///
   /// In en, this message translates to:
-  /// **'No Donations'**
+  /// **'No donations found'**
   String get noDonationsFound;
 
   /// No description provided for @noDonationsFoundMessage.
@@ -3680,6 +3677,846 @@ abstract class AppLocalizations {
   /// **'Rahma'**
   String get rahma;
 
+  /// No description provided for @donorsCountStatic.
+  ///
+  /// In en, this message translates to:
+  /// **'1000+ Donors'**
+  String get donorsCountStatic;
+
+  /// No description provided for @donationsCountStatic.
+  ///
+  /// In en, this message translates to:
+  /// **'5000+ Donations'**
+  String get donationsCountStatic;
+
+  /// No description provided for @menu.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu'**
+  String get menu;
+
+  /// No description provided for @navigationMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Navigation menu'**
+  String get navigationMenu;
+
+  /// No description provided for @closeMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Close menu'**
+  String get closeMenu;
+
+  /// No description provided for @darkMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark Mode'**
+  String get darkMode;
+
+  /// No description provided for @lightMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Light mode'**
+  String get lightMode;
+
+  /// No description provided for @themeSetting.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme setting'**
+  String get themeSetting;
+
+  /// No description provided for @switchTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch theme'**
+  String get switchTheme;
+
+  /// No description provided for @toggleTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle theme'**
+  String get toggleTheme;
+
+  /// No description provided for @languageSetting.
+  ///
+  /// In en, this message translates to:
+  /// **'Language setting'**
+  String get languageSetting;
+
+  /// No description provided for @navigateToLoginPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Navigate to login page'**
+  String get navigateToLoginPage;
+
+  /// No description provided for @navigateToRegistrationPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Navigate to registration page'**
+  String get navigateToRegistrationPage;
+
+  /// No description provided for @switchToLightMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to light mode'**
+  String get switchToLightMode;
+
+  /// No description provided for @switchToDarkMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to dark mode'**
+  String get switchToDarkMode;
+
+  /// No description provided for @tapToToggleTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to toggle theme'**
+  String get tapToToggleTheme;
+
+  /// No description provided for @changeLanguageCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Change language, current'**
+  String get changeLanguageCurrent;
+
+  /// No description provided for @tapToSwitchLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to switch language'**
+  String get tapToSwitchLanguage;
+
+  /// No description provided for @openNavigationMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Open navigation menu'**
+  String get openNavigationMenu;
+
+  /// No description provided for @mainHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Main heading'**
+  String get mainHeading;
+
+  /// No description provided for @sectionHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Section heading'**
+  String get sectionHeading;
+
+  /// No description provided for @winterClothesKids.
+  ///
+  /// In en, this message translates to:
+  /// **'Winter Clothes - Kids Size 6-10'**
+  String get winterClothesKids;
+
+  /// No description provided for @calculusPhysicsTextbooks.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculus & Physics Textbooks'**
+  String get calculusPhysicsTextbooks;
+
+  /// No description provided for @riceCannedGoods.
+  ///
+  /// In en, this message translates to:
+  /// **'Rice & Canned Goods (15kg)'**
+  String get riceCannedGoods;
+
+  /// No description provided for @dellLaptop.
+  ///
+  /// In en, this message translates to:
+  /// **'Dell Laptop - Core i5, 8GB RAM'**
+  String get dellLaptop;
+
+  /// No description provided for @communityCenter.
+  ///
+  /// In en, this message translates to:
+  /// **'Community Center'**
+  String get communityCenter;
+
+  /// No description provided for @universityGraduate.
+  ///
+  /// In en, this message translates to:
+  /// **'University Graduate'**
+  String get universityGraduate;
+
+  /// No description provided for @localBusiness.
+  ///
+  /// In en, this message translates to:
+  /// **'Local Business'**
+  String get localBusiness;
+
+  /// No description provided for @itProfessional.
+  ///
+  /// In en, this message translates to:
+  /// **'IT Professional'**
+  String get itProfessional;
+
+  /// No description provided for @downtownCairo.
+  ///
+  /// In en, this message translates to:
+  /// **'Downtown, Cairo'**
+  String get downtownCairo;
+
+  /// No description provided for @maadiCairo.
+  ///
+  /// In en, this message translates to:
+  /// **'Maadi, Cairo'**
+  String get maadiCairo;
+
+  /// No description provided for @nasrCity.
+  ///
+  /// In en, this message translates to:
+  /// **'Nasr City'**
+  String get nasrCity;
+
+  /// No description provided for @newCairo.
+  ///
+  /// In en, this message translates to:
+  /// **'New Cairo'**
+  String get newCairo;
+
+  /// No description provided for @likeNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Like New'**
+  String get likeNew;
+
+  /// No description provided for @good.
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get good;
+
+  /// No description provided for @new.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get new;
+
+  /// No description provided for @eightDonationsToday.
+  ///
+  /// In en, this message translates to:
+  /// **'8 donations today'**
+  String get eightDonationsToday;
+
+  /// No description provided for @sixtySevenPeopleHelped.
+  ///
+  /// In en, this message translates to:
+  /// **'67 people helped'**
+  String get sixtySevenPeopleHelped;
+
+  /// No description provided for @errorUploadingAvatar.
+  ///
+  /// In en, this message translates to:
+  /// **'Error uploading avatar'**
+  String get errorUploadingAvatar;
+
+  /// No description provided for @fullActivityLogComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Full activity log coming soon'**
+  String get fullActivityLogComingSoon;
+
+  /// No description provided for @switchBetweenLightDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch between light and dark theme'**
+  String get switchBetweenLightDark;
+
+  /// No description provided for @privacySecurity.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy & Security'**
+  String get privacySecurity;
+
+  /// No description provided for @helpAndSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Help & Support'**
+  String get helpAndSupport;
+
+  /// No description provided for @getHelpContactSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Get help and contact support'**
+  String get getHelpContactSupport;
+
+  /// No description provided for @termsAndConditions.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms & Conditions'**
+  String get termsAndConditions;
+
+  /// No description provided for @readTermsConditions.
+  ///
+  /// In en, this message translates to:
+  /// **'Read our terms and conditions'**
+  String get readTermsConditions;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicy;
+
+  /// No description provided for @readPrivacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Read our privacy policy'**
+  String get readPrivacyPolicy;
+
+  /// No description provided for @register.
+  ///
+  /// In en, this message translates to:
+  /// **'Register'**
+  String get register;
+
+  /// No description provided for @getStartedToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Started Today'**
+  String get getStartedToday;
+
+  /// No description provided for @filterPresetSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter preset saved'**
+  String get filterPresetSaved;
+
+  /// No description provided for @verifiedOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified only'**
+  String get verifiedOnly;
+
+  /// No description provided for @showOnlyVerifiedItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Show only verified items'**
+  String get showOnlyVerifiedItems;
+
+  /// No description provided for @urgentOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Urgent only'**
+  String get urgentOnly;
+
+  /// No description provided for @showOnlyUrgentRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Show only urgent requests'**
+  String get showOnlyUrgentRequests;
+
+  /// No description provided for @dateCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Date created'**
+  String get dateCreated;
+
+  /// No description provided for @lastUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Last updated'**
+  String get lastUpdated;
+
+  /// No description provided for @descending.
+  ///
+  /// In en, this message translates to:
+  /// **'Descending'**
+  String get descending;
+
+  /// No description provided for @ascending.
+  ///
+  /// In en, this message translates to:
+  /// **'Ascending'**
+  String get ascending;
+
+  /// No description provided for @syncPendingChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync Pending Changes'**
+  String get syncPendingChanges;
+
+  /// No description provided for @syncCompletedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync completed successfully'**
+  String get syncCompletedSuccessfully;
+
+  /// No description provided for @syncFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync failed: {error}'**
+  String syncFailed(String error);
+
+  /// No description provided for @forceSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Force Sync'**
+  String get forceSync;
+
+  /// No description provided for @clearCache.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Cache'**
+  String get clearCache;
+
+  /// No description provided for @basicFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic filters'**
+  String get basicFilters;
+
+  /// No description provided for @presets.
+  ///
+  /// In en, this message translates to:
+  /// **'Presets'**
+  String get presets;
+
+  /// No description provided for @advanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced'**
+  String get advanced;
+
+  /// No description provided for @saveCurrentFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Save current filters'**
+  String get saveCurrentFilters;
+
+  /// No description provided for @enterPresetName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter preset name'**
+  String get enterPresetName;
+
+  /// No description provided for @minAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Min Amount'**
+  String get minAmount;
+
+  /// No description provided for @maxAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Max Amount'**
+  String get maxAmount;
+
+  /// No description provided for @sortBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort By'**
+  String get sortBy;
+
+  /// No description provided for @order.
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get order;
+
+  /// No description provided for @searchDonationsCategoriesLocations.
+  ///
+  /// In en, this message translates to:
+  /// **'Search donations, categories, locations...'**
+  String get searchDonationsCategoriesLocations;
+
+  /// No description provided for @tellDonorWhyYouNeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell the donor why you need this...'**
+  String get tellDonorWhyYouNeed;
+
+  /// No description provided for @messageOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Message (Optional)'**
+  String get messageOptional;
+
+  /// No description provided for @tellDonorWhyYouNeedDonation.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell the donor why you need this donation...'**
+  String get tellDonorWhyYouNeedDonation;
+
+  /// No description provided for @searchUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Search users...'**
+  String get searchUsers;
+
+  /// No description provided for @givingBridgeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Giving Bridge'**
+  String get givingBridgeTitle;
+
+  /// No description provided for @connectHeartsShareHopeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect Hearts, Share Hope'**
+  String get connectHeartsShareHopeTitle;
+
+  /// No description provided for @joinCommunityDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Join our community of generous donors and those in need. Make a difference with every donation, create lasting connections, and build a better world together.'**
+  String get joinCommunityDescription;
+
+  /// No description provided for @easyDonationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Easy Donations'**
+  String get easyDonationsTitle;
+
+  /// No description provided for @easyDonationsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Simple and secure donation process with just a few clicks.'**
+  String get easyDonationsDescription;
+
+  /// No description provided for @smartMatchingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Matching'**
+  String get smartMatchingTitle;
+
+  /// No description provided for @smartMatchingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Find the perfect donation requests that match your interests.'**
+  String get smartMatchingDescription;
+
+  /// No description provided for @verifiedUsersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified Users'**
+  String get verifiedUsersTitle;
+
+  /// No description provided for @verifiedUsersDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'All users are verified to ensure safe and trustworthy donations.'**
+  String get verifiedUsersDescription;
+
+  /// No description provided for @impactTrackingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Impact Tracking'**
+  String get impactTrackingTitle;
+
+  /// No description provided for @impactTrackingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Track your donation impact and see the difference you make.'**
+  String get impactTrackingDescription;
+
+  /// No description provided for @whyChooseGivingBridgeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Why Choose Giving Bridge?'**
+  String get whyChooseGivingBridgeTitle;
+
+  /// No description provided for @platformMakesEasyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Our platform makes it easy to connect donors with those in need, creating meaningful relationships and lasting impact.'**
+  String get platformMakesEasyDescription;
+
+  /// No description provided for @readyToMakeDifferenceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to Make a Difference?'**
+  String get readyToMakeDifferenceTitle;
+
+  /// No description provided for @joinThousandsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Join thousands of users who are already making a positive impact in their communities.'**
+  String get joinThousandsDescription;
+
+  /// No description provided for @connectingHeartsChangingLives.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting hearts, changing lives, one donation at a time.'**
+  String get connectingHeartsChangingLives;
+
+  /// No description provided for @switchToEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to English'**
+  String get switchToEnglish;
+
+  /// No description provided for @switchToArabic.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to Arabic'**
+  String get switchToArabic;
+
+  /// No description provided for @noSearchHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'No search history'**
+  String get noSearchHistory;
+
+  /// No description provided for @nameIsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required'**
+  String get nameIsRequired;
+
+  /// No description provided for @nameTooShortValidation.
+  ///
+  /// In en, this message translates to:
+  /// **'Name must be at least 2 characters'**
+  String get nameTooShortValidation;
+
+  /// No description provided for @passwordTooShortValidation.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 8 characters'**
+  String get passwordTooShortValidation;
+
+  /// No description provided for @passwordMustContainUppercase.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must contain at least one uppercase letter'**
+  String get passwordMustContainUppercase;
+
+  /// No description provided for @makeDifferenceToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Make a Difference Today'**
+  String get makeDifferenceToday;
+
+  /// No description provided for @verifiedPlatform.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified Platform'**
+  String get verifiedPlatform;
+
+  /// No description provided for @directImpact.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct Impact'**
+  String get directImpact;
+
+  /// No description provided for @securePrivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure & Private'**
+  String get securePrivate;
+
+  /// No description provided for @createAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Account'**
+  String get createAccount;
+
+  /// No description provided for @accountType.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Type'**
+  String get accountType;
+
+  /// No description provided for @helpOthersByDonating.
+  ///
+  /// In en, this message translates to:
+  /// **'Help others by donating'**
+  String get helpOthersByDonating;
+
+  /// No description provided for @requestWhatYouNeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Request what you need'**
+  String get requestWhatYouNeed;
+
+  /// No description provided for @clearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get clearFilters;
+
+  /// No description provided for @inYourArea.
+  ///
+  /// In en, this message translates to:
+  /// **'In your area'**
+  String get inYourArea;
+
+  /// No description provided for @awaitingApproval.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting approval'**
+  String get awaitingApproval;
+
+  /// No description provided for @findItemsYouNeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Find items you need'**
+  String get findItemsYouNeed;
+
+  /// No description provided for @viewRequestStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'View request status'**
+  String get viewRequestStatus;
+
+  /// No description provided for @contactDonors.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact donors'**
+  String get contactDonors;
+
+  /// No description provided for @categories.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get categories;
+
+  /// No description provided for @filterByCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by category'**
+  String get filterByCategory;
+
+  /// No description provided for @requestApprovedDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Sarah approved your request for winter clothes'**
+  String get requestApprovedDescription;
+
+  /// No description provided for @newDonationAvailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New donation available'**
+  String get newDonationAvailableTitle;
+
+  /// No description provided for @newDonationAvailableDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Food items posted in your area'**
+  String get newDonationAvailableDescription;
+
+  /// No description provided for @messageFromDonor.
+  ///
+  /// In en, this message translates to:
+  /// **'Message from donor'**
+  String get messageFromDonor;
+
+  /// No description provided for @messageFromDonorDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Mike sent you pickup instructions'**
+  String get messageFromDonorDescription;
+
+  /// No description provided for @requestPendingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Request pending'**
+  String get requestPendingTitle;
+
+  /// No description provided for @requestPendingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Your book request is awaiting approval'**
+  String get requestPendingDescription;
+
+  /// No description provided for @recentActivityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Activity'**
+  String get recentActivityTitle;
+
+  /// No description provided for @searchDonationsByTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search donations by title, description, or location...'**
+  String get searchDonationsByTitle;
+
+  /// No description provided for @yourProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Progress'**
+  String get yourProgress;
+
+  /// No description provided for @profileComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile Complete'**
+  String get profileComplete;
+
+  /// No description provided for @pendingReviewStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Review'**
+  String get pendingReviewStatus;
+
+  /// No description provided for @likeNewCondition.
+  ///
+  /// In en, this message translates to:
+  /// **'Like New'**
+  String get likeNewCondition;
+
+  /// No description provided for @availableStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get availableStatus;
+
+  /// No description provided for @spam.
+  ///
+  /// In en, this message translates to:
+  /// **'Spam'**
+  String get spam;
+
+  /// No description provided for @harassment.
+  ///
+  /// In en, this message translates to:
+  /// **'Harassment'**
+  String get harassment;
+
+  /// No description provided for @inappropriateContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Inappropriate Content'**
+  String get inappropriateContent;
+
+  /// No description provided for @scam.
+  ///
+  /// In en, this message translates to:
+  /// **'Scam'**
+  String get scam;
+
+  /// No description provided for @fakeProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Fake Profile'**
+  String get fakeProfile;
+
+  /// No description provided for @otherReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get otherReason;
+
+  /// No description provided for @reviewedStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviewed'**
+  String get reviewedStatus;
+
+  /// No description provided for @resolvedStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get resolvedStatus;
+
+  /// No description provided for @dismissedStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismissed'**
+  String get dismissedStatus;
+
   /// No description provided for @hikmah.
   ///
   /// In en, this message translates to:
@@ -3841,12 +4678,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Password is too weak'**
   String get passwordTooWeak;
-
-  /// No description provided for @passwordMustContainUppercase.
-  ///
-  /// In en, this message translates to:
-  /// **'Password must contain an uppercase letter'**
-  String get passwordMustContainUppercase;
 
   /// No description provided for @passwordMustContainLowercase.
   ///
@@ -4688,90 +5519,6 @@ abstract class AppLocalizations {
   /// **'Decryption completed'**
   String get decryptionCompleted;
 
-  /// No description provided for @filterPresetSaved.
-  ///
-  /// In en, this message translates to:
-  /// **'Filter preset saved'**
-  String get filterPresetSaved;
-
-  /// No description provided for @basicFilters.
-  ///
-  /// In en, this message translates to:
-  /// **'Basic filters'**
-  String get basicFilters;
-
-  /// No description provided for @presets.
-  ///
-  /// In en, this message translates to:
-  /// **'Presets'**
-  String get presets;
-
-  /// No description provided for @advanced.
-  ///
-  /// In en, this message translates to:
-  /// **'Advanced'**
-  String get advanced;
-
-  /// No description provided for @saveCurrentFilters.
-  ///
-  /// In en, this message translates to:
-  /// **'Save current filters'**
-  String get saveCurrentFilters;
-
-  /// No description provided for @enterPresetName.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter preset name'**
-  String get enterPresetName;
-
-  /// No description provided for @dateCreated.
-  ///
-  /// In en, this message translates to:
-  /// **'Date created'**
-  String get dateCreated;
-
-  /// No description provided for @lastUpdated.
-  ///
-  /// In en, this message translates to:
-  /// **'Last updated'**
-  String get lastUpdated;
-
-  /// No description provided for @descending.
-  ///
-  /// In en, this message translates to:
-  /// **'Descending'**
-  String get descending;
-
-  /// No description provided for @ascending.
-  ///
-  /// In en, this message translates to:
-  /// **'Ascending'**
-  String get ascending;
-
-  /// No description provided for @verifiedOnly.
-  ///
-  /// In en, this message translates to:
-  /// **'Verified only'**
-  String get verifiedOnly;
-
-  /// No description provided for @showOnlyVerifiedItems.
-  ///
-  /// In en, this message translates to:
-  /// **'Show only verified items'**
-  String get showOnlyVerifiedItems;
-
-  /// No description provided for @urgentOnly.
-  ///
-  /// In en, this message translates to:
-  /// **'Urgent only'**
-  String get urgentOnly;
-
-  /// No description provided for @showOnlyUrgentRequests.
-  ///
-  /// In en, this message translates to:
-  /// **'Show only urgent requests'**
-  String get showOnlyUrgentRequests;
-
   /// No description provided for @newYork.
   ///
   /// In en, this message translates to:
@@ -4964,18 +5711,6 @@ abstract class AppLocalizations {
   /// **'No internet connection'**
   String get noInternetConnection;
 
-  /// No description provided for @switchToEnglish.
-  ///
-  /// In en, this message translates to:
-  /// **'Switch to English'**
-  String get switchToEnglish;
-
-  /// No description provided for @switchToArabic.
-  ///
-  /// In en, this message translates to:
-  /// **'Switch to Arabic'**
-  String get switchToArabic;
-
   /// No description provided for @newConversation.
   ///
   /// In en, this message translates to:
@@ -5072,35 +5807,11 @@ abstract class AppLocalizations {
   /// **'New'**
   String get newItem;
 
-  /// No description provided for @likeNew.
-  ///
-  /// In en, this message translates to:
-  /// **'Like New'**
-  String get likeNew;
-
-  /// No description provided for @good.
-  ///
-  /// In en, this message translates to:
-  /// **'Good'**
-  String get good;
-
   /// No description provided for @fair.
   ///
   /// In en, this message translates to:
   /// **'Fair'**
   String get fair;
-
-  /// No description provided for @minAmount.
-  ///
-  /// In en, this message translates to:
-  /// **'Min Amount'**
-  String get minAmount;
-
-  /// No description provided for @maxAmount.
-  ///
-  /// In en, this message translates to:
-  /// **'Max Amount'**
-  String get maxAmount;
 
   /// No description provided for @distance.
   ///
@@ -5534,12 +6245,6 @@ abstract class AppLocalizations {
   /// **'{count} donations'**
   String donationsCount(int count);
 
-  /// No description provided for @fullActivityLogComingSoon.
-  ///
-  /// In en, this message translates to:
-  /// **'Full activity log coming soon'**
-  String get fullActivityLogComingSoon;
-
   /// No description provided for @goalTracking.
   ///
   /// In en, this message translates to:
@@ -5630,12 +6335,6 @@ abstract class AppLocalizations {
   /// **'Please log in again'**
   String get pleaseLoginAgain;
 
-  /// No description provided for @darkMode.
-  ///
-  /// In en, this message translates to:
-  /// **'Dark Mode'**
-  String get darkMode;
-
   /// No description provided for @darkModeDesc.
   ///
   /// In en, this message translates to:
@@ -5696,24 +6395,6 @@ abstract class AppLocalizations {
   /// **'Sync completed successfully'**
   String get syncCompletedSuccess;
 
-  /// No description provided for @syncFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Sync failed: {error}'**
-  String syncFailed(String error);
-
-  /// No description provided for @forceSync.
-  ///
-  /// In en, this message translates to:
-  /// **'Force Sync'**
-  String get forceSync;
-
-  /// No description provided for @clearCache.
-  ///
-  /// In en, this message translates to:
-  /// **'Clear Cache'**
-  String get clearCache;
-
   /// No description provided for @givingBridge.
   ///
   /// In en, this message translates to:
@@ -5749,10 +6430,165 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Screen for route: {route}'**
   String screenForRoute(String route);
+
+  /// No description provided for @nameMustBeAtLeast2Characters.
+  ///
+  /// In en, this message translates to:
+  /// **'Name must be at least 2 characters'**
+  String get nameMustBeAtLeast2Characters;
+
+  /// No description provided for @passwordMustBeAtLeast8Characters.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 8 characters'**
+  String get passwordMustBeAtLeast8Characters;
+
+  /// No description provided for @requestApprovedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Request approved'**
+  String get requestApprovedTitle;
+
+  /// No description provided for @noUsersFoundInSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'No users found in the system'**
+  String get noUsersFoundInSystem;
+
+  /// No description provided for @noDonationsFoundInSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'No donations found in the system'**
+  String get noDonationsFoundInSystem;
+
+  /// No description provided for @allDonations.
+  ///
+  /// In en, this message translates to:
+  /// **'All donations'**
+  String get allDonations;
+
+  /// No description provided for @availableNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Available now'**
+  String get availableNow;
+
+  /// No description provided for @successfullyDelivered.
+  ///
+  /// In en, this message translates to:
+  /// **'Successfully delivered'**
+  String get successfullyDelivered;
+
+  /// No description provided for @communityImpact.
+  ///
+  /// In en, this message translates to:
+  /// **'Community impact'**
+  String get communityImpact;
+
+  /// No description provided for @newRequestReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'New request received'**
+  String get newRequestReceived;
+
+  /// No description provided for @newRequestDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'John requested your winter jacket'**
+  String get newRequestDescription;
+
+  /// No description provided for @donationMarkedComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Donation marked complete'**
+  String get donationMarkedComplete;
+
+  /// No description provided for @donationMarkedCompleteDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Your book donation was successfully delivered'**
+  String get donationMarkedCompleteDescription;
+
+  /// No description provided for @itemViewed.
+  ///
+  /// In en, this message translates to:
+  /// **'Item viewed'**
+  String get itemViewed;
+
+  /// No description provided for @itemViewedDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'12 people viewed your laptop donation'**
+  String get itemViewedDescription;
+
+  /// No description provided for @messageReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Message received'**
+  String get messageReceived;
+
+  /// No description provided for @messageReceivedDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Sarah sent you a thank you message'**
+  String get messageReceivedDescription;
+
+  /// No description provided for @chatWithRecipients.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat with recipients'**
+  String get chatWithRecipients;
+
+  /// No description provided for @searchDonationsByTitleDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Search donations by title, description, or category...'**
+  String get searchDonationsByTitleDescription;
+
+  /// No description provided for @tryAdjustingSearchFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Try adjusting your search or filters'**
+  String get tryAdjustingSearchFilters;
+
+  /// No description provided for @clearAllFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all filters'**
+  String get clearAllFilters;
+
+  /// No description provided for @demoDonor.
+  ///
+  /// In en, this message translates to:
+  /// **'Demo Donor'**
+  String get demoDonor;
+
+  /// No description provided for @demoAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Demo Admin'**
+  String get demoAdmin;
+
+  /// No description provided for @demoReceiver.
+  ///
+  /// In en, this message translates to:
+  /// **'Demo Receiver'**
+  String get demoReceiver;
+
+  /// No description provided for @failedToLoadDonations.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load donations'**
+  String get failedToLoadDonations;
+
+  /// No description provided for @failedToUpdateDonation.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update donation'**
+  String get failedToUpdateDonation;
 }
 
-class _AppLocalizationsDelegate
-    extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -5761,25 +6597,25 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['ar', 'en'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['ar', 'en'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+
+
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'ar':
-      return AppLocalizationsAr();
-    case 'en':
-      return AppLocalizationsEn();
+    case 'ar': return AppLocalizationsAr();
+    case 'en': return AppLocalizationsEn();
   }
 
   throw FlutterError(
-      'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-      'an issue with the localizations generation tool. Please file an issue '
-      'on GitHub with a reproducible sample app and the gen-l10n configuration '
-      'that was used.');
+    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+    'an issue with the localizations generation tool. Please file an issue '
+    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'that was used.'
+  );
 }

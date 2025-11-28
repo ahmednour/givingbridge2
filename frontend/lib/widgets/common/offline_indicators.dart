@@ -177,7 +177,7 @@ class _OfflineSyncDialogState extends State<OfflineSyncDialog> {
         children: [
           const Icon(Icons.sync, color: DesignSystem.primaryBlue),
           const SizedBox(width: DesignSystem.spaceM),
-          const Text('Sync Pending Changes'),
+          Text(l10n.syncPendingChanges),
         ],
       ),
       content: SizedBox(
@@ -353,6 +353,7 @@ class _OfflineSyncDialogState extends State<OfflineSyncDialog> {
   }
 
   Future<void> _syncNow() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _isSyncing = true;
     });
@@ -362,8 +363,8 @@ class _OfflineSyncDialogState extends State<OfflineSyncDialog> {
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Sync completed successfully'),
+          SnackBar(
+            content: Text(l10n.syncCompletedSuccessfully),
             backgroundColor: DesignSystem.success,
           ),
         );
@@ -372,7 +373,7 @@ class _OfflineSyncDialogState extends State<OfflineSyncDialog> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Sync failed: $error'),
+            content: Text(l10n.syncFailed(error.toString())),
             backgroundColor: DesignSystem.error,
           ),
         );
@@ -393,6 +394,7 @@ class OfflineStatusWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Consumer<NetworkStatusService>(
       builder: (context, networkService, child) {
         final offlineService = OfflineService();
@@ -450,14 +452,14 @@ class OfflineStatusWidget extends StatelessWidget {
                         onPressed: networkService.isOnline
                             ? () => offlineService.forceSync()
                             : null,
-                        child: const Text('Force Sync'),
+                        child: Text(l10n.forceSync),
                       ),
                     ),
                     const SizedBox(width: DesignSystem.spaceM),
                     Expanded(
                       child: OutlinedButton(
                         onPressed: () => offlineService.clearCache(),
-                        child: const Text('Clear Cache'),
+                        child: Text(l10n.clearCache),
                       ),
                     ),
                   ],

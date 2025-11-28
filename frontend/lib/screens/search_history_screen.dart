@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/theme/design_system.dart';
+import '../l10n/app_localizations.dart';
 
 class SearchHistoryScreen extends StatefulWidget {
   const SearchHistoryScreen({Key? key}) : super(key: key);
@@ -27,7 +28,7 @@ class _SearchHistoryScreenState extends State<SearchHistoryScreen> {
                   ),
                   const SizedBox(height: DesignSystem.spaceM),
                   Text(
-                    'No search history',
+                    AppLocalizations.of(context)!.noSearchHistory,
                     style: DesignSystem.bodyLarge(context).copyWith(
                       color: Colors.grey[600],
                     ),

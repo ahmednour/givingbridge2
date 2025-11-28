@@ -321,10 +321,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           TextFormField(
             controller: _nameController,
-            decoration: const InputDecoration(
-              labelText: 'Name',
-              prefixIcon: Icon(Icons.person),
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)!.name,
+              prefixIcon: const Icon(Icons.person),
+              border: const OutlineInputBorder(),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -336,20 +336,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(height: 15),
           TextFormField(
             controller: _phoneController,
-            decoration: const InputDecoration(
-              labelText: 'Phone',
-              prefixIcon: Icon(Icons.phone),
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)!.phone,
+              prefixIcon: const Icon(Icons.phone),
+              border: const OutlineInputBorder(),
             ),
             keyboardType: TextInputType.phone,
           ),
           const SizedBox(height: 15),
           TextFormField(
             controller: _locationController,
-            decoration: const InputDecoration(
-              labelText: 'Location',
-              prefixIcon: Icon(Icons.location_on),
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)!.location,
+              prefixIcon: const Icon(Icons.location_on),
+              border: const OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 20),
@@ -699,7 +699,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const Icon(Icons.error, color: Colors.white),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text('Error uploading avatar: $e'),
+                  child: Text(
+                      '${AppLocalizations.of(context)!.errorUploadingAvatar}: $e'),
                 ),
               ],
             ),

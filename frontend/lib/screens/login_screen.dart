@@ -87,10 +87,10 @@ class _LoginScreenState extends State<LoginScreen> {
       return l10n.requiredField;
     }
     if (value.length < 8) {
-      return 'Password must be at least 8 characters';
+      return AppLocalizations.of(context)!.passwordMustBeAtLeast8Characters;
     }
     if (!RegExp(r'[A-Z]').hasMatch(value)) {
-      return 'Password must contain at least one uppercase letter';
+      return AppLocalizations.of(context)!.passwordMustContainUppercase;
     }
     return null;
   }
@@ -195,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 // Tagline
                 Text(
-                  'Connect Hearts, Share Hope',
+                  AppLocalizations.of(context)!.connectHeartsShareHope,
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w500,
@@ -435,7 +435,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     alignment: WrapAlignment.center,
                     children: [
                       WebButton(
-                        text: 'Demo Donor',
+                        text: AppLocalizations.of(context)!.demoDonor,
                         variant: WebButtonVariant.ghost,
                         size: WebButtonSize.small,
                         onPressed: () {
@@ -445,7 +445,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                       ),
                       WebButton(
-                        text: 'Demo Admin',
+                        text: AppLocalizations.of(context)!.demoAdmin,
                         variant: WebButtonVariant.ghost,
                         size: WebButtonSize.small,
                         onPressed: () {
@@ -455,7 +455,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                       ),
                       WebButton(
-                        text: 'Demo Receiver',
+                        text: AppLocalizations.of(context)!.demoReceiver,
                         variant: WebButtonVariant.ghost,
                         size: WebButtonSize.small,
                         onPressed: () {

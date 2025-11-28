@@ -211,7 +211,8 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
     );
   }
 
-  Widget _buildDesktopSidebar(BuildContext context, AppLocalizations l10n, AuthProvider authProvider) {
+  Widget _buildDesktopSidebar(
+      BuildContext context, AppLocalizations l10n, AuthProvider authProvider) {
     return Container(
       width: 280,
       decoration: BoxDecoration(
@@ -237,7 +238,8 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
                       height: 40,
                       decoration: BoxDecoration(
                         gradient: DesignSystem.receiverGradient,
-                        borderRadius: BorderRadius.circular(DesignSystem.radiusM),
+                        borderRadius:
+                            BorderRadius.circular(DesignSystem.radiusM),
                       ),
                       child: const Icon(
                         Icons.inbox,
@@ -261,21 +263,22 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
               ],
             ),
           ),
-          
+
           const Divider(height: 1),
-          
+
           // User Section
           Padding(
             padding: const EdgeInsets.all(DesignSystem.spaceM),
             child: _buildUserSection(authProvider),
           ),
-          
+
           const Divider(height: 1),
-          
+
           // Navigation Items
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.symmetric(vertical: DesignSystem.spaceM),
+              padding:
+                  const EdgeInsets.symmetric(vertical: DesignSystem.spaceM),
               children: [
                 _buildNavItem(
                   context,
@@ -292,7 +295,9 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
                   DesignSystem.accentPurple,
                   'requests',
                   () => setState(() => _currentRoute = 'requests'),
-                  badge: _myRequests.isNotEmpty ? _myRequests.length.toString() : null,
+                  badge: _myRequests.isNotEmpty
+                      ? _myRequests.length.toString()
+                      : null,
                 ),
                 _buildNavItem(
                   context,
@@ -305,9 +310,9 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
               ],
             ),
           ),
-          
+
           const Divider(height: 1),
-          
+
           // Logout Button
           Padding(
             padding: const EdgeInsets.all(DesignSystem.spaceM),
@@ -337,7 +342,7 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
     String? badge,
   }) {
     final isActive = _currentRoute == route;
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: DesignSystem.spaceM,
@@ -353,13 +358,16 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
             decoration: BoxDecoration(
               color: isActive ? color.withOpacity(0.1) : Colors.transparent,
               borderRadius: BorderRadius.circular(DesignSystem.radiusM),
-              border: isActive ? Border.all(color: color.withOpacity(0.3)) : null,
+              border:
+                  isActive ? Border.all(color: color.withOpacity(0.3)) : null,
             ),
             child: Row(
               children: [
                 Icon(
                   icon,
-                  color: isActive ? color : DesignSystem.getTextColor(context).withOpacity(0.7),
+                  color: isActive
+                      ? color
+                      : DesignSystem.getTextColor(context).withOpacity(0.7),
                   size: 20,
                 ),
                 const SizedBox(width: DesignSystem.spaceM),
@@ -367,7 +375,8 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
                   child: Text(
                     label,
                     style: DesignSystem.bodyMedium(context).copyWith(
-                      color: isActive ? color : DesignSystem.getTextColor(context),
+                      color:
+                          isActive ? color : DesignSystem.getTextColor(context),
                       fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
                     ),
                   ),
@@ -380,7 +389,8 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
                     ),
                     decoration: BoxDecoration(
                       color: color,
-                      borderRadius: BorderRadius.circular(DesignSystem.radiusPill),
+                      borderRadius:
+                          BorderRadius.circular(DesignSystem.radiusPill),
                     ),
                     child: Text(
                       badge,
@@ -398,8 +408,6 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
       ),
     );
   }
-
-
 
   Widget _buildMobileBottomNav(BuildContext context, AppLocalizations l10n) {
     return Container(
@@ -454,7 +462,7 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
     VoidCallback onTap,
   ) {
     final isActive = _currentRoute == route;
-    
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -491,7 +499,7 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
 
   Widget _buildLanguageToggle(BuildContext context) {
     final localeProvider = Provider.of<LocaleProvider>(context);
-    
+
     return Container(
       decoration: BoxDecoration(
         color: DesignSystem.getSurfaceColor(context),
@@ -508,9 +516,10 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
     );
   }
 
-  Widget _buildLanguageButton(String locale, String label, LocaleProvider localeProvider) {
+  Widget _buildLanguageButton(
+      String locale, String label, LocaleProvider localeProvider) {
     final isActive = localeProvider.locale.languageCode == locale;
-    
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -528,7 +537,8 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
           child: Text(
             label,
             style: DesignSystem.bodySmall(context).copyWith(
-              color: isActive ? Colors.white : DesignSystem.getTextColor(context),
+              color:
+                  isActive ? Colors.white : DesignSystem.getTextColor(context),
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -615,7 +625,7 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
             const Divider(),
             ListTile(
               leading: Icon(Icons.logout, color: DesignSystem.error),
-              title: Text('Logout'),
+              title: Text(l10n.logout),
               onTap: () {
                 Navigator.pop(context);
                 authProvider.logout();
@@ -701,6 +711,7 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
 
   Widget _buildBrowseTab(
       BuildContext context, ThemeData theme, bool isDark, bool isDesktop) {
+    final l10n = AppLocalizations.of(context)!;
     final donationsToDisplay =
         _searchQuery.isEmpty && _selectedCategories.isEmpty
             ? _availableDonations
@@ -763,7 +774,7 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
                             _applyFiltersAndSearch();
                           },
                           child: Text(
-                            'Clear filters',
+                            l10n.clearFilters,
                             style: TextStyle(
                               fontSize: 14,
                               color: DesignSystem.secondaryGreen,
@@ -891,7 +902,7 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
           icon: Icons.inventory_2,
           color: DesignSystem.secondaryGreen,
           trend: availableTrend,
-          subtitle: 'In your area',
+          subtitle: l10n.inYourArea,
           isLoading: _isLoading,
         ),
         GBStatCard(
@@ -900,7 +911,7 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
           icon: Icons.inbox_outlined,
           color: DesignSystem.primaryBlue,
           trend: requestsTrend,
-          subtitle: 'Total requests',
+          subtitle: l10n.totalRequests,
           isLoading: _isLoading,
         ),
         GBStatCard(
@@ -908,7 +919,7 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
           value: pendingCount.toString(),
           icon: Icons.hourglass_empty,
           color: DesignSystem.warning,
-          subtitle: 'Awaiting approval',
+          subtitle: l10n.awaitingApproval,
           isLoading: _isLoading,
         ),
         GBStatCard(
@@ -948,21 +959,21 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
           children: [
             GBQuickActionCard(
               title: l10n.browseDonations,
-              description: 'Find items you need',
+              description: l10n.findItemsYouNeed,
               icon: Icons.search,
               color: DesignSystem.primaryBlue,
               onTap: () => setState(() => _currentRoute = 'browse'),
             ),
             GBQuickActionCard(
               title: l10n.myRequests,
-              description: 'View request status',
+              description: l10n.viewRequestStatus,
               icon: Icons.inbox_outlined,
               color: DesignSystem.secondaryGreen,
               onTap: () => setState(() => _currentRoute = 'requests'),
             ),
             GBQuickActionCard(
               title: l10n.message,
-              description: 'Contact donors',
+              description: l10n.contactDonors,
               icon: Icons.message_outlined,
               color: DesignSystem.accentPink,
               onTap: () {
@@ -976,8 +987,8 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
               },
             ),
             GBQuickActionCard(
-              title: 'Categories',
-              description: 'Filter by category',
+              title: l10n.categories,
+              description: l10n.filterByCategory,
               icon: Icons.category,
               color: DesignSystem.accentCyan,
               onTap: () => setState(() => _currentRoute = 'browse'),
@@ -995,29 +1006,29 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
     // Sample activity data - replace with real data from API
     final activities = [
       {
-        'title': 'Request approved',
-        'description': 'Sarah approved your request for winter clothes',
+        'title': l10n.requestApprovedTitle,
+        'description': l10n.requestApprovedDescription,
         'time': '10 min ago',
         'icon': Icons.check_circle,
         'color': DesignSystem.success,
       },
       {
-        'title': 'New donation available',
-        'description': 'Food items posted in your area',
+        'title': l10n.newDonationAvailableTitle,
+        'description': l10n.newDonationAvailableDescription,
         'time': '1 hour ago',
         'icon': Icons.inventory_2,
         'color': DesignSystem.secondaryGreen,
       },
       {
-        'title': 'Message from donor',
-        'description': 'Mike sent you pickup instructions',
+        'title': l10n.messageFromDonor,
+        'description': l10n.messageFromDonorDescription,
         'time': '3 hours ago',
         'icon': Icons.message,
         'color': DesignSystem.accentPink,
       },
       {
-        'title': 'Request pending',
-        'description': 'Your book request is awaiting approval',
+        'title': l10n.requestPendingTitle,
+        'description': l10n.requestPendingDescription,
         'time': '1 day ago',
         'icon': Icons.hourglass_empty,
         'color': DesignSystem.warning,
@@ -1031,7 +1042,7 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Recent Activity',
+              l10n.recentActivity,
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
@@ -1041,8 +1052,7 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
             TextButton.icon(
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Full activity log coming soon')),
+                  SnackBar(content: Text(l10n.fullActivityLogComingSoon)),
                 );
               },
               icon: const Icon(Icons.arrow_forward, size: 16),
@@ -1101,7 +1111,7 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
       children: [
         // Search Bar
         GBSearchBar<Donation>(
-          hint: 'Search donations by title, description, or location...',
+          hint: l10n.searchDonationsByTitle,
           onSearch: (query) => _onSearchChanged(query),
           onChanged: (query) => _onSearchChanged(query),
         ),
@@ -1136,7 +1146,7 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Your Progress',
+          l10n.yourProgress,
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w700,
@@ -1159,14 +1169,14 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
                       progress: totalRequests > 0
                           ? approvedRequests / requestGoal
                           : 0.0,
-                      label: l10n.requestsFilled, 
+                      label: l10n.requestsFilled,
                       color: DesignSystem.secondaryGreen,
                       size: 140,
                     ),
                     const SizedBox(width: AppTheme.spacingXL),
                     GBProgressRing(
                       progress: profileCompletion,
-                      label: 'Profile Complete',
+                      label: l10n.profileComplete,
                       color: DesignSystem.primaryBlue,
                       size: 140,
                     ),
@@ -1185,7 +1195,7 @@ class _ReceiverDashboardEnhancedState extends State<ReceiverDashboardEnhanced> {
                     const SizedBox(height: AppTheme.spacingXL),
                     GBProgressRing(
                       progress: profileCompletion,
-                      label: 'Profile Complete',
+                      label: l10n.profileComplete,
                       color: DesignSystem.primaryBlue,
                       size: 140,
                     ),
@@ -1746,7 +1756,7 @@ class _RequestDialogState extends State<_RequestDialog> {
             controller: _messageController,
             decoration: InputDecoration(
               labelText: l10n.message,
-              hintText: 'Tell the donor why you need this...',
+              hintText: l10n.tellDonorWhyYouNeed,
               border: const OutlineInputBorder(),
             ),
             maxLines: 4,

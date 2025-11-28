@@ -148,8 +148,8 @@ class SettingsScreen extends StatelessWidget {
                     icon: const Icon(Icons.swap_horiz),
                     label: Text(
                       localeProvider.isArabic
-                          ? 'Switch to English'
-                          : 'التبديل إلى العربية',
+                          ? l10n.switchToEnglish
+                          : l10n.switchToArabic,
                     ),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
@@ -201,7 +201,7 @@ class SettingsScreen extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.security),
             title: Text(l10n.privacy),
-            subtitle: const Text('Privacy & Security'),
+            subtitle: Text(l10n.privacySecurity),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
               // Navigate to privacy settings
@@ -222,8 +222,8 @@ class SettingsScreen extends StatelessWidget {
         children: [
           SwitchListTile(
             secondary: const Icon(Icons.dark_mode_outlined),
-            title: const Text('Dark Mode'),
-            subtitle: const Text('Switch between light and dark theme'),
+            title: Text(l10n.darkMode),
+            subtitle: Text(l10n.switchBetweenLightDark),
             value: Theme.of(context).brightness == Brightness.dark,
             onChanged: (bool value) {
               // Toggle theme mode
@@ -270,8 +270,8 @@ class SettingsScreen extends StatelessWidget {
           const Divider(height: 1),
           ListTile(
             leading: const Icon(Icons.help_outline),
-            title: const Text('Help & Support'),
-            subtitle: const Text('Get help and contact support'),
+            title: Text(l10n.helpAndSupport),
+            subtitle: Text(l10n.getHelpContactSupport),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
               // Navigate to help
@@ -280,8 +280,8 @@ class SettingsScreen extends StatelessWidget {
           const Divider(height: 1),
           ListTile(
             leading: const Icon(Icons.description_outlined),
-            title: const Text('Terms & Conditions'),
-            subtitle: const Text('Read our terms and conditions'),
+            title: Text(l10n.termsAndConditions),
+            subtitle: Text(l10n.readTermsConditions),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
               // Navigate to terms
@@ -290,8 +290,8 @@ class SettingsScreen extends StatelessWidget {
           const Divider(height: 1),
           ListTile(
             leading: const Icon(Icons.privacy_tip_outlined),
-            title: const Text('Privacy Policy'),
-            subtitle: const Text('Read our privacy policy'),
+            title: Text(l10n.privacyPolicy),
+            subtitle: Text(l10n.readPrivacyPolicy),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
               // Navigate to privacy policy

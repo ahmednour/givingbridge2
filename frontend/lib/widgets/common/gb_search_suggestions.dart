@@ -110,7 +110,8 @@ class _GBSearchSuggestionsState extends State<GBSearchSuggestions> {
           controller: widget.searchController,
           focusNode: _focusNode,
           decoration: InputDecoration(
-            hintText: 'Search donations, categories, locations...',
+            hintText: AppLocalizations.of(context)!
+                .searchDonationsCategoriesLocations,
             prefixIcon: const Icon(Icons.search),
             suffixIcon: widget.searchController.text.isNotEmpty
                 ? IconButton(

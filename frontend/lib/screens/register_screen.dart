@@ -78,10 +78,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   String? _validateName(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Name is required';
+      return AppLocalizations.of(context)!.nameIsRequired;
     }
     if (value.length < 2) {
-      return 'Name must be at least 2 characters';
+      return AppLocalizations.of(context)!.nameTooShortValidation;
     }
     return null;
   }
@@ -103,10 +103,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return l10n.requiredField;
     }
     if (value.length < 8) {
-      return 'Password must be at least 8 characters';
+      return AppLocalizations.of(context)!.passwordTooShortValidation;
     }
     if (!RegExp(r'[A-Z]').hasMatch(value)) {
-      return 'Password must contain at least one uppercase letter';
+      return AppLocalizations.of(context)!.passwordMustContainUppercase;
     }
     return null;
   }
@@ -211,7 +211,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 // Tagline
                 Text(
-                  'Make a Difference Today',
+                  AppLocalizations.of(context)!.makeDifferenceToday,
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w500,
@@ -228,11 +228,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 // Benefits
                 Column(
                   children: [
-                    _buildBenefit(Icons.verified_user, 'Verified Platform'),
+                    _buildBenefit(Icons.verified_user,
+                        AppLocalizations.of(context)!.verifiedPlatform),
                     SizedBox(height: DesignSystem.spaceL),
-                    _buildBenefit(Icons.handshake, 'Direct Impact'),
+                    _buildBenefit(Icons.handshake,
+                        AppLocalizations.of(context)!.directImpact),
                     SizedBox(height: DesignSystem.spaceL),
-                    _buildBenefit(Icons.security, 'Secure & Private'),
+                    _buildBenefit(Icons.security,
+                        AppLocalizations.of(context)!.securePrivate),
                   ],
                 )
                     .animate(delay: 600.ms)
@@ -346,7 +349,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         SizedBox(height: DesignSystem.spaceL),
                       ],
                       Text(
-                        'Create Account',
+                        AppLocalizations.of(context)!.createAccount,
                         style: isDesktop
                             ? DesignSystem.headlineLarge(context).copyWith(
                                 fontWeight: FontWeight.w800,
@@ -415,7 +418,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                   // Role selection
                   Text(
-                    'Account Type',
+                    AppLocalizations.of(context)!.accountType,
                     style: DesignSystem.labelLarge(context).copyWith(
                       fontWeight: FontWeight.w600,
                     ),
@@ -431,7 +434,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           'donor',
                           l10n.donor,
                           Icons.volunteer_activism,
-                          'Help others by donating',
+                          l10n.helpOthersByDonating,
                           DesignSystem.primaryBlue,
                         )
                             .animate(delay: 300.ms)
@@ -444,7 +447,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           'receiver',
                           l10n.receiver,
                           Icons.person_outline,
-                          'Request what you need',
+                          l10n.requestWhatYouNeed,
                           DesignSystem.secondaryGreen,
                         )
                             .animate(delay: 350.ms)

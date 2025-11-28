@@ -151,22 +151,22 @@ class _LandingScreenState extends State<LandingScreen>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Semantics(
-                    label: 'Navigation menu',
+                    label: l10n.navigationMenu,
                     header: true,
                     child: Text(
-                      'Menu',
+                      l10n.menu,
                       style: DesignSystem.headlineSmall(context).copyWith(
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
                   Semantics(
-                    label: 'Close menu',
+                    label: l10n.closeMenu,
                     button: true,
                     child: IconButton(
                       icon: const Icon(Icons.close),
                       onPressed: () => Navigator.pop(context),
-                      tooltip: 'Close',
+                      tooltip: l10n.close,
                     ),
                   ),
                 ],
@@ -177,22 +177,23 @@ class _LandingScreenState extends State<LandingScreen>
 
               // Dark Mode Toggle
               Semantics(
-                label: 'Theme setting: ${isDark ? "Dark mode" : "Light mode"}',
+                label:
+                    '${l10n.themeSetting}: ${isDark ? l10n.darkMode : l10n.lightMode}',
                 child: ListTile(
                   leading: Icon(
                     isDark ? Icons.light_mode : Icons.dark_mode,
                     color: DesignSystem.primaryBlue,
                   ),
                   title: Text(
-                    isDark ? 'Light Mode' : 'Dark Mode',
+                    isDark ? l10n.lightMode : l10n.darkMode,
                     style: DesignSystem.bodyLarge(context),
                   ),
                   subtitle: Text(
-                    'Switch theme',
+                    l10n.switchTheme,
                     style: DesignSystem.bodySmall(context),
                   ),
                   trailing: Semantics(
-                    label: 'Toggle theme',
+                    label: l10n.toggleTheme,
                     button: true,
                     child: Switch(
                       value: isDark,
@@ -214,7 +215,7 @@ class _LandingScreenState extends State<LandingScreen>
               // Language Switcher
               Semantics(
                 label:
-                    'Language setting: ${localeProvider.isArabic ? "Arabic" : "English"}',
+                    '${l10n.languageSetting}: ${localeProvider.isArabic ? l10n.arabic : l10n.english}',
                 child: ListTile(
                   leading: const Icon(
                     Icons.language,
@@ -225,7 +226,7 @@ class _LandingScreenState extends State<LandingScreen>
                     style: DesignSystem.bodyLarge(context),
                   ),
                   subtitle: Text(
-                    localeProvider.isArabic ? 'العربية' : 'English',
+                    localeProvider.isArabic ? l10n.arabic : l10n.english,
                     style: DesignSystem.bodySmall(context),
                   ),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
@@ -241,7 +242,7 @@ class _LandingScreenState extends State<LandingScreen>
 
               // Login Button
               Semantics(
-                label: 'Navigate to login page',
+                label: l10n.navigateToLoginPage,
                 button: true,
                 child: WebButton(
                   text: l10n.login,
@@ -260,7 +261,7 @@ class _LandingScreenState extends State<LandingScreen>
 
               // Get Started Button
               Semantics(
-                label: 'Navigate to registration page',
+                label: l10n.navigateToRegistrationPage,
                 button: true,
                 child: WebButton(
                   text: l10n.getStarted,
@@ -403,10 +404,10 @@ class _LandingScreenState extends State<LandingScreen>
                     builder: (context, themeProvider, child) {
                       return Semantics(
                         label: isDark
-                            ? 'Switch to light mode'
-                            : 'Switch to dark mode',
+                            ? l10n.switchToLightMode
+                            : l10n.switchToDarkMode,
                         button: true,
-                        hint: 'Tap to toggle theme',
+                        hint: l10n.tapToToggleTheme,
                         child: MouseRegion(
                           cursor: SystemMouseCursors.click,
                           child: InkWell(
@@ -439,11 +440,11 @@ class _LandingScreenState extends State<LandingScreen>
                   Consumer<LocaleProvider>(
                     builder: (context, localeProvider, child) {
                       final currentLang =
-                          localeProvider.isArabic ? 'Arabic' : 'English';
+                          localeProvider.isArabic ? l10n.arabic : l10n.english;
                       return Semantics(
-                        label: 'Change language, current: $currentLang',
+                        label: '${l10n.changeLanguageCurrent}: $currentLang',
                         button: true,
-                        hint: 'Tap to switch language',
+                        hint: l10n.tapToSwitchLanguage,
                         child: MouseRegion(
                           cursor: SystemMouseCursors.click,
                           child: InkWell(
@@ -502,26 +503,26 @@ class _LandingScreenState extends State<LandingScreen>
                     builder: (context, themeProvider, child) {
                       return Semantics(
                         label: isDark
-                            ? 'Switch to light mode'
-                            : 'Switch to dark mode',
+                            ? l10n.switchToLightMode
+                            : l10n.switchToDarkMode,
                         button: true,
                         child: IconButton(
                           icon: Icon(
                             isDark ? Icons.light_mode : Icons.dark_mode,
                           ),
                           onPressed: () => themeProvider.toggleTheme(),
-                          tooltip: isDark ? 'Light mode' : 'Dark mode',
+                          tooltip: isDark ? l10n.lightMode : l10n.darkMode,
                         ),
                       );
                     },
                   ),
                   Semantics(
-                    label: 'Open navigation menu',
+                    label: l10n.openNavigationMenu,
                     button: true,
                     child: IconButton(
                       icon: const Icon(Icons.menu),
                       onPressed: () => _showMobileMenu(context),
-                      tooltip: 'Menu',
+                      tooltip: l10n.menu,
                     ),
                   ),
                 ],
@@ -602,7 +603,7 @@ class _LandingScreenState extends State<LandingScreen>
       children: [
         // Main headline
         Semantics(
-          label: 'Main heading',
+          label: l10n.mainHeading,
           header: true,
           child: Text(
             l10n.connectHeartsShareHope,
@@ -708,13 +709,13 @@ class _LandingScreenState extends State<LandingScreen>
           children: [
             _buildHeroFeature(
               icon: Icons.people_outline,
-              label: '1000+ Donors',
+              label: l10n.donorsCountStatic,
             ),
             SizedBox(
                 width: isDesktop ? DesignSystem.spaceXL : DesignSystem.spaceL),
             _buildHeroFeature(
               icon: Icons.volunteer_activism_outlined,
-              label: '5000+ Donations',
+              label: l10n.donationsCountStatic,
             ),
             SizedBox(
                 width: isDesktop ? DesignSystem.spaceXL : DesignSystem.spaceL),
@@ -838,7 +839,7 @@ class _LandingScreenState extends State<LandingScreen>
                 ),
                 const SizedBox(width: DesignSystem.spaceS),
                 Text(
-                  '8 donations today',
+                  l10n.eightDonationsToday,
                   style: DesignSystem.labelLarge(context).copyWith(
                     color: DesignSystem.textPrimary,
                     fontWeight: FontWeight.w600,
@@ -879,7 +880,7 @@ class _LandingScreenState extends State<LandingScreen>
                 ),
                 const SizedBox(width: DesignSystem.spaceS),
                 Text(
-                  '67 people helped',
+                  l10n.sixtySevenPeopleHelped,
                   style: DesignSystem.labelLarge(context).copyWith(
                     color: DesignSystem.textPrimary,
                     fontWeight: FontWeight.w600,
@@ -1139,7 +1140,7 @@ class _LandingScreenState extends State<LandingScreen>
         children: [
           // Section header with modern typography
           Semantics(
-            label: 'Section heading',
+            label: l10n.sectionHeading,
             header: true,
             child: Text(
               l10n.whyChooseGivingBridge,
@@ -2105,41 +2106,41 @@ class _LandingScreenState extends State<LandingScreen>
     // Sample featured donations with realistic data
     final donations = [
       {
-        'title': 'Winter Clothes - Kids Size 6-10',
-        'category': 'Clothes',
-        'condition': 'Like New',
-        'donorName': 'Community Center',
-        'location': 'Downtown, Cairo',
+        'title': l10n.winterClothesKids,
+        'category': l10n.clothes,
+        'condition': l10n.likeNew,
+        'donorName': l10n.communityCenter,
+        'location': l10n.downtownCairo,
         'isNew': true,
         'image': Icons.checkroom,
         'color': DesignSystem.primaryBlue,
       },
       {
-        'title': 'Calculus & Physics Textbooks',
-        'category': 'Books',
-        'condition': 'Good',
-        'donorName': 'University Graduate',
-        'location': 'Maadi, Cairo',
+        'title': l10n.calculusPhysicsTextbooks,
+        'category': l10n.books,
+        'condition': l10n.good,
+        'donorName': l10n.universityGraduate,
+        'location': l10n.maadiCairo,
         'isNew': false,
         'image': Icons.menu_book,
         'color': const Color(0xFF06B6D4),
       },
       {
-        'title': 'Rice & Canned Goods (15kg)',
-        'category': 'Food',
-        'condition': 'New',
-        'donorName': 'Local Business',
-        'location': 'Nasr City',
+        'title': l10n.riceCannedGoods,
+        'category': l10n.food,
+        'condition': l10n.new,
+        'donorName': l10n.localBusiness,
+        'location': l10n.nasrCity,
         'isNew': true,
         'image': Icons.restaurant,
         'color': DesignSystem.secondaryGreen,
       },
       {
-        'title': 'Dell Laptop - Core i5, 8GB RAM',
-        'category': 'Electronics',
-        'condition': 'Good',
-        'donorName': 'IT Professional',
-        'location': 'New Cairo',
+        'title': l10n.dellLaptop,
+        'category': l10n.electronics,
+        'condition': l10n.good,
+        'donorName': l10n.itProfessional,
+        'location': l10n.newCairo,
         'isNew': false,
         'image': Icons.laptop_mac,
         'color': const Color(0xFFF59E0B),

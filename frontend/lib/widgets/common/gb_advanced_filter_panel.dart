@@ -295,9 +295,9 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
                       Expanded(
                         child: TextField(
                           controller: _presetNameController,
-                          decoration: const InputDecoration(
-                            hintText: 'Enter preset name',
-                            border: OutlineInputBorder(),
+                          decoration: InputDecoration(
+                            hintText: l10n.enterPresetName,
+                            border: const OutlineInputBorder(),
                           ),
                         ),
                       ),
@@ -311,8 +311,9 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
                                   _presetNameController.clear();
                                   if (mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text('Filter preset saved')),
+                                      SnackBar(
+                                          content:
+                                              Text(l10n.filterPresetSaved)),
                                     );
                                   }
                                 }
@@ -390,6 +391,7 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
   }
 
   Widget _buildAdvancedFilters(FilterProvider filterProvider) {
+    final l10n = AppLocalizations.of(context)!;
     return SingleChildScrollView(
       padding: const EdgeInsets.all(DesignSystem.spaceL),
       child: Column(
@@ -400,8 +402,8 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
             children: [
               Expanded(
                 child: CheckboxListTile(
-                  title: const Text('Verified Only'),
-                  subtitle: const Text('Show only verified items'),
+                  title: Text(l10n.verifiedOnly),
+                  subtitle: Text(l10n.showOnlyVerifiedItems),
                   value: filterProvider.verifiedOnly,
                   onChanged: (value) {
                     filterProvider.setVerifiedOnly(value ?? false);
@@ -411,8 +413,8 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
               ),
               Expanded(
                 child: CheckboxListTile(
-                  title: const Text('Urgent Only'),
-                  subtitle: const Text('Show only urgent requests'),
+                  title: Text(l10n.urgentOnly),
+                  subtitle: Text(l10n.showOnlyUrgentRequests),
                   value: filterProvider.urgentOnly,
                   onChanged: (value) {
                     filterProvider.setUrgentOnly(value ?? false);
@@ -613,10 +615,10 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
               child: TextField(
                 controller: _minAmountController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Min Amount',
+                decoration: InputDecoration(
+                  labelText: l10n.minAmount,
                   prefixText: '\$',
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                 ),
                 onChanged: (value) {
                   final amount = double.tryParse(value);
@@ -631,10 +633,10 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
               child: TextField(
                 controller: _maxAmountController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Max Amount',
+                decoration: InputDecoration(
+                  labelText: l10n.maxAmount,
                   prefixText: '\$',
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                 ),
                 onChanged: (value) {
                   final amount = double.tryParse(value);
@@ -667,15 +669,15 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
             Expanded(
               child: DropdownButtonFormField<String>(
                 value: filterProvider.sortBy,
-                decoration: const InputDecoration(
-                  labelText: 'Sort By',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: l10n.sortBy,
+                  border: const OutlineInputBorder(),
                 ),
                 items: [
-                  const DropdownMenuItem(
-                      value: 'createdAt', child: Text('Date Created')),
-                  const DropdownMenuItem(
-                      value: 'updatedAt', child: Text('Last Updated')),
+                  DropdownMenuItem(
+                      value: 'createdAt', child: Text(l10n.dateCreated)),
+                  DropdownMenuItem(
+                      value: 'updatedAt', child: Text(l10n.lastUpdated)),
                   DropdownMenuItem(value: 'title', child: Text(l10n.title)),
                   DropdownMenuItem(value: 'amount', child: Text(l10n.quantity)),
                   DropdownMenuItem(
@@ -693,13 +695,13 @@ class _GBAdvancedFilterPanelState extends State<GBAdvancedFilterPanel>
             Expanded(
               child: DropdownButtonFormField<String>(
                 value: filterProvider.sortOrder,
-                decoration: const InputDecoration(
-                  labelText: 'Order',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: l10n.order,
+                  border: const OutlineInputBorder(),
                 ),
-                items: const [
-                  DropdownMenuItem(value: 'desc', child: Text('Descending')),
-                  DropdownMenuItem(value: 'asc', child: Text('Ascending')),
+                items: [
+                  DropdownMenuItem(value: 'desc', child: Text(l10n.descending)),
+                  DropdownMenuItem(value: 'asc', child: Text(l10n.ascending)),
                 ],
                 onChanged: (value) {
                   if (value != null) {

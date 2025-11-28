@@ -716,10 +716,11 @@ class _RequestDialogState extends State<_RequestDialog> {
               controller: _messageController,
               maxLines: 3,
               maxLength: 500,
-              decoration: const InputDecoration(
-                labelText: 'Message (Optional)',
-                hintText: 'Tell the donor why you need this donation...',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.messageOptional,
+                hintText:
+                    AppLocalizations.of(context)!.tellDonorWhyYouNeedDonation,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: DesignSystem.spaceS),

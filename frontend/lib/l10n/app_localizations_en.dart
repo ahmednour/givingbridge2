@@ -177,8 +177,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get donationDetails => 'Donation Details';
 
   @override
-  String get basicInfoDescription =>
-      'Provide basic information about your donation';
+  String get basicInfoDescription => 'Provide basic information about your donation';
 
   @override
   String get donationTitle => 'Donation';
@@ -199,15 +198,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get donationDescriptionHint => 'Describe your donation in detail';
 
   @override
-  String get descriptionTooShort =>
-      'Description must be at least 10 characters long';
+  String get descriptionTooShort => 'Description must be at least 10 characters long';
 
   @override
   String get donationLocation => 'Location';
 
   @override
-  String get donationLocationHint =>
-      'Enter the location where the donation is available';
+  String get donationLocationHint => 'Enter the location where the donation is available';
 
   @override
   String get locationTooShort => 'Location must be at least 2 characters long';
@@ -243,8 +240,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get categoryAndCondition => 'Category & Condition';
 
   @override
-  String get categoryDescription =>
-      'Select the appropriate category and condition for your donation';
+  String get categoryDescription => 'Select the appropriate category and condition for your donation';
 
   @override
   String get donationCategory => 'Category';
@@ -316,8 +312,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reviewDonation => 'Review Donation';
 
   @override
-  String get reviewDescription =>
-      'Review your donation details before submitting';
+  String get reviewDescription => 'Review your donation details before submitting';
 
   @override
   String get images => 'images';
@@ -350,8 +345,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noMessages => 'No Messages';
 
   @override
-  String get noMessagesDescription =>
-      'Start a conversation to connect with others';
+  String get noMessagesDescription => 'Start a conversation to connect with others';
 
   @override
   String get startConversation => 'Start Conversation';
@@ -369,8 +363,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get messageSettingsComingSoon => 'Message Settings - Coming Soon';
 
   @override
-  String get archivedConversationsComingSoon =>
-      'Archived Conversations - Coming Soon';
+  String get archivedConversationsComingSoon => 'Archived Conversations - Coming Soon';
 
   @override
   String get blockedUsersComingSoon => 'Blocked Users - Coming Soon';
@@ -412,8 +405,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get autoDeleteMessages => 'Auto-delete Messages';
 
   @override
-  String get automaticallyDeleteOldMessages =>
-      'Automatically delete old messages';
+  String get automaticallyDeleteOldMessages => 'Automatically delete old messages';
 
   @override
   String get settingUpdated => 'Setting updated';
@@ -422,8 +414,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noArchivedConversations => 'No archived conversations';
 
   @override
-  String get noArchivedConversationsDescription =>
-      'Your archived conversations will appear here';
+  String get noArchivedConversationsDescription => 'Your archived conversations will appear here';
 
   @override
   String get unarchive => 'Unarchive';
@@ -450,7 +441,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get totalDonations => 'Total Donations';
 
   @override
-  String get totalRequests => 'Total Requests';
+  String get totalRequests => 'Total requests';
 
   @override
   String get activeUsers => 'Active Users';
@@ -483,6 +474,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String pendingOperations(int count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
+      
     );
     final String countString = countNumberFormat.format(count);
 
@@ -503,11 +495,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get getStarted => 'Get Started';
 
   @override
-  String get connectHeartsShareHope => 'Connect Hearts,\nShare Hope';
+  String get connectHeartsShareHope => 'Connect Hearts, Share Hope';
 
   @override
-  String get landingHeroDescription =>
-      'Giving Bridge connects generous donors with those in need, creating a community where kindness flows freely and every donation makes a real difference.';
+  String get landingHeroDescription => 'Giving Bridge connects generous donors with those in need, creating a community where kindness flows freely and every donation makes a real difference.';
 
   @override
   String get startDonating => 'Start donating to see your impact!';
@@ -516,43 +507,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get learnMore => 'Learn More';
 
   @override
-  String get beautifulIllustrationComingSoon =>
-      'Beautiful Illustration\nComing Soon';
+  String get beautifulIllustrationComingSoon => 'Beautiful Illustration\nComing Soon';
 
   @override
   String get whyChooseGivingBridge => 'Why Choose Giving Bridge?';
 
   @override
-  String get platformDescription =>
-      'Our platform makes giving and receiving simple, safe, and meaningful.';
+  String get platformDescription => 'Our platform makes giving and receiving simple, safe, and meaningful.';
 
   @override
   String get easyDonations => 'Easy Donations';
 
   @override
-  String get easyDonationsDesc =>
-      'Simple and secure way to donate items to those who need them most.';
+  String get easyDonationsDesc => 'Simple and secure way to donate items to those who need them most.';
 
   @override
   String get smartMatching => 'Smart Matching';
 
   @override
-  String get smartMatchingDesc =>
-      'Our platform intelligently connects donors with receivers based on location and needs.';
+  String get smartMatchingDesc => 'Our platform intelligently connects donors with receivers based on location and needs.';
 
   @override
   String get verifiedUsers => 'Verified Users';
 
   @override
-  String get verifiedUsersDesc =>
-      'All users are verified to ensure safe and trustworthy transactions.';
+  String get verifiedUsersDesc => 'All users are verified to ensure safe and trustworthy transactions.';
 
   @override
   String get impactTracking => 'Impact Tracking';
 
   @override
-  String get impactTrackingDesc =>
-      'Track your donations and see the real impact you\'re making in your community.';
+  String get impactTrackingDesc => 'Track your donations and see the real impact you\'re making in your community.';
 
   @override
   String get howItWorks => 'How It Works';
@@ -561,29 +546,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stepSignUp => 'Sign Up';
 
   @override
-  String get stepSignUpDesc =>
-      'Create your account as a donor or receiver in just a few clicks.';
+  String get stepSignUpDesc => 'Create your account as a donor or receiver in just a few clicks.';
 
   @override
   String get stepBrowseOrPost => 'Browse or Post';
 
   @override
-  String get stepBrowseOrPostDesc =>
-      'Donors post items, receivers browse available donations.';
+  String get stepBrowseOrPostDesc => 'Donors post items, receivers browse available donations.';
 
   @override
   String get stepConnect => 'Connect';
 
   @override
-  String get stepConnectDesc =>
-      'Get matched with verified users in your community.';
+  String get stepConnectDesc => 'Get matched with verified users in your community.';
 
   @override
   String get stepShareReceive => 'Share & Receive';
 
   @override
-  String get stepShareReceiveDesc =>
-      'Complete the donation and make a positive impact together.';
+  String get stepShareReceiveDesc => 'Complete the donation and make a positive impact together.';
 
   @override
   String get ourImpactInNumbers => 'Our Impact in Numbers';
@@ -604,8 +585,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get readyToMakeADifference => 'Ready to Make a Difference?';
 
   @override
-  String get joinThousands =>
-      'Join thousands of people who are already making their communities better, one donation at a time.';
+  String get joinThousands => 'Join thousands of people who are already making their communities better, one donation at a time.';
 
   @override
   String get browseDonationsAction => 'Browse Donations';
@@ -620,8 +600,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorOccurred => 'An error occurred';
 
   @override
-  String get pleaseCheckConnection =>
-      'Please check your connection and try again';
+  String get pleaseCheckConnection => 'Please check your connection and try again';
 
   @override
   String get confirm => 'Confirm';
@@ -653,8 +632,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveChanges => 'Save Changes';
 
   @override
-  String get notificationSettingsComingSoon =>
-      'Notification settings coming soon!';
+  String get notificationSettingsComingSoon => 'Notification settings coming soon!';
 
   @override
   String get languageSettingsComingSoon => 'Language settings coming soon';
@@ -714,8 +692,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noDonationsYet => 'No donations yet';
 
   @override
-  String get startMakingDifference =>
-      'Start making a difference by creating your first donation';
+  String get startMakingDifference => 'Start making a difference by creating your first donation';
 
   @override
   String get createFirstDonation => 'Create First Donation';
@@ -724,8 +701,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteDonation => 'Delete Donation';
 
   @override
-  String get deleteDonationConfirm =>
-      'Are you sure you want to delete this donation?';
+  String get deleteDonationConfirm => 'Are you sure you want to delete this donation?';
 
   @override
   String get donationDeletedSuccess => 'Donation deleted successfully!';
@@ -766,7 +742,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get requestStatus => 'Request Status';
 
   @override
-  String get noDonations => 'No donations yet';
+  String get noDonations => 'No Donations';
 
   @override
   String get noRequests => 'No requests yet';
@@ -775,8 +751,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get featuredDonations => 'Featured Donations';
 
   @override
-  String get featuredDonationsDesc =>
-      'See what people are sharing in our community';
+  String get featuredDonationsDesc => 'See what people are sharing in our community';
 
   @override
   String get viewAllDonations => 'View All Donations';
@@ -805,12 +780,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get approvalMessage => 'Approval Message';
 
   @override
-  String get provideDeclineReason =>
-      'Please provide a reason for declining (optional)...';
+  String get provideDeclineReason => 'Please provide a reason for declining (optional)...';
 
   @override
-  String get provideApprovalMessage =>
-      'Add a message for the receiver (optional)...';
+  String get provideApprovalMessage => 'Add a message for the receiver (optional)...';
 
   @override
   String get responseMessageHint => 'Enter your message here...';
@@ -836,8 +809,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noRequestsFound => 'No requests found';
 
   @override
-  String get noRequestsDescription =>
-      'You don\'t have any requests matching the selected filter.';
+  String get noRequestsDescription => 'You don\'t have any requests matching the selected filter.';
 
   @override
   String get respondedAt => 'Responded';
@@ -890,22 +862,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get donationRequests => 'Donation Requests';
 
   @override
-  String get notifyDonationRequests =>
-      'Get notified when someone requests your donations';
+  String get notifyDonationRequests => 'Get notified when someone requests your donations';
 
   @override
   String get newDonations => 'New Donations';
 
   @override
-  String get notifyNewDonations =>
-      'Get notified about new donations in your area';
+  String get notifyNewDonations => 'Get notified about new donations in your area';
 
   @override
   String get statusUpdates => 'Status Updates';
 
   @override
-  String get notifyStatusUpdates =>
-      'Get notified about donation status changes';
+  String get notifyStatusUpdates => 'Get notified about donation status changes';
 
   @override
   String get reminders => 'Reminders';
@@ -920,8 +889,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weeklySummary => 'Weekly Summary';
 
   @override
-  String get receiveWeeklySummary =>
-      'Receive a weekly summary of your activity';
+  String get receiveWeeklySummary => 'Receive a weekly summary of your activity';
 
   @override
   String get importantUpdates => 'Important Updates';
@@ -951,8 +919,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationDeleted => 'Notification deleted';
 
   @override
-  String get clearAllConfirm =>
-      'Are you sure you want to clear all notifications? This action cannot be undone.';
+  String get clearAllConfirm => 'Are you sure you want to clear all notifications? This action cannot be undone.';
 
   @override
   String get allNotificationsCleared => 'All notifications cleared';
@@ -985,8 +952,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancelRequest => 'Cancel Request';
 
   @override
-  String get cancelRequestConfirm =>
-      'Are you sure you want to cancel this request?';
+  String get cancelRequestConfirm => 'Are you sure you want to cancel this request?';
 
   @override
   String get yesCancelRequest => 'Yes, Cancel';
@@ -1046,15 +1012,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get securePlatform => 'Secure Platform';
 
   @override
-  String get securePlatformDesc =>
-      'End-to-end encryption and secure payment processing for your peace of mind.';
+  String get securePlatformDesc => 'End-to-end encryption and secure payment processing for your peace of mind.';
 
   @override
   String get support247 => '24/7 Support';
 
   @override
-  String get support247Desc =>
-      'Our dedicated support team is always ready to help you make a difference.';
+  String get support247Desc => 'Our dedicated support team is always ready to help you make a difference.';
 
   @override
   String get simpleSteps => 'Simple steps to make a difference';
@@ -1063,20 +1027,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get whatCommunitySays => 'What Our Community Says';
 
   @override
-  String get realStories =>
-      'Real stories from donors and receivers who make a difference every day';
+  String get realStories => 'Real stories from donors and receivers who make a difference every day';
 
   @override
-  String get testimonial1Text =>
-      'After losing my business due to the pandemic, I found myself needing help. Within 2 days, a donor provided groceries for my family. Now that I\'m back on my feet, I donate regularly to pay it forward. This platform saved us.';
+  String get testimonial1Text => 'After losing my business due to the pandemic, I found myself needing help. Within 2 days, a donor provided groceries for my family. Now that I\'m back on my feet, I donate regularly to pay it forward. This platform saved us.';
 
   @override
-  String get testimonial2Text =>
-      'I coordinate donations for my neighborhood. GivingBridge streamlined everything - from posting requests to tracking deliveries. We\'ve helped 23 families this year alone. The impact is real and measurable.';
+  String get testimonial2Text => 'I coordinate donations for my neighborhood. GivingBridge streamlined everything - from posting requests to tracking deliveries. We\'ve helped 23 families this year alone. The impact is real and measurable.';
 
   @override
-  String get testimonial3Text =>
-      'As a single mother working two jobs, affording school supplies was tough. Through GivingBridge, my kids got books, a laptop, and clothes. The donors were respectful and kind. This platform is a blessing.';
+  String get testimonial3Text => 'As a single mother working two jobs, affording school supplies was tough. Through GivingBridge, my kids got books, a laptop, and clothes. The donors were respectful and kind. This platform is a blessing.';
 
   @override
   String get enterYourName => 'Enter your name';
@@ -1100,8 +1060,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pleaseEnterYourName => 'Please enter your name';
 
   @override
-  String get pleaseFillRequiredFields =>
-      'Please fill in all required fields correctly';
+  String get pleaseFillRequiredFields => 'Please fill in all required fields correctly';
 
   @override
   String get requestsForMyDonations => 'Requests for my donations';
@@ -1110,8 +1069,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noIncomingRequests => 'No incoming requests yet';
 
   @override
-  String get whenReceiversRequest =>
-      'When receivers request your donations, they will appear here';
+  String get whenReceiversRequest => 'When receivers request your donations, they will appear here';
 
   @override
   String get requestedOn => 'Requested on';
@@ -1177,7 +1135,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statistics => 'Statistics';
 
   @override
-  String get requestApproved => 'Request approved successfully';
+  String get requestApproved => 'Request approved';
 
   @override
   String get requestDeclined => 'Request declined';
@@ -1231,15 +1189,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newBadge => '🆕 New';
 
   @override
-  String get receiveDonationNotifications =>
-      'Receive notifications about donations';
+  String get receiveDonationNotifications => 'Receive notifications about donations';
 
   @override
   String get donationApprovals => 'Donation Approvals';
 
   @override
-  String get notifyOnApprovals =>
-      'Notify when your donation requests are approved';
+  String get notifyOnApprovals => 'Notify when your donation requests are approved';
 
   @override
   String get notifyOnNewMessages => 'Notify when you receive new messages';
@@ -1248,8 +1204,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get systemUpdates => 'System Updates';
 
   @override
-  String get notifyOnSystemUpdates =>
-      'Notify about app updates and maintenance';
+  String get notifyOnSystemUpdates => 'Notify about app updates and maintenance';
 
   @override
   String get manageYourNotifications => 'Manage your notification preferences';
@@ -1303,8 +1258,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchDonations => 'Search donations...';
 
   @override
-  String get overviewSubtitle =>
-      'Monitor your platform performance and activity';
+  String get overviewSubtitle => 'Monitor your platform performance and activity';
 
   @override
   String get usersSubtitle => 'Manage registered users and their permissions';
@@ -1346,7 +1300,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noUsersFoundMessage => 'No users found in the system';
 
   @override
-  String get noDonationsFound => 'No Donations';
+  String get noDonationsFound => 'No donations found';
 
   @override
   String get noDonationsFoundMessage => 'No donations found in the system';
@@ -1467,8 +1421,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get provideRejectionReason => 'Provide a reason for rejection';
 
   @override
-  String get pleaseProvideRejectionReason =>
-      'Please provide a rejection reason';
+  String get pleaseProvideRejectionReason => 'Please provide a rejection reason';
 
   @override
   String get reject => 'Reject';
@@ -1525,27 +1478,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get approvalStatusUnknown => 'Unknown';
 
   @override
-  String get donationPendingReview =>
-      'Your donation is pending review by an administrator';
+  String get donationPendingReview => 'Your donation is pending review by an administrator';
 
   @override
-  String get donationApprovedByAdmin =>
-      'Your donation has been approved by an administrator';
+  String get donationApprovedByAdmin => 'Your donation has been approved by an administrator';
 
   @override
-  String get donationRejectedByAdmin =>
-      'Your donation has been rejected by an administrator';
+  String get donationRejectedByAdmin => 'Your donation has been rejected by an administrator';
 
   @override
   String get waitingForApproval => 'Waiting for Approval';
 
   @override
-  String get visibleAfterApproval =>
-      'Your donation will be visible to receivers once approved by an administrator';
+  String get visibleAfterApproval => 'Your donation will be visible to receivers once approved by an administrator';
 
   @override
-  String get donationCreatedPendingApproval =>
-      'Donation created successfully and is pending admin approval';
+  String get donationCreatedPendingApproval => 'Donation created successfully and is pending admin approval';
 
   @override
   String get statusAvailable => 'Available';
@@ -1665,12 +1613,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get categoryOther => 'Other';
 
   @override
-  String get medicalDescription =>
-      'Medical supplies, medications, and health equipment';
+  String get medicalDescription => 'Medical supplies, medications, and health equipment';
 
   @override
-  String get educationDescription =>
-      'School books, educational supplies, and study materials';
+  String get educationDescription => 'School books, educational supplies, and study materials';
 
   @override
   String get foodDescription => 'Food, groceries, and ready meals';
@@ -1889,6 +1835,428 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rahma => 'Rahma';
 
   @override
+  String get donorsCountStatic => '1000+ Donors';
+
+  @override
+  String get donationsCountStatic => '5000+ Donations';
+
+  @override
+  String get menu => 'Menu';
+
+  @override
+  String get navigationMenu => 'Navigation menu';
+
+  @override
+  String get closeMenu => 'Close menu';
+
+  @override
+  String get darkMode => 'Dark Mode';
+
+  @override
+  String get lightMode => 'Light mode';
+
+  @override
+  String get themeSetting => 'Theme setting';
+
+  @override
+  String get switchTheme => 'Switch theme';
+
+  @override
+  String get toggleTheme => 'Toggle theme';
+
+  @override
+  String get languageSetting => 'Language setting';
+
+  @override
+  String get navigateToLoginPage => 'Navigate to login page';
+
+  @override
+  String get navigateToRegistrationPage => 'Navigate to registration page';
+
+  @override
+  String get switchToLightMode => 'Switch to light mode';
+
+  @override
+  String get switchToDarkMode => 'Switch to dark mode';
+
+  @override
+  String get tapToToggleTheme => 'Tap to toggle theme';
+
+  @override
+  String get changeLanguageCurrent => 'Change language, current';
+
+  @override
+  String get tapToSwitchLanguage => 'Tap to switch language';
+
+  @override
+  String get openNavigationMenu => 'Open navigation menu';
+
+  @override
+  String get mainHeading => 'Main heading';
+
+  @override
+  String get sectionHeading => 'Section heading';
+
+  @override
+  String get winterClothesKids => 'Winter Clothes - Kids Size 6-10';
+
+  @override
+  String get calculusPhysicsTextbooks => 'Calculus & Physics Textbooks';
+
+  @override
+  String get riceCannedGoods => 'Rice & Canned Goods (15kg)';
+
+  @override
+  String get dellLaptop => 'Dell Laptop - Core i5, 8GB RAM';
+
+  @override
+  String get communityCenter => 'Community Center';
+
+  @override
+  String get universityGraduate => 'University Graduate';
+
+  @override
+  String get localBusiness => 'Local Business';
+
+  @override
+  String get itProfessional => 'IT Professional';
+
+  @override
+  String get downtownCairo => 'Downtown, Cairo';
+
+  @override
+  String get maadiCairo => 'Maadi, Cairo';
+
+  @override
+  String get nasrCity => 'Nasr City';
+
+  @override
+  String get newCairo => 'New Cairo';
+
+  @override
+  String get likeNew => 'Like New';
+
+  @override
+  String get good => 'Good';
+
+  @override
+  String get new => 'New';
+
+  @override
+  String get eightDonationsToday => '8 donations today';
+
+  @override
+  String get sixtySevenPeopleHelped => '67 people helped';
+
+  @override
+  String get errorUploadingAvatar => 'Error uploading avatar';
+
+  @override
+  String get fullActivityLogComingSoon => 'Full activity log coming soon';
+
+  @override
+  String get switchBetweenLightDark => 'Switch between light and dark theme';
+
+  @override
+  String get privacySecurity => 'Privacy & Security';
+
+  @override
+  String get helpAndSupport => 'Help & Support';
+
+  @override
+  String get getHelpContactSupport => 'Get help and contact support';
+
+  @override
+  String get termsAndConditions => 'Terms & Conditions';
+
+  @override
+  String get readTermsConditions => 'Read our terms and conditions';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
+  String get readPrivacyPolicy => 'Read our privacy policy';
+
+  @override
+  String get register => 'Register';
+
+  @override
+  String get getStartedToday => 'Get Started Today';
+
+  @override
+  String get filterPresetSaved => 'Filter preset saved';
+
+  @override
+  String get verifiedOnly => 'Verified only';
+
+  @override
+  String get showOnlyVerifiedItems => 'Show only verified items';
+
+  @override
+  String get urgentOnly => 'Urgent only';
+
+  @override
+  String get showOnlyUrgentRequests => 'Show only urgent requests';
+
+  @override
+  String get dateCreated => 'Date created';
+
+  @override
+  String get lastUpdated => 'Last updated';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get syncPendingChanges => 'Sync Pending Changes';
+
+  @override
+  String get syncCompletedSuccessfully => 'Sync completed successfully';
+
+  @override
+  String syncFailed(String error) {
+    return 'Sync failed: $error';
+  }
+
+  @override
+  String get forceSync => 'Force Sync';
+
+  @override
+  String get clearCache => 'Clear Cache';
+
+  @override
+  String get basicFilters => 'Basic filters';
+
+  @override
+  String get presets => 'Presets';
+
+  @override
+  String get advanced => 'Advanced';
+
+  @override
+  String get saveCurrentFilters => 'Save current filters';
+
+  @override
+  String get enterPresetName => 'Enter preset name';
+
+  @override
+  String get minAmount => 'Min Amount';
+
+  @override
+  String get maxAmount => 'Max Amount';
+
+  @override
+  String get sortBy => 'Sort By';
+
+  @override
+  String get order => 'Order';
+
+  @override
+  String get searchDonationsCategoriesLocations => 'Search donations, categories, locations...';
+
+  @override
+  String get tellDonorWhyYouNeed => 'Tell the donor why you need this...';
+
+  @override
+  String get messageOptional => 'Message (Optional)';
+
+  @override
+  String get tellDonorWhyYouNeedDonation => 'Tell the donor why you need this donation...';
+
+  @override
+  String get searchUsers => 'Search users...';
+
+  @override
+  String get givingBridgeTitle => 'Giving Bridge';
+
+  @override
+  String get connectHeartsShareHopeTitle => 'Connect Hearts, Share Hope';
+
+  @override
+  String get joinCommunityDescription => 'Join our community of generous donors and those in need. Make a difference with every donation, create lasting connections, and build a better world together.';
+
+  @override
+  String get easyDonationsTitle => 'Easy Donations';
+
+  @override
+  String get easyDonationsDescription => 'Simple and secure donation process with just a few clicks.';
+
+  @override
+  String get smartMatchingTitle => 'Smart Matching';
+
+  @override
+  String get smartMatchingDescription => 'Find the perfect donation requests that match your interests.';
+
+  @override
+  String get verifiedUsersTitle => 'Verified Users';
+
+  @override
+  String get verifiedUsersDescription => 'All users are verified to ensure safe and trustworthy donations.';
+
+  @override
+  String get impactTrackingTitle => 'Impact Tracking';
+
+  @override
+  String get impactTrackingDescription => 'Track your donation impact and see the difference you make.';
+
+  @override
+  String get whyChooseGivingBridgeTitle => 'Why Choose Giving Bridge?';
+
+  @override
+  String get platformMakesEasyDescription => 'Our platform makes it easy to connect donors with those in need, creating meaningful relationships and lasting impact.';
+
+  @override
+  String get readyToMakeDifferenceTitle => 'Ready to Make a Difference?';
+
+  @override
+  String get joinThousandsDescription => 'Join thousands of users who are already making a positive impact in their communities.';
+
+  @override
+  String get connectingHeartsChangingLives => 'Connecting hearts, changing lives, one donation at a time.';
+
+  @override
+  String get switchToEnglish => 'Switch to English';
+
+  @override
+  String get switchToArabic => 'Switch to Arabic';
+
+  @override
+  String get noSearchHistory => 'No search history';
+
+  @override
+  String get nameIsRequired => 'Name is required';
+
+  @override
+  String get nameTooShortValidation => 'Name must be at least 2 characters';
+
+  @override
+  String get passwordTooShortValidation => 'Password must be at least 8 characters';
+
+  @override
+  String get passwordMustContainUppercase => 'Password must contain at least one uppercase letter';
+
+  @override
+  String get makeDifferenceToday => 'Make a Difference Today';
+
+  @override
+  String get verifiedPlatform => 'Verified Platform';
+
+  @override
+  String get directImpact => 'Direct Impact';
+
+  @override
+  String get securePrivate => 'Secure & Private';
+
+  @override
+  String get createAccount => 'Create Account';
+
+  @override
+  String get accountType => 'Account Type';
+
+  @override
+  String get helpOthersByDonating => 'Help others by donating';
+
+  @override
+  String get requestWhatYouNeed => 'Request what you need';
+
+  @override
+  String get clearFilters => 'Clear filters';
+
+  @override
+  String get inYourArea => 'In your area';
+
+  @override
+  String get awaitingApproval => 'Awaiting approval';
+
+  @override
+  String get findItemsYouNeed => 'Find items you need';
+
+  @override
+  String get viewRequestStatus => 'View request status';
+
+  @override
+  String get contactDonors => 'Contact donors';
+
+  @override
+  String get categories => 'Categories';
+
+  @override
+  String get filterByCategory => 'Filter by category';
+
+  @override
+  String get requestApprovedDescription => 'Sarah approved your request for winter clothes';
+
+  @override
+  String get newDonationAvailableTitle => 'New donation available';
+
+  @override
+  String get newDonationAvailableDescription => 'Food items posted in your area';
+
+  @override
+  String get messageFromDonor => 'Message from donor';
+
+  @override
+  String get messageFromDonorDescription => 'Mike sent you pickup instructions';
+
+  @override
+  String get requestPendingTitle => 'Request pending';
+
+  @override
+  String get requestPendingDescription => 'Your book request is awaiting approval';
+
+  @override
+  String get recentActivityTitle => 'Recent Activity';
+
+  @override
+  String get searchDonationsByTitle => 'Search donations by title, description, or location...';
+
+  @override
+  String get yourProgress => 'Your Progress';
+
+  @override
+  String get profileComplete => 'Profile Complete';
+
+  @override
+  String get pendingReviewStatus => 'Pending Review';
+
+  @override
+  String get likeNewCondition => 'Like New';
+
+  @override
+  String get availableStatus => 'Available';
+
+  @override
+  String get spam => 'Spam';
+
+  @override
+  String get harassment => 'Harassment';
+
+  @override
+  String get inappropriateContent => 'Inappropriate Content';
+
+  @override
+  String get scam => 'Scam';
+
+  @override
+  String get fakeProfile => 'Fake Profile';
+
+  @override
+  String get otherReason => 'Other';
+
+  @override
+  String get reviewedStatus => 'Reviewed';
+
+  @override
+  String get resolvedStatus => 'Resolved';
+
+  @override
+  String get dismissedStatus => 'Dismissed';
+
+  @override
   String get hikmah => 'Hikmah';
 
   @override
@@ -1970,19 +2338,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passwordTooWeak => 'Password is too weak';
 
   @override
-  String get passwordMustContainUppercase =>
-      'Password must contain an uppercase letter';
-
-  @override
-  String get passwordMustContainLowercase =>
-      'Password must contain a lowercase letter';
+  String get passwordMustContainLowercase => 'Password must contain a lowercase letter';
 
   @override
   String get passwordMustContainNumber => 'Password must contain a number';
 
   @override
-  String get passwordMustContainSpecialChar =>
-      'Password must contain a special character';
+  String get passwordMustContainSpecialChar => 'Password must contain a special character';
 
   @override
   String get nameRequired => 'Name is required';
@@ -2027,8 +2389,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get descriptionRequired => 'Description is required';
 
   @override
-  String get descriptionTooLong =>
-      'Description is too long (maximum 1000 characters)';
+  String get descriptionTooLong => 'Description is too long (maximum 1000 characters)';
 
   @override
   String get categoryRequired => 'Category is required';
@@ -2397,48 +2758,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get decryptionCompleted => 'Decryption completed';
 
   @override
-  String get filterPresetSaved => 'Filter preset saved';
-
-  @override
-  String get basicFilters => 'Basic filters';
-
-  @override
-  String get presets => 'Presets';
-
-  @override
-  String get advanced => 'Advanced';
-
-  @override
-  String get saveCurrentFilters => 'Save current filters';
-
-  @override
-  String get enterPresetName => 'Enter preset name';
-
-  @override
-  String get dateCreated => 'Date created';
-
-  @override
-  String get lastUpdated => 'Last updated';
-
-  @override
-  String get descending => 'Descending';
-
-  @override
-  String get ascending => 'Ascending';
-
-  @override
-  String get verifiedOnly => 'Verified only';
-
-  @override
-  String get showOnlyVerifiedItems => 'Show only verified items';
-
-  @override
-  String get urgentOnly => 'Urgent only';
-
-  @override
-  String get showOnlyUrgentRequests => 'Show only urgent requests';
-
-  @override
   String get newYork => 'New York';
 
   @override
@@ -2504,8 +2823,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get noPermissionAccess =>
-      'You do not have permission to access this page.';
+  String get noPermissionAccess => 'You do not have permission to access this page.';
 
   @override
   String errorLoadingRequests(String error) {
@@ -2552,12 +2870,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noInternetConnection => 'No internet connection';
 
   @override
-  String get switchToEnglish => 'Switch to English';
-
-  @override
-  String get switchToArabic => 'Switch to Arabic';
-
-  @override
   String get newConversation => 'New Conversation';
 
   @override
@@ -2587,8 +2899,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get searchByNameEmailLocation =>
-      'Search by name, email, or location...';
+  String get searchByNameEmailLocation => 'Search by name, email, or location...';
 
   @override
   String get failedToSearchUsers => 'Failed to search users';
@@ -2615,19 +2926,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newItem => 'New';
 
   @override
-  String get likeNew => 'Like New';
-
-  @override
-  String get good => 'Good';
-
-  @override
   String get fair => 'Fair';
-
-  @override
-  String get minAmount => 'Min Amount';
-
-  @override
-  String get maxAmount => 'Max Amount';
 
   @override
   String get distance => 'Distance';
@@ -2687,8 +2986,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get whyBlockingUser => 'Why are you blocking this user?';
 
   @override
-  String get blockingUserWarning =>
-      'Blocking this user will prevent them from contacting you and viewing your donations.';
+  String get blockingUserWarning => 'Blocking this user will prevent them from contacting you and viewing your donations.';
 
   @override
   String get failedToBlockUser => 'Failed to block user';
@@ -2720,33 +3018,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectCategory => 'Select Category';
 
   @override
-  String get startMakingDifferenceFirst =>
-      'Start making a difference by creating your first donation';
+  String get startMakingDifferenceFirst => 'Start making a difference by creating your first donation';
 
   @override
   String get noRequestsYet => 'No requests yet';
 
   @override
-  String get browseAvailableDonations =>
-      'Browse available donations and request items you need';
+  String get browseAvailableDonations => 'Browse available donations and request items you need';
 
   @override
   String get noResultsFound => 'No results found';
 
   @override
-  String get tryAdjustingFilters =>
-      'Try adjusting your filters or search terms';
+  String get tryAdjustingFilters => 'Try adjusting your filters or search terms';
 
   @override
   String get noUsersMatchCriteria => 'No users match your search criteria';
 
   @override
-  String get noDonationsMatchCriteria =>
-      'No donations match your search criteria';
+  String get noDonationsMatchCriteria => 'No donations match your search criteria';
 
   @override
-  String get noPermissionPage =>
-      'You do not have permission to access this page.';
+  String get noPermissionPage => 'You do not have permission to access this page.';
 
   @override
   String get filterByStatus => 'Filter by status: ';
@@ -2825,8 +3118,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get blockUserTitle => 'Block User';
 
   @override
-  String get blockUserWarning =>
-      'Blocking this user will prevent them from contacting you and viewing your donations.';
+  String get blockUserWarning => 'Blocking this user will prevent them from contacting you and viewing your donations.';
 
   @override
   String get blockUserReasonLabel => 'Reason (Optional)';
@@ -2877,9 +3169,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get fullActivityLogComingSoon => 'Full activity log coming soon';
-
-  @override
   String get goalTracking => 'Goal Tracking';
 
   @override
@@ -2900,16 +3189,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resetNotificationSettings => 'Reset Notification Settings';
 
   @override
-  String get resetNotificationConfirm =>
-      'This will reset all notification settings to their default values. Are you sure?';
+  String get resetNotificationConfirm => 'This will reset all notification settings to their default values. Are you sure?';
 
   @override
-  String get notificationSettingsReset =>
-      'Notification settings reset to defaults';
+  String get notificationSettingsReset => 'Notification settings reset to defaults';
 
   @override
-  String get pushNotificationsDesc =>
-      'Receive push notifications on your device';
+  String get pushNotificationsDesc => 'Receive push notifications on your device';
 
   @override
   String get emailNotificationsDesc => 'Receive notifications via email';
@@ -2928,9 +3214,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pleaseLoginAgain => 'Please log in again';
-
-  @override
-  String get darkMode => 'Dark Mode';
 
   @override
   String get darkModeDesc => 'Toggle dark/light theme';
@@ -2957,22 +3240,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteNotification => 'Delete Notification';
 
   @override
-  String get deleteNotificationConfirm =>
-      'Are you sure you want to delete this notification?';
+  String get deleteNotificationConfirm => 'Are you sure you want to delete this notification?';
 
   @override
   String get syncCompletedSuccess => 'Sync completed successfully';
-
-  @override
-  String syncFailed(String error) {
-    return 'Sync failed: $error';
-  }
-
-  @override
-  String get forceSync => 'Force Sync';
-
-  @override
-  String get clearCache => 'Clear Cache';
 
   @override
   String get givingBridge => 'GivingBridge';
@@ -2993,4 +3264,82 @@ class AppLocalizationsEn extends AppLocalizations {
   String screenForRoute(String route) {
     return 'Screen for route: $route';
   }
+
+  @override
+  String get nameMustBeAtLeast2Characters => 'Name must be at least 2 characters';
+
+  @override
+  String get passwordMustBeAtLeast8Characters => 'Password must be at least 8 characters';
+
+  @override
+  String get requestApprovedTitle => 'Request approved';
+
+  @override
+  String get noUsersFoundInSystem => 'No users found in the system';
+
+  @override
+  String get noDonationsFoundInSystem => 'No donations found in the system';
+
+  @override
+  String get allDonations => 'All donations';
+
+  @override
+  String get availableNow => 'Available now';
+
+  @override
+  String get successfullyDelivered => 'Successfully delivered';
+
+  @override
+  String get communityImpact => 'Community impact';
+
+  @override
+  String get newRequestReceived => 'New request received';
+
+  @override
+  String get newRequestDescription => 'John requested your winter jacket';
+
+  @override
+  String get donationMarkedComplete => 'Donation marked complete';
+
+  @override
+  String get donationMarkedCompleteDescription => 'Your book donation was successfully delivered';
+
+  @override
+  String get itemViewed => 'Item viewed';
+
+  @override
+  String get itemViewedDescription => '12 people viewed your laptop donation';
+
+  @override
+  String get messageReceived => 'Message received';
+
+  @override
+  String get messageReceivedDescription => 'Sarah sent you a thank you message';
+
+  @override
+  String get chatWithRecipients => 'Chat with recipients';
+
+  @override
+  String get searchDonationsByTitleDescription => 'Search donations by title, description, or category...';
+
+  @override
+  String get tryAdjustingSearchFilters => 'Try adjusting your search or filters';
+
+  @override
+  String get clearAllFilters => 'Clear all filters';
+
+  @override
+  String get demoDonor => 'Demo Donor';
+
+  @override
+  String get demoAdmin => 'Demo Admin';
+
+  @override
+  String get demoReceiver => 'Demo Receiver';
+
+  @override
+  String get failedToLoadDonations => 'Failed to load donations';
+
+  @override
+  String get failedToUpdateDonation => 'Failed to update donation';
 }
